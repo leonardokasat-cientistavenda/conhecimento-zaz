@@ -29,7 +29,7 @@ jobs:
           cf_api_token: ${{ secrets.CF_API_TOKEN }}
       
       - name: Aguardar propagação Cloudflare
-        run: sleep 10
+        run: sleep 30
       
       - name: Sync documents to Outline
         env:
