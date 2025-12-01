@@ -1,3 +1,12 @@
+---
+nome: 00_O_1_1_Metodo_Epistemologico
+versao: "1.2"
+tipo: Framework
+classe_ref: Framework
+origem: interno
+status: Draft
+---
+
 # 00_O_1_1_Metodo_Epistemologico
 **Versão:** 1.2  
 **Tipo:** Framework  
@@ -17,13 +26,13 @@ Método Epistemológico é o framework que orquestra a geração de conhecimento
 
 ## 2. Métodos
 
-| Ordem | Método | Input | Output | Detalhamento |
-|-------|--------|-------|--------|--------------|
-| 1 | Definir Objeto | Hipótese | Objeto definido | 00_O_1_1_1_Definir_Objeto |
-| 2 | Levantar Marco Teórico | Objeto definido | Conhecimento externo | - |
-| 3 | Mapear Classes | Objeto + Marco teórico | Classes do objeto | - |
-| 4 | Mapear Métodos | Classes | Métodos das classes | - |
-| 5 | Documentar | Classes + Métodos | Documento (Ontologia) | - |
+| Ordem | Método | Input | Output |
+|-------|--------|-------|--------|
+| 1 | Definir Objeto | Hipótese | Objeto definido |
+| 2 | Levantar Marco Teórico | Objeto definido | Conhecimento externo |
+| 3 | Mapear Classes | Objeto + Marco teórico | Classes do objeto |
+| 4 | Mapear Métodos | Classes | Métodos das classes |
+| 5 | Documentar | Classes + Métodos | Documento (Ontologia) |
 
 ---
 
@@ -40,7 +49,6 @@ Método Epistemológico é o framework que orquestra a geração de conhecimento
 │   │      Input: Hipótese                                                │   │
 │   │      Output: Objeto definido                                        │   │
 │   │      Regras: Identificar nome, escopo, fronteiras                   │   │
-│   │      Detalhe: ver 00_O_1_1_1_Definir_Objeto                         │   │
 │   │                                                                     │   │
 │   └─────────────────────────┬───────────────────────────────────────────┘   │
 │                             │                                               │
@@ -91,39 +99,7 @@ Método Epistemológico é o framework que orquestra a geração de conhecimento
 
 ---
 
-## 4. Loop de Refinamento
-
-Qualquer etapa (M2, M3, M4) pode refinar M1 se descobrir informação que altera o objeto.
-
-```
-M1 ──► M2 ──► Refina M1? ─── Sim ──► volta M1
-              │
-              │ Não
-              ▼
-             M3 ──► Refina M1? ─── Sim ──► volta M1
-              │
-              │ Não
-              ▼
-             M4 ──► Refina M1? ─── Sim ──► volta M1
-              │
-              │ Não
-              ▼
-             M5
-```
-
-### Critérios de Refinamento
-
-| Situação | Ação |
-|----------|------|
-| Etapa confirma M1 | Segue para próxima |
-| Etapa expande escopo | Refina M1 |
-| Etapa redefine fronteiras | Refina M1 |
-| Etapa muda critério de sucesso | Refina M1 |
-| Etapa mostra objetivo errado | Volta M1 ou abandona |
-
----
-
-## 5. Recursividade
+## 4. Recursividade
 
 ```
 Objeto: "X"
@@ -151,7 +127,7 @@ Objeto: "X"
 
 ---
 
-## 6. Critério de parada
+## 5. Critério de parada
 
 | Critério | Descrição |
 |----------|-----------|
@@ -161,15 +137,15 @@ Objeto: "X"
 
 ---
 
-## 7. Referências
+## 6. Referências
 
 | Documento | Relação |
 |-----------|---------|
+| 00_O_Ontologia | Pai |
 | 00_O_1_1_1_Definir_Objeto | Filho (detalha M1) |
 | 00_E_1_2_Metodo | Define M1-M5 |
 | 00_E_1_3_Framework | Método Epistemológico é instância |
 | 00_E_1_4_Documento | M5 usa para output |
-| 00_META | Contexto geral |
 
 ---
 
@@ -178,5 +154,4 @@ Objeto: "X"
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2024-11-27 | Criação; 5 métodos; Recursividade |
-| 1.1 | 2025-11-30 | Adicionado seção Estrutura do Output |
-| 1.2 | 2025-12-01 | Loop de Refinamento; Referência a filho 00_O_1_1_1 |
+| 1.2 | 2025-12-01 | Frontmatter YAML; Referências atualizadas |

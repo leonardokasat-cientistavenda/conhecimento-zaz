@@ -1,3 +1,12 @@
+---
+nome: 00_O_Ontologia
+versao: "1.0"
+tipo: Introducao
+classe_ref: Documento
+origem: interno
+status: Draft
+---
+
 # 00_O_Ontologia
 **Versão:** 1.0  
 **Tipo:** Introducao  
@@ -126,9 +135,8 @@ DESCOBERTAS
 |-----------|---------|
 | 00_META | Pai |
 | 00_E_Epistemologia | Irmão |
-| 00_O_1_Fontes | Filho |
-| 00_O_2_Catalogo | Filho |
-| 00_O_3_Descobertas | Filho |
+| 00_O_1_1_Metodo_Epistemologico | Filho |
+| 00_O_1_2_Pipeline_Documentacao | Filho |
 
 ---
 

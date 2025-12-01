@@ -1,3 +1,12 @@
+---
+nome: 00_O_1_2_Pipeline_Documentacao
+versao: "1.1"
+tipo: Framework
+classe_ref: Framework
+origem: interno
+status: Draft
+---
+
 # 00_O_1_2_Pipeline_Documentacao
 **Versão:** 1.1  
 **Tipo:** Framework  
@@ -17,8 +26,8 @@ Opera após M5 (Documentar) do Método Epistemológico.
 
 ## 2. Classes
 
-| Classe | Responsabilidade | Status |
-|--------|------------------|--------|
+| Classe | Responsabilidade | Documento |
+|--------|------------------|-----------|
 | GitHub | Estrutura de pastas, convenções, versionamento | 00_O_1_2_1_GitHub |
 | GitHub_Actions | Validação automática, sync | Pendente |
 | Outline | Publicação, collections, hierarquia | 00_O_1_2_3_Outline |
@@ -45,33 +54,19 @@ Opera após M5 (Documentar) do Método Epistemológico.
 │                             ▼                                               │
 │   ┌─────────────────────────────────────────────────────────────────────┐   │
 │   │                                                                     │   │
-│   │  VERSÃO (Git)                                                       │   │
-│   │      Commit por etapa (M1, M2, M3, M4, M5)                          │   │
-│   │      Histórico imutável                                             │   │
-│   │      Critério de parada: sistema estável                            │   │
-│   │                                                                     │   │
-│   └─────────────────────────┬───────────────────────────────────────────┘   │
-│                             │                                               │
-│                             │ trigger: push to docs/                        │
-│                             ▼                                               │
-│   ┌─────────────────────────────────────────────────────────────────────┐   │
-│   │                                                                     │   │
 │   │  VALIDAÇÃO (GitHub Actions)                                         │   │
-│   │      Verifica frontmatter                                           │   │
-│   │      Valida links internos                                          │   │
-│   │      Verifica encoding UTF-8                                        │   │
-│   │      Ignora _drafts/                                                │   │
+│   │      Frontmatter YAML                                               │   │
+│   │      Links internos                                                 │   │
+│   │      Seções obrigatórias                                            │   │
 │   │                                                                     │   │
 │   └─────────────────────────┬───────────────────────────────────────────┘   │
 │                             │                                               │
-│                             │ se válido                                     │
 │                             ▼                                               │
 │   ┌─────────────────────────────────────────────────────────────────────┐   │
 │   │                                                                     │   │
 │   │  PUBLICAÇÃO (Outline)                                               │   │
-│   │      Resolve links Git → Outline                                    │   │
-│   │      Sync para collection apropriada                                │   │
-│   │      Atualiza frontmatter com outline_id                            │   │
+│   │      Collection: Epistemologia, Ontologia, Domínios                 │   │
+│   │      Hierarquia: baseada em prefixo                                 │   │
 │   │      Detalhe: ver 00_O_1_2_3_Outline                                │   │
 │   │                                                                     │   │
 │   └─────────────────────────────────────────────────────────────────────┘   │
@@ -88,21 +83,6 @@ Opera após M5 (Documentar) do Método Epistemológico.
 | docs/00_E/ | Epistemologia |
 | docs/00_O/ | Ontologia |
 | docs/01/ | Domínios |
-
-### Regra de Hierarquia
-
-Pai = prefixo mais curto que contém o atual.
-
-```
-Collection: Ontologia
-└── 00_O_Ontologia (root)
-    ├── 00_O_1_1_Metodo_Epistemologico
-    │   └── 00_O_1_1_1_Definir_Objeto
-    └── 00_O_1_2_Pipeline_Documentacao
-        ├── 00_O_1_2_1_GitHub
-        ├── 00_O_1_2_2_GitHub_Actions
-        └── 00_O_1_2_3_Outline
-```
 
 ---
 
@@ -132,12 +112,11 @@ Collection: Ontologia
 
 | Documento | Relação |
 |-----------|---------|
+| 00_O_Ontologia | Pai |
 | 00_O_1_2_1_GitHub | Filho (estrutura) |
-| 00_O_1_2_2_GitHub_Actions | Filho (validação) |
 | 00_O_1_2_3_Outline | Filho (publicação) |
 | 00_O_1_1_Metodo_Epistemologico | Pipeline opera após M5 |
 | 00_E_1_4_Documento | Define estrutura validada |
-| 00_E_1_3_Framework | Pipeline é instância |
 
 ---
 
@@ -146,4 +125,4 @@ Collection: Ontologia
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-11-30 | Criação; 4 classes; 4 métodos |
-| 1.1 | 2025-12-01 | Escopo sync (só docs/); Mapeamento Git→Outline; Referências filhos |
+| 1.1 | 2025-12-01 | Frontmatter YAML; Escopo sync; Mapeamento Git→Outline |

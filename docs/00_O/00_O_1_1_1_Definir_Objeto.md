@@ -1,3 +1,12 @@
+---
+nome: 00_O_1_1_1_Definir_Objeto
+versao: "1.1"
+tipo: Metodo
+classe_ref: Metodo
+origem: interno
+status: Draft
+---
+
 # 00_O_1_1_1_Definir_Objeto
 **Versão:** 1.1  
 **Tipo:** Método  
@@ -113,8 +122,6 @@ Objeto Definido
     └── Objeto Prescritivo
 ```
 
-Cada subclasse herda atributos comuns e adiciona específicos.
-
 ---
 
 ## 6. Submétodos
@@ -125,15 +132,6 @@ Cada subclasse herda atributos comuns e adiciona específicos.
 |-------|-------|
 | Input | Hipótese bruta |
 | Output | tipo_pesquisa |
-
-```
-Decisão:
-├── "Quero descobrir o que existe" ──► Exploratório
-├── "Quero medir/descrever" ────────► Descritivo
-├── "Quero entender por quê" ───────► Explanatório
-├── "Quero prever" ─────────────────► Preditivo
-└── "Quero construir/especificar" ──► Prescritivo
-```
 
 ### 6.2 ColetarComuns
 
@@ -149,7 +147,6 @@ Decisão:
 |-------|-------|
 | Input | tipo_pesquisa, atributos base |
 | Output | atributos específicos |
-| Regra | Schema varia por tipo |
 
 ### 6.4 Validar
 
@@ -157,14 +154,6 @@ Decisão:
 |-------|-------|
 | Input | todos atributos |
 | Output | válido / inválido + erros |
-
-| Regra | Aplica a |
-|-------|----------|
-| Campos obrigatórios | Todos |
-| Objetivo SMART | Todos |
-| Hipótese falsificável | Epistêmicos |
-| Threshold definido | Desc, Expla, Pred |
-| Requisitos completos | Prescritivo |
 
 ### 6.5 Gerar
 
@@ -175,39 +164,12 @@ Decisão:
 
 ---
 
-## 7. Grafo de Evolução entre Tipos
-
-```
-Exploratório ──► Descritivo ──┬──► Explanatório
-                             │
-                             ├──► Preditivo
-                             │
-                             └──► Prescritivo
-                                      ▲
-Explanatório ─────────────────────────┤
-Preditivo ────────────────────────────┘
-```
-
-Não é pipeline obrigatório. Objeto pode iniciar em qualquer tipo.
-
----
-
-## 8. Marco Teórico
-
-| Fonte | Contribuição |
-|-------|--------------|
-| Popper | Falsificabilidade como critério |
-| SMART | Estrutura para objetivos |
-| Tipos de Pesquisa | Descritivo, Prescritivo, Exploratório, Explanatório, Preditivo |
-
----
-
-## 9. Referências
+## 7. Referências
 
 | Documento | Relação |
 |-----------|---------|
-| 00_O_1_1_Metodo_Epistemologico | Pai (M1 é parte do framework) |
-| 00_E_1_2_Metodo | Classe base |
+| 00_O_1_1_Metodo_Epistemologico | Pai |
+| 00_E_1_2_Metodo | Define estrutura de Método |
 
 ---
 
@@ -215,5 +177,5 @@ Não é pipeline obrigatório. Objeto pode iniciar em qualquer tipo.
 
 | Versão | Data | Alteração |
 |--------|------|-----------|
-| 1.0 | 2025-11-30 | Criação; 5 subclasses; 5 submétodos; grafo de evolução |
-| 1.1 | 2025-12-01 | Adicionado campo versao ao schema; Histórico no documento |
+| 1.0 | 2025-11-30 | Criação; 5 tipos pesquisa; 5 submétodos |
+| 1.1 | 2025-12-01 | Frontmatter YAML; atributo versao adicionado |
