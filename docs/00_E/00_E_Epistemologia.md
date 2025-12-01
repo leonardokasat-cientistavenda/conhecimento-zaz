@@ -1,3 +1,12 @@
+---
+nome: 00_E_Epistemologia
+versao: "1.0"
+tipo: Introducao
+classe_ref: Documento
+origem: interno
+status: Draft
+---
+
 # 00_E_Epistemologia
 **Versão:** 1.0  
 **Tipo:** Introducao  
@@ -114,7 +123,7 @@ EPISTEMOLOGIA                    ONTOLOGIA
 | Classe | PascalCase | Documento, Metodo |
 | Atributo | snake_case | classe_ref, versão |
 | Método | Verbo infinitivo | Mapear Classes |
-| Arquivo | NN_E_N_Nome_vX_Y.md | 00_E_1_1_Classe_v1_0.md |
+| Arquivo | NN_E_N_Nome.md | 00_E_1_1_Classe.md |
 
 ---
 
@@ -136,5 +145,3 @@ EPISTEMOLOGIA                    ONTOLOGIA
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2024-11-27 | Criação; 4 classes fundamentais |
-
-**linha teste adicionada**

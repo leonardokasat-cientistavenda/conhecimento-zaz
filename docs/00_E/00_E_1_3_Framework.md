@@ -1,3 +1,12 @@
+---
+nome: 00_E_1_3_Framework
+versao: "1.1"
+tipo: Classe
+classe_ref: Classe
+origem: interno
+status: Draft
+---
+
 # 00_E_1_3_Framework
 **Versão:** 1.1  
 **Tipo:** Classe Epistemológica  
@@ -82,25 +91,6 @@ Framework define "quando" e "em que ordem" executar Métodos.
                               ◄──────── não conhece
 ```
 
-### Compartilhamento de Métodos
-
-```
-Framework A                    Framework B
-┌─────────────────┐            ┌─────────────────┐
-│                 │            │                 │
-│  ┌───┐  ┌───┐   │            │  ┌───┐  ┌───┐   │
-│  │M1 │  │M2 │   │            │  │M2 │  │M4 │   │
-│  └───┘  └───┘   │            │  └───┘  └───┘   │
-│                 │            │                 │
-└────────┬────────┘            └────────┬────────┘
-         │                              │
-         │         ┌───────┐            │
-         └────────►│  M2   │◄───────────┘
-                   │       │
-                   │(único)│
-                   └───────┘
-```
-
 ---
 
 ## 5. Regras
@@ -157,9 +147,9 @@ Framework: Método Epistemológico
 
 | Documento | Relação |
 |-----------|---------|
+| 00_E_Epistemologia | Pai |
 | 00_E_1_2_Metodo | Framework agrega Métodos |
 | 00_E_1_4_Documento | Framework documentado seguindo template |
-| 00_O_1_Fontes | Armazena instâncias de Framework |
 
 ---
 

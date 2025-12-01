@@ -1,3 +1,12 @@
+---
+nome: 00_E_1_1_Classe
+versao: "1.1"
+tipo: Classe
+classe_ref: Classe
+origem: interno
+status: Draft
+---
+
 # 00_E_1_1_Classe
 **Versão:** 1.1  
 **Tipo:** Classe Epistemológica  
@@ -122,9 +131,9 @@ Classe
 
 | Documento | Relação |
 |-----------|---------|
+| 00_E_Epistemologia | Pai |
 | 00_E_1_4_Documento | Classe é documentada seguindo template |
 | 00_E_1_2_Metodo | Método usa Classe como I/O |
-| 00_O_2_Catalogo | Armazena instâncias de Classe |
 
 ---
 
