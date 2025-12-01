@@ -1,0 +1,223 @@
+name: Sync to Outline
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**/*.md'
+  workflow_dispatch:  # permite rodar manualmente
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: pip install requests pyyaml
+      
+      - name: Sync documents to Outline
+        env:
+          OUTLINE_URL: https://wiki.zaz.vc
+          OUTLINE_TOKEN: ${{ secrets.OUTLINE_API_TOKEN }}
+          COLLECTION_00_E: aH6kL3RCZl
+          COLLECTION_00_O: Nr6KAiM5Ci
+          COLLECTION_01: 5gzfS5iKsM
+        run: |
+          python << 'EOF'
+          import os
+          import re
+          import yaml
+          import requests
+          from pathlib import Path
+
+          OUTLINE_URL = os.environ['OUTLINE_URL']
+          TOKEN = os.environ['OUTLINE_TOKEN']
+          HEADERS = {
+              'Authorization': f'Bearer {TOKEN}',
+              'Content-Type': 'application/json'
+          }
+
+          # Mapeamento pasta → collection
+          COLLECTIONS = {
+              'docs/00_E': os.environ['COLLECTION_00_E'],
+              'docs/00_O': os.environ['COLLECTION_00_O'],
+              'docs/01': os.environ['COLLECTION_01'],
+          }
+
+          def get_collection(filepath):
+              """Retorna collection_id baseado no caminho"""
+              for prefix, coll_id in COLLECTIONS.items():
+                  if filepath.startswith(prefix):
+                      return coll_id
+              return None
+
+          def parse_frontmatter(content):
+              """Extrai frontmatter YAML do markdown"""
+              if not content.startswith('---'):
+                  return {}, content
+              parts = content.split('---', 2)
+              if len(parts) < 3:
+                  return {}, content
+              try:
+                  fm = yaml.safe_load(parts[1])
+                  body = parts[2].strip()
+                  return fm or {}, body
+              except:
+                  return {}, content
+
+          def get_title(fm, body):
+              """Extrai título do frontmatter ou primeiro H1"""
+              if 'nome' in fm:
+                  return fm['nome']
+              match = re.search(r'^#\s+(.+)$', body, re.MULTILINE)
+              if match:
+                  return match.group(1)
+              return 'Sem título'
+
+          def find_parent_id(nome, doc_map):
+              """Encontra documento pai baseado no prefixo"""
+              parts = nome.split('_')
+              # Tenta encontrar pai com prefixo menor
+              for i in range(len(parts) - 1, 1, -1):
+                  parent_prefix = '_'.join(parts[:i])
+                  for doc_nome, doc_id in doc_map.items():
+                      if doc_nome.startswith(parent_prefix) and doc_nome != nome:
+                          return doc_id
+              return None
+
+          def create_document(title, text, collection_id, parent_id=None):
+              """Cria documento no Outline"""
+              data = {
+                  'title': title,
+                  'text': text,
+                  'collectionId': collection_id,
+                  'publish': True
+              }
+              if parent_id:
+                  data['parentDocumentId'] = parent_id
+              
+              resp = requests.post(
+                  f'{OUTLINE_URL}/api/documents.create',
+                  headers=HEADERS,
+                  json=data
+              )
+              if resp.status_code == 200:
+                  return resp.json()['data']
+              else:
+                  print(f"  ❌ Erro ao criar: {resp.text}")
+                  return None
+
+          def update_document(doc_id, title, text):
+              """Atualiza documento existente"""
+              resp = requests.post(
+                  f'{OUTLINE_URL}/api/documents.update',
+                  headers=HEADERS,
+                  json={
+                      'id': doc_id,
+                      'title': title,
+                      'text': text,
+                      'publish': True
+                  }
+              )
+              if resp.status_code == 200:
+                  return resp.json()['data']
+              else:
+                  print(f"  ❌ Erro ao atualizar: {resp.text}")
+                  return None
+
+          def search_document(title, collection_id):
+              """Busca documento por título na collection"""
+              resp = requests.post(
+                  f'{OUTLINE_URL}/api/documents.search',
+                  headers=HEADERS,
+                  json={
+                      'query': title,
+                      'collectionId': collection_id
+                  }
+              )
+              if resp.status_code == 200:
+                  results = resp.json().get('data', [])
+                  for r in results:
+                      if r['document']['title'] == title:
+                          return r['document']['id']
+              return None
+
+          # Main
+          print("=== Sincronizando com Outline ===\n")
+
+          # Coleta todos os documentos
+          docs = []
+          for md_file in Path('docs').rglob('*.md'):
+              filepath = str(md_file)
+              collection_id = get_collection(filepath)
+              if not collection_id:
+                  print(f"⚠️  Ignorando {filepath} (sem collection mapeada)")
+                  continue
+              
+              content = md_file.read_text(encoding='utf-8')
+              fm, body = parse_frontmatter(content)
+              title = get_title(fm, body)
+              
+              docs.append({
+                  'filepath': filepath,
+                  'nome': fm.get('nome', title),
+                  'title': title,
+                  'text': body,
+                  'collection_id': collection_id,
+                  'outline_id': fm.get('outline_id')
+              })
+
+          # Ordena por profundidade (pais primeiro)
+          docs.sort(key=lambda d: d['nome'].count('_'))
+
+          # Mapa nome → outline_id (para resolver hierarquia)
+          doc_map = {}
+
+          # Primeira passada: busca IDs existentes
+          for doc in docs:
+              if doc['outline_id']:
+                  doc_map[doc['nome']] = doc['outline_id']
+              else:
+                  existing_id = search_document(doc['title'], doc['collection_id'])
+                  if existing_id:
+                      doc_map[doc['nome']] = existing_id
+                      doc['outline_id'] = existing_id
+
+          # Segunda passada: cria/atualiza
+          created = 0
+          updated = 0
+
+          for doc in docs:
+              print(f"Processando: {doc['filepath']}")
+              
+              if doc['outline_id']:
+                  # Atualiza existente
+                  result = update_document(doc['outline_id'], doc['title'], doc['text'])
+                  if result:
+                      print(f"  ✅ Atualizado")
+                      updated += 1
+              else:
+                  # Cria novo
+                  parent_id = find_parent_id(doc['nome'], doc_map)
+                  result = create_document(
+                      doc['title'],
+                      doc['text'],
+                      doc['collection_id'],
+                      parent_id
+                  )
+                  if result:
+                      doc_map[doc['nome']] = result['id']
+                      print(f"  ✅ Criado (id: {result['id']})")
+                      created += 1
+
+          print(f"\n=== Resumo ===")
+          print(f"Criados: {created}")
+          print(f"Atualizados: {updated}")
+          print(f"Total: {len(docs)}")
+          EOF
