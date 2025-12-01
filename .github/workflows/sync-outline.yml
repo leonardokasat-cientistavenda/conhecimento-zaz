@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - 'docs/**/*.md'
-  workflow_dispatch:  # permite rodar manualmente
+  workflow_dispatch:
 
 jobs:
   sync:
@@ -53,7 +53,6 @@ jobs:
               'Content-Type': 'application/json'
           }
 
-          # Mapeamento pasta → collection
           COLLECTIONS = {
               'docs/00_E': os.environ['COLLECTION_00_E'],
               'docs/00_O': os.environ['COLLECTION_00_O'],
@@ -61,14 +60,12 @@ jobs:
           }
 
           def get_collection(filepath):
-              """Retorna collection_id baseado no caminho"""
               for prefix, coll_id in COLLECTIONS.items():
                   if filepath.startswith(prefix):
                       return coll_id
               return None
 
           def parse_frontmatter(content):
-              """Extrai frontmatter YAML do markdown"""
               if not content.startswith('---'):
                   return {}, content
               parts = content.split('---', 2)
@@ -82,7 +79,6 @@ jobs:
                   return {}, content
 
           def get_title(fm, body):
-              """Extrai título do frontmatter ou primeiro H1"""
               if 'nome' in fm:
                   return fm['nome']
               match = re.search(r'^#\s+(.+)$', body, re.MULTILINE)
@@ -90,19 +86,65 @@ jobs:
                   return match.group(1)
               return 'Sem título'
 
-          def find_parent_id(nome, doc_map):
-              """Encontra documento pai baseado no prefixo"""
+          def get_numeric_prefix(nome):
+              """
+              Extrai prefixo numérico do nome.
+              
+              Exemplos:
+                00_E_1_2_Metodo → 00_E_1_2
+                00_E_Epistemologia → 00_E
+                00_O_1_1_Metodo_Epistemologico → 00_O_1_1
+                01_1_02_Segmentos → 01_1_02
+              """
               parts = nome.split('_')
-              # Tenta encontrar pai com prefixo menor
-              for i in range(len(parts) - 1, 1, -1):
-                  parent_prefix = '_'.join(parts[:i])
+              prefix = []
+              for part in parts:
+                  # Número puro (1, 02, 10, etc)
+                  if part.isdigit():
+                      prefix.append(part)
+                  # Código de 2 chars começando com dígito (00, 01) ou letra única (E, O)
+                  elif len(part) <= 2 and (part[0].isdigit() or (len(part) == 1 and part.isupper())):
+                      prefix.append(part)
+                  else:
+                      # Encontrou parte descritiva, para aqui
+                      break
+              return '_'.join(prefix)
+
+          def find_parent_id(nome, doc_map):
+              """
+              Encontra documento pai baseado no prefixo numérico.
+              
+              Regra: Pai = documento existente cujo prefixo numérico é
+                     o ancestral mais próximo do prefixo atual.
+              
+              Exemplos:
+                00_E_1_2_Metodo (prefixo 00_E_1_2)
+                  → tenta 00_E_1 (não existe)
+                  → tenta 00_E (existe: 00_E_Epistemologia) ✓
+                
+                00_O_1_1_1_Definir_Objeto (prefixo 00_O_1_1_1)
+                  → tenta 00_O_1_1 (existe: 00_O_1_1_Metodo_Epistemologico) ✓
+              """
+              my_prefix = get_numeric_prefix(nome)
+              if not my_prefix:
+                  return None
+              
+              prefix_parts = my_prefix.split('_')
+              
+              # Tenta cada ancestral (do mais próximo ao mais distante)
+              for i in range(len(prefix_parts) - 1, 0, -1):
+                  ancestor_prefix = '_'.join(prefix_parts[:i])
+                  
+                  # Busca documento cujo prefixo seja EXATAMENTE o ancestral
                   for doc_nome, doc_id in doc_map.items():
-                      if doc_nome.startswith(parent_prefix) and doc_nome != nome:
-                          return doc_id
+                      if doc_nome != nome:
+                          doc_prefix = get_numeric_prefix(doc_nome)
+                          if doc_prefix == ancestor_prefix:
+                              return doc_id
+              
               return None
 
           def create_document(title, text, collection_id, parent_id=None):
-              """Cria documento no Outline"""
               data = {
                   'title': title,
                   'text': text,
@@ -124,7 +166,6 @@ jobs:
                   return None
 
           def update_document(doc_id, title, text):
-              """Atualiza documento existente"""
               resp = requests.post(
                   f'{OUTLINE_URL}/api/documents.update',
                   headers=HEADERS,
@@ -142,7 +183,6 @@ jobs:
                   return None
 
           def search_document(title, collection_id):
-              """Busca documento por título na collection"""
               resp = requests.post(
                   f'{OUTLINE_URL}/api/documents.search',
                   headers=HEADERS,
@@ -161,7 +201,6 @@ jobs:
           # Main
           print("=== Sincronizando com Outline ===\n")
 
-          # Coleta todos os documentos
           docs = []
           for md_file in Path('docs').rglob('*.md'):
               filepath = str(md_file)
@@ -183,13 +222,12 @@ jobs:
                   'outline_id': fm.get('outline_id')
               })
 
-          # Ordena por profundidade (pais primeiro)
-          docs.sort(key=lambda d: d['nome'].count('_'))
+          # Ordena por tamanho do prefixo (pais primeiro)
+          docs.sort(key=lambda d: len(get_numeric_prefix(d['nome'])))
 
-          # Mapa nome → outline_id (para resolver hierarquia)
           doc_map = {}
 
-          # Primeira passada: busca IDs existentes
+          # Primeira passada: coleta IDs existentes
           for doc in docs:
               if doc['outline_id']:
                   doc_map[doc['nome']] = doc['outline_id']
@@ -205,16 +243,22 @@ jobs:
 
           for doc in docs:
               print(f"Processando: {doc['filepath']}")
+              prefix = get_numeric_prefix(doc['nome'])
+              print(f"  Prefixo: {prefix}")
               
               if doc['outline_id']:
-                  # Atualiza existente
                   result = update_document(doc['outline_id'], doc['title'], doc['text'])
                   if result:
                       print(f"  ✅ Atualizado")
                       updated += 1
               else:
-                  # Cria novo
                   parent_id = find_parent_id(doc['nome'], doc_map)
+                  if parent_id:
+                      parent_nome = [k for k, v in doc_map.items() if v == parent_id][0]
+                      print(f"  Pai: {parent_nome}")
+                  else:
+                      print(f"  Pai: (root)")
+                  
                   result = create_document(
                       doc['title'],
                       doc['text'],
