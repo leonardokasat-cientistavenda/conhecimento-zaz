@@ -5,20 +5,17 @@ tipo: Classe
 classe_ref: Classe
 origem: interno
 status: Draft
+outline_id: 
+outline_url: 
 ---
 
 # 00_E_1_2_Metodo
-**Versão:** 1.1  
-**Tipo:** Classe Epistemológica  
-**Status:** Draft
-
----
 
 ## 1. Definição
 
-Método é o processo que transforma input em output, ambos tipados por Classe.
+Método é um processo com input e output tipados por Classe.
 
-Método define "como fazer" na Epistemologia.
+Transforma conhecimento de um estado para outro.
 
 ---
 
@@ -26,13 +23,11 @@ Método define "como fazer" na Epistemologia.
 
 | Atributo | Tipo | Obrigatório | Descrição |
 |----------|------|-------------|-----------|
-| nome | string | Sim | Verbo infinitivo + objeto (ex: "Mapear Classes") |
+| nome | string | Sim | Verbo infinitivo + objeto |
 | input | Classe | Sim | Tipo de entrada |
 | output | Classe | Sim | Tipo de saída |
-| executor | Pessoa_Contexto \| Sistema | Não | Quem executa |
-| sistemas | Sistema[] | Não | Ferramentas utilizadas |
-| descrição | string | Sim | O que o método faz |
-| submétodos | Submétodo[] | Não | Decomposição interna |
+| descrição | string | Sim | O que faz |
+| submétodos | Submétodo[] | Não | Etapas internas |
 
 ---
 
@@ -52,67 +47,19 @@ Método define "como fazer" na Epistemologia.
 ┌─────────────────────────────────────────────────────────────────┐
 │                          MÉTODO                                 │
 │                                                                 │
-│   ┌─────────────────────────────────────────────────────────┐   │
-│   │                                                         │   │
-│   │                        INPUT                            │   │
-│   │                      (Classe A)                         │   │
-│   │                                                         │   │
-│   └─────────────────────────────┬───────────────────────────┘   │
-│                                 │                               │
-│                                 ▼                               │
-│   ┌─────────────────────────────────────────────────────────┐   │
-│   │                                                         │   │
-│   │                    TRANSFORMAÇÃO                        │   │
-│   │                                                         │   │
-│   │   ┌───────────────────────────────────────────────┐     │   │
-│   │   │  Submétodo 1                                  │     │   │
-│   │   └───────────────────────────────────────────────┘     │   │
-│   │                         │                               │   │
-│   │                         ▼                               │   │
-│   │   ┌───────────────────────────────────────────────┐     │   │
-│   │   │  Submétodo 2                                  │     │   │
-│   │   └───────────────────────────────────────────────┘     │   │
-│   │                         │                               │   │
-│   │                         ▼                               │   │
-│   │   ┌───────────────────────────────────────────────┐     │   │
-│   │   │  Submétodo N                                  │     │   │
-│   │   └───────────────────────────────────────────────┘     │   │
-│   │                                                         │   │
-│   └─────────────────────────────┬───────────────────────────┘   │
-│                                 │                               │
-│                                 ▼                               │
-│   ┌─────────────────────────────────────────────────────────┐   │
-│   │                                                         │   │
-│   │                       OUTPUT                            │   │
-│   │                      (Classe B)                         │   │
-│   │                                                         │   │
-│   └─────────────────────────────────────────────────────────┘   │
+│   ┌───────────┐      ┌───────────────────┐      ┌───────────┐   │
+│   │           │      │                   │      │           │   │
+│   │   INPUT   │─────►│   Transformação   │─────►│  OUTPUT   │   │
+│   │  (Classe) │      │                   │      │  (Classe) │   │
+│   │           │      │  ┌─────────────┐  │      │           │   │
+│   └───────────┘      │  │ Submétodo 1 │  │      └───────────┘   │
+│                      │  │ Submétodo 2 │  │                      │
+│                      │  │ Submétodo N │  │                      │
+│                      │  └─────────────┘  │                      │
+│                      │                   │                      │
+│                      └───────────────────┘                      │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
-```
-
-### Método vs Framework
-
-```
-MÉTODO (atômico)              FRAMEWORK (composto)
-                              
-┌─────────┐                   ┌─────────────────────┐
-│         │                   │                     │
-│  Input  │                   │  ┌─────┐            │
-│    │    │                   │  │ M1  │            │
-│    ▼    │                   │  └──┬──┘            │
-│ Processo│                   │     │               │
-│    │    │                   │     ▼               │
-│    ▼    │                   │  ┌─────┐            │
-│ Output  │                   │  │ M2  │            │
-│         │                   │  └──┬──┘            │
-└─────────┘                   │     │               │
-                              │     ▼               │
-                              │  ┌─────┐            │
-                              │  │ M3  │            │
-                              │  └─────┘            │
-                              │                     │
-                              └─────────────────────┘
 ```
 
 ---
@@ -122,9 +69,8 @@ MÉTODO (atômico)              FRAMEWORK (composto)
 | Relação | Tipo | Descrição |
 |---------|------|-----------|
 | Método → Classe | N:N referência | Via input/output |
-| Método → Submétodo | 1:N composição | Contém |
-| Framework → Método | 1:N agregação | Framework orquestra |
-| Método → Sistema | N:N referência | Usa |
+| Método → Submétodo | 1:N composição | Contém etapas |
+| Framework → Método | 1:N agregação | Framework usa Método |
 
 ---
 
@@ -133,10 +79,10 @@ MÉTODO (atômico)              FRAMEWORK (composto)
 | Regra | Descrição |
 |-------|-----------|
 | Nomenclatura | Verbo infinitivo + objeto |
-| I/O Tipado | Sempre declarar input e output |
+| I/O Tipado | Sempre declarar input/output |
 | 1:1 | Um input, um output |
-| Atomicidade | Método não referencia Framework |
-| Polimorfismo | Input aceita Classe declarada + subclasses |
+| Atomicidade | Não referencia Framework |
+| Polimorfismo | Input aceita subclasses |
 
 ---
 
@@ -145,9 +91,9 @@ MÉTODO (atômico)              FRAMEWORK (composto)
 | Documento | Relação |
 |-----------|---------|
 | 00_E_Epistemologia | Pai |
-| 00_E_1_1_Classe | Método usa Classe como I/O |
-| 00_E_1_3_Framework | Framework agrega Métodos |
-| 00_E_1_4_Documento | Método documentado seguindo template |
+| 00_E_1_1_Classe | Irmão (define I/O) |
+| 00_E_1_3_Framework | Irmão (usa Método) |
+| 00_E_1_4_Documento | Irmão |
 
 ---
 
@@ -156,4 +102,4 @@ MÉTODO (atômico)              FRAMEWORK (composto)
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2024-11-27 | Criação |
-| 1.1 | 2024-11-27 | Adicionado seção 4. Diagrama |
+| 1.1 | 2025-12-01 | Migração para frontmatter YAML |

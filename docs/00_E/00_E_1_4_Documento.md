@@ -1,18 +1,15 @@
 ---
 nome: 00_E_1_4_Documento
-versao: "1.3"
+versao: "1.4"
 tipo: Classe
 classe_ref: Classe
 origem: interno
 status: Draft
+outline_id: 
+outline_url: 
 ---
 
 # 00_E_1_4_Documento
-**Versão:** 1.3  
-**Tipo:** Classe Epistemológica  
-**Status:** Draft
-
----
 
 ## 1. Definição
 
@@ -23,8 +20,6 @@ Todo conhecimento gerado pelo Método Científico é persistido como instância 
 ---
 
 ## 2. Frontmatter (Schema YAML)
-
-A partir de v1.3, documentos usam frontmatter YAML para metadados.
 
 ### 2.1 Schema Obrigatório
 
@@ -43,8 +38,8 @@ status: enum           # Draft | Revisao | Publicado
 
 ```yaml
 ---
-outline_id: string     # UUID do documento no Outline (preenchido no sync)
-outline_url: string    # URL do documento no Outline (preenchido no sync)
+outline_id: string     # UUID do documento no Outline
+outline_url: string    # URL do documento no Outline
 ---
 ```
 
@@ -52,59 +47,28 @@ outline_url: string    # URL do documento no Outline (preenchido no sync)
 
 ```yaml
 ---
-etapa: enum            # M1 | M2 | M3 | M4 | M5 (para rascunhos em _drafts/)
----
-```
-
-### 2.4 Exemplo Completo
-
-```yaml
----
-nome: 00_O_1_2_3_Outline
-versao: "1.0"
-tipo: Framework
-classe_ref: Framework
-origem: interno
-status: Draft
-etapa: M3
-outline_id: 
-outline_url: 
+etapa: enum            # M1 | M2 | M3 | M4 | M5 (para _drafts/)
 ---
 ```
 
 ---
 
-## 3. Atributos (Legado)
-
-Para compatibilidade, atributos também podem aparecer em cabeçalho markdown:
-
-| Atributo | Tipo | Obrigatório | Descrição |
-|----------|------|-------------|-----------|
-| nome | string | Sim | Identificador único |
-| versão | string | Sim | SemVer (vX.Y) |
-| tipo | enum | Sim | Classe, Catalogo, Framework, Introducao |
-| status | enum | Sim | Draft, Revisao, Publicado |
-| depende_de | Documento[] | Não | Referências pai |
-| usado_por | Documento[] | Não | Referências filho |
-
----
-
-## 4. Estrutura Padrão
+## 3. Estrutura Padrão
 
 | Seção | Obrigatório | Conteúdo |
 |-------|-------------|----------|
 | Frontmatter | Sim | Metadados YAML |
 | Definição | Sim | O que é |
-| Diagrama | Sim | ASCII que sintetiza estrutura ou fluxo |
+| Diagrama | Sim | ASCII estrutura/fluxo |
 | Atributos | Se Classe | Schema |
 | Relacionamentos | Se Classe | Conexões |
 | Métodos | Se Framework | Sequência |
-| Referências | Sim | Links para documentos relacionados |
-| Histórico | Sim | Registro de versões |
+| Referências | Sim | Links relacionados |
+| Histórico | Sim | Registro versões |
 
 ---
 
-## 5. Diagrama
+## 4. Diagrama
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -112,39 +76,17 @@ Para compatibilidade, atributos também podem aparecer em cabeçalho markdown:
 │                                                                 │
 │   ┌─────────────────────────────────────────────────────────┐   │
 │   │                     Frontmatter                         │   │
-│   │                                                         │   │
-│   │   nome: string                                          │   │
-│   │   versao: string                                        │   │
-│   │   tipo: enum                                            │   │
-│   │   status: enum                                          │   │
-│   │   etapa: enum (opcional)                                │   │
-│   │                                                         │   │
+│   │   nome | versao | tipo | status | origem                │   │
 │   └─────────────────────────────────────────────────────────┘   │
 │                                                                 │
 │   ┌─────────────────────────────────────────────────────────┐   │
-│   │                     Conteúdo                            │   │
-│   │                                                         │   │
-│   │   Definição                                             │   │
-│   │   Atributos (se Classe)                                 │   │
-│   │   Métodos (se Framework)                                │   │
-│   │   Objetos (se Catálogo)                                 │   │
-│   │   Estrutura (se Introdução)                             │   │
-│   │                                                         │   │
+│   │                      Conteúdo                           │   │
+│   │   Definição | Diagrama | Atributos | Referências        │   │
 │   └─────────────────────────────────────────────────────────┘   │
 │                                                                 │
 │   ┌─────────────────────────────────────────────────────────┐   │
-│   │                    Referências                          │   │
-│   │                                                         │   │
-│   │   depende_de[]: Documento[]                             │   │
-│   │   usado_por[]: Documento[]                              │   │
-│   │                                                         │   │
-│   └─────────────────────────────────────────────────────────┘   │
-│                                                                 │
-│   ┌─────────────────────────────────────────────────────────┐   │
-│   │                     Histórico                           │   │
-│   │                                                         │   │
-│   │   versões[]: {versão, data, alteração}                  │   │
-│   │                                                         │   │
+│   │                      Histórico                          │   │
+│   │   Versão | Data | Alteração                             │   │
 │   └─────────────────────────────────────────────────────────┘   │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
@@ -152,66 +94,27 @@ Para compatibilidade, atributos também podem aparecer em cabeçalho markdown:
 
 ---
 
-## 6. Templates
+## 5. Tipos de Documento
 
-### 6.1 Template Classe
-
-```markdown
----
-nome: [ID]_[Nome]
-versao: "X.Y"
-tipo: Classe
-classe_ref: Classe
-origem: interno
-status: Draft
----
-
-# [ID]_[Nome]
-
-## 1. Definição
-
-[O que é esta classe]
+| Tipo | Descrição | Template |
+|------|-----------|----------|
+| Classe | Define estrutura | Atributos + Relacionamentos |
+| Framework | Orquestra métodos | Sequência + Métodos |
+| Catalogo | Lista instâncias | Tabela de objetos |
+| Introducao | Visão geral | Estrutura + Componentes |
+| Metodo | Define processo | Input/Output + Submétodos |
 
 ---
 
-## 2. Atributos
-
-| Atributo | Tipo | Obrigatório | Descrição |
-|----------|------|-------------|-----------|
-
----
-
-## 3. Relacionamentos
-
-| Relação | Tipo | Descrição |
-|---------|------|-----------|
-
----
-
-## 4. Referências
-
-| Documento | Relação |
-|-----------|---------|
-
----
-
-## Histórico
-
-| Versão | Data | Alteração |
-|--------|------|-----------|
-```
-
----
-
-## 7. Referências
+## 6. Referências
 
 | Documento | Relação |
 |-----------|---------|
 | 00_E_Epistemologia | Pai |
-| 00_E_1_1_Classe | Documento é instância de Classe |
-| 00_E_1_2_Metodo | Documentar é instância de Método |
+| 00_E_1_1_Classe | Irmão |
+| 00_E_1_2_Metodo | Irmão |
+| 00_E_1_3_Framework | Irmão |
 | 00_O_1_2_Pipeline_Documentacao | Define ciclo de vida |
-| Todos os outros | Usam Documento como template |
 
 ---
 
@@ -219,7 +122,8 @@ status: Draft
 
 | Versão | Data | Alteração |
 |--------|------|-----------|
-| 1.0 | 2024-11-27 | Criação; Templates Classe, Framework, Catálogo, Introdução |
-| 1.1 | 2024-11-27 | Adicionado seção Regras de Formatação |
-| 1.2 | 2024-11-27 | Adicionado seção 4. Diagrama |
-| 1.3 | 2025-12-01 | Migração para Frontmatter YAML; Campo etapa; Templates atualizados |
+| 1.0 | 2024-11-27 | Criação |
+| 1.1 | 2024-11-27 | Regras de Formatação |
+| 1.2 | 2024-11-27 | Seção Diagrama |
+| 1.3 | 2025-12-01 | Migração para Frontmatter YAML |
+| 1.4 | 2025-12-01 | Ajuste estrutura; campo etapa |

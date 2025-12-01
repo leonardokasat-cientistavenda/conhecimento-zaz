@@ -2,23 +2,20 @@
 nome: 00_E_Epistemologia
 versao: "1.0"
 tipo: Introducao
-classe_ref: Documento
+classe_ref: 
 origem: interno
 status: Draft
+outline_id: 
+outline_url: 
 ---
 
 # 00_E_Epistemologia
-**Versão:** 1.0  
-**Tipo:** Introducao  
-**Status:** Draft
-
----
 
 ## 1. Definição
 
 Epistemologia é a dimensão que define **como conhecer**.
 
-Contém Classes, Métodos e Frameworks que estruturam a geração de conhecimento.
+Contém Classes, Métodos e Frameworks. Não contém instâncias.
 
 ---
 
@@ -27,116 +24,62 @@ Contém Classes, Métodos e Frameworks que estruturam a geração de conheciment
 ```
 00_E_Epistemologia
 │
-└── 00_E_1_Classes
-    ├── 00_E_1_1_Classe
-    ├── 00_E_1_2_Metodo
-    ├── 00_E_1_3_Framework
-    └── 00_E_1_4_Documento
+├── 00_E_1_1_Classe
+├── 00_E_1_2_Metodo
+├── 00_E_1_3_Framework
+└── 00_E_1_4_Documento
 ```
 
 ---
 
-## 3. Classes Fundamentais
+## 3. Componentes
 
-| Classe | Definição | Função |
-|--------|-----------|--------|
-| Classe | Molde abstrato | Define estrutura |
-| Método | Processo I/O | Define transformação |
-| Framework | Agregador de Métodos | Define sequência |
-| Documento | Template de armazenamento | Define persistência |
+| Componente | Definição | Documento |
+|------------|-----------|-----------|
+| Classe | Molde que define atributos | 00_E_1_1_Classe |
+| Método | Processo com input/output | 00_E_1_2_Metodo |
+| Framework | Agregador de métodos | 00_E_1_3_Framework |
+| Documento | Formato de persistência | 00_E_1_4_Documento |
 
 ---
 
 ## 4. Diagrama
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    EPISTEMOLOGIA                        │
-│                                                         │
-│   ┌─────────────┐                                       │
-│   │   Classe    │ ◄─── define estrutura                 │
-│   └──────┬──────┘                                       │
-│          │                                              │
-│          │ tipifica I/O                                 │
-│          ▼                                              │
-│   ┌─────────────┐                                       │
-│   │   Método    │ ◄─── define transformação             │
-│   └──────┬──────┘                                       │
-│          │                                              │
-│          │ agrega                                       │
-│          ▼                                              │
-│   ┌─────────────┐                                       │
-│   │  Framework  │ ◄─── define sequência                 │
-│   └──────┬──────┘                                       │
-│          │                                              │
-│          │ persiste via                                 │
-│          ▼                                              │
-│   ┌─────────────┐                                       │
-│   │  Documento  │ ◄─── define armazenamento             │
-│   └─────────────┘                                       │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                       EPISTEMOLOGIA                             │
+│                                                                 │
+│   ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
+│   │   CLASSE    │  │   MÉTODO    │  │  FRAMEWORK  │             │
+│   │             │  │             │  │             │             │
+│   │ Define      │  │ Processa    │  │ Orquestra   │             │
+│   │ estrutura   │  │ I/O         │  │ sequência   │             │
+│   └──────┬──────┘  └──────┬──────┘  └──────┬──────┘             │
+│          │                │                │                    │
+│          │                │                │                    │
+│          ▼                ▼                ▼                    │
+│   ┌─────────────────────────────────────────────────────────┐   │
+│   │                      ONTOLOGIA                          │   │
+│   │                                                         │   │
+│   │   Objeto = instância de Classe                          │   │
+│   │                                                         │   │
+│   └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 5. Relação com Ontologia
-
-```
-EPISTEMOLOGIA                    ONTOLOGIA
-│                                     │
-│  Classe ─────── instancia ────────► Objeto
-│  Método ─────── executa ──────────► Transformação
-│  Framework ──── instancia ────────► Framework específico
-│  Documento ──── instancia ────────► Arquivo .md
-│                                     │
-```
-
----
-
-## 6. Glossário
-
-### Termos POO
-
-| Termo | Definição |
-|-------|-----------|
-| Classe | Blueprint abstrato |
-| Objeto | Instância concreta |
-| Atributo | Propriedade |
-| Herança | Classe filha herda de pai |
-| Composição | Classe contém outra |
-| Agregação | Classe referencia outra |
-
-### Termos Filosóficos
-
-| Termo | Definição |
-|-------|-----------|
-| Epistemológico | Relativo ao método/sistema |
-| Ontológico | Relativo ao que existe |
-
----
-
-## 7. Nomenclatura
-
-| Tipo | Convenção | Exemplo |
-|------|-----------|---------|
-| Classe | PascalCase | Documento, Metodo |
-| Atributo | snake_case | classe_ref, versão |
-| Método | Verbo infinitivo | Mapear Classes |
-| Arquivo | NN_E_N_Nome.md | 00_E_1_1_Classe.md |
-
----
-
-## 8. Referências
+## 5. Referências
 
 | Documento | Relação |
 |-----------|---------|
 | 00_META | Pai |
+| 00_O_Ontologia | Irmão |
 | 00_E_1_1_Classe | Filho |
 | 00_E_1_2_Metodo | Filho |
 | 00_E_1_3_Framework | Filho |
 | 00_E_1_4_Documento | Filho |
-| 00_O_Ontologia | Irmão |
 
 ---
 
@@ -144,4 +87,4 @@ EPISTEMOLOGIA                    ONTOLOGIA
 
 | Versão | Data | Alteração |
 |--------|------|-----------|
-| 1.0 | 2024-11-27 | Criação; 4 classes fundamentais |
+| 1.0 | 2025-12-01 | Criação; Migração para frontmatter YAML |

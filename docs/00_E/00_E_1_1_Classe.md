@@ -5,14 +5,11 @@ tipo: Classe
 classe_ref: Classe
 origem: interno
 status: Draft
+outline_id: 
+outline_url: 
 ---
 
 # 00_E_1_1_Classe
-**Versão:** 1.1  
-**Tipo:** Classe Epistemológica  
-**Status:** Draft
-
----
 
 ## 1. Definição
 
@@ -61,11 +58,9 @@ Classe pertence à Epistemologia. Suas instâncias (Objetos) pertencem à Ontolo
 │   │   classe_pai: Classe                                    │   │
 │   │                                                         │   │
 │   └─────────────────────────────────────────────────────────┘   │
-│                                                                 │
 │                              │                                  │
 │                              │ instancia                        │
 │                              ▼                                  │
-│                                                                 │
 │   ┌─────────────────────────────────────────────────────────┐   │
 │   │                       OBJETO                            │   │
 │   │                     (Ontologia)                         │   │
@@ -75,33 +70,7 @@ Classe pertence à Epistemologia. Suas instâncias (Objetos) pertencem à Ontolo
 │   │   status: HIPÓTESE | VALIDADO | REFUTADO                │   │
 │   │                                                         │   │
 │   └─────────────────────────────────────────────────────────┘   │
-│                                                                 │
 └─────────────────────────────────────────────────────────────────┘
-```
-
-### Herança
-
-```
-        Classe Pai
-            │
-            │ herda
-            ▼
-    ┌───────┴───────┐
-    │               │
-Subclasse A    Subclasse B
-```
-
-### Composição (Atributo)
-
-```
-Classe
-├── Atributo
-│   ├── nome: string
-│   ├── tipo: string
-│   ├── obrigatório: boolean
-│   └── descrição: string
-├── Atributo
-└── Atributo
 ```
 
 ---
@@ -132,8 +101,9 @@ Classe
 | Documento | Relação |
 |-----------|---------|
 | 00_E_Epistemologia | Pai |
-| 00_E_1_4_Documento | Classe é documentada seguindo template |
-| 00_E_1_2_Metodo | Método usa Classe como I/O |
+| 00_E_1_2_Metodo | Irmão |
+| 00_E_1_3_Framework | Irmão |
+| 00_E_1_4_Documento | Irmão |
 
 ---
 
@@ -142,4 +112,4 @@ Classe
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2024-11-27 | Criação |
-| 1.1 | 2024-11-27 | Adicionado seção 4. Diagrama |
+| 1.1 | 2025-12-01 | Migração para frontmatter YAML |
