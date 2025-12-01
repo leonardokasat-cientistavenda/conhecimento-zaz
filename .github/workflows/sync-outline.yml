@@ -21,6 +21,13 @@ jobs:
       - name: Install dependencies
         run: pip install requests pyyaml
       
+      - name: Bypass Cloudflare
+        uses: xiaotianxt/bypass-cloudflare-for-github-action@v2.0.1
+        with:
+          cf_account_id: ${{ secrets.CF_ACCOUNT_ID }}
+          cf_zone_id: ${{ secrets.CF_ZONE_ID }}
+          cf_api_token: ${{ secrets.CF_API_TOKEN }}
+      
       - name: Sync documents to Outline
         env:
           OUTLINE_URL: https://wiki.zaz.vc
