@@ -136,3 +136,5 @@ EPISTEMOLOGIA                    ONTOLOGIA
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2024-11-27 | Criação; 4 classes fundamentais |
+
+**linha teste adicionada**
