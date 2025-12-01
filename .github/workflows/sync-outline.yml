@@ -28,6 +28,9 @@ jobs:
           cf_zone_id: ${{ secrets.CF_ZONE_ID }}
           cf_api_token: ${{ secrets.CF_API_TOKEN }}
       
+      - name: Aguardar propagação Cloudflare
+        run: sleep 30
+      
       - name: Sync documents to Outline
         env:
           OUTLINE_URL: https://wiki.zaz.vc
