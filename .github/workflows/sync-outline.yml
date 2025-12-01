@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - 'docs/**/*.md'
-  workflow_dispatch:
+  workflow_dispatch:  # permite rodar manualmente
 
 jobs:
   sync:
@@ -20,6 +20,16 @@ jobs:
       
       - name: Install dependencies
         run: pip install requests pyyaml
+      
+      - name: Bypass Cloudflare
+        uses: xiaotianxt/bypass-cloudflare-for-github-action@v2.0.1
+        with:
+          cf_account_id: ${{ secrets.CF_ACCOUNT_ID }}
+          cf_zone_id: ${{ secrets.CF_ZONE_ID }}
+          cf_api_token: ${{ secrets.CF_API_TOKEN }}
+      
+      - name: Aguardar propagação Cloudflare
+        run: sleep 10
       
       - name: Sync documents to Outline
         env:
@@ -43,6 +53,7 @@ jobs:
               'Content-Type': 'application/json'
           }
 
+          # Mapeamento pasta → collection
           COLLECTIONS = {
               'docs/00_E': os.environ['COLLECTION_00_E'],
               'docs/00_O': os.environ['COLLECTION_00_O'],
@@ -50,12 +61,14 @@ jobs:
           }
 
           def get_collection(filepath):
+              """Retorna collection_id baseado no caminho"""
               for prefix, coll_id in COLLECTIONS.items():
                   if filepath.startswith(prefix):
                       return coll_id
               return None
 
           def parse_frontmatter(content):
+              """Extrai frontmatter YAML do markdown"""
               if not content.startswith('---'):
                   return {}, content
               parts = content.split('---', 2)
@@ -69,6 +82,7 @@ jobs:
                   return {}, content
 
           def get_title(fm, body):
+              """Extrai título do frontmatter ou primeiro H1"""
               if 'nome' in fm:
                   return fm['nome']
               match = re.search(r'^#\s+(.+)$', body, re.MULTILINE)
@@ -77,7 +91,9 @@ jobs:
               return 'Sem título'
 
           def find_parent_id(nome, doc_map):
+              """Encontra documento pai baseado no prefixo"""
               parts = nome.split('_')
+              # Tenta encontrar pai com prefixo menor
               for i in range(len(parts) - 1, 1, -1):
                   parent_prefix = '_'.join(parts[:i])
                   for doc_nome, doc_id in doc_map.items():
@@ -86,6 +102,7 @@ jobs:
               return None
 
           def create_document(title, text, collection_id, parent_id=None):
+              """Cria documento no Outline"""
               data = {
                   'title': title,
                   'text': text,
@@ -107,6 +124,7 @@ jobs:
                   return None
 
           def update_document(doc_id, title, text):
+              """Atualiza documento existente"""
               resp = requests.post(
                   f'{OUTLINE_URL}/api/documents.update',
                   headers=HEADERS,
@@ -124,6 +142,7 @@ jobs:
                   return None
 
           def search_document(title, collection_id):
+              """Busca documento por título na collection"""
               resp = requests.post(
                   f'{OUTLINE_URL}/api/documents.search',
                   headers=HEADERS,
@@ -139,8 +158,10 @@ jobs:
                           return r['document']['id']
               return None
 
+          # Main
           print("=== Sincronizando com Outline ===\n")
 
+          # Coleta todos os documentos
           docs = []
           for md_file in Path('docs').rglob('*.md'):
               filepath = str(md_file)
@@ -162,9 +183,13 @@ jobs:
                   'outline_id': fm.get('outline_id')
               })
 
+          # Ordena por profundidade (pais primeiro)
           docs.sort(key=lambda d: d['nome'].count('_'))
+
+          # Mapa nome → outline_id (para resolver hierarquia)
           doc_map = {}
 
+          # Primeira passada: busca IDs existentes
           for doc in docs:
               if doc['outline_id']:
                   doc_map[doc['nome']] = doc['outline_id']
@@ -174,6 +199,7 @@ jobs:
                       doc_map[doc['nome']] = existing_id
                       doc['outline_id'] = existing_id
 
+          # Segunda passada: cria/atualiza
           created = 0
           updated = 0
 
@@ -181,11 +207,13 @@ jobs:
               print(f"Processando: {doc['filepath']}")
               
               if doc['outline_id']:
+                  # Atualiza existente
                   result = update_document(doc['outline_id'], doc['title'], doc['text'])
                   if result:
                       print(f"  ✅ Atualizado")
                       updated += 1
               else:
+                  # Cria novo
                   parent_id = find_parent_id(doc['nome'], doc_map)
                   result = create_document(
                       doc['title'],
