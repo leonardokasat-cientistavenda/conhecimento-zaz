@@ -1,0 +1,38 @@
+name: Validar Documentos
+
+on:
+  push:
+    paths:
+      - 'docs/**/*.md'
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validar estrutura
+        run: |
+          echo "=== Validando documentos ==="
+          erros=0
+          
+          for arquivo in $(find docs -name "*.md"); do
+            echo "Verificando: $arquivo"
+            
+            # Verifica se tem frontmatter (---)
+            if ! head -1 "$arquivo" | grep -q "^---"; then
+              echo "  ❌ Falta frontmatter"
+              erros=$((erros+1))
+            else
+              echo "  ✅ Frontmatter OK"
+            fi
+          done
+          
+          echo ""
+          if [ $erros -gt 0 ]; then
+            echo "❌ $erros erro(s) encontrado(s)"
+            exit 1
+          else
+            echo "✅ Todos documentos válidos"
+          fi
