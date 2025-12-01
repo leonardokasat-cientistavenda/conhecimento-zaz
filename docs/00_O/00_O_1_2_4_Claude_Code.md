@@ -1,9 +1,12 @@
 ---
 nome: "00_O_1_2_4_Claude_Code"
 versao: "1.0"
+tipo: Classe
+classe_ref: Classe
+origem: interno
+status: Draft
 data_criacao: "2025-12-01"
 ultima_atualizacao: "2025-12-01"
-status: "ativo"
 autor: "ZAZ"
 outline_id: ""
 ---
