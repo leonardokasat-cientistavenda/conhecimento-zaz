@@ -25,9 +25,9 @@ jobs:
         env:
           OUTLINE_URL: https://wiki.zaz.vc
           OUTLINE_TOKEN: ${{ secrets.OUTLINE_API_TOKEN }}
-          COLLECTION_00_E: aH6kL3RCZl
-          COLLECTION_00_O: Nr6KAiM5Ci
-          COLLECTION_01: 5gzfS5iKsM
+          COLLECTION_00_E: e305c77a-1c2e-4b30-9e03-b4009151257b
+          COLLECTION_00_O: dc5d8afd-bba7-4a5b-a193-3c19668c3f44
+          COLLECTION_01: 7179e7b0-8037-4979-a030-816e2394355d
         run: |
           python << 'EOF'
           import os
