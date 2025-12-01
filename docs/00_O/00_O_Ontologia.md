@@ -1,18 +1,15 @@
 ---
 nome: 00_O_Ontologia
-versao: "1.0"
+versao: "1.1"
 tipo: Introducao
-classe_ref: Documento
+classe_ref: 
 origem: interno
 status: Draft
+outline_id: 
+outline_url: 
 ---
 
 # 00_O_Ontologia
-**Versão:** 1.0  
-**Tipo:** Introducao  
-**Status:** Draft
-
----
 
 ## 1. Definição
 
@@ -27,17 +24,13 @@ Contém instâncias de Classes definidas na Epistemologia.
 ```
 00_O_Ontologia
 │
-├── 00_O_1_Fontes
-│   └── Frameworks instanciados (externos e internos)
-│   └── Sistemas externos
+├── 00_O_1_1_Metodo_Epistemologico
+│   └── 00_O_1_1_1_Definir_Objeto
 │
-├── 00_O_2_Catalogo
-│   └── Objetos por Classe
-│
-└── 00_O_3_Descobertas
-    ├── Validações
-    ├── Refutações
-    └── Achados
+└── 00_O_1_2_Pipeline_Documentacao
+    ├── 00_O_1_2_1_GitHub
+    ├── 00_O_1_2_2_GitHub_Actions
+    └── 00_O_1_2_3_Outline
 ```
 
 ---
@@ -46,9 +39,9 @@ Contém instâncias de Classes definidas na Epistemologia.
 
 | Componente | Definição | Conteúdo |
 |------------|-----------|----------|
-| **Fontes** | De onde vem conhecimento | Marcos teóricos, Sistemas externos |
-| **Catálogo** | O que sabemos | Objetos instanciados |
-| **Descobertas** | O que aprendemos | Resultados de experimentos |
+| Fontes | De onde vem conhecimento | Marcos teóricos, Sistemas |
+| Catálogo | O que sabemos | Objetos instanciados |
+| Descobertas | O que aprendemos | Validações, Refutações |
 
 ---
 
@@ -60,37 +53,19 @@ Contém instâncias de Classes definidas na Epistemologia.
 │                                                                 │
 │   ┌─────────────────────────────────────────────────────────┐   │
 │   │                       FONTES                            │   │
-│   │                                                         │   │
-│   │   ┌─────────────────┐   ┌─────────────────┐             │   │
-│   │   │   Frameworks    │   │    Sistemas     │             │   │
-│   │   │                 │   │                 │             │   │
-│   │   │ • VPC           │   │ • IBGE          │             │   │
-│   │   │ • Lean Startup  │   │ • RF_CNPJ       │             │   │
-│   │   │ • Met. Epist.   │   │ • CRM           │             │   │
-│   │   └─────────────────┘   └─────────────────┘             │   │
-│   │                                                         │   │
+│   │   Frameworks externos | Sistemas | Marcos teóricos      │   │
 │   └─────────────────────────────────────────────────────────┘   │
-│                                                                 │
+│                             │                                   │
+│                             ▼                                   │
 │   ┌─────────────────────────────────────────────────────────┐   │
 │   │                      CATÁLOGO                           │   │
-│   │                                                         │   │
-│   │   Objetos instanciados por Classe                       │   │
-│   │   • classe_ref: Classe                                  │   │
-│   │   • atributos: {}                                       │   │
-│   │   • status: HIPÓTESE | VALIDADO | REFUTADO              │   │
-│   │                                                         │   │
+│   │   Objetos: classe_ref + atributos + status              │   │
 │   └─────────────────────────────────────────────────────────┘   │
-│                                                                 │
+│                             │                                   │
+│                             ▼                                   │
 │   ┌─────────────────────────────────────────────────────────┐   │
 │   │                    DESCOBERTAS                          │   │
-│   │                                                         │   │
-│   │   ┌─────────────┐ ┌─────────────┐ ┌─────────────┐       │   │
-│   │   │ VALIDAÇÃO   │ │ REFUTAÇÃO   │ │   ACHADO    │       │   │
-│   │   │             │ │             │ │             │       │   │
-│   │   │ Hipótese    │ │ Hipótese    │ │ Emergente   │       │   │
-│   │   │ confirmada  │ │ negada      │ │ inesperado  │       │   │
-│   │   └─────────────┘ └─────────────┘ └─────────────┘       │   │
-│   │                                                         │   │
+│   │   Validação | Refutação | Achado                        │   │
 │   └─────────────────────────────────────────────────────────┘   │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
@@ -98,27 +73,7 @@ Contém instâncias de Classes definidas na Epistemologia.
 
 ---
 
-## 5. Ciclo de vida do Conhecimento
-
-```
-FONTES
-    │
-    │ alimenta
-    ▼
-CATÁLOGO (status: HIPÓTESE)
-    │
-    │ experimenta
-    ▼
-DESCOBERTAS
-    │
-    ├── Validação → CATÁLOGO (status: VALIDADO)
-    ├── Refutação → CATÁLOGO (status: REFUTADO)
-    └── Achado → CATÁLOGO (novo objeto, status: HIPÓTESE)
-```
-
----
-
-## 6. Relação com Epistemologia
+## 5. Relação com Epistemologia
 
 | Epistemologia | Ontologia |
 |---------------|-----------|
@@ -129,7 +84,7 @@ DESCOBERTAS
 
 ---
 
-## 7. Referências
+## 6. Referências
 
 | Documento | Relação |
 |-----------|---------|
@@ -144,4 +99,5 @@ DESCOBERTAS
 
 | Versão | Data | Alteração |
 |--------|------|-----------|
-| 1.0 | 2024-11-27 | Criação; Fontes, Catálogo, Descobertas |
+| 1.0 | 2024-11-27 | Criação |
+| 1.1 | 2025-12-01 | Migração frontmatter YAML; Ajuste estrutura |

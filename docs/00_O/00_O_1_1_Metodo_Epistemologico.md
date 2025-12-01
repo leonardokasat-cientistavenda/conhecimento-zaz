@@ -5,147 +5,72 @@ tipo: Framework
 classe_ref: Framework
 origem: interno
 status: Draft
+outline_id: 
+outline_url: 
 ---
 
 # 00_O_1_1_Metodo_Epistemologico
-**Versão:** 1.2  
-**Tipo:** Framework  
-**Classe_ref:** Framework  
-**Origem:** interno  
-**Status:** Draft
-
----
 
 ## 1. Definição
 
-Método Epistemológico é o framework que orquestra a geração de conhecimento estruturado sobre qualquer objeto.
+Método Epistemológico é o framework que orquestra a construção de conhecimento estruturado.
 
-É a implementação operacional do Método Científico.
+Sequência de 5 métodos (M1-M5) que transforma objeto indefinido em documento publicado.
 
 ---
 
-## 2. Métodos
+## 2. Sequência
 
 | Ordem | Método | Input | Output |
 |-------|--------|-------|--------|
-| 1 | Definir Objeto | Hipótese | Objeto definido |
-| 2 | Levantar Marco Teórico | Objeto definido | Conhecimento externo |
-| 3 | Mapear Classes | Objeto + Marco teórico | Classes do objeto |
-| 4 | Mapear Métodos | Classes | Métodos das classes |
-| 5 | Documentar | Classes + Métodos | Documento (Ontologia) |
+| M1 | Definir Objeto | Problema | Objeto Definido |
+| M2 | Levantar Marco Teórico | Objeto | Marco Teórico |
+| M3 | Definir Classes | Marco | Classes |
+| M4 | Definir Métodos | Classes | Métodos |
+| M5 | Documentar | Métodos | Documento |
 
 ---
 
 ## 3. Diagrama
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                                                                             │
-│                      MÉTODO EPISTEMOLÓGICO                                  │
-│                                                                             │
-│   ┌─────────────────────────────────────────────────────────────────────┐   │
-│   │                                                                     │   │
-│   │  M1: DEFINIR OBJETO                                                 │   │
-│   │      Input: Hipótese                                                │   │
-│   │      Output: Objeto definido                                        │   │
-│   │      Regras: Identificar nome, escopo, fronteiras                   │   │
-│   │                                                                     │   │
-│   └─────────────────────────┬───────────────────────────────────────────┘   │
-│                             │                                               │
-│                             ▼                                               │
-│   ┌─────────────────────────────────────────────────────────────────────┐   │
-│   │                                                                     │   │
-│   │  M2: LEVANTAR MARCO TEÓRICO                                         │   │
-│   │      Input: Objeto definido                                         │   │
-│   │      Output: Conhecimento externo sobre objeto                      │   │
-│   │      Regras: Buscar frameworks, teorias, referências existentes     │   │
-│   │                                                                     │   │
-│   └─────────────────────────┬───────────────────────────────────────────┘   │
-│                             │                                               │
-│                             ▼                                               │
-│   ┌─────────────────────────────────────────────────────────────────────┐   │
-│   │                                                                     │   │
-│   │  M3: MAPEAR CLASSES                                                 │   │
-│   │      Input: Marco teórico + Objeto                                  │   │
-│   │      Output: Classes do objeto                                      │   │
-│   │      Regras: Identificar atributos, relacionamentos, herança        │   │
-│   │                                                                     │   │
-│   │      ⟳ Recursivo: cada classe pode virar novo objeto                │   │
-│   │                                                                     │   │
-│   └─────────────────────────┬───────────────────────────────────────────┘   │
-│                             │                                               │
-│                             ▼                                               │
-│   ┌─────────────────────────────────────────────────────────────────────┐   │
-│   │                                                                     │   │
-│   │  M4: MAPEAR MÉTODOS                                                 │   │
-│   │      Input: Classes do objeto                                       │   │
-│   │      Output: Métodos que operam nas classes                         │   │
-│   │      Regras: Identificar I/O, executor, sistemas                    │   │
-│   │                                                                     │   │
-│   └─────────────────────────┬───────────────────────────────────────────┘   │
-│                             │                                               │
-│                             ▼                                               │
-│   ┌─────────────────────────────────────────────────────────────────────┐   │
-│   │                                                                     │   │
-│   │  M5: DOCUMENTAR                                                     │   │
-│   │      Input: Classes + Métodos                                       │   │
-│   │      Output: Documento (Ontologia)                                  │   │
-│   │      Regras: Seguir template de Documento                           │   │
-│   │                                                                     │   │
-│   └─────────────────────────────────────────────────────────────────────┘   │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                   MÉTODO EPISTEMOLÓGICO                         │
+│                                                                 │
+│   ┌─────┐   ┌─────┐   ┌─────┐   ┌─────┐   ┌─────┐               │
+│   │ M1  │──►│ M2  │──►│ M3  │──►│ M4  │──►│ M5  │               │
+│   │     │   │     │   │     │   │     │   │     │               │
+│   │Def. │   │Marco│   │Clas-│   │Méto-│   │Docu-│               │
+│   │Obj. │   │Teór.│   │ses  │   │dos  │   │ment.│               │
+│   └─────┘   └─────┘   └─────┘   └─────┘   └─────┘               │
+│                                                                 │
+│   Problema ─────────────────────────────────► Documento         │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 4. Recursividade
+## 4. Métodos Detalhados
 
-```
-Objeto: "X"
-    │
-    ├── M1: Definir "X"
-    ├── M2: Marco teórico de "X"
-    ├── M3: Mapear Classes de "X"
-    │       │
-    │       ├── Classe A
-    │       │   │
-    │       │   │ ⟳ recursivo (A vira objeto)
-    │       │   │
-    │       │   ├── M1: Definir "A"
-    │       │   ├── M2: Marco teórico de "A"
-    │       │   ├── M3: Mapear Classes de "A"
-    │       │   ├── M4: Mapear Métodos de "A"
-    │       │   └── M5: Documentar "A"
-    │       │
-    │       └── Classe B
-    │           └── ...
-    │
-    ├── M4: Mapear Métodos de "X"
-    └── M5: Documentar "X"
-```
+### M1: Definir Objeto
+
+Ver: 00_O_1_1_1_Definir_Objeto
+
+### M2-M5
+
+Documentação pendente em arquivos filhos.
 
 ---
 
-## 5. Critério de parada
-
-| Critério | Descrição |
-|----------|-----------|
-| Atomicidade | Classe não tem subclasses relevantes |
-| Suficiência | Conhecimento suficiente para o objetivo |
-| Estabilidade | Classe já definida em outro contexto |
-
----
-
-## 6. Referências
+## 5. Referências
 
 | Documento | Relação |
 |-----------|---------|
 | 00_O_Ontologia | Pai |
-| 00_O_1_1_1_Definir_Objeto | Filho (detalha M1) |
-| 00_E_1_2_Metodo | Define M1-M5 |
-| 00_E_1_3_Framework | Método Epistemológico é instância |
-| 00_E_1_4_Documento | M5 usa para output |
+| 00_O_1_1_1_Definir_Objeto | Filho (M1) |
+| 00_O_1_2_Pipeline_Documentacao | Irmão (opera após M5) |
+| 00_E_1_3_Framework | Classe epistemológica |
 
 ---
 
@@ -153,5 +78,6 @@ Objeto: "X"
 
 | Versão | Data | Alteração |
 |--------|------|-----------|
-| 1.0 | 2024-11-27 | Criação; 5 métodos; Recursividade |
-| 1.2 | 2025-12-01 | Frontmatter YAML; Referências atualizadas |
+| 1.0 | 2024-11-27 | Criação |
+| 1.1 | 2024-11-28 | Detalhamento M1-M5 |
+| 1.2 | 2025-12-01 | Migração frontmatter YAML |
