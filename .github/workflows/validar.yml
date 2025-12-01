@@ -4,34 +4,81 @@ on:
   push:
     paths:
       - 'docs/**/*.md'
+  pull_request:
+    paths:
+      - 'docs/**/*.md'
 
 jobs:
   validar:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
+      
       - name: Validar estrutura
         run: |
           echo "=== Validando documentos ==="
-          erros=0
           
-          for arquivo in $(find docs -name "*.md"); do
+          ERROS_TOTAL=0
+          
+          # Valores válidos para enums
+          TIPOS_VALIDOS="Classe|Framework|Catalogo|Introducao|Metodo"
+          ORIGEM_VALIDOS="interno|externo"
+          STATUS_VALIDOS="Draft|Revisao|Publicado"
+          
+          for arquivo in $(find docs -name "*.md" -type f); do
             echo "Verificando: $arquivo"
+            ERRO_ARQUIVO=0
             
-            # Verifica se tem frontmatter (---)
+            # Verifica se tem frontmatter (começa com ---)
             if ! head -1 "$arquivo" | grep -q "^---"; then
               echo "  ❌ Falta frontmatter"
-              erros=$((erros+1))
-            else
+              ERROS_TOTAL=$((ERROS_TOTAL + 1))
+              continue
+            fi
+            
+            # Extrai frontmatter (entre primeiro e segundo ---)
+            FRONTMATTER=$(awk '/^---$/{if(f)exit;f=1;next}f' "$arquivo")
+            
+            # Verifica campos obrigatórios
+            for campo in nome versao tipo classe_ref origem status; do
+              if ! echo "$FRONTMATTER" | grep -q "^${campo}:"; then
+                echo "  ❌ Falta campo: $campo"
+                ERRO_ARQUIVO=1
+              fi
+            done
+            
+            # Valida enum: tipo
+            TIPO=$(echo "$FRONTMATTER" | grep "^tipo:" | sed 's/tipo: *//')
+            if [ -n "$TIPO" ] && ! echo "$TIPO" | grep -qE "^($TIPOS_VALIDOS)$"; then
+              echo "  ❌ tipo inválido: $TIPO"
+              ERRO_ARQUIVO=1
+            fi
+            
+            # Valida enum: origem
+            ORIGEM=$(echo "$FRONTMATTER" | grep "^origem:" | sed 's/origem: *//')
+            if [ -n "$ORIGEM" ] && ! echo "$ORIGEM" | grep -qE "^($ORIGEM_VALIDOS)$"; then
+              echo "  ❌ origem inválida: $ORIGEM"
+              ERRO_ARQUIVO=1
+            fi
+            
+            # Valida enum: status
+            STATUS=$(echo "$FRONTMATTER" | grep "^status:" | sed 's/status: *//')
+            if [ -n "$STATUS" ] && ! echo "$STATUS" | grep -qE "^($STATUS_VALIDOS)$"; then
+              echo "  ❌ status inválido: $STATUS"
+              ERRO_ARQUIVO=1
+            fi
+            
+            # Resultado do arquivo
+            if [ $ERRO_ARQUIVO -eq 0 ]; then
               echo "  ✅ Frontmatter OK"
+            else
+              ERROS_TOTAL=$((ERROS_TOTAL + 1))
             fi
           done
           
           echo ""
-          if [ $erros -gt 0 ]; then
-            echo "❌ $erros erro(s) encontrado(s)"
+          if [ $ERROS_TOTAL -ne 0 ]; then
+            echo "❌ $ERROS_TOTAL arquivo(s) com erro"
             exit 1
           else
             echo "✅ Todos documentos válidos"
