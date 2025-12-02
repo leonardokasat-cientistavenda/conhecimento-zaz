@@ -37,7 +37,7 @@ status: Draft
 ## 2. MARCO TEÓRICO
 
 | Conceito | Definição |
-|----------|-----------|
+|----------|----------|
 | **POO** | Estruturação por classes, atributos, métodos, herança. Objetos encapsulam estado e comportamento. |
 | **Recursividade** | Sistema que opera sobre si mesmo. Output de um ciclo vira input do próximo. |
 | **Meta-Programação** | Código/instruções que geram ou modificam código/instruções. |
@@ -269,5 +269,5 @@ SE usuário menciona Camada N
 ## 7. CHANGELOG
 
 | versao | data | alteracao |
-|--------|------|-----------|
+|--------|------|----------|
 | 0.1 | 2025-12-02 | Criação. Seções 0-7 definidas. Stub inicial. |
