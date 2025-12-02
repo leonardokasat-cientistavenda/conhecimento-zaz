@@ -1,6 +1,6 @@
 ---
 nome: GENESIS
-versao: "0.1"
+versao: "0.3"
 tipo: Framework
 classe_ref: Framework
 origem: interno
@@ -188,6 +188,7 @@ status: Draft
 | G2 | resolver_dependencia | Identifica e carrega arquivos referenciados | índice, path | arquivos_carregados | Camada 2 |
 | G3 | validar_camada | Verifica se camada anterior está estável | camada_id | bool | Camada 2 |
 | G4 | refatorar_stub | Atualiza GENESIS com conhecimento gerado | descobertas, versão_atual | GENESIS v+1 | Camada 1 |
+| G5 | aplicar_patch | Edita arquivo via _patches/*.md | arquivo_patch | arquivo_atualizado | Camada 2 |
 
 ---
 
@@ -255,6 +256,7 @@ Nenhum.
 | /docs/00_O/00_O_1_1_Metodo_Epistemologico.md | 1.2 | Draft | 2025-12-01 | 3 | 00_META.md |
 | /docs/00_O/00_O_1_1_1_Definir_Objeto.md | 1.1 | Draft | 2025-12-01 | 3 | 00_O_1_1_Metodo_Epistemologico.md |
 | /docs/00_I_1_1_Github_Instructions.md | 1.0 | Estável | 2025-12-02 | 2 | GENESIS.md |
+| /docs/00_O/00_O_1_2_6_Patch_System.md | 1.0 | Draft | 2025-12-02 | 2 | GENESIS.md |
 
 ### Regra de Carregamento
 
@@ -272,3 +274,4 @@ SE usuário menciona Camada N
 |--------|------|----------|
 | 0.1 | 2025-12-02 | Criação. Seções 0-7 definidas. Stub inicial. |
 | 0.2 | 2025-12-02 | Camada 2 estabilizada. Infraestrutura funcional. |
+| 0.3 | 2025-12-02 | Adiciona método G5 (aplicar_patch). Atualiza índice com Patch_System. |
