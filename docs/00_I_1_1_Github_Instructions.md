@@ -1,6 +1,6 @@
 ---
 nome: 00_I_1_1_Github_Instructions
-versao: "1.0"
+versao: "1.1"
 tipo: Instrucao
 classe_ref: Documento
 origem: interno
@@ -136,6 +136,15 @@ workflows:
     metodo: str_replace por seção
     marcador: "<!-- section:X -->...<!-- /section:X -->"
     beneficio: economia de tokens
+  token_efficiency:
+    criacao_inicial:
+      1: validar seções individualmente com usuário
+      2: ao final, commit direto sem exibir documento completo
+      3: exemplo: "Seções validadas. Commit em [path]?"
+    atualizacao_diff:
+      1: usar str_replace com bloco mínimo (section markers)
+      2: sem exibir preview
+      3: confirmar e executar
 <!-- /section:workflows -->
 
 ---
@@ -155,3 +164,4 @@ workflows:
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-02 | Criação |
+| 1.1 | 2025-12-02 | Adiciona estratégia de economia de tokens |
