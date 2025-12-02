@@ -147,7 +147,7 @@ status: Draft
 |----|------|------------------|-------------|--------|------------|
 | 0 | Axiomas | Conceitos assumidos | POO, Recursividade, Meta-Programação, Semiótica, Epistemologia, Ontologia | Imutável | null |
 | 1 | Stub | Quebra bootstrap | GENESIS.md v0.1 | Atual | Camada 0 |
-| 2 | Infraestrutura | Persistência e contexto | GitHub, Claude Instructions, Estrutura Pastas | Pendente | Camada 1 |
+| 2 | Infraestrutura | Persistência e contexto | GitHub, Claude Instructions, Estrutura Pastas | Estável | Camada 1 |
 | 3 | Framework | Método de conhecimento | M1-M5, Documento, Classes | Parcial | Camada 2 |
 | 4 | Domínios | Aplicação em negócio | Mercado, Produto, Empresa, GTM | Futuro | Camada 3 |
 
@@ -271,3 +271,4 @@ SE usuário menciona Camada N
 | versao | data | alteracao |
 |--------|------|----------|
 | 0.1 | 2025-12-02 | Criação. Seções 0-7 definidas. Stub inicial. |
+| 0.2 | 2025-12-02 | Camada 2 estabilizada. Infraestrutura funcional. |
