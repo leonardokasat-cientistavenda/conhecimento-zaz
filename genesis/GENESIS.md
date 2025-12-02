@@ -1,6 +1,6 @@
 ---
 nome: GENESIS
-versao: "0.3"
+versao: "0.4"
 tipo: Framework
 classe_ref: Framework
 origem: interno
@@ -200,7 +200,7 @@ status: Draft
 | **objetivo** | Finalizar GENESIS.md v0.1 e persistir no GitHub |
 | **camada_foco** | Camada 1 (Stub) |
 | **inicio** | 2025-12-02 |
-| **status** | Em andamento |
+| **status** | Concluído |
 
 ### Tarefas
 
@@ -216,7 +216,7 @@ status: Draft
 | T8 | Definir Seção 6 (Índice) | ✅ |
 | T9 | Definir Seção 7 (Changelog) | ✅ |
 | T10 | Commit GENESIS.md no GitHub | ✅ |
-| T11 | Configurar Project Instructions Claude | ⏳ |
+| T11 | Configurar Project Instructions Claude | ✅ |
 
 ### Bloqueios
 
@@ -275,3 +275,4 @@ SE usuário menciona Camada N
 | 0.1 | 2025-12-02 | Criação. Seções 0-7 definidas. Stub inicial. |
 | 0.2 | 2025-12-02 | Camada 2 estabilizada. Infraestrutura funcional. |
 | 0.3 | 2025-12-02 | Adiciona método G5 (aplicar_patch). Atualiza índice com Patch_System. |
+| 0.4 | 2025-12-02 | Sprint S001 concluída. T11 finalizada. |
