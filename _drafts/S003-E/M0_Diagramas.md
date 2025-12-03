@@ -1,6 +1,6 @@
 ---
 nome: M0_Diagramas
-versao: \"1.0\"
+versao: "2.0"
 tipo: Classe
 classe_ref: Problema
 origem: interno
@@ -13,7 +13,7 @@ data_inicio: 2025-12-03
 
 ## 1. Definição
 
-Problema no framework epistemológico de comunicação visual: precisamos de um **sistema de classificação + seleção de diagramas** que determine qual tipo de diagrama usar em cada etapa do método M0-M4, para diferentes audiências, garantindo consistência visual e clareza de comunicação.
+Problema no framework epistemológico de comunicação visual: precisamos de um **sistema de classificação + seleção de diagramas** que determine qual tipo de diagrama usar em cada etapa do método M0-M4, para diferentes classes, garantindo consistência visual e clareza de comunicação.
 
 ---
 
@@ -78,7 +78,7 @@ Resultado: Cada documento improvisa, gerando inconsistência.
 Criar um **sistema de modelagem de diagramas** que:
 
 1. **Categorize tipos** de diagrama (Estrutura, Fluxo, Dependência, Semiótica, Contexto, etc.)
-2. **Defina critérios de seleção** (Qual tipo para qual etapa? Qual audiência?)
+2. **Defina critérios de seleção** (Qual tipo para qual etapa? Qual classe?)
 3. **Padronize convenções** (Símbolos, cores, texto, legenda)
 4. **Seja aplicável recursivamente** (O próprio sistema pode ser documentado via diagrama)
 5. **Seja persistido como Classe** (00_E_X_X_Diagrama.md) para reutilização
@@ -128,21 +128,221 @@ M4 (Persistir)
 
 ---
 
-## 11. Referências
+## 11. Diagramas de M0 (Aplicando a Matriz)
 
-| Documento | Relação |
-|-----------|---------|
-| 00_E_Epistemologia.md | Contexto (framework) |
-| 00_E_1_1_Problema.md | Classe base (M0) |
-| 00_E_1_4_Classe.md | Próximo (M3) |
-| 00_E_1_6_Documento.md | Persistência (M4) |
-| GENESIS.md | Exemplo de diagramas atuais |
+### DIAGRAMA 1: Signo Saussure - Desambiguação
+
+**Metodologia Aplicada:** 1 (Semiótica) + 3 (Estrutural)
+
+**Nome do Diagrama na Metodologia:** "Signo de Saussure"
+
+**Por que selecionado:**
+
+O core do Problema é **desambiguar o termo "diagrama"**. Conforme análise semiótica (Seção 3), o termo "diagrama" tem múltiplos significados possíveis:
+- Tipo específico (Class Diagram, Sequence Diagram, etc.)?
+- Categoria genérica (qualquer visual)?
+- Ferramenta ou resultado?
+
+A Metodologia 1 (Semiótica) indica que quando há **ambiguidade de significado**, o diagrama de Signo Saussure é primário porque **visualiza exatamente essa ambiguidade** (significante → múltiplos significados → resolução).
+
+A Metodologia 3 (Estrutural) valida: o Problema tem estrutura "significantes[] → glossario[]", e Signo reflete essa estrutura.
+
+**Outras opções e por que descartadas:**
+
+- **Venn Múltiplo:** Funcionaria se houvesse 3+ significados igualmente válidos. Mas queremos **resolver ambiguidade**, não apenas listar. Descartada.
+- **Fluxo:** Mostra sequência, mas não o core da desambiguação. Secundário.
+
+**Representação:**
+
+```
+┌──────────────────────────────────────────────────────┐
+│                    SIGNO: DIAGRAMA                   │
+├──────────────────────────────────────────────────────┤
+│                                                      │
+│         SIGNIFICANTE                                 │
+│         (Forma Visual)                               │
+│                                                      │
+│            "diagrama"                                │
+│          (palavra/conceito)                          │
+│                                                      │
+│                    ↓ representa                      │
+│                                                      │
+│    ╔════════════════════════════════════╗            │
+│    ║    SIGNIFICADO (Múltiplos Possíveis)║            │
+│    ╠════════════════════════════════════╣            │
+│    ║ 1. Tipo específico (UML, fluxo, ...)║            │
+│    ║ 2. Categoria genérica (qualquer representação)  ║
+│    ║ 3. Ferramenta/Processo de desenho  ║            │
+│    ║ 4. Output/Artefato final           ║            │
+│    ╚════════════════════════════════════╝            │
+│                    ↓ glossário resolve              │
+│                                                      │
+│    SIGNIFICADO FINAL (Este Problema):                │
+│    "Representação visual estruturada que comunica    │
+│     conceitos, processos ou estruturas usando       │
+│     convenções gráficas padronizadas"               │
+│                                                      │
+└──────────────────────────────────────────────────────┘
+```
 
 ---
 
-## 12. Histórico
+### DIAGRAMA 2: Fluxo M0 - Sequência de Clarificação
+
+**Metodologia Aplicada:** 3 (Estrutural) + 2 (Carga Cognitiva)
+
+**Nome do Diagrama na Metodologia:** "Fluxo de Processo / Atividade"
+
+**Por que selecionado:**
+
+O Problema tem uma **sequência lógica clara** de clarificação:
+```
+Sintoma (diagramas inconsistentes)
+  → Significantes ambíguos extraídos
+  → Glossário mapeado
+  → Causa raiz identificada
+  → Necessidade definida
+```
+
+A Metodologia 3 (Estrutural) indica que processos com **sequência obrigatória** (sintoma → glossário → necessidade) merecem **Fluxo** porque as setas refletem a ordem causal.
+
+A Metodologia 2 (Carga Cognitiva) valida: fluxo linear é **baixa carga** (máx 5-7 etapas), fácil de seguir.
+
+**Outras opções e por que descartadas:**
+
+- **Atividade (com decisões):** Não há branches (if/then) neste Problema. Fluxo linear é suficiente.
+- **Diagrama de Dependência:** Mostraria "quem depende de quem", não a sequência de clarificação.
+
+**Representação:**
+
+```
+Sintoma Bruto
+    │ (observar inconsistência)
+    ▼
+┌─────────────────────────────┐
+│  Extrair Significantes      │ ──► Lista: [diagrama, tipo, "melhor"]
+└─────────────────────────────┘
+    │ (identificar termos-chave)
+    ▼
+┌─────────────────────────────┐
+│  Mapear Significados        │ ──► Tabela: significante → significado
+└─────────────────────────────┘
+    │ (definir cada termo)
+    ▼
+┌─────────────────────────────┐
+│  Detectar Ambiguidades      │ ──► Termos com múltiplos significados
+└─────────────────────────────┘
+    │ (confirmar com user)
+    ▼
+┌─────────────────────────────┐
+│  Alinhar / Resolver         │ ──► Glossário validado
+└─────────────────────────────┘
+    │ (todos os termos têm 1 significado)
+    ▼
+┌─────────────────────────────┐
+│  Identificar Causa Raiz     │ ──► "Falta de meta-sistema"
+└─────────────────────────────┘
+    │ (por que o sintoma ocorre?)
+    ▼
+┌─────────────────────────────┐
+│  Definir Necessidade        │ ──► "Criar sistema + documentar"
+└─────────────────────────────┘
+    │ (ação para resolver)
+    ▼
+Problema Definido (pronto para M1)
+```
+
+---
+
+### DIAGRAMA 3: Venn - Múltiplos Significados (Contexto)
+
+**Metodologia Aplicada:** 1 (Semiótica)
+
+**Nome do Diagrama na Metodologia:** "Diagrama de Venn"
+
+**Por que selecionado:**
+
+O Problema menciona que **diferentes audiências** (técnicos, gestores, aprendizes) podem ter diferentes interpretações legítimas do termo "diagrama".
+
+A Metodologia 1 (Semiótica) indica que quando há **múltiplas interpretações válidas baseadas em contexto**, Venn mostra **interseção entre domínios**:
+- Técnico: foca em "tipo específico" (UML, fluxo, etc.)
+- Gestor: foca em "comunicação de estrutura"
+- Aprendiz: foca em "forma visual compreensível"
+
+O Venn mostra que **há overlap** (todos precisam de "representação visual") mas **ênfases diferentes**.
+
+**Outras opções e por que descartadas:**
+
+- **Rede Conceitual:** Seria overly complex para este propósito. Venn é mais direto.
+- (Terciário/opcional - só se tipo_pesquisa for Exploratória. Aqui é Explicativa.)
+
+**Representação:**
+
+```
+┌─────────────────────────────────────────────────────┐
+│   Interpretações Legítimas de "Diagrama"            │
+│   por Audiência Diferente                           │
+└─────────────────────────────────────────────────────┘
+
+          ┌─────────────┐         ┌──────────────┐
+          │  TÉCNICO    │         │   GESTOR     │
+          │             │         │              │
+          │  · UML      │         │ · Estrutura  │
+          │  · Fluxo    │         │ · Processo   │
+          │  · Tipo     │   ┌─────┼─ · Resultado│
+          │    específ. │   │     │              │
+          └─────────────┘   │     └──────────────┘
+                            │
+                      ┌─────▼──────┐
+                      │  Overlap    │
+                      │  (Todos)    │
+                      │             │
+                      │ Representação
+                      │ Visual Clara
+                      │ Comunica
+                      │ Conceito
+                      └─────┬──────┘
+                            │
+          ┌─────────────┐   │
+          │  APRENDIZ   │───┘
+          │             │
+          │ · Intuitivo │
+          │ · Forma     │
+          │   visual    │
+          │ · Simples   │
+          └─────────────┘
+```
+
+---
+
+## 12. Validação dos Diagramas Selecionados
+
+**Consultando Matriz_Selecao_Diagramas.md (Seção 3.1 - PROBLEMA):**
+
+| Meu Diagrama | Recomendação Matriz | Status |
+|--------------|---------------------|--------|
+| 1. Signo Saussure | Sempre (primário) | ✅ Alinhado |
+| 2. Fluxo M0 | Sempre (secundário) | ✅ Alinhado |
+| 3. Venn | Se tipo_pesquisa ∈ [Exploratória, Transformativa] | ⚠️ Descartável (tipo_pesquisa é Explicativa aqui) |
+
+**Conclusão:** Os 2 primeiros diagramas estão **validados pela Matriz**. O terceiro é **contextual** (válido se houver exploração de múltiplas interpretações).
+
+---
+
+## 13. Referências
+
+| Documento | Relação |
+|-----------|---------|
+| Matriz_Selecao_Diagramas.md | Ferramenta de seleção (aplicada aqui) |
+| 00_E_Epistemologia.md | Pai (framework epistemológico) |
+| 00_E_1_1_Problema.md | Classe base (M0) |
+| 00_E_1_2_MarcoTeorico.md | Próximo (M1) |
+
+---
+
+## 14. Histórico
 
 | Versão | Data | Hora | Alteração |
 |--------|------|------|-----------|
-| 1.0 | 2025-12-03 | 15:30 | Criação. M0 completo com sintoma, significantes, glossário, causa raiz, necessidade. Sprint S003-E T2. |
-"
+| 1.0 | 2025-12-03 | 13:58 | Criação inicial: M0 com sintoma, significantes, glossário, causa raiz, necessidade. |
+| 2.0 | 2025-12-03 | 16:15 | Adiciona 3 diagramas (Signo, Fluxo M0, Venn) com metodologia aplicada + justificativa. Validação pela Matriz. |
