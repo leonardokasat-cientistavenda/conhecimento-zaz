@@ -1,6 +1,6 @@
 ---
 nome: 00_E_1_6_Documento
-versao: "2.2"
+versao: "2.3"
 tipo: Classe
 classe_ref: Classe
 origem: interno
@@ -163,15 +163,67 @@ Estrutura:
 [C3] refactor: reestrutura Documento para M4
 ```
 
-### 8.3 Ciclo de Vida (Chat → _drafts/ → docs/)
+### 8.3 Estrutura de Pastas para Sprints
+
+**Estrutura:**
+
+```
+_sprints/
+  SXXX-Y.md              # Definição da Sprint
+
+_drafts/
+  SXXX-Y/                # Pasta da Sprint
+    TXX/                 # Subpasta por Task
+      M0_Nome.md         # Artefato M0
+      M1_Nome.md         # Artefato M1
+      M2_Nome.md         # Artefato M2
+      M3_Nome.md         # Artefato M3
+      M4_Nome.md         # Artefato M4 (opcional, pode ir direto para docs/)
+    recursos/            # Recursos compartilhados da sprint (opcional)
+      Matriz_X.md
+      Referencia_Y.md
+```
+
+**Exemplo concreto (S003-E):**
+
+```
+_sprints/
+  S003-E.md
+
+_drafts/
+  S003-E/
+    T06/
+      M0_Objeto_v2.md
+      M1_Objeto_v2.md
+      M2_Objeto_v2.md
+      M3_Objeto_v2.md
+      M4_Objeto_v2.md
+    T07/
+      M0_Classe_v2.md
+      ...
+    recursos/
+      Matriz_Selecao_Diagramas.md
+```
+
+**Regras:**
+
+| Regra | Descrição |
+|-------|-----------|
+| Nomenclatura Task | `TXX` onde XX = número da task (T01, T02... T15) |
+| Nomenclatura Arquivo | `MX_NomeObjeto.md` onde X = etapa (0-4) |
+| Recursos compartilhados | Arquivos usados por múltiplas tasks vão em `recursos/` |
+| Ao concluir M4 | Arquivo final vai para `docs/`, artefatos intermediários podem ser deletados |
+| Ao fechar Sprint | Deletar pasta `_drafts/SXXX-Y/` (histórico preservado no Git) |
+
+### 8.4 Ciclo de Vida (Chat → _drafts/ → docs/)
 
 **Princípio:** O trabalho de cada etapa (M0-M4) acontece no chat. A persistência ocorre ao finalizar cada etapa.
 
 ```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│    Chat     │ ──► │  _drafts/   │ ──► │    docs/    │
-│  (trabalho) │     │ (rascunho)  │     │ (publicado) │
-└─────────────┘     └─────────────┘     └─────────────┘
+┌─────────────┐     ┌─────────────────────┐     ┌─────────────┐
+│    Chat     │ ──► │  _drafts/SPRINT/TXX │ ──► │    docs/    │
+│  (trabalho) │     │     (rascunho)      │     │ (publicado) │
+└─────────────┘     └─────────────────────┘     └─────────────┘
 ```
 
 **Fluxo:**
@@ -179,16 +231,14 @@ Estrutura:
 | Momento | Local | Ação |
 |---------|-------|------|
 | M0 em andamento | Chat | Desenvolver Problema (sintoma, significantes, causa, necessidade) |
-| M0 finalizado | _drafts/SPRINT/ | Persistir arquivo com `etapa: M0` |
+| M0 finalizado | _drafts/SPRINT/TXX/ | Persistir `M0_Nome.md` com `etapa: M0` |
 | M1 em andamento | Chat | Desenvolver Marco Teórico |
-| M1 finalizado | _drafts/SPRINT/ | Atualizar arquivo com `etapa: M1` |
-| M2 finalizado | _drafts/SPRINT/ | Atualizar arquivo com `etapa: M2` |
-| M3 finalizado | _drafts/SPRINT/ | Atualizar arquivo com `etapa: M3` |
-| M4 finalizado | docs/ | Mover arquivo, remover campo `etapa` |
+| M1 finalizado | _drafts/SPRINT/TXX/ | Persistir `M1_Nome.md` com `etapa: M1` |
+| M2 finalizado | _drafts/SPRINT/TXX/ | Persistir `M2_Nome.md` com `etapa: M2` |
+| M3 finalizado | _drafts/SPRINT/TXX/ | Persistir `M3_Nome.md` com `etapa: M3` |
+| M4 finalizado | docs/ | Persistir arquivo final, deletar pasta TXX/ |
 
-**Ao fechar sprint:** Deletar pasta `_drafts/SPRINT/` (histórico preservado no Git).
-
-### 8.4 Como criar uma Sprint
+### 8.5 Como criar uma Sprint
 
 **Local:** `_sprints/SXXX-Y.md`
 
@@ -217,8 +267,8 @@ data_fim: null
 
 | id | Arquivo | Tarefa | Status |
 |----|---------|--------|--------|
-| T1 | arquivo.md | Descrição | ⏳ |
-| T2 | arquivo.md | Descrição | ⏳ |
+| T01 | arquivo.md | Descrição | ⏳ |
+| T02 | arquivo.md | Descrição | ⏳ |
 
 ## Histórico
 
@@ -255,3 +305,4 @@ data_fim: null
 | 2.0 | 2025-12-03 | - | Reestruturação como classe M4. Novo path 00_E_1_6. |
 | 2.1 | 2025-12-03 | 14:45 | Adiciona ciclo de vida _drafts/ (8.3), instrução Sprint (8.4), timestamp no histórico. |
 | 2.2 | 2025-12-03 | 15:30 | Clarifica 8.3: trabalho no Chat, persistência ao finalizar etapa. |
+| 2.3 | 2025-12-03 | 20:00 | Reestrutura 8.3: subpastas TXX por task, recursos compartilhados, nomenclatura MX_Nome.md. Move Sprint para 8.5. |
