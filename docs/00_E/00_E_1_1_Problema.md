@@ -1,6 +1,6 @@
 ---
 nome: 00_E_1_1_Problema
-versao: "2.0"
+versao: "2.1"
 tipo: Classe
 classe_ref: Classe
 origem: interno
@@ -26,7 +26,7 @@ O output de M0 (Problema Definido) serve como filtro de escopo para M1 (Marco Te
 | **Significado** | O conceito ou ideia por trás da forma | O que o termo realmente quer dizer no contexto |
 | **Ambiguidade** | Quando um significante tem múltiplos significados possíveis | Fonte de mal-entendidos que M0 deve resolver |
 
-### Diagrama do Signo
+**Diagrama: Signo** (Metodologia: 1-Semiótica)
 
 ```
 ┌─────────────────────────────────┐
@@ -74,9 +74,7 @@ Para casos complexos com múltiplas personas/stakeholders, existe aprofundamento
 | significado | string | Definição no contexto do problema |
 | ambiguidade | string | Outros significados possíveis (se houver) |
 
----
-
-## 4. Diagrama
+**Diagrama: Caixa POO** (Metodologia: 3-Estrutural)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -114,7 +112,7 @@ Para casos complexos com múltiplas personas/stakeholders, existe aprofundamento
 
 ---
 
-## 5. Restrições
+## 4. Restrições
 
 - Sintoma deve ser observável (não abstrato)
 - Causa raiz deve explicar logicamente o sintoma
@@ -125,7 +123,9 @@ Para casos complexos com múltiplas personas/stakeholders, existe aprofundamento
 
 ---
 
-## 6. Fluxo (M0)
+## 5. Fluxo (M0)
+
+**Diagrama: Fluxo** (Metodologia: 3-Estrutural)
 
 ```
 Sintoma (texto livre)
@@ -166,9 +166,9 @@ Problema Definido (input para M1)
 
 ---
 
-## 7. INSTRUÇÃO: Como definir um Problema
+## 6. INSTRUÇÃO: Como definir um Problema
 
-### 7.1 Fontes de Input
+### 6.1 Fontes de Input
 
 | Tipo | Exemplo | Processamento |
 |------|---------|---------------|
@@ -177,7 +177,7 @@ Problema Definido (input para M1)
 | Arquivo | Documento, relatório, ticket | Localizar seção com sintoma |
 | Conversa | Diálogo com usuário | Perguntar até sintoma emergir |
 
-### 7.2 Método de Extração (IA)
+### 6.2 Método de Extração (IA)
 
 **Passo 1: Capturar sintoma bruto**
 - Se áudio: transcrever e identificar reclamação/dor
@@ -201,7 +201,15 @@ Problema Definido (input para M1)
 - Definir necessidade: "O que precisa para resolver?"
 - Registrar tentativas anteriores: "O que já tentou?"
 
-### 7.3 Template de Output
+### 6.3 Diagrama
+
+Ver **00_E_1_4_1_Diagrama.md** para método de seleção.
+
+**Diagramas recomendados para Problema (M0):**
+- Primário: **Signo** (desambiguação de termos)
+- Secundário: **Fluxo** (sequência sintoma → necessidade)
+
+### 6.4 Template de Output
 
 ```markdown
 | Campo | Valor |
@@ -220,7 +228,7 @@ Problema Definido (input para M1)
 | termo2 | [definição no contexto] | - |
 ```
 
-### 7.4 Checklist
+### 6.5 Checklist
 
 - [ ] Fonte processada (áudio/texto/arquivo/conversa)
 - [ ] Sintoma extraído
@@ -230,24 +238,27 @@ Problema Definido (input para M1)
 - [ ] Causa raiz identificada
 - [ ] Necessidade é acionável
 - [ ] Tentativas anteriores documentadas (se houver)
+- [ ] Diagramas inseridos nas seções (Signo, Fluxo)
 
-### 7.5 Persistência
+### 6.6 Persistência
 
-Ao iniciar a definição de um Problema:
-1. Criar arquivo em `_drafts/` com status M0
-2. Preencher conforme método (7.2)
-3. Ao concluir, mover para `docs/` com status definido
+**Ao finalizar M0, persistir o documento:**
 
-Ver: 00_E_1_6_Documento.md (ciclo de vida e persistência)
+1. Criar arquivo `M0_[Nome].md` em `_drafts/SPRINT/TXX/`
+2. Preencher frontmatter com `etapa: M0`
+3. Commit com mensagem: `[C3] add: M0 [Nome] - problema definido`
+
+Ver: **00_E_1_6_Documento.md** (ciclo de vida e persistência)
 
 ---
 
-## 8. Referências
+## 7. Referências
 
 | Documento | Relação |
 |-----------|---------|
 | 00_E_Epistemologia | Pai |
 | 00_E_1_4_Classe | Classe base |
+| 00_E_1_4_1_Diagrama | Seleção de diagramas |
 | 00_E_1_2_MarcoTeorico | Próximo (M1) |
 | 00_E_1_6_Documento | Ciclo de vida (persistência) |
 
@@ -265,3 +276,4 @@ Ver: 00_E_1_6_Documento.md (ciclo de vida e persistência)
 |--------|------|------|-----------|
 | 1.0 | 2025-12-03 | - | Criação. Classe base para M0 do framework epistemológico. |
 | 2.0 | 2025-12-03 | 14:30 | Adiciona Marco Teórico (Saussure). Análise semiótica. Fluxo M0 expandido. Método de extração para múltiplas fontes. |
+| 2.1 | 2025-12-03 | 22:45 | Adiciona instruções de diagrama (ref 00_E_1_4_1_Diagrama) e persistência ao final de M0. Reorganiza seções. |
