@@ -1,6 +1,6 @@
 ---
 nome: 00_E_1_5_Metodo
-versao: "2.0"
+versao: "2.1"
 tipo: Classe
 classe_ref: Classe
 origem: interno
@@ -101,7 +101,15 @@ Transformação interna:
 
 ## 6. INSTRUÇÃO: Como especificar um Método
 
-### 6.1 Template (copiar e preencher)
+### 6.1 Diagrama
+
+Ver **00_E_1_4_1_Diagrama.md** para método de seleção.
+
+**Diagramas recomendados para Metodo (M3):**
+- Primário: **Fluxo** (sequência de etapas)
+- Secundário: **Sequência** (se múltiplos atores)
+
+### 6.2 Template (copiar e preencher)
 
 ```markdown
 | Campo | Valor |
@@ -118,13 +126,24 @@ Transformação interna:
 | 2 | [nome] | [o que faz] |
 ```
 
-### 6.2 Checklist
+### 6.3 Checklist
 
 - [ ] Nome é verbo infinitivo + objeto
 - [ ] Input é uma Classe válida
 - [ ] Output é uma Classe válida
 - [ ] Descrição explica a transformação
 - [ ] Submétodos estão ordenados
+- [ ] Diagramas inseridos nas seções (Fluxo)
+
+### 6.4 Persistência
+
+**Ao finalizar M3, persistir o documento:**
+
+1. Criar arquivo `M3_[Nome].md` em `_drafts/SPRINT/TXX/`
+2. Preencher frontmatter com `etapa: M3`
+3. Commit com mensagem: `[C3] add: M3 [Nome] - especificação POO`
+
+Ver: **00_E_1_6_Documento.md** (ciclo de vida e persistência)
 
 ---
 
@@ -135,7 +154,8 @@ Transformação interna:
 | 00_E_Epistemologia | Pai |
 | 00_E_1_4_Classe | Classe base / define I/O |
 | 00_E_1_3_Objeto | Anterior (M2) |
-| 00_E_1_6_Documento | Próximo (M4) |
+| 00_E_1_6_Documento | Próximo (M4) / Ciclo de vida |
+| 00_E_1_4_1_Diagrama | Seleção de diagramas |
 
 ---
 
@@ -145,4 +165,5 @@ Transformação interna:
 |--------|------|-----------|
 | 1.0 | 2024-11-27 | Criação |
 | 1.1 | 2025-12-01 | Migração para frontmatter YAML |
-| 2.0 | 2025-12-03 | Reestruturação como classe M3. Novo path 00_E_1_5. |
+| 2.0 | 2025-12-03 | - | Reestruturação como classe M3. Novo path 00_E_1_5. |
+| 2.1 | 2025-12-03 | 23:15 | Adiciona instruções de diagrama (ref 00_E_1_4_1_Diagrama) e persistência. |
