@@ -1,6 +1,6 @@
 ---
 nome: 00_E_1_2_MarcoTeorico
-versao: "2.0"
+versao: "2.1"
 tipo: Classe
 classe_ref: Classe
 origem: interno
@@ -15,7 +15,19 @@ MarcoTeórico é a etapa M1 do framework epistemológico que pesquisa conhecimen
 
 ---
 
-## 2. Diagrama
+## 2. Atributos
+
+| Atributo | Tipo | Card. | Obrig. | Descrição |
+|----------|------|-------|--------|-----------|
+| nome | string | 1 | Sim | Identificador único |
+| problema_ref | Problema | 1 | Sim | Problema (M0) que fundamenta |
+| conceitos | Conceito[] | 1..* | Sim | Conceitos extraídos (mín. 1) |
+| fontes | Fonte[] | 1..* | Sim | Referências (mín. 1) |
+| premissas | string[] | 0..* | Não | Suposições assumidas |
+| referencias_conceituais | ReferenciaConceitual[] | 0..* | Não | Frameworks de apoio |
+| lacunas | string[] | 0..* | Não | O que falta para M3 |
+
+**Diagrama: Caixa POO** (Metodologia: 3-Estrutural)
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -45,21 +57,7 @@ MarcoTeórico é a etapa M1 do framework epistemológico que pesquisa conhecimen
 └───────────────┘
 ```
 
----
-
-## 3. Atributos
-
-| Atributo | Tipo | Card. | Obrig. | Descrição |
-|----------|------|-------|--------|-----------|
-| nome | string | 1 | Sim | Identificador único |
-| problema_ref | Problema | 1 | Sim | Problema (M0) que fundamenta |
-| conceitos | Conceito[] | 1..* | Sim | Conceitos extraídos (mín. 1) |
-| fontes | Fonte[] | 1..* | Sim | Referências (mín. 1) |
-| premissas | string[] | 0..* | Não | Suposições assumidas |
-| referencias_conceituais | ReferenciaConceitual[] | 0..* | Não | Frameworks de apoio |
-| lacunas | string[] | 0..* | Não | O que falta para M3 |
-
-### 3.1 Conceito (subtipo)
+### 2.1 Conceito (subtipo)
 
 | Atributo | Tipo | Card. | Obrig. | Descrição |
 |----------|------|-------|--------|-----------|
@@ -69,7 +67,7 @@ MarcoTeórico é a etapa M1 do framework epistemológico que pesquisa conhecimen
 | fonte_ref | Fonte | 1 | Sim | Referência da fonte |
 | aplicacao | string | 0..1 | Não | Como usar no contexto |
 
-### 3.2 Fonte (subtipo)
+### 2.2 Fonte (subtipo)
 
 | Atributo | Tipo | Card. | Obrig. | Descrição |
 |----------|------|-------|--------|-----------|
@@ -79,7 +77,7 @@ MarcoTeórico é a etapa M1 do framework epistemológico que pesquisa conhecimen
 | path | string | 0..1 | Não | Caminho interno |
 | data_acesso | date | 0..1 | Não | Quando consultado |
 
-### 3.3 ReferenciaConceitual (subtipo)
+### 2.3 ReferenciaConceitual (subtipo)
 
 | Atributo | Tipo | Card. | Obrig. | Descrição |
 |----------|------|-------|--------|-----------|
@@ -90,7 +88,7 @@ MarcoTeórico é a etapa M1 do framework epistemológico que pesquisa conhecimen
 
 ---
 
-## 4. Restrições
+## 3. Restrições
 
 | Código | Restrição | Validação |
 |--------|-----------|-----------|
@@ -103,9 +101,9 @@ MarcoTeórico é a etapa M1 do framework epistemológico que pesquisa conhecimen
 
 ---
 
-## 5. Métodos
+## 4. Métodos
 
-### 5.1 pesquisarInterno(problema: Problema): Conceito[]
+### 4.1 pesquisarInterno(problema: Problema): Conceito[]
 
 **Descrição:** Consulta ontologia interna antes de buscar externamente.
 
@@ -116,7 +114,7 @@ MarcoTeórico é a etapa M1 do framework epistemológico que pesquisa conhecimen
 | Pré-condição | problema.necessidade != null |
 | Pós-condição | Todos conceitos têm fonte_ref.tipo = Ontologia |
 
-**Processo:**
+**Diagrama: Fluxo** (Metodologia: 3-Estrutural)
 
 ```
 ┌─────────────────┐
@@ -150,7 +148,7 @@ MarcoTeórico é a etapa M1 do framework epistemológico que pesquisa conhecimen
 
 ---
 
-### 5.2 pesquisarExterno(problema: Problema): Conceito[]
+### 4.2 pesquisarExterno(problema: Problema): Conceito[]
 
 **Descrição:** Busca conhecimento comum quando interno não basta.
 
@@ -161,36 +159,9 @@ MarcoTeórico é a etapa M1 do framework epistemológico que pesquisa conhecimen
 | Pré-condição | pesquisarInterno() já executado |
 | Pós-condição | Todos conceitos têm fonte_ref.url != null |
 
-**Processo:**
-
-```
-┌─────────────────────────────────┐
-│  Identificar lacunas            │
-│  (não cobertas por interno)     │
-└────────────────┬────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────┐
-│  Buscar: Literatura, Papers,    │
-│  Web, Frameworks                │
-└────────────────┬────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────┐
-│  Extrair conceitos + definição  │
-│  Criar Fonte (url, data_acesso) │
-│  Marcar origem = externa        │
-└────────────────┬────────────────┘
-                 │
-                 ▼
-         ┌──────────────┐
-         │  Conceito[]  │
-         └──────────────┘
-```
-
 ---
 
-### 5.3 sintetizar(conceitos: Conceito[]): MarcoTeorico
+### 4.3 sintetizar(conceitos: Conceito[]): MarcoTeorico
 
 **Descrição:** Articula conceitos em sistema coerente.
 
@@ -201,16 +172,9 @@ MarcoTeórico é a etapa M1 do framework epistemológico que pesquisa conhecimen
 | Pré-condição | conceitos.length >= 1 |
 | Pós-condição | MarcoTeorico.conceitos coerentes entre si |
 
-**Processo:**
-1. Agrupar conceitos por tema/relação
-2. Verificar coerência (sem contradições)
-3. Identificar premissas implícitas
-4. Documentar referências conceituais
-5. Listar lacunas restantes para M3
-
 ---
 
-### 5.4 validar(): boolean
+### 4.4 validar(): boolean
 
 **Descrição:** Verifica qualidade do marco teórico.
 
@@ -223,19 +187,9 @@ MarcoTeórico é a etapa M1 do framework epistemológico que pesquisa conhecimen
 
 ---
 
-### 5.5 gerarObjeto(): Objeto
+## 5. Fluxo Completo (M1)
 
-**Descrição:** Produz input para M2.
-
-| Campo | Valor |
-|-------|-------|
-| Input | MarcoTeorico validado |
-| Output | Objeto para M2 |
-| Pré-condição | validar() == true |
-
----
-
-## 6. Fluxo Completo (M1)
+**Diagrama: Fluxo** (Metodologia: 3-Estrutural)
 
 ```
 ┌─────────────────┐
@@ -284,9 +238,17 @@ MarcoTeórico é a etapa M1 do framework epistemológico que pesquisa conhecimen
 
 ---
 
-## 7. INSTRUÇÃO: Como executar M1
+## 6. INSTRUÇÃO: Como executar M1
 
-### 7.1 Checklist
+### 6.1 Diagrama
+
+Ver **00_E_1_4_1_Diagrama.md** para método de seleção.
+
+**Diagramas recomendados para MarcoTeórico (M1):**
+- Primário: **Rede** (conceitos relacionados)
+- Secundário: **Tabela** (conceitos consolidados)
+
+### 6.2 Checklist
 
 - [ ] Problema (M0) definido com necessidade clara
 - [ ] Ontologia interna consultada primeiro (`docs/00_O/`)
@@ -294,8 +256,9 @@ MarcoTeórico é a etapa M1 do framework epistemológico que pesquisa conhecimen
 - [ ] Conceitos com definição operacional (aplicável)
 - [ ] Fontes rastreáveis (path ou url)
 - [ ] Validação: Seletividade + Profundidade + Coerência + Rastreabilidade
+- [ ] Diagramas inseridos nas seções (Rede, Tabela)
 
-### 7.2 Template de Saída
+### 6.3 Template de Saída
 
 ```markdown
 ## Marco Teórico
@@ -317,25 +280,21 @@ MarcoTeórico é a etapa M1 do framework epistemológico que pesquisa conhecimen
 | Conceito | Definição | Origem | Aplicação |
 |----------|-----------|--------|-----------|
 | [termo] | [definição] | interna/externa | [como usar] |
-
-### Referências Conceituais
-
-| Framework | Descrição | Aplicação no ZAZ |
-|-----------|-----------|------------------|
-| [nome] | [o que é] | [como se relaciona] |
-
-### Premissas
-
-1. [suposição assumida]
-
-### Lacunas
-
-1. [o que falta para M3]
 ```
+
+### 6.4 Persistência
+
+**Ao finalizar M1, persistir o documento:**
+
+1. Criar arquivo `M1_[Nome].md` em `_drafts/SPRINT/TXX/`
+2. Preencher frontmatter com `etapa: M1`
+3. Commit com mensagem: `[C3] add: M1 [Nome] - marco teórico`
+
+Ver: **00_E_1_6_Documento.md** (ciclo de vida e persistência)
 
 ---
 
-## 8. Referência Conceitual: Double Diamond
+## 7. Referência Conceitual: Double Diamond
 
 | Double Diamond | Framework ZAZ | Fase |
 |----------------|---------------|------|
@@ -344,19 +303,18 @@ MarcoTeórico é a etapa M1 do framework epistemológico que pesquisa conhecimen
 
 **Fonte:** Design Council (UK), 2005
 
-**Aplicação:** Valida que o framework ZAZ segue padrão reconhecido de discovery.
-
 ---
 
-## 9. Referências
+## 8. Referências
 
 | Documento | Relação |
 |-----------|---------|
 | 00_E_Epistemologia | Pai |
 | 00_E_1_4_Classe | Classe base |
+| 00_E_1_4_1_Diagrama | Seleção de diagramas |
 | 00_E_1_1_Problema | Anterior (M0) - input |
 | 00_E_1_3_Objeto | Próximo (M2) - output |
-| Matriz_Selecao_Diagramas | Guia para diagramas |
+| 00_E_1_6_Documento | Ciclo de vida (persistência) |
 
 ---
 
@@ -365,4 +323,5 @@ MarcoTeórico é a etapa M1 do framework epistemológico que pesquisa conhecimen
 | Versão | Data | Hora | Alteração |
 |--------|------|------|-----------|
 | 1.0 | 2025-12-03 | - | Criação. Classe básica para M1. |
-| 2.0 | 2025-12-03 | 16:45 | Reestruturação via M0-M4 recursivo. Método de pesquisa (interno/externo), diagrama UML, subtipos, restrições, referência Double Diamond. |
+| 2.0 | 2025-12-03 | 16:45 | Reestruturação via M0-M4 recursivo. |
+| 2.1 | 2025-12-03 | 22:50 | Adiciona instruções de diagrama (ref 00_E_1_4_1_Diagrama) e persistência. Reorganiza seções. |
