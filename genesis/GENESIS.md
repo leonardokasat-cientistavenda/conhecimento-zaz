@@ -1,6 +1,6 @@
 ---
 nome: GENESIS
-versao: "0.6"
+versao: "0.7"
 tipo: Framework
 classe_ref: Framework
 origem: interno
@@ -28,7 +28,7 @@ status: Draft
 | **tipo_pesquisa** | Prescritivo |
 | **objetivo** | Sistema de instruções que permite ao Claude manter contexto entre conversas, reduzindo Entropia Contextual e Bootstrap Circular. Base para o Meta Sistema Epistemológico que cataloga conhecimento da ZAZ. |
 | **escopo** | Estrutura de arquivos, regras de carregamento, índice de dependências, definição de camadas |
-| **fronteiras** | Não cobre: conteúdo dos domínios, regras de negócio, execução do M1-M5 (isso é do Meta Sistema) |
+| **fronteiras** | Não cobre: conteúdo dos domínios, regras de negócio, execução do M0-M4 (isso é do Meta Sistema) |
 | **criterio_sucesso** | Claude lê GENESIS → carrega dependências → executa tarefas sem loop → Meta Sistema pode ser construído sobre ele |
 | **criterio_insucesso** | Loop em 3-4 trocas OU impossibilidade de construir camada superior |
 
@@ -87,9 +87,10 @@ status: Draft
 │                 META SISTEMA EPISTEMOLÓGICO                     │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│  Camada 3: FRAMEWORK                                            │
+│  Camada 3: FRAMEWORK (M0-M4)                                    │
 │  ┌──────────────────┬────────────────┬─────────────────────┐    │
-│  │  M1-M5 (Método)  │    Documento   │      Classes        │    │
+│  │  Problema (M0)   │  Objeto (M2)   │   Documento (M4)    │    │
+│  │  MarcoTeor.(M1)  │  Classe (M3)   │                     │    │
 │  └──────────────────┴────────────────┴─────────────────────┘    │
 │                           │                                     │
 │  Camada 4: DOMÍNIOS       │                                     │
@@ -148,7 +149,7 @@ status: Draft
 | 0 | Axiomas | Conceitos assumidos | POO, Recursividade, Meta-Programação, Semiótica, Epistemologia, Ontologia | Imutável | null |
 | 1 | Stub | Quebra bootstrap | GENESIS.md v0.1 | Atual | Camada 0 |
 | 2 | Infraestrutura | Persistência e contexto | GitHub, Claude Instructions, Estrutura Pastas | Estável | Camada 1 |
-| 3 | Framework | Método de conhecimento | M1-M5, Documento, Classes | Parcial | Camada 2 |
+| 3 | Framework | Método de conhecimento | M0-M4, Problema, MarcoTeorico, Objeto, Classe, Metodo, Documento | Estável | Camada 2 |
 | 4 | Domínios | Aplicação em negócio | Mercado, Produto, Empresa, GTM | Futuro | Camada 3 |
 
 ---
@@ -198,7 +199,7 @@ status: Draft
 |-------|-------|
 | **id** | S002-E |
 | **camada_foco** | Camada 3 (Framework) |
-| **status** | Em andamento |
+| **status** | ✅ Concluída |
 | **detalhes** | Ver /docs/00_E/00_E_Epistemologia.md (Seção 8) |
 
 Sprint detalhada movida para o arquivo do Meta Sistema.
@@ -216,7 +217,7 @@ Cada camada gerencia sua própria sprint.
 │  ─────────                                                      │
 │  - path: string                                                 │
 │  - versao: string                                               │
-│  - status: enum [Estável, Draft, Pendente]                      │
+│  - status: enum [Estável, Draft, Deprecated]                    │
 │  - updated_at: datetime                                         │
 │  - camada: Camada                                               │
 │  - depende_de: Arquivo[]                                        │
@@ -232,13 +233,24 @@ Cada camada gerencia sua própria sprint.
 
 | path | versao | status | updated_at | camada | depende_de |
 |------|--------|--------|------------|--------|------------|
-| /genesis/GENESIS.md | 0.1 | Draft | 2025-12-02 | 1 | null |
-| /docs/00_META.md | 1.0 | Draft | 2024-11-27 | 3 | GENESIS.md |
-| /docs/00_E/00_E_1_4_Documento.md | 1.4 | Draft | 2025-12-01 | 3 | 00_META.md |
-| /docs/00_O/00_O_1_1_Metodo_Epistemologico.md | 1.2 | Draft | 2025-12-01 | 3 | 00_META.md |
-| /docs/00_O/00_O_1_1_1_Definir_Objeto.md | 1.1 | Draft | 2025-12-01 | 3 | 00_O_1_1_Metodo_Epistemologico.md |
+| /genesis/GENESIS.md | 0.7 | Draft | 2025-12-03 | 1 | null |
+| /docs/00_E/00_E_Epistemologia.md | 2.0 | Draft | 2025-12-03 | 3 | GENESIS.md |
+| /docs/00_E/00_E_1_1_Problema.md | 1.0 | Draft | 2025-12-03 | 3 | 00_E_Epistemologia.md |
+| /docs/00_E/00_E_1_2_MarcoTeorico.md | 1.0 | Draft | 2025-12-03 | 3 | 00_E_Epistemologia.md |
+| /docs/00_E/00_E_1_3_Objeto.md | 1.0 | Draft | 2025-12-03 | 3 | 00_E_Epistemologia.md |
+| /docs/00_E/00_E_1_4_Classe.md | 2.0 | Draft | 2025-12-03 | 3 | 00_E_Epistemologia.md |
+| /docs/00_E/00_E_1_5_Metodo.md | 2.0 | Draft | 2025-12-03 | 3 | 00_E_Epistemologia.md |
+| /docs/00_E/00_E_1_6_Documento.md | 2.0 | Draft | 2025-12-03 | 3 | 00_E_Epistemologia.md |
 | /docs/00_I_1_1_Github_Instructions.md | 1.0 | Estável | 2025-12-02 | 2 | GENESIS.md |
 | /docs/00_O/00_O_1_2_6_Patch_System.md | 1.0 | Draft | 2025-12-02 | 2 | GENESIS.md |
+
+### Arquivos Deprecated
+
+| path | redireciona_para |
+|------|------------------|
+| /docs/00_E/00_E_1_2_Metodo.md | 00_E_1_5_Metodo.md |
+| /docs/00_E/00_E_1_3_Framework.md | 00_E_Epistemologia.md (Seção 4) |
+| /docs/00_E/00_E_1_4_Documento.md | 00_E_1_6_Documento.md |
 
 ### Regra de Carregamento
 
@@ -260,3 +272,4 @@ SE usuário menciona Camada N
 | 0.4 | 2025-12-02 | Sprint S001 concluída. T11 finalizada. |
 | 0.5 | 2025-12-02 | Define Sprint S002. Handoff para integração Camada 3. |
 | 0.6 | 2025-12-02 | Move Sprint para 00_E_Epistemologia.md. Cada camada gerencia própria sprint. |
+| 0.7 | 2025-12-03 | Sprint S002-E concluída. Classes M0-M4 criadas. Camada 3 estabilizada. |
