@@ -1,6 +1,6 @@
 ---
 nome: 00_E_1_6_Documento
-versao: "2.1"
+versao: "2.2"
 tipo: Classe
 classe_ref: Classe
 origem: interno
@@ -163,24 +163,28 @@ Estrutura:
 [C3] refactor: reestrutura Documento para M4
 ```
 
-### 8.3 Ciclo de Vida (_drafts/ → docs/)
+### 8.3 Ciclo de Vida (Chat → _drafts/ → docs/)
+
+**Princípio:** O trabalho de cada etapa (M0-M4) acontece no chat. A persistência ocorre ao finalizar cada etapa.
 
 ```
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   _drafts/  │ ──► │   Validar   │ ──► │    docs/    │
-│  SPRINT/    │     │  Checklist  │     │   status:   │
-│  etapa: M0  │     │     8.1     │     │   Draft     │
+│    Chat     │ ──► │  _drafts/   │ ──► │    docs/    │
+│  (trabalho) │     │ (rascunho)  │     │ (publicado) │
 └─────────────┘     └─────────────┘     └─────────────┘
 ```
 
-**Regra:** Ao iniciar qualquer objeto no método epistemológico (M0), criar arquivo imediatamente em `_drafts/SPRINT/` para evitar perda de contexto.
+**Fluxo:**
 
-| Etapa | Local | frontmatter.etapa | Ação |
-|-------|-------|-------------------|------|
-| M0 iniciado | _drafts/SPRINT/ | M0 | Criar arquivo, persistir sintoma |
-| M0 → M1 | _drafts/SPRINT/ | M1 | Atualizar etapa |
-| M2 → M3 | _drafts/SPRINT/ | M3 | Atualizar etapa |
-| M4 concluído | docs/ | - | Mover arquivo, remover campo etapa |
+| Momento | Local | Ação |
+|---------|-------|------|
+| M0 em andamento | Chat | Desenvolver Problema (sintoma, significantes, causa, necessidade) |
+| M0 finalizado | _drafts/SPRINT/ | Persistir arquivo com `etapa: M0` |
+| M1 em andamento | Chat | Desenvolver Marco Teórico |
+| M1 finalizado | _drafts/SPRINT/ | Atualizar arquivo com `etapa: M1` |
+| M2 finalizado | _drafts/SPRINT/ | Atualizar arquivo com `etapa: M2` |
+| M3 finalizado | _drafts/SPRINT/ | Atualizar arquivo com `etapa: M3` |
+| M4 finalizado | docs/ | Mover arquivo, remover campo `etapa` |
 
 **Ao fechar sprint:** Deletar pasta `_drafts/SPRINT/` (histórico preservado no Git).
 
@@ -250,3 +254,4 @@ data_fim: null
 | 1.4 | 2025-12-01 | - | Ajuste estrutura; campo etapa |
 | 2.0 | 2025-12-03 | - | Reestruturação como classe M4. Novo path 00_E_1_6. |
 | 2.1 | 2025-12-03 | 14:45 | Adiciona ciclo de vida _drafts/ (8.3), instrução Sprint (8.4), timestamp no histórico. |
+| 2.2 | 2025-12-03 | 15:30 | Clarifica 8.3: trabalho no Chat, persistência ao finalizar etapa. |
