@@ -1,6 +1,6 @@
 ---
 nome: 00_E_1_6_Documento
-versao: "2.3"
+versao: "2.4"
 tipo: Classe
 classe_ref: Classe
 origem: interno
@@ -146,7 +146,15 @@ Estrutura:
 
 ## 8. INSTRUÇÃO: Como persistir um Documento
 
-### 8.1 Checklist
+### 8.1 Diagrama
+
+Ver **00_E_1_4_1_Diagrama.md** para método de seleção.
+
+**Diagramas recomendados para Documento (M4):**
+- Primário: **Estado** (ciclo de vida Draft → Publicado)
+- Secundário: **Caixa** (estrutura Frontmatter + Conteúdo + Histórico)
+
+### 8.2 Checklist
 
 - [ ] Frontmatter completo e válido
 - [ ] Definição clara (1-2 frases)
@@ -155,7 +163,7 @@ Estrutura:
 - [ ] Histórico com nova versão e timestamp
 - [ ] Commit com convenção [CAMADA] ação: descrição
 
-### 8.2 Convenção de Commit
+### 8.3 Convenção de Commit
 
 ```
 [C1] feat: cria GENESIS.md v0.1
@@ -163,7 +171,7 @@ Estrutura:
 [C3] refactor: reestrutura Documento para M4
 ```
 
-### 8.3 Estrutura de Pastas para Sprints
+### 8.4 Estrutura de Pastas para Sprints
 
 **Estrutura:**
 
@@ -215,7 +223,7 @@ _drafts/
 | Ao concluir M4 | Arquivo final vai para `docs/`, artefatos intermediários podem ser deletados |
 | Ao fechar Sprint | Deletar pasta `_drafts/SXXX-Y/` (histórico preservado no Git) |
 
-### 8.4 Ciclo de Vida (Chat → _drafts/ → docs/)
+### 8.5 Ciclo de Vida (Chat → _drafts/ → docs/)
 
 **Princípio:** O trabalho de cada etapa (M0-M4) acontece no chat. A persistência ocorre ao finalizar cada etapa.
 
@@ -238,7 +246,7 @@ _drafts/
 | M3 finalizado | _drafts/SPRINT/TXX/ | Persistir `M3_Nome.md` com `etapa: M3` |
 | M4 finalizado | docs/ | Persistir arquivo final, deletar pasta TXX/ |
 
-### 8.5 Como criar uma Sprint
+### 8.6 Como criar uma Sprint
 
 **Local:** `_sprints/SXXX-Y.md`
 
@@ -288,6 +296,7 @@ data_fim: null
 | 00_E_Epistemologia | Pai |
 | 00_E_1_4_Classe | Classe base |
 | 00_E_1_5_Metodo | Anterior (M3) |
+| 00_E_1_4_1_Diagrama | Seleção de diagramas |
 | 00_E_1_1_Problema | Referencia ciclo de vida (7.5) |
 | GENESIS.md | Define índice de arquivos |
 
@@ -306,3 +315,4 @@ data_fim: null
 | 2.1 | 2025-12-03 | 14:45 | Adiciona ciclo de vida _drafts/ (8.3), instrução Sprint (8.4), timestamp no histórico. |
 | 2.2 | 2025-12-03 | 15:30 | Clarifica 8.3: trabalho no Chat, persistência ao finalizar etapa. |
 | 2.3 | 2025-12-03 | 20:00 | Reestrutura 8.3: subpastas TXX por task, recursos compartilhados, nomenclatura MX_Nome.md. Move Sprint para 8.5. |
+| 2.4 | 2025-12-03 | 23:20 | Adiciona instrução de diagrama (ref 00_E_1_4_1_Diagrama). Renumera seções 8.X. |
