@@ -1,6 +1,6 @@
 ---
 nome: 00_E_1_3_Objeto
-versao: "1.0"
+versao: "2.0"
 tipo: Classe
 classe_ref: Classe
 origem: interno
@@ -9,142 +9,355 @@ status: Draft
 
 # 00_E_1_3_Objeto
 
-## 1. Definição
+## 1. Definicao
 
-Objeto é a classe que estrutura o escopo de pesquisa (M2). Transforma conhecimento do marco teórico em objeto delimitado com fronteiras claras e critérios de sucesso.
+Objeto e a classe que estrutura o escopo de pesquisa (M2). Transforma conhecimento do marco teorico em objeto delimitado com fronteiras claras e criterios de sucesso.
 
----
-
-## 2. Atributos
-
-| Atributo | Tipo | Obrigatório | Descrição |
-|----------|------|-------------|-----------|
-| nome | string | Sim | Identificador único |
-| marco_ref | MarcoTeorico | Sim | Marco teórico que fundamenta |
-| tipo_pesquisa | enum | Sim | Exploratório, Descritivo, Prescritivo |
-| objetivo | string | Sim | O que pretende resolver/descobrir |
-| escopo | string | Sim | O que está incluído |
-| fronteiras | string | Sim | O que está excluído |
-| requisitos | string[] | Não | Pré-condições necessárias |
-| criterio_sucesso | string | Sim | Quando considera completo |
-| criterio_insucesso | string | Sim | Quando considera falho |
-| frontmatter | Frontmatter | Sim | Metadados YAML |
+**Funcao critica:** Ponte entre M1 (conceitos) e M3 (classes). Um Objeto bem definido permite que M3 gere Classes/Metodos sem ambiguidade e sem retornar a M1.
 
 ---
 
-## 3. Diagrama
+## 2. Marco Teorico
+
+| Conceito | Definicao | Aplicacao |
+|----------|-----------|-----------|
+| **Escopo** | O que esta INCLUIDO no objeto de pesquisa | Atributo obrigatorio |
+| **Fronteiras** | O que esta EXCLUIDO; limites deliberados | Atributo obrigatorio |
+| **Delimitacao** | Ato de definir escopo + fronteiras | Metodo central delimitar() |
+| **Afunilamento** | Reducao progressiva: Tema -> Objeto especifico | Processo de M0->M1->M2 |
+| **Ponte M1->M3** | Funcao de conectar conceitos teoricos a especificacao estruturada | Criterio de sucesso |
+
+### Fontes
+
+| Fonte | Conceito |
+|-------|----------|
+| AJE (aje.com) | Escopo, Delimitacao |
+| Mettzer | Afunilamento, Objeto de Estudo |
+| Design Council | Double Diamond |
+
+---
+
+## 3. Atributos
+
+| Atributo | Tipo | Card. | Obrig. | Descricao |
+|----------|------|-------|--------|-----------|
+| nome | string | 1 | Sim | Identificador unico |
+| problema_ref | Problema | 1 | Sim | Problema (M0) de origem |
+| marco_ref | MarcoTeorico | 1 | Sim | Marco teorico que fundamenta |
+| tipo_pesquisa | enum | 1 | Sim | Exploratorio, Descritivo, Prescritivo |
+| objetivo | string | 1 | Sim | O que pretende resolver/descobrir |
+| escopo | string | 1 | Sim | O que esta incluido |
+| fronteiras | string | 1 | Sim | O que esta excluido |
+| requisitos | string[] | 0..* | Nao | Pre-condicoes necessarias |
+| conceitos_usados | string[] | 1..* | Sim | Conceitos de M1 aplicados |
+| criterio_sucesso | string | 1 | Sim | Quando considera completo |
+| criterio_insucesso | string | 1 | Sim | Quando considera falho |
+| frontmatter | Frontmatter | 1 | Sim | Metadados YAML |
+
+---
+
+## 4. Diagrama UML da Classe
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                          OBJETO                                 │
-├─────────────────────────────────────────────────────────────────┤
-│  Atributos                                                      │
-│  ─────────                                                      │
-│  - nome: string                                                 │
-│  - marco_ref: MarcoTeorico                                      │
-│  - tipo_pesquisa: enum [Exploratório|Descritivo|Prescritivo]    │
-│  - objetivo: string                                             │
-│  - escopo: string                                               │
-│  - fronteiras: string                                           │
-│  - requisitos: string[]                                         │
-│  - criterio_sucesso: string                                     │
-│  - criterio_insucesso: string                                   │
-│  - frontmatter: Frontmatter                                     │
-├─────────────────────────────────────────────────────────────────┤
-│  Restrições                                                     │
-│  ──────────                                                     │
-│  - escopo e fronteiras não podem ter interseção                 │
-│  - critérios devem ser verificáveis                             │
-│  - objetivo deve usar conceitos do marco teórico                │
-├─────────────────────────────────────────────────────────────────┤
-│  Métodos                                                        │
-│  ────────                                                       │
-│  + definir(): Objeto                                            │
-│  + validar(): bool                                              │
-│  + gerar_classes(): Classe[]                                    │
-└─────────────────────────────────────────────────────────────────┘
++---------------------------------------------------------------+
+|                         <<class>>                             |
+|                          Objeto                               |
++---------------------------------------------------------------+
+|  - nome: string                                               |
+|  - problema_ref: Problema [1]                                 |
+|  - marco_ref: MarcoTeorico [1]                                |
+|  - tipo_pesquisa: enum [Exploratorio|Descritivo|Prescritivo]  |
+|  - objetivo: string                                           |
+|  - escopo: string                                             |
+|  - fronteiras: string                                         |
+|  - requisitos: string [0..*]                                  |
+|  - conceitos_usados: string [1..*]                            |
+|  - criterio_sucesso: string                                   |
+|  - criterio_insucesso: string                                 |
+|  - frontmatter: Frontmatter [1]                               |
++---------------------------------------------------------------+
+|  + delimitar(m: MarcoTeorico, p: Problema): Objeto            |
+|  + validar(): boolean                                         |
+|  + validarCompletude(): boolean                               |
+|  + verificarConexaoM1(m: MarcoTeorico): string[]              |
+|  + gerarClasses(): Classe[]                                   |
++---------------------------------------------------------------+
+              |                          |
+              | problema_ref [1]         | marco_ref [1]
+              v                          v
+      +---------------+          +---------------+
+      |   Problema    |          |  MarcoTeorico |
+      |     (M0)      |          |     (M1)      |
+      +---------------+          +---------------+
 ```
 
 ---
 
-## 4. Restrições
+## 5. Diagrama de Escopo (Circulo/Venn)
 
-- Escopo e fronteiras são mutuamente exclusivos
-- Critérios de sucesso/insucesso devem ser verificáveis
-- Objetivo deve usar conceitos definidos no marco teórico
-- Tipo de pesquisa determina a natureza do output
+```
++-------------------------------------------------------------------------+
+|                        CONTEXTO: META SISTEMA                           |
+|                                                                         |
+|      FRONTEIRAS (excluido)              +-------------------+           |
+|      ---------------------              |                   |           |
+|                                         |  ESCOPO (incluido)|           |
+|      - Outras classes                   |  ----------------  |           |
+|      - Implementacao codigo             |                   |           |
+|      - Dominios negocio                 |  - Atributos      |           |
+|      - UI/Interface                     |  - Metodos        |           |
+|                                         |  - Restricoes     |           |
+|                                         |  - Diagramas      |           |
+|                                         |  - Conexao M0/M1  |           |
+|                                         |  - Ponte M1->M3   |           |
+|                                         |                   |           |
+|                                         +-------------------+           |
+|                                                                         |
++-------------------------------------------------------------------------+
+```
 
 ---
 
-## 5. Tipos de Pesquisa
+## 6. Diagrama Contextual (Posicao no Framework)
 
-| Tipo | Pergunta | Output típico |
+```
++-------------------------------------------------------------------------+
+|                              FRAMEWORK M0-M4                            |
+|                                                                         |
+|  +--------------+      +--------------+      +--------------+           |
+|  |     M0       |      |     M1       |      |     M3       |           |
+|  |   Problema   |      |    Marco     |      |   Classes    |           |
+|  |              |      |   Teorico    |      |   Metodos    |           |
+|  +------+-------+      +------+-------+      +------^-------+           |
+|         |                     |                     |                   |
+|         |    problema_ref     |    marco_ref        |   output          |
+|         +---------+   +-------+                     |                   |
+|                   v   v                             |                   |
+|         +---------------------------------+         |                   |
+|         |          M2: OBJETO             |---------+                   |
+|         |                                 |                             |
+|         |  Recebe:                        |                             |
+|         |  - glossario validado (M0)      |                             |
+|         |  - conceitos operacionais (M1)  |                             |
+|         |                                 |                             |
+|         |  Produz:                        |                             |
+|         |  - escopo delimitado            |                             |
+|         |  - fronteiras claras            |                             |
+|         |  - criterios verificaveis       |                             |
+|         +---------------------------------+                             |
+|                                                                         |
++-------------------------------------------------------------------------+
+```
+
+---
+
+## 7. Restricoes
+
+| Codigo | Restricao | Validacao |
+|--------|-----------|-----------|
+| R1 | problema_ref obrigatorio | Nao existe M2 sem M0 |
+| R2 | marco_ref obrigatorio | Nao existe M2 sem M1 |
+| R3 | Termos do objetivo devem estar validados | objetivo.termos in (problema.glossario + marco.conceitos) |
+| R4 | Escopo e fronteiras mutuamente exclusivos | escopo AND fronteiras = vazio |
+| R5 | Criterios devem ser verificaveis | criterio contem verbo mensuravel |
+| R6 | conceitos_usados nao vazio | Minimo 1 conceito de M1 |
+| R7 | Objeto deve permitir M3 sem retorno | validarCompletude() == true antes de gerarClasses() |
+
+---
+
+## 8. Metodos
+
+### 8.1 delimitar(marco: MarcoTeorico, problema: Problema): Objeto
+
+**Descricao:** Processo de afunilamento que transforma conceitos em escopo delimitado.
+
+| Campo | Valor |
+|-------|-------|
+| Input | MarcoTeorico (M1), Problema (M0) |
+| Output | Objeto delimitado |
+| Pre-condicao | marco.validar() == true, problema.validar() == true |
+| Pos-condicao | Objeto com escopo, fronteiras e criterios definidos |
+
+**Processo:**
+
+```
++---------------------------------------+
+|        CONCEITOS DE M1                |
+|   (lista de conceitos operacionais)   |
++-------------------+-------------------+
+                    |
+                    v
++---------------------------------------+
+|     1. EXTRAIR TERMOS RELEVANTES      |
+|     (filtrar conceitos aplicaveis)    |
++-------------------+-------------------+
+                    |
+                    v
++---------------------------------------+
+|     2. DEFINIR OBJETIVO               |
+|     (usar termos do glossario M0)     |
++-------------------+-------------------+
+                    |
+                    v
++---------------------------------------+
+|     3. DELIMITAR ESCOPO               |
+|     (o que sera incluido)             |
++-------------------+-------------------+
+                    |
+                    v
++---------------------------------------+
+|     4. DEFINIR FRONTEIRAS             |
+|     (o que sera excluido)             |
++-------------------+-------------------+
+                    |
+                    v
++---------------------------------------+
+|     5. ESPECIFICAR CRITERIOS          |
+|     (sucesso e insucesso verificaveis)|
++-------------------+-------------------+
+                    |
+                    v
++---------------------------------------+
+|     6. REGISTRAR CONCEITOS USADOS     |
+|     (rastreabilidade para M1)         |
++-------------------+-------------------+
+                    |
+                    v
+              +-----------+
+              |  OBJETO   |
+              | DELIMITADO|
+              +-----------+
+```
+
+---
+
+### 8.2 validar(): boolean
+
+**Descricao:** Verifica se Objeto atende restricoes basicas.
+
+| Campo | Valor |
+|-------|-------|
+| Input | self |
+| Output | boolean |
+| Validacoes | R1-R6 |
+
+---
+
+### 8.3 validarCompletude(): boolean
+
+**Descricao:** Verifica se Objeto esta completo para M3 prosseguir.
+
+| Campo | Valor |
+|-------|-------|
+| Input | self |
+| Output | boolean |
+| Pre-condicao | validar() == true |
+
+**Criterios de Completude:**
+
+| Criterio | Pergunta |
+|----------|----------|
+| Escopo claro | M3 sabe exatamente o que incluir? |
+| Fronteiras claras | M3 sabe exatamente o que excluir? |
+| Conceitos suficientes | Todos os termos do escopo tem definicao? |
+| Criterios verificaveis | M3 consegue testar sucesso/insucesso? |
+
+---
+
+### 8.4 verificarConexaoM1(marco: MarcoTeorico): string[]
+
+**Descricao:** Lista conceitos de M1 nao utilizados no Objeto.
+
+| Campo | Valor |
+|-------|-------|
+| Input | MarcoTeorico |
+| Output | string[] (conceitos nao usados) |
+| Uso | Identificar lacunas ou escopo incompleto |
+
+---
+
+### 8.5 gerarClasses(): Classe[]
+
+**Descricao:** Produz input para M3.
+
+| Campo | Valor |
+|-------|-------|
+| Input | self (Objeto validado) |
+| Output | Classe[] para M3 |
+| Pre-condicao | validarCompletude() == true |
+
+---
+
+## 9. Tipos de Pesquisa
+
+| Tipo | Pergunta | Output tipico |
 |------|----------|---------------|
-| Exploratório | O que existe? | Mapeamento, descoberta |
-| Descritivo | Como funciona? | Documentação, análise |
-| Prescritivo | Como deveria ser? | Sistema, framework, método |
+| Exploratorio | O que existe? | Mapeamento, descoberta |
+| Descritivo | Como funciona? | Documentacao, analise |
+| Prescritivo | Como deveria ser? | Sistema, framework, metodo |
 
 ---
 
-## 6. Fluxo (M2)
+## 10. INSTRUCAO: Como definir um Objeto
 
-```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│    Marco    │ ──► │  Delimitar  │ ──► │   Objeto    │
-│   Teórico   │     │   Escopo    │     │  Definido   │
-└─────────────┘     └─────────────┘     └─────────────┘
-                           │
-                           ▼
-            ┌─────────────────────────────┐
-            │  + objetivo                 │
-            │  + escopo / fronteiras      │
-            │  + critérios sucesso/falha  │
-            └─────────────────────────────┘
-```
-
----
-
-## 7. INSTRUÇÃO: Como definir um Objeto
-
-### 7.1 Template (copiar e preencher)
+### 10.1 Template (copiar e preencher)
 
 ```markdown
 | Campo | Valor |
 |-------|-------|
 | **nome** | [identificador] |
-| **tipo_pesquisa** | [Exploratório/Descritivo/Prescritivo] |
-| **objetivo** | [o que pretende resolver] |
-| **escopo** | [o que está incluído] |
-| **fronteiras** | [o que está excluído] |
-| **criterio_sucesso** | [quando está completo] |
-| **criterio_insucesso** | [quando falhou] |
+| **problema_ref** | [path do M0] |
+| **marco_ref** | [path do M1] |
+| **tipo_pesquisa** | [Exploratorio/Descritivo/Prescritivo] |
+| **objetivo** | [o que pretende resolver - usar termos de M0/M1] |
+| **escopo** | [o que esta incluido] |
+| **fronteiras** | [o que esta excluido] |
+| **conceitos_usados** | [lista de conceitos de M1] |
+| **criterio_sucesso** | [quando esta completo - verificavel] |
+| **criterio_insucesso** | [quando falhou - verificavel] |
 ```
 
-### 7.2 Checklist
+### 10.2 Checklist
 
-- [ ] Nome é único e descritivo
+- [ ] problema_ref aponta para M0 valido
+- [ ] marco_ref aponta para M1 valido
+- [ ] Nome e unico e descritivo
 - [ ] Tipo de pesquisa definido
-- [ ] Objetivo é claro e acionável
+- [ ] Objetivo usa termos do glossario (M0) e conceitos (M1)
 - [ ] Escopo lista o que cobre
-- [ ] Fronteiras lista o que NÃO cobre
-- [ ] Critério de sucesso é verificável
-- [ ] Critério de insucesso é verificável
+- [ ] Fronteiras lista o que NAO cobre
+- [ ] Escopo e fronteiras nao tem intersecao
+- [ ] conceitos_usados lista pelo menos 1 conceito de M1
+- [ ] Criterio de sucesso e verificavel
+- [ ] Criterio de insucesso e verificavel
+- [ ] validarCompletude() retorna true
 
 ---
 
-## 8. Referências
+## 11. Referencias
 
-| Documento | Relação |
+| Documento | Relacao |
 |-----------|---------|
 | 00_E_Epistemologia | Pai |
 | 00_E_1_4_Classe | Classe base |
+| 00_E_1_1_Problema | Anterior (M0) |
 | 00_E_1_2_MarcoTeorico | Anterior (M1) |
-| 00_E_1_5_Metodo | Próximo (M3 - especificação) |
+| 00_E_1_4_Classe | Proximo (M3 - especificacao) |
+| Matriz_Selecao_Diagramas | Guia para diagramas |
+
+### Referencias Externas
+
+| Fonte | Conceito utilizado |
+|-------|-------------------|
+| AJE (aje.com) | Escopo, Delimitacao |
+| Mettzer | Afunilamento, Objeto de Estudo |
+| Design Council | Double Diamond |
 
 ---
 
-## Histórico
+## Historico
 
-| Versão | Data | Alteração |
-|--------|------|-----------|
-| 1.0 | 2025-12-03 | Criação. Classe para M2 do framework epistemológico. |
+| Versao | Data | Hora | Alteracao |
+|--------|------|------|-----------|
+| 1.0 | 2025-12-03 | - | Criacao. Classe para M2 do framework epistemologico. |
+| 2.0 | 2025-12-03 | 19:45 | Reestruturacao via M0-M4 recursivo. Marco teorico (Escopo, Fronteiras, Delimitacao, Afunilamento, Ponte). Diagramas UML/Circulo/Contextual conforme Matriz. Metodos delimitar/validarCompletude/verificarConexaoM1. Restricoes R1-R7. Conexao explicita com M0/M1. |
