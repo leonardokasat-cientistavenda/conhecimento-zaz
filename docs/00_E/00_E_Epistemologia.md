@@ -1,6 +1,6 @@
 ---
 nome: 00_E_Epistemologia
-versao: "2.1"
+versao: "2.2"
 tipo: Introducao
 classe_ref: Documento
 origem: interno
@@ -103,46 +103,32 @@ O sistema usa a si mesmo para evoluir.
 
 ---
 
-## 8. Sprint Atual
+## 8. Sprints
+
+### Sprint Atual
 
 | Campo | Valor |
 |-------|-------|
-| **id** | S002-E |
-| **objetivo** | Estruturar Meta Sistema Epistemologia |
-| **inicio** | 2025-12-02 |
-| **fim** | 2025-12-03 |
-| **status** | ✅ Concluída |
+| **id** | S003-E |
+| **arquivo** | [_sprints/S003-E.md](/_sprints/S003-E.md) |
+| **objetivo** | Aprofundamento recursivo: Saussure em M0, POO em M3, consistência entre etapas |
+| **inicio** | 2025-12-03 |
+| **status** | 🔄 Em andamento |
 
-### Contexto
+### Sprints Anteriores
 
-Reestruturação de 00_E para funcionar como Meta Sistema gerador de conhecimento, aplicando M0-M4 recursivamente.
-
-### Tarefas
-
-| id | tarefa | status |
-|----|--------|--------|
-| T1 | Criar 00_E_Epistemologia.md (raiz) | ✅ |
-| T2 | Criar 00_E_1_4_Classe.md | ✅ |
-| T3 | Criar 00_E_1_1_Problema.md | ✅ |
-| T4 | Criar 00_E_1_2_MarcoTeorico.md | ✅ |
-| T5 | Criar 00_E_1_3_Objeto.md | ✅ |
-| T6 | Revisar 00_E_1_5_Metodo.md | ✅ |
-| T7 | Revisar 00_E_1_6_Documento.md | ✅ |
-| T8 | Limpar arquivos antigos | ✅ |
-| T9 | Atualizar índice GENESIS.md | ✅ |
-
-### Arquivos Deprecated
-
-- 00_E_1_2_Metodo.md → 00_E_1_5_Metodo.md
-- 00_E_1_3_Framework.md → 00_E_Epistemologia.md (Seção 4)
-- 00_E_1_4_Documento.md → 00_E_1_6_Documento.md
+| Sprint | Objetivo | Status |
+|--------|----------|--------|
+| S002-E | Estruturar Meta Sistema Epistemologia | ✅ Concluída |
+| S001-E | Definir infraestrutura inicial | ✅ Concluída |
 
 ---
 
 ## Histórico
 
-| Versão | Data | Alteração |
-|--------|------|-----------|
-| 1.0 | 2024-11-27 | Criação |
-| 2.0 | 2025-12-02 | Reestruturação como Meta Sistema. Framework M0-M4. Sprint S002-E. |
-| 2.1 | 2025-12-03 | Sprint S002-E concluída. Todas as classes criadas. |
+| Versão | Data | Hora | Alteração |
+|--------|------|------|-----------|
+| 1.0 | 2024-11-27 | - | Criação |
+| 2.0 | 2025-12-02 | - | Reestruturação como Meta Sistema. Framework M0-M4. Sprint S002-E. |
+| 2.1 | 2025-12-03 | - | Sprint S002-E concluída. Todas as classes criadas. |
+| 2.2 | 2025-12-03 | 14:20 | Sprint S003-E iniciada. Referência a _sprints/. |
