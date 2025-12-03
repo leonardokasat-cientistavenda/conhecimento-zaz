@@ -1,6 +1,6 @@
 ---
 nome: 00_E_1_3_Objeto
-versao: "2.0"
+versao: "2.1"
 tipo: Classe
 classe_ref: Classe
 origem: interno
@@ -317,7 +317,15 @@ Objeto e a classe que estrutura o escopo de pesquisa (M2). Transforma conhecimen
 | **criterio_insucesso** | [quando falhou - verificavel] |
 ```
 
-### 10.2 Checklist
+### 10.2 Diagrama
+
+Ver **00_E_1_4_1_Diagrama.md** para método de seleção.
+
+**Diagramas recomendados para Objeto (M2):**
+- Primário: **Círculo/Venn** (escopo e fronteiras)
+- Secundário: **Contextual** (posição no framework)
+
+### 10.3 Checklist
 
 - [ ] problema_ref aponta para M0 valido
 - [ ] marco_ref aponta para M1 valido
@@ -331,6 +339,17 @@ Objeto e a classe que estrutura o escopo de pesquisa (M2). Transforma conhecimen
 - [ ] Criterio de sucesso e verificavel
 - [ ] Criterio de insucesso e verificavel
 - [ ] validarCompletude() retorna true
+- [ ] Diagramas inseridos nas seções (Círculo, Contextual)
+
+### 10.4 Persistência
+
+**Ao finalizar M2, persistir o documento:**
+
+1. Criar arquivo `M2_[Nome].md` em `_drafts/SPRINT/TXX/`
+2. Preencher frontmatter com `etapa: M2`
+3. Commit com mensagem: `[C3] add: M2 [Nome] - objeto delimitado`
+
+Ver: **00_E_1_6_Documento.md** (ciclo de vida e persistência)
 
 ---
 
@@ -343,7 +362,8 @@ Objeto e a classe que estrutura o escopo de pesquisa (M2). Transforma conhecimen
 | 00_E_1_1_Problema | Anterior (M0) |
 | 00_E_1_2_MarcoTeorico | Anterior (M1) |
 | 00_E_1_4_Classe | Proximo (M3 - especificacao) |
-| Matriz_Selecao_Diagramas | Guia para diagramas |
+| 00_E_1_4_1_Diagrama | Seleção de diagramas |
+| 00_E_1_6_Documento | Ciclo de vida (persistência) |
 
 ### Referencias Externas
 
@@ -361,3 +381,4 @@ Objeto e a classe que estrutura o escopo de pesquisa (M2). Transforma conhecimen
 |--------|------|------|-----------|
 | 1.0 | 2025-12-03 | - | Criacao. Classe para M2 do framework epistemologico. |
 | 2.0 | 2025-12-03 | 19:45 | Reestruturacao via M0-M4 recursivo. Marco teorico (Escopo, Fronteiras, Delimitacao, Afunilamento, Ponte). Diagramas UML/Circulo/Contextual conforme Matriz. Metodos delimitar/validarCompletude/verificarConexaoM1. Restricoes R1-R7. Conexao explicita com M0/M1. |
+| 2.1 | 2025-12-03 | 23:10 | Adiciona instruções de diagrama (ref 00_E_1_4_1_Diagrama) e persistência ao final de M2. |
