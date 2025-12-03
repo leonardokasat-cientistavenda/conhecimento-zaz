@@ -1,6 +1,6 @@
 ---
 nome: 00_E_Epistemologia
-versao: "2.0"
+versao: "2.1"
 tipo: Introducao
 classe_ref: Documento
 origem: interno
@@ -110,7 +110,8 @@ O sistema usa a si mesmo para evoluir.
 | **id** | S002-E |
 | **objetivo** | Estruturar Meta Sistema Epistemologia |
 | **inicio** | 2025-12-02 |
-| **status** | Em andamento |
+| **fim** | 2025-12-03 |
+| **status** | ✅ Concluída |
 
 ### Contexto
 
@@ -122,19 +123,19 @@ Reestruturação de 00_E para funcionar como Meta Sistema gerador de conheciment
 |----|--------|--------|
 | T1 | Criar 00_E_Epistemologia.md (raiz) | ✅ |
 | T2 | Criar 00_E_1_4_Classe.md | ✅ |
-| T3 | Criar 00_E_1_1_Problema.md | ⏳ |
-| T4 | Criar 00_E_1_2_MarcoTeorico.md | ⏳ |
-| T5 | Criar 00_E_1_3_Objeto.md | ⏳ |
-| T6 | Revisar 00_E_1_5_Metodo.md | ⏳ |
-| T7 | Revisar 00_E_1_6_Documento.md | ⏳ |
-| T8 | Limpar arquivos antigos | ⏳ |
-| T9 | Atualizar índice GENESIS.md | ⏳ |
+| T3 | Criar 00_E_1_1_Problema.md | ✅ |
+| T4 | Criar 00_E_1_2_MarcoTeorico.md | ✅ |
+| T5 | Criar 00_E_1_3_Objeto.md | ✅ |
+| T6 | Revisar 00_E_1_5_Metodo.md | ✅ |
+| T7 | Revisar 00_E_1_6_Documento.md | ✅ |
+| T8 | Limpar arquivos antigos | ✅ |
+| T9 | Atualizar índice GENESIS.md | ✅ |
 
-### Arquivos a remover
+### Arquivos Deprecated
 
-- 00_E_1_1_Classe.md (migrado para 00_E_1_4)
-- 00_E_1_2_Metodo.md (será 00_E_1_5)
-- 00_E_1_3_Framework.md (incorporado ao Framework M0-M4)
+- 00_E_1_2_Metodo.md → 00_E_1_5_Metodo.md
+- 00_E_1_3_Framework.md → 00_E_Epistemologia.md (Seção 4)
+- 00_E_1_4_Documento.md → 00_E_1_6_Documento.md
 
 ---
 
@@ -144,3 +145,4 @@ Reestruturação de 00_E para funcionar como Meta Sistema gerador de conheciment
 |--------|------|-----------|
 | 1.0 | 2024-11-27 | Criação |
 | 2.0 | 2025-12-02 | Reestruturação como Meta Sistema. Framework M0-M4. Sprint S002-E. |
+| 2.1 | 2025-12-03 | Sprint S002-E concluída. Todas as classes criadas. |
