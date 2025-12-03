@@ -1,6 +1,6 @@
 ---
 nome: 00_I_1_1_Github_Instructions
-versao: "1.1"
+versao: "1.2"
 tipo: Instrucao
 classe_ref: Documento
 origem: interno
@@ -85,14 +85,20 @@ permissions:
 <!-- section:conventions -->
 conventions:
   commit_messages:
-    format: "tipo: descrição"
+    format: "[CAMADA] tipo: descrição"
+    camadas:
+      - C0: Axiomas
+      - C1: Stub/GENESIS
+      - C2: Infraestrutura
+      - C3: Framework/Epistemologia
+      - C4: Domínios
     tipos:
-      - feat: nova funcionalidade
+      - add: novo arquivo
+      - update: atualização
       - fix: correção
-      - docs: documentação
-      - refactor: refatoração
+      - cleanup: limpeza
     idioma: português
-    exemplo: "docs: adiciona framework de vendas consultivas"
+    exemplo: "[C3] add: M0 Problema para Objeto v2"
   branches:
     format: "tipo/descricao-curta"
     exemplo: "docs/framework-vendas"
@@ -106,11 +112,17 @@ structure:
       purpose: documentos publicados
       status: Publicado
     - path: _drafts/
-      purpose: documentos em elaboração
+      purpose: documentos em elaboração (M0-M3)
       status: Draft
     - path: _inbox/
       purpose: entradas não processadas
       status: Triagem
+    - path: _patches/
+      purpose: patches para edição automática
+      status: Sistema
+    - path: _sprints/
+      purpose: controle de sprints
+      status: Sistema
     - path: .github/
       purpose: configurações do repositório
       status: Sistema
@@ -136,16 +148,34 @@ workflows:
     metodo: str_replace por seção
     marcador: "<!-- section:X -->...<!-- /section:X -->"
     beneficio: economia de tokens
-  token_efficiency:
-    criacao_inicial:
-      1: validar seções individualmente com usuário
-      2: ao final, commit direto sem exibir documento completo
-      3: exemplo: "Seções validadas. Commit em [path]?"
-    atualizacao_diff:
-      1: usar str_replace com bloco mínimo (section markers)
-      2: sem exibir preview
-      3: confirmar e executar
 <!-- /section:workflows -->
+
+<!-- section:token_efficiency -->
+token_efficiency:
+  regra_principal: NÃO duplicar conteúdo (chat + GitHub)
+  
+  criacao_arquivo:
+    1: Criar arquivo DIRETO no GitHub (sem preview no chat)
+    2: Informar apenas: "Arquivo criado: [path] - [resumo 1 linha]"
+    3: Usuário valida pelo link do GitHub
+    4: Se erro, corrigir via patch
+  
+  edicao_arquivo:
+    pequena: github:create_or_update_file com SHA (substituição completa)
+    grande: criar patch em _patches/ conforme 00_O_1_2_6_Patch_System.md
+    preferencia: patch é mais performático para edições parciais
+  
+  validacao:
+    1: NÃO exibir documento completo no chat
+    2: Confirmar estrutura/seções antes de criar
+    3: Exemplo: "Vou criar M0 com: problema X, diagramas Y. Confirma?"
+    4: Após confirmação, commit direto
+  
+  anti_patterns:
+    - Mostrar conteúdo no chat E depois subir no GitHub (duplicação)
+    - Preview completo antes de commit
+    - Exibir arquivo inteiro para pequenas edições
+<!-- /section:token_efficiency -->
 
 ---
 
@@ -153,15 +183,16 @@ workflows:
 
 | Documento | Relação |
 |-----------|---------|
-| 00_E_1_4_Documento | Define estrutura |
-| 01_1_Estrutura_Markdown_Outline | Padrões de formatação |
-| CLAUDE.md | Instruções gerais do repo |
+| GENESIS.md | Pai (Camada 2) |
+| 00_E_1_6_Documento | Define estrutura de documentos |
+| 00_O_1_2_6_Patch_System | Sistema de patches |
 
 ---
 
 ## Histórico
 
-| Versão | Data | Alteração |
-|--------|------|-----------|
-| 1.0 | 2025-12-02 | Criação |
-| 1.1 | 2025-12-02 | Adiciona estratégia de economia de tokens |
+| Versão | Data | Hora | Alteração |
+|--------|------|------|-----------|
+| 1.0 | 2025-12-02 | - | Criação |
+| 1.1 | 2025-12-02 | - | Adiciona estratégia de economia de tokens |
+| 1.2 | 2025-12-03 | 19:55 | Refatora token_efficiency: regra de criação direta no GitHub, anti-patterns, preferência por patch. Atualiza conventions com padrão [CAMADA]. |
