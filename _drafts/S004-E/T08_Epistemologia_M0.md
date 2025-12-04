@@ -5,7 +5,7 @@ tipo: Framework
 classe_ref: Framework
 origem: interno
 status: Draft
-etapa: M0
+etapa: M1
 sprint_ref: S004-E
 task_ref: T08
 ---
@@ -196,7 +196,126 @@ task_ref: T08
 
 ## 2. Marco Teórico (M1)
 
-_A desenvolver_
+### 2.1 Conceitos Fundamentais
+
+| Conceito | Teoria | Aplicação no Sistema |
+|----------|--------|---------------------|
+| **Entropia** | Shannon (1948) - Information Theory | Estrutura explícita reduz incerteza; diagrama-first |
+| **Autopoiesis** | Maturana & Varela (1980) | Sistema se autoproduz via recursividade |
+| **Recursividade** | Gödel, Turing, Hofstadter | M0-M4 aplicado a si mesmo |
+| **Epistemologia vs Ontologia** | Filosofia clássica | Classes (como conhecer) ≠ Instâncias (o que existe) |
+| **Knowledge Management** | Nonaka & Takeuchi, von Krogh | Ciclo de criação e persistência de conhecimento |
+
+### 2.2 Teoria da Informação (Shannon)
+
+| Princípio | Fonte | Aplicação |
+|-----------|-------|-----------|
+| Entropia como incerteza | Shannon (1948) | Conhecimento sem estrutura = alta entropia = degrada |
+| Padrões reduzem entropia | Quanta Magazine | Diagrama-first: estrutura visual reduz incerteza |
+| Redundância controlada | Information Theory | Frontmatter + histórico = redundância útil |
+
+**Insight central:** Mensagens estruturadas requerem menos bits para comunicar a mesma informação. Aplicado a conhecimento: estrutura explícita (diagramas, classes, atributos) reduz a "entropia epistêmica" - a degradação do conhecimento ao longo do tempo.
+
+### 2.3 Autopoiesis (Maturana & Varela)
+
+| Princípio | Fonte | Aplicação |
+|-----------|-------|-----------|
+| Auto-produção | Maturana & Varela (1980) | Sistema gera seus próprios componentes |
+| Clausura operacional | Luhmann (1986) | Sistema opera sobre si mesmo recursivamente |
+| Distinção sistema/ambiente | Teoria de Sistemas | Epistemologia (interno) ≠ Domínios (externo) |
+
+**Insight central:** Sistemas autopoiéticos reproduzem seus componentes através de operações internas. Epistemologia é autopoiética: usa M0-M4 para definir as próprias classes de M0-M4.
+
+### 2.4 Recursividade e Meta-Programação
+
+| Princípio | Fonte | Aplicação |
+|-----------|-------|-----------|
+| Auto-referência | Gödel (1931), Hofstadter | Sistema pode referenciar a si mesmo |
+| Turing-completude | Turing (1936) | Sistema pode modificar suas próprias instruções |
+| Recursive Self-Improvement | AI Research | Sistema melhora a si mesmo iterativamente |
+
+**Insight central:** Sistemas recursivos que operam sobre si mesmos podem evoluir sem intervenção externa. M0-M4 aplicado às classes de M0-M4 = evolução endógena.
+
+### 2.5 Epistemologia vs Ontologia
+
+| Aspecto | Epistemologia | Ontologia |
+|---------|---------------|-----------|
+| **Pergunta** | "Como conhecer?" | "O que existe?" |
+| **Natureza** | Método, processo | Entidade, fato |
+| **Artefato** | Classe, Framework | Instância, Dado |
+| **Estabilidade** | Estrutural | Contextual |
+| **Exemplo** | Classe "Produto" | Produto "ZAZ Energy v1.0" |
+
+**Insight central:** Separar "como conhecer" de "o que existe" permite que o método (Epistemologia) seja reutilizado em N domínios, enquanto as instâncias (Ontologia) são específicas de cada domínio.
+
+### 2.6 Knowledge Management
+
+| Modelo | Fonte | Aplicação |
+|--------|-------|-----------|
+| SECI (Socialização→Externalização→Combinação→Internalização) | Nonaka & Takeuchi | M0-M4 como externalização estruturada |
+| Organizational Epistemology | von Krogh & Roos | Classes como "conhecimento codificado" |
+| Applied Epistemology | Garfield | KM como "epistemologia aplicada" |
+
+**Insight central:** Knowledge Management é epistemologia aplicada - gerenciar "o que sabemos e como sabemos". M0-M4 operacionaliza isso com ciclo explícito.
+
+### 2.7 Diagrama: Fundamentos Teóricos
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      MARCO TEÓRICO EPISTEMOLOGIA                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                    TEORIA DA INFORMAÇÃO                             │    │
+│  │                      (Shannon, 1948)                                │    │
+│  │                                                                     │    │
+│  │  Entropia = Incerteza    →    Estrutura REDUZ entropia              │    │
+│  │                               ↓                                     │    │
+│  │                          DIAGRAMA-FIRST                             │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                               │                                             │
+│                               ▼                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                      AUTOPOIESIS                                    │    │
+│  │               (Maturana & Varela, 1980)                             │    │
+│  │                                                                     │    │
+│  │  Sistema se autoproduz    →    M0-M4 define M0-M4                   │    │
+│  │                               ↓                                     │    │
+│  │                          RECURSIVIDADE                              │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                               │                                             │
+│                               ▼                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                EPISTEMOLOGIA vs ONTOLOGIA                           │    │
+│  │                    (Filosofia Clássica)                             │    │
+│  │                                                                     │    │
+│  │  Como conhecer ≠ O que existe    →    Classes ≠ Instâncias          │    │
+│  │                                       ↓                             │    │
+│  │                               SEPARAÇÃO E/O                         │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                               │                                             │
+│                               ▼                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                  KNOWLEDGE MANAGEMENT                               │    │
+│  │              (Nonaka, von Krogh, Garfield)                          │    │
+│  │                                                                     │    │
+│  │  KM = Epistemologia Aplicada    →    M0-M4 = Ciclo KM               │    │
+│  │                                       ↓                             │    │
+│  │                              PERSISTÊNCIA                           │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 2.8 Síntese: Propriedades Fundamentadas
+
+| Propriedade | Fundamento Teórico | Operacionalização |
+|-------------|-------------------|-------------------|
+| **Redução Entrópica** | Shannon - estrutura reduz incerteza | Diagrama-first, SSOT, atomicidade |
+| **Recursividade** | Autopoiesis - sistema se autoproduz | M0-M4 aplicado a si mesmo |
+| **Separação E/O** | Filosofia - epistemologia ≠ ontologia | Classes (00_E) ≠ Instâncias (00_O) |
+| **Persistência** | KM - conhecimento codificado | GitHub + frontmatter + histórico |
+| **Reutilização** | KM - conhecimento transferível | Classes aplicáveis a N domínios |
 
 ---
 
@@ -214,6 +333,8 @@ _A desenvolver_
 
 ## 5. Referências
 
+### Internas
+
 | Documento | Relação |
 |-----------|---------|
 | GENESIS.md | Pai (Camada 1) - Pré-requisito resolvido |
@@ -223,6 +344,18 @@ _A desenvolver_
 | 00_E_1_4_Classe | Filho - Classe usada em M3 |
 | 00_E_1_6_Documento | Filho - Classe usada em M4 |
 | 00_I_1_1_GitHub | Infraestrutura - COMO persistir |
+
+### Externas
+
+| Fonte | Conceito |
+|-------|----------|
+| Shannon, C. (1948). A Mathematical Theory of Communication | Entropia, Information Theory |
+| Maturana, H. & Varela, F. (1980). Autopoiesis and Cognition | Autopoiesis, Auto-produção |
+| Luhmann, N. (1986). Social Systems | Autopoiesis social, Clausura operacional |
+| Nonaka, I. & Takeuchi, H. (1995). The Knowledge Creating Company | SECI, Knowledge Management |
+| von Krogh, G. & Roos, J. (1995). Organizational Epistemology | Epistemologia organizacional |
+| Garfield, S. (2019). Knowledge Management and Epistemology | KM como epistemologia aplicada |
+| Hofstadter, D. (1979). Gödel, Escher, Bach | Recursividade, Auto-referência |
 
 ---
 
@@ -234,3 +367,4 @@ _A desenvolver_
 | 3.0-M0 | 2025-12-04 | 19:30 | M0 completo: Problema central definido. Tese formulada. Atributos do problema identificados. |
 | 3.0-M0.1 | 2025-12-04 | 19:45 | Diagrama generalizado: Meta Sistema [N] com Sub-Sistemas [N]. Removida instância específica. |
 | 3.0-M0.2 | 2025-12-04 | 20:00 | Adicionada seção 1.3 Pré-requisitos (GENESIS). Diagrama ciclo recursivo GENESIS↔Epistemologia. Tese revisada com retroalimentação. |
+| 3.0-M1 | 2025-12-04 | 20:30 | M1 completo: Marco Teórico com 5 fundamentos (Shannon, Autopoiesis, Recursividade, E/O, KM). Propriedades fundamentadas teoricamente. |
