@@ -1,32 +1,56 @@
 ---
 nome: Modulo_Raciocinio
-versao: "0.1"
+versao: "0.2"
 tipo: Backlog
 classe_ref: Modulo
 origem: interno
 status: Backlog
-sprint_ref: S005-E (futuro)
+sprint_ref: S006-E (futuro)
 ---
 
 # Módulo Raciocínio - Documento de Contexto
 
 ## 1. Propósito deste Documento
 
-Preservar o contexto e descobertas que levaram à identificação do Módulo Raciocínio como componente crítico da Epistemologia. Este documento serve como ponto de partida para a Sprint S005-E.
+Preservar o contexto e descobertas que levaram à identificação do Módulo Raciocínio como componente crítico. Este documento serve como ponto de partida para uma Sprint futura (S006-E), após a refatoração do GENESIS (S005-G).
 
 ---
 
-## 2. Origem da Necessidade
+## 2. Posição na Hierarquia
 
-### 2.1 Pergunta Gatilho
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    HIERARQUIA DE RESPONSABILIDADES                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  GENESIS (Camada 1) ─── PROPÓSITO                                           │
+│  │  Tese: Inteligência Híbrida (amplificar capacidade cognitiva humana)     │
+│  │                                                                          │
+│  └──► EPISTEMOLOGIA (Camada 3) ─── MÉTODO                                   │
+│       │  Tese: Criar Meta Sistemas via M0-M4, hierarquia fractal, módulos   │
+│       │                                                                     │
+│       └──► MÓDULOS OPCIONAIS ─── CAPACIDADES                                │
+│            │                                                                │
+│            ├── Raciocínio ◄── ESTE DOCUMENTO                                │
+│            ├── Catálogo                                                     │
+│            └── Análise                                                      │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Nota:** Módulo Raciocínio NÃO é Meta Sistema. É conjunto de classes opcionais que Meta Sistemas podem compor.
+
+---
+
+## 3. Origem da Necessidade
+
+### 3.1 Pergunta Gatilho
 
 Durante desenvolvimento da Epistemologia v3.1, Leonardo questionou:
 
 > "De certa forma, esse meta sistema conseguirá em algum momento abstrair bastante camada para gerar inteligência."
 
-### 2.2 Análise que Levou ao Módulo
-
-A discussão revelou que:
+### 3.2 Análise que Levou ao Módulo
 
 | Componente | Capacidade | Limitação |
 |------------|------------|-----------|
@@ -34,7 +58,7 @@ A discussão revelou que:
 | **Humano** | Intenção, validação, decisão | Energia limitada, fadiga, inconsistência |
 | **Epistemologia (sem módulo)** | Estrutura, método, persistência | Não estrutura o RACIOCÍNIO em si |
 
-### 2.3 Insight Central
+### 3.3 Insight Central: Níveis de Abstração
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -62,17 +86,14 @@ A discussão revelou que:
 │  NÍVEL 6: Raciocínio Estruturado (MÓDULO RACIOCÍNIO)  ◄── ESTE MÓDULO       │
 │  └── Classes que estruturam o ATO DE PENSAR                                 │
 │                                                                             │
-│  NÍVEL 7+: Composição de raciocínios                                        │
-│  └── Meta-raciocínio, raciocínio sobre raciocínio...                        │
-│                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 3. O Problema que o Módulo Resolve
+## 4. O Problema que o Módulo Resolve
 
-### 3.1 Sintoma
+### 4.1 Sintoma
 
 | Sintoma | Evidência |
 |---------|-----------|
@@ -81,7 +102,7 @@ A discussão revelou que:
 | Humano não consegue validar | Não sabe quais passos o LLM seguiu |
 | Decisões não são auditáveis | Sem histórico de hipóteses, evidências, inferências |
 
-### 3.2 Causa Raiz
+### 4.2 Causa Raiz
 
 | Causa | Consequência |
 |-------|--------------|
@@ -90,7 +111,7 @@ A discussão revelou que:
 | Sem separação entre etapas | Hipótese, evidência, inferência misturados |
 | Sem validação intermediária | Erro em hipótese propaga para decisão |
 
-### 3.3 Necessidade
+### 4.3 Necessidade
 
 | Necessidade | Critério de Sucesso |
 |-------------|---------------------|
@@ -101,9 +122,9 @@ A discussão revelou que:
 
 ---
 
-## 4. Arquitetura Proposta
+## 5. Arquitetura Proposta
 
-### 4.1 Decisão Arquitetural: Composição (não Herança)
+### 5.1 Decisão Arquitetural: Composição (não Herança)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -124,12 +145,13 @@ A discussão revelou que:
 │       └── Meta Sistema Glossário                                            │
 │           └── USA: M0-M4 (não precisa de Raciocínio)                        │
 │                                                                             │
+│  Fundamento: Princípio SOLID - Composição sobre Herança                     │
 │  Vantagem: Meta Sistema escolhe se precisa de Raciocínio                    │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.2 Classes Candidatas
+### 5.2 Classes Candidatas
 
 | Classe | Função | Atributos Candidatos |
 |--------|--------|---------------------|
@@ -138,7 +160,7 @@ A discussão revelou que:
 | **Inferência** | Conexão lógica | premissas[], conclusão, método_logico |
 | **Decisão** | Escolha baseada em raciocínio | opções[], escolhida, justificativa, hipoteses_ref[] |
 
-### 4.3 Método Candidato: Ciclo de Raciocínio
+### 5.3 Método Candidato: Ciclo de Raciocínio
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -163,9 +185,9 @@ A discussão revelou que:
 
 ---
 
-## 5. Relação com Outros Componentes
+## 6. Relação com Outros Componentes
 
-### 5.1 Integração com Epistemologia
+### 6.1 Integração com Epistemologia
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -192,7 +214,16 @@ A discussão revelou que:
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 5.2 Uso em Meta Sistema Vendas
+### 6.2 Meta Sistemas "Inteligentes" vs "Eficazes"
+
+| Tipo | Usa Raciocínio? | Característica |
+|------|-----------------|----------------|
+| Meta Sistema com Raciocínio | ✅ Sim | Mais "inteligente", mais complexo, decisões rastreáveis |
+| Meta Sistema sem Raciocínio | ❌ Não | Menos "inteligente", mais restrito, mais rápido |
+
+**Insight:** Meta Sistemas sem Raciocínio são "menos inteligentes, mas mais eficazes porque são mais restritos" - fazem menos, mas fazem bem.
+
+### 6.3 Exemplo: Meta Sistema Vendas
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -226,9 +257,9 @@ A discussão revelou que:
 
 ---
 
-## 6. Marco Teórico Preliminar
+## 7. Marco Teórico Preliminar
 
-### 6.1 Referências a Investigar
+### 7.1 Referências a Investigar
 
 | Área | Referência | Relevância |
 |------|-----------|------------|
@@ -238,7 +269,7 @@ A discussão revelou que:
 | **Argumentation Theory** | Toulmin Model | Estrutura de argumentos |
 | **AI Reasoning** | Chain of Thought, Tree of Thought | Raciocínio em LLMs |
 
-### 6.2 Toulmin Model (candidato)
+### 7.2 Toulmin Model (candidato principal)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -260,18 +291,23 @@ A discussão revelou que:
 │  BACKING: suporte para o warrant                                            │
 │                                                                             │
 │  MAPEAMENTO PARA NOSSAS CLASSES:                                            │
-│  • Data → Evidência                                                         │
-│  • Warrant → Inferência (regra)                                             │
-│  • Claim → Decisão                                                          │
-│  • Qualifier → atributo "confiança" em Decisão                              │
-│  • Rebuttal → Evidência com peso negativo                                   │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  Toulmin          │  Nosso Módulo                                   │    │
+│  ├────────────────────┼────────────────────────────────────────────────┤    │
+│  │  Data              │  Evidência                                     │    │
+│  │  Warrant           │  Inferência (regra)                            │    │
+│  │  Claim             │  Decisão                                       │    │
+│  │  Qualifier         │  atributo "confiança" em Decisão               │    │
+│  │  Rebuttal          │  Evidência com peso negativo                   │    │
+│  │  Backing           │  Evidência que suporta a Inferência            │    │
+│  └────────────────────┴────────────────────────────────────────────────┘    │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 7. Riscos e Considerações
+## 8. Riscos e Considerações
 
 | Risco | Mitigação |
 |-------|-----------|
@@ -279,20 +315,6 @@ A discussão revelou que:
 | Burocracia no raciocínio | Permitir atalhos quando confiança é alta |
 | LLM não segue o método | Instruções explícitas no prompt, validação em cada etapa |
 | Humano ignora validação | Feedback loop obrigatório em decisões críticas |
-
----
-
-## 8. Próximos Passos (Sprint S005-E)
-
-| # | Task | Descrição |
-|---|------|-----------|
-| T01 | M0 Raciocínio | Problema completo com sintomas, causas, necessidades |
-| T02 | M1 Raciocínio | Marco Teórico (Toulmin, Decision Theory, Chain of Thought) |
-| T03 | M2 Raciocínio | Objeto com fronteiras, entradas/saídas |
-| T04 | M3 Raciocínio | Classes: Hipótese, Evidência, Inferência, Decisão |
-| T05 | M4 Raciocínio | Documento final do Módulo |
-| T06 | Integração | Atualizar Epistemologia para importar Módulo |
-| T07 | Teste | Aplicar em caso real (ex: decisão de venda) |
 
 ---
 
@@ -314,16 +336,37 @@ A discussão revelou que:
 
 > "Composição sobre herança (princípio SOLID). Módulo Raciocínio não é pai dos Meta Sistemas - é biblioteca que eles podem usar ou não."
 
+### 9.5 Sobre Meta Sistemas Restritos
+
+> "Meta Sistemas sem Raciocínio são menos inteligentes, mas mais eficazes porque são mais restritos."
+
 ---
 
-## 10. Referências
+## 10. Próximos Passos (Sprint S006-E)
+
+**Pré-requisito:** Completar Sprint S005-G (Refatoração GENESIS)
+
+| # | Task | Descrição |
+|---|------|-----------|
+| T01 | M0 Raciocínio | Problema completo com sintomas, causas, necessidades |
+| T02 | M1 Raciocínio | Marco Teórico (Toulmin, Decision Theory, Chain of Thought) |
+| T03 | M2 Raciocínio | Objeto com fronteiras, entradas/saídas |
+| T04 | M3 Raciocínio | Classes: Hipótese, Evidência, Inferência, Decisão |
+| T05 | M4 Raciocínio | Documento final do Módulo |
+| T06 | Integração | Atualizar Epistemologia para importar Módulo |
+| T07 | Teste | Aplicar em caso real (ex: decisão de venda) |
+
+---
+
+## 11. Referências
 
 ### Internas
 
 | Documento | Relação |
 |-----------|---------|
-| 00_E_Epistemologia (v3.1) | Pai - Epistemologia que conterá este módulo |
-| _drafts/S004-E/T08_Epistemologia_M0.md | Contexto - Onde o módulo foi identificado |
+| _sprints/S005-G_Sprint_Genesis.md | Pré-requisito |
+| _drafts/S004-E/T08_Epistemologia_M0.md | Contexto onde foi identificado |
+| 00_E_Epistemologia (v3.2) | Pai - Epistemologia que conterá este módulo |
 
 ### Externas (a explorar)
 
@@ -341,4 +384,5 @@ A discussão revelou que:
 
 | Versão | Data | Hora | Alteração |
 |--------|------|------|-----------|
-| 0.1 | 2025-12-04 | 22:45 | Documento inicial - contexto preservado |
+| 0.1 | 2025-12-04 | 22:45 | Documento inicial |
+| 0.2 | 2025-12-04 | 23:35 | Atualizado: hierarquia corrigida, Sprint ref S006-E, insights adicionais |
