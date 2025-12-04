@@ -21,7 +21,7 @@ task_ref: T08
 | Projetos anteriores entraram em loop | Sistema ZAZ, Metodologia Vendas - progresso perdido |
 | IA alucina sem estrutura | Complexidade sem método gera inconsistência |
 | Conhecimento não persiste entre sessões | Cada conversa recomeça do zero |
-| Impossível construir meta sistemas derivados | Sistema Científico Vendas ZAZ travado |
+| Impossível construir meta sistemas derivados | Meta sistemas complexos travados |
 
 ### 1.2 Significantes e Glossário
 
@@ -30,7 +30,8 @@ task_ref: T08
 | **Epistemologia** | Meta Sistema de originação e persistência de conhecimento estruturado |
 | **Ontologia** | Camada de instâncias - conhecimento validado e materializado |
 | **Entropia Epistêmica** | Degradação do conhecimento por falta de estrutura explícita |
-| **Meta Sistema Derivado** | Sistema construído SOBRE a Epistemologia (ex: Sistema Científico Vendas ZAZ) |
+| **Meta Sistema Derivado** | Sistema construído SOBRE a Epistemologia |
+| **Sub-Sistema** | Componente de um Meta Sistema Derivado |
 | **Classe** | Molde estrutural que pode ser instanciado em múltiplos domínios |
 | **Framework** | Orquestração de métodos com objetivo específico |
 | **M0-M4** | Ciclo recursivo: Problema → Marco → Objeto → Classe → Documento |
@@ -52,7 +53,7 @@ task_ref: T08
 | **Classes reutilizáveis** | Problema, Objeto, Classe, Documento aplicáveis a qualquer domínio |
 | **Redução entrópica** | Diagramas > Prosa; Estrutura explícita > Implícita |
 | **Persistência versionada** | GitHub + frontmatter + histórico |
-| **Base para meta sistemas derivados** | Sistema Científico Vendas ZAZ construível sobre esta fundação |
+| **Base para meta sistemas derivados** | N meta sistemas construíveis sobre esta fundação |
 
 ### 1.5 Diagrama do Problema
 
@@ -91,27 +92,33 @@ task_ref: T08
 │                                                                             │
 └──────────────────────────────────┬──────────────────────────────────────────┘
                                    │
-                                   │ habilita construção de
+                                   │ habilita construção de N
                                    ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                   META SISTEMAS DERIVADOS (Camada 4+)                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  ┌───────────────────────────────────────────────────────────────────┐      │
-│  │            SISTEMA CIENTÍFICO VENDAS ZAZ (exemplo)                │      │
+│  │                      META SISTEMA [N]                             │      │
 │  ├───────────────────────────────────────────────────────────────────┤      │
 │  │                                                                   │      │
-│  │  DOMÍNIOS (usa Classes da Epistemologia):                         │      │
+│  │  SUB-SISTEMAS (usa Classes da Epistemologia):                     │      │
 │  │  ┌──────────┬──────────┬──────────┬──────────┐                    │      │
-│  │  │ NEGÓCIO  │ MERCADO  │ PRODUTO  │   GTM    │                    │      │
-│  │  │ (01)     │ (02)     │ (03)     │  (04)    │                    │      │
+│  │  │ Sub [1]  │ Sub [2]  │ Sub [3]  │ Sub [N]  │                    │      │
 │  │  └──────────┴──────────┴──────────┴──────────┘                    │      │
 │  │                                                                   │      │
 │  │  EPISTEMOLOGIA LOCAL:           ONTOLOGIA LOCAL:                  │      │
-│  │  • Pessoa, Empresa, Produto     • Instâncias validadas            │      │
-│  │  • Método, CX_Artifact          • Descobertas de mercado          │      │
-│  │  • VPC, SPIN, BANT              • Resultados de experimentos      │      │
+│  │  ┌─────────────────────┐        ┌─────────────────────┐           │      │
+│  │  │ Classes específicas │        │ Instâncias          │           │      │
+│  │  │ do domínio          │───────►│ validadas           │           │      │
+│  │  │ (herdam de 00_E)    │        │ (conhecimento)      │           │      │
+│  │  └─────────────────────┘        └─────────────────────┘           │      │
 │  │                                                                   │      │
+│  └───────────────────────────────────────────────────────────────────┘      │
+│                                                                             │
+│  ┌───────────────────────────────────────────────────────────────────┐      │
+│  │                      META SISTEMA [N+1]                           │      │
+│  │                           ...                                     │      │
 │  └───────────────────────────────────────────────────────────────────┘      │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -124,8 +131,8 @@ task_ref: T08
 | **Recursividade** | Sistema usa si mesmo para evoluir | Classes aplicam M0-M4 a si mesmas |
 | **Redução Entrópica** | Estrutura explícita resiste a degradação | Diagrama-first, SSOT, atomicidade |
 | **Persistência** | Conhecimento sobrevive entre sessões | GitHub + versionamento + histórico |
-| **Reutilização** | Classes aplicáveis a qualquer domínio | Problema, Objeto, Classe funcionam em Vendas ZAZ |
-| **Fundação** | Habilita meta sistemas derivados | Sistema Científico Vendas ZAZ construível |
+| **Reutilização** | Classes aplicáveis a qualquer domínio | Problema, Objeto, Classe funcionam em N domínios |
+| **Fundação** | Habilita meta sistemas derivados | N meta sistemas construíveis |
 | **Separação E/O** | Distingue "como conhecer" de "o que existe" | Epistemologia (classes) ≠ Ontologia (instâncias) |
 
 ### 1.7 Tese
@@ -137,7 +144,7 @@ task_ref: T08
 > 2. Classes reutilizáveis aplicáveis a qualquer domínio
 > 3. Persistência versionada que sobrevive a sessões e pessoas
 >
-> **Propósito final:** Servir de fundação para meta sistemas derivados, onde as classes da Epistemologia são instanciadas em domínios específicos, gerando camada ontológica de conhecimento validado.
+> **Propósito final:** Servir de fundação para N meta sistemas derivados, onde as classes da Epistemologia são instanciadas em domínios específicos, gerando camada ontológica de conhecimento validado.
 
 ---
 
@@ -179,3 +186,4 @@ _A desenvolver_
 |--------|------|------|-----------|
 | 2.2 | 2025-12-03 | 14:20 | Última versão antes revisão |
 | 3.0-M0 | 2025-12-04 | 19:30 | M0 completo: Problema central definido. Tese formulada. Atributos do problema identificados. |
+| 3.0-M0.1 | 2025-12-04 | 19:45 | Diagrama generalizado: Meta Sistema [N] com Sub-Sistemas [N]. Removida instância específica. |
