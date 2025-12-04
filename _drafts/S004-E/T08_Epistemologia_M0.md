@@ -30,13 +30,51 @@ task_ref: T08
 | **Epistemologia** | Meta Sistema de originação e persistência de conhecimento estruturado |
 | **Ontologia** | Camada de instâncias - conhecimento validado e materializado |
 | **Entropia Epistêmica** | Degradação do conhecimento por falta de estrutura explícita |
+| **Entropia Contextual** | Perda de precisão em conversas longas (problema de Claude) |
+| **Bootstrap Circular** | Dependência mútua entre componentes na inicialização |
+| **STUB** | Versão mínima hardcoded que quebra o ciclo circular |
 | **Meta Sistema Derivado** | Sistema construído SOBRE a Epistemologia |
 | **Sub-Sistema** | Componente de um Meta Sistema Derivado |
 | **Classe** | Molde estrutural que pode ser instanciado em múltiplos domínios |
 | **Framework** | Orquestração de métodos com objetivo específico |
 | **M0-M4** | Ciclo recursivo: Problema → Marco → Objeto → Classe → Documento |
 
-### 1.3 Causa Raiz
+### 1.3 Pré-requisitos Resolvidos (GENESIS)
+
+| Problema | Resolvido por | Status |
+|----------|---------------|--------|
+| Bootstrap Circular | GENESIS (STUB v0.10) | ✅ Resolvido |
+| Entropia Contextual | GENESIS (arquivos atômicos + índice) | ✅ Resolvido |
+| **Entropia Epistêmica** | **Epistemologia (M0-M4)** | 🔄 Em definição |
+
+**Relação GENESIS ↔ Epistemologia:**
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         CICLO RECURSIVO                                     │
+│                                                                             │
+│   GENESIS v0.10 (STUB)                                                      │
+│   ├── Resolve: Bootstrap Circular + Entropia Contextual                     │
+│   ├── Natureza: Infraestrutura de inicialização                             │
+│   └── Status: Versão mínima funcional                                       │
+│        │                                                                    │
+│        │ habilita                                                           │
+│        ▼                                                                    │
+│   EPISTEMOLOGIA v3.0 (Framework)                                            │
+│   ├── Resolve: Entropia Epistêmica                                          │
+│   ├── Natureza: Método de produção de conhecimento                          │
+│   └── Status: Em definição (esta sprint)                                    │
+│        │                                                                    │
+│        │ retroalimenta (método G4: refatorar_stub)                          │
+│        ▼                                                                    │
+│   GENESIS v1.0 (refatorado)                                                 │
+│   ├── Aplicar M0-M4 ao próprio GENESIS                                      │
+│   └── Status: Futuro (após Epistemologia estável)                           │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 1.4 Causa Raiz
 
 | Causa | Consequência |
 |-------|--------------|
@@ -45,7 +83,7 @@ task_ref: T08
 | Sem persistência versionada | Decisões e aprendizados perdidos |
 | Sem separação Epistemologia/Ontologia | Confunde "como conhecer" com "o que existe" |
 
-### 1.4 Necessidade
+### 1.5 Necessidade
 
 | Necessidade | Critério de Sucesso |
 |-------------|---------------------|
@@ -55,7 +93,7 @@ task_ref: T08
 | **Persistência versionada** | GitHub + frontmatter + histórico |
 | **Base para meta sistemas derivados** | N meta sistemas construíveis sobre esta fundação |
 
-### 1.5 Diagrama do Problema
+### 1.6 Diagrama do Problema
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -71,6 +109,8 @@ task_ref: T08
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                     EPISTEMOLOGIA (Meta Sistema Base)                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  PRÉ-REQUISITO: GENESIS (STUB) resolve Bootstrap + Entropia Contextual     │
 │                                                                             │
 │  PROPRIEDADES REQUERIDAS:                                                   │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐              │
@@ -124,7 +164,7 @@ task_ref: T08
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 1.6 Atributos do Problema
+### 1.7 Atributos do Problema
 
 | Atributo | Descrição | Critério de Validação |
 |----------|-----------|----------------------|
@@ -135,16 +175,22 @@ task_ref: T08
 | **Fundação** | Habilita meta sistemas derivados | N meta sistemas construíveis |
 | **Separação E/O** | Distingue "como conhecer" de "o que existe" | Epistemologia (classes) ≠ Ontologia (instâncias) |
 
-### 1.7 Tese
+### 1.8 Tese
 
 > **Epistemologia é o Meta Sistema de originação e persistência de conhecimento estruturado.**
 >
-> Resolve o problema da entropia epistêmica através de:
+> **Pré-requisito:** GENESIS (STUB) resolve Bootstrap Circular e Entropia Contextual.
+>
+> **Problema que resolve:** Entropia Epistêmica - degradação do conhecimento por falta de estrutura.
+>
+> **Como resolve:**
 > 1. Método recursivo (M0-M4) que força estruturação explícita
 > 2. Classes reutilizáveis aplicáveis a qualquer domínio
 > 3. Persistência versionada que sobrevive a sessões e pessoas
 >
 > **Propósito final:** Servir de fundação para N meta sistemas derivados, onde as classes da Epistemologia são instanciadas em domínios específicos, gerando camada ontológica de conhecimento validado.
+>
+> **Retroalimentação:** Após estabilização, Epistemologia retroalimenta GENESIS (v0.10 → v1.0) via método G4.
 
 ---
 
@@ -170,7 +216,7 @@ _A desenvolver_
 
 | Documento | Relação |
 |-----------|---------|
-| GENESIS.md | Pai (Camada 1) |
+| GENESIS.md | Pai (Camada 1) - Pré-requisito resolvido |
 | 00_E_1_1_Problema | Filho - Classe usada em M0 |
 | 00_E_1_2_MarcoTeorico | Filho - Classe usada em M1 |
 | 00_E_1_3_Objeto | Filho - Classe usada em M2 |
@@ -187,3 +233,4 @@ _A desenvolver_
 | 2.2 | 2025-12-03 | 14:20 | Última versão antes revisão |
 | 3.0-M0 | 2025-12-04 | 19:30 | M0 completo: Problema central definido. Tese formulada. Atributos do problema identificados. |
 | 3.0-M0.1 | 2025-12-04 | 19:45 | Diagrama generalizado: Meta Sistema [N] com Sub-Sistemas [N]. Removida instância específica. |
+| 3.0-M0.2 | 2025-12-04 | 20:00 | Adicionada seção 1.3 Pré-requisitos (GENESIS). Diagrama ciclo recursivo GENESIS↔Epistemologia. Tese revisada com retroalimentação. |
