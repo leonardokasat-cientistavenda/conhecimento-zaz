@@ -1,304 +1,405 @@
 ---
 nome: 00_E_1_6_Documento
-versao: "2.4"
+versao: "3.0"
 tipo: Classe
 classe_ref: Classe
 origem: interno
-status: Draft
+status: Publicado
 ---
 
-# 00_E_1_6_Documento
+# Documento v3.0
 
-## 1. Definição
+## 1. Problema (M0)
 
-Documento é a classe que estrutura a persistência de conhecimento (M4). Todo output do método epistemológico é armazenado como instância de Documento com frontmatter YAML e estrutura padronizada.
+### 1.1 Sintoma
+
+| Sintoma | Evidência |
+|---------|-----------|
+| Documento v2.4 desatualizado | Não segue padrão dos outros docs (M0-M3) |
+| Falta marco teórico | Decisões de estrutura sem fundamento |
+| Mistura concerns | Documento fala de persistência (GitHub) |
+| Não define seções | Quais seções? O que cada uma contém? |
+| Viola diagrama-first | Seções com prosa como conteúdo principal |
+
+### 1.2 Significantes e Glossário
+
+| Significante | Significado no Contexto |
+|--------------|-------------------------|
+| **documento** | Artefato atômico com frontmatter + seções + histórico |
+| **seção** | Unidade de conteúdo com nome + diagrama obrigatório + contexto |
+| **diagrama** | Representação visual estruturada (Tabela, Caixa, Fluxo, Rede, Lista) |
+| **diagrama-first** | Diagrama é conteúdo principal; prosa apenas contextualiza |
+| **persistência** | COMO persistir = GitHub (separação de concerns) |
+| **entropia** | Diagrama reduz entropia vs prosa |
+| **separação de concerns** | Documento (O QUE) ≠ GitHub (COMO) |
+
+### 1.3 Causa Raiz
+
+| Causa | Consequência |
+|-------|--------------|
+| Não define Seção como subtipo | Seções inconsistentes entre documentos |
+| Não postula diagrama-first | Prosa como conteúdo principal = mais entropia |
+| Mistura O QUE com COMO | Documento fala de commits/patches (deveria ser GitHub) |
+
+### 1.4 Necessidade
+
+| Necessidade | Ação |
+|-------------|------|
+| Definir Seção como subtipo | Com diagrama obrigatório |
+| Postular diagrama-first | Regra: toda seção tem diagrama; prosa contextualiza |
+| Separar concerns | Documento cita GitHub (COMO persistir) e Diagrama.md (COMO visualizar) |
+| Definir seções por tipo | Template para Classe, Framework, Metodo, Sprint, Catalogo |
 
 ---
 
-## 2. Atributos
+## 2. Marco Teórico (M1)
 
-| Atributo | Tipo | Obrigatório | Descrição |
-|----------|------|-------------|-----------|
-| nome | string | Sim | Identificador único |
-| metodo_ref | Metodo | Sim | Método que gerou o documento |
-| frontmatter | Frontmatter | Sim | Metadados YAML |
-| conteudo | Secao[] | Sim | Seções do documento |
-| historico | Versao[] | Sim | Registro de versões |
+### 2.1 Conceitos Consolidados
+
+| Conceito | Teoria | Aplicação |
+|----------|--------|-----------|
+| **Lifecycle Stages** | DLM | M0→M4, drafts→docs |
+| **Atomicidade** | Git Best Practices | 1 commit = 1 mudança lógica |
+| **Entropia** | Shannon | Diagrama reduz incerteza vs prosa |
+| **Cognitive Load** | Hick-Hyman | Visual processa mais rápido |
+| **SSOT** | Information Architecture | 1 lugar para cada verdade |
+| **SRP** | SOLID | Cada classe uma responsabilidade |
+| **SemVer** | File Naming | Versão como metadado, não no nome |
+
+### 2.2 Postulado Diagrama-First
+
+| Teoria | Suporte |
+|--------|---------|
+| **Shannon** | Diagrama = estrutura explícita → menos incerteza |
+| **Hick-Hyman** | Visual processa mais rápido que texto |
+| **SSOT** | Diagrama força estruturação → elimina redundância |
+| **Atomicidade** | Seção com diagrama = unidade autocontida |
+
+**Postulado:**
+> Toda seção deve ter representação visual estruturada (diagrama). Prosa apenas contextualiza.
 
 ---
 
-## 3. Frontmatter (Schema YAML)
+## 3. Objeto (M2)
 
-### 3.1 Obrigatório
+### 3.1 Definição do Objeto
+
+| Campo | Valor |
+|-------|-------|
+| **nome** | Documento |
+| **tipo_pesquisa** | Prescritivo |
+| **objetivo** | Definir O QUE documentar: estrutura, seções, tipos, regras |
+
+### 3.2 Escopo
+
+| Inclui | Descrição |
+|--------|-----------|
+| Frontmatter | Schema YAML obrigatório |
+| Seção (subtipo) | Unidade com diagrama obrigatório |
+| Tipos de documento | Classe, Framework, Metodo, Sprint, Catalogo |
+| Seções por tipo | Template de seções para cada tipo |
+| Ciclo de vida | M0→M4, _drafts→docs |
+| Nomenclatura | Padrão sem versão no nome |
+| Postulado diagrama-first | Regra fundamental |
+
+### 3.3 Fronteiras
+
+| Não cobre | Referência |
+|-----------|------------|
+| COMO persistir | 00_I_1_1_GitHub.md |
+| COMO selecionar diagrama | 00_E_1_4_1_Diagrama.md |
+| Conteúdo dos domínios | Camada 4 |
+
+### 3.4 Diagrama de Escopo
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              CONTEXTO: META SISTEMA                         │
+│                                                                             │
+│   FRONTEIRAS                          ┌─────────────────────────────────┐   │
+│   ──────────                          │         ESCOPO                  │   │
+│                                       ├─────────────────────────────────┤   │
+│   ┌───────────────────┐               │  Frontmatter                    │   │
+│   │ GitHub.md         │               │  ├─ nome                        │   │
+│   │ (COMO persistir)  │               │  ├─ versao                      │   │
+│   └───────────────────┘               │  ├─ tipo                        │   │
+│                                       │  └─ status                      │   │
+│   ┌───────────────────┐               │                                 │   │
+│   │ Diagrama.md       │               │  Seção (subtipo)                │   │
+│   │ (COMO visualizar) │               │  ├─ nome                        │   │
+│   └───────────────────┘               │  ├─ diagrama (obrigatório)      │   │
+│                                       │  └─ contexto (prosa)            │   │
+│   ┌───────────────────┐               │                                 │   │
+│   │ Domínios          │               │  Tipos: Classe, Framework,      │   │
+│   │ (conteúdo)        │               │         Metodo, Sprint, Catalogo│   │
+│   └───────────────────┘               │                                 │   │
+│                                       │  Seções por tipo (templates)    │   │
+│                                       │                                 │   │
+│                                       │  Ciclo: M0→M1→M2→M3→M4          │   │
+│                                       │                                 │   │
+│                                       │  Nomenclatura (sem versão)      │   │
+│                                       │                                 │   │
+│                                       │  Postulado diagrama-first       │   │
+│                                       └─────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 4. Classe (M3)
+
+### 4.1 Diagrama de Classe
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              DOCUMENTO                                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Atributos                                                                  │
+│  ──────────                                                                 │
+│  - nome: string                    # Identificador único                    │
+│  - frontmatter: Frontmatter        # Metadados YAML                         │
+│  - secoes: Secao[]                 # Array de seções                        │
+│  - historico: Versao[]             # Registro de alterações                 │
+│  - ciclo_vida: enum                # M0 | M1 | M2 | M3 | M4                 │
+│  - localizacao: enum               # _drafts | docs                         │
+│  - tipo: TipoDocumento             # Define seções obrigatórias             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Restrições                                                                 │
+│  ──────────                                                                 │
+│  - frontmatter obrigatório                                                  │
+│  - versão no frontmatter, NUNCA no nome do arquivo                          │
+│  - toda seção deve ter diagrama (postulado diagrama-first)                  │
+│  - seções definidas por tipo de documento                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Métodos                                                                    │
+│  ────────                                                                   │
+│  + validar(): bool                                                          │
+│  + promover(): Documento                                                    │
+│  + versionar(): Documento                                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                     │
+                                     │ composto por
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                SEÇÃO                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Atributos                                                                  │
+│  ──────────                                                                 │
+│  - nome: string                    # Ex: "Problema", "Atributos"            │
+│  - diagrama: Diagrama              # OBRIGATÓRIO (postulado)                │
+│  - contexto: string                # Prosa que contextualiza (opcional)     │
+│  - obrigatoria: bool               # Depende do tipo de documento           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Restrições                                                                 │
+│  ──────────                                                                 │
+│  - diagrama NUNCA é null                                                    │
+│  - contexto máximo 3 parágrafos                                             │
+│  - para COMO criar diagrama, ver 00_E_1_4_1_Diagrama.md                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                     │
+                                     │ contém
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                               DIAGRAMA                                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Atributos                                                                  │
+│  ──────────                                                                 │
+│  - tipo: TipoDiagrama              # Tabela | Caixa | Fluxo | Rede | Lista  │
+│  - conteudo: string                # ASCII ou Markdown                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Referência                                                                 │
+│  ──────────                                                                 │
+│  Para COMO selecionar tipo: ver 00_E_1_4_1_Diagrama.md (Matriz de Seleção)  │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.2 Frontmatter (Schema)
 
 ```yaml
 ---
-nome: string           # Identificador único (ex: 00_O_1_1_Metodo)
-versao: string         # SemVer (ex: "1.3")
-tipo: enum             # Classe | Framework | Catalogo | Introducao | Metodo | Sprint
-classe_ref: string     # Classe epistemológica de referência
-origem: enum           # interno | externo
-status: enum           # Draft | Revisao | Publicado | EmAndamento | Concluida
+# OBRIGATÓRIO
+nome: string           # Identificador único (ex: 00_E_1_6_Documento)
+versao: string         # SemVer (ex: "3.0")
+tipo: TipoDocumento    # Classe | Framework | Catalogo | Metodo | Sprint
+status: enum           # Draft | Revisao | Publicado
+
+# OPCIONAL (apenas em drafts)
+etapa: enum            # M0 | M1 | M2 | M3 | M4
+sprint_ref: string     # Ex: S003-E
+task_ref: string       # Ex: T12
 ---
 ```
 
-### 3.2 Opcional
+### 4.3 Tipos de Documento e Seções
 
-```yaml
----
-outline_id: string     # UUID do documento no Outline (sync)
-outline_url: string    # URL do documento no Outline (sync)
-etapa: enum            # M0 | M1 | M2 | M3 | M4 (para _drafts/)
-data_inicio: date      # Para Sprints
-data_fim: date         # Para Sprints
----
-```
+| Tipo | Seções Obrigatórias | Diagrama Esperado |
+|------|---------------------|-------------------|
+| **Classe** | Problema, Marco Teórico, Objeto, Classe, Referências, Histórico | Caixa POO, Tabelas |
+| **Framework** | Definição, Componentes, Fluxo, Referências, Histórico | Fluxo, Rede |
+| **Metodo** | Definição, I/O, Submétodos, Referências, Histórico | Fluxo, Tabela I/O |
+| **Sprint** | Objetivo, Problema, Tarefas, Drafts, Referências, Histórico | Tabela, Lista |
+| **Catalogo** | Definição, Instâncias, Referências, Histórico | Tabela |
 
----
+### 4.4 Seções por Tipo: Classe
 
-## 4. Diagrama
+| Seção | Diagrama | Contexto |
+|-------|----------|----------|
+| **1. Problema (M0)** | Tabela: Sintoma, Causa, Necessidade | O que motivou criar esta classe |
+| **2. Marco Teórico (M1)** | Tabela: Conceito, Teoria, Aplicação | Fundamentação teórica |
+| **3. Objeto (M2)** | Tabela: Campo, Valor + Diagrama Escopo | Delimitação do objeto |
+| **4. Classe (M3)** | Caixa POO: Atributos, Restrições, Métodos | Especificação técnica |
+| **5. Referências** | Tabela: Documento, Relação | Links internos e externos |
+| **6. Histórico** | Tabela: Versão, Data, Hora, Alteração | Registro de mudanças |
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        DOCUMENTO                                │
-├─────────────────────────────────────────────────────────────────┤
-│  Atributos                                                      │
-│  ─────────                                                      │
-│  - nome: string                                                 │
-│  - metodo_ref: Metodo                                           │
-│  - frontmatter: Frontmatter                                     │
-│  - conteudo: Secao[]                                            │
-│  - historico: Versao[]                                          │
-├─────────────────────────────────────────────────────────────────┤
-│  Restrições                                                     │
-│  ──────────                                                     │
-│  - frontmatter obrigatório em todo documento                    │
-│  - histórico atualizado a cada versão                           │
-│  - nome único no sistema                                        │
-├─────────────────────────────────────────────────────────────────┤
-│  Métodos                                                        │
-│  ────────                                                       │
-│  + persistir(): Documento                                       │
-│  + validar(): bool                                              │
-│  + versionar(): Documento                                       │
-└─────────────────────────────────────────────────────────────────┘
+### 4.5 Seções por Tipo: Framework
 
-Estrutura:
-┌─────────────────────────────────────────────────────────────────┐
-│                     Frontmatter                                 │
-│   nome | versao | tipo | status | origem                        │
-├─────────────────────────────────────────────────────────────────┤
-│                      Conteúdo                                   │
-│   Definição | Diagrama | Atributos | Referências                │
-├─────────────────────────────────────────────────────────────────┤
-│                      Histórico                                  │
-│   Versão | Data | Hora | Alteração                              │
-└─────────────────────────────────────────────────────────────────┘
-```
+| Seção | Diagrama | Contexto |
+|-------|----------|----------|
+| **1. Definição** | Tabela resumo | O que é o framework |
+| **2. Componentes** | Rede ou Lista hierárquica | Partes do framework |
+| **3. Fluxo** | Fluxo sequencial | Como usar o framework |
+| **4. Referências** | Tabela | Links |
+| **5. Histórico** | Tabela | Registro |
 
----
+### 4.6 Seções por Tipo: Metodo
 
-## 5. Estrutura Padrão
+| Seção | Diagrama | Contexto |
+|-------|----------|----------|
+| **1. Definição** | Tabela resumo | O que o método faz |
+| **2. I/O** | Tabela: Input, Output, Tipo | Entrada e saída |
+| **3. Submétodos** | Fluxo ou Lista | Passos do método |
+| **4. Referências** | Tabela | Links |
+| **5. Histórico** | Tabela | Registro |
 
-| Seção | Obrigatório | Conteúdo |
-|-------|-------------|----------|
-| Frontmatter | Sim | Metadados YAML |
-| Definição | Sim | O que é (1-2 frases) |
-| Diagrama | Sim | ASCII estrutura/fluxo |
-| Atributos | Se Classe | Schema de atributos |
-| Restrições | Se Classe | Regras de validação |
-| Referências | Sim | Links relacionados |
-| Histórico | Sim | Registro versões (com timestamp) |
+### 4.7 Seções por Tipo: Sprint
 
----
+| Seção | Diagrama | Contexto |
+|-------|----------|----------|
+| **1. Objetivo** | Tabela resumo | Meta do sprint |
+| **2. Problema** | Tabela | O que será resolvido |
+| **3. Tarefas** | Tabela: ID, Nome, Status, Etapa | Lista de tasks |
+| **4. Drafts Ativos** | Tabela: Task, Arquivo, Etapa | Arquivos em progresso |
+| **5. Referências** | Tabela | Links |
+| **6. Histórico** | Tabela | Registro |
 
-## 6. Tipos de Documento
+### 4.8 Seções por Tipo: Catalogo
 
-| Tipo | Descrição | Template específico |
-|------|-----------|---------------------|
-| Classe | Define estrutura | Atributos + Restrições + Métodos |
-| Framework | Orquestra métodos | Sequência + Etapas |
-| Catalogo | Lista instâncias | Tabela de objetos |
-| Introducao | Visão geral | Estrutura + Componentes |
-| Metodo | Define processo | Input/Output + Submétodos |
-| Sprint | Ciclo de trabalho | Objetivo + Tarefas |
+| Seção | Diagrama | Contexto |
+|-------|----------|----------|
+| **1. Definição** | Tabela resumo | O que o catálogo lista |
+| **2. Instâncias** | Tabela: ID, Nome, Atributos | Lista de objetos |
+| **3. Referências** | Tabela | Links |
+| **4. Histórico** | Tabela | Registro |
 
----
+### 4.9 Nomenclatura
 
-## 7. Fluxo (M4)
-
-```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   Métodos   │ ──► │  Persistir  │ ──► │  Documento  │
-│   Classes   │     │   em .md    │     │ Versionado  │
-└─────────────┘     └─────────────┘     └─────────────┘
-                           │
-                           ▼
-            ┌─────────────────────────────┐
-            │  + Frontmatter YAML         │
-            │  + Estrutura padronizada    │
-            │  + Histórico atualizado     │
-            │  + Commit no GitHub         │
-            └─────────────────────────────┘
-```
-
----
-
-## 8. INSTRUÇÃO: Como persistir um Documento
-
-### 8.1 Diagrama
-
-Ver **00_E_1_4_1_Diagrama.md** para método de seleção.
-
-**Diagramas recomendados para Documento (M4):**
-- Primário: **Estado** (ciclo de vida Draft → Publicado)
-- Secundário: **Caixa** (estrutura Frontmatter + Conteúdo + Histórico)
-
-### 8.2 Checklist
-
-- [ ] Frontmatter completo e válido
-- [ ] Definição clara (1-2 frases)
-- [ ] Diagrama ASCII representando estrutura
-- [ ] Referências mapeadas
-- [ ] Histórico com nova versão e timestamp
-- [ ] Commit com convenção [CAMADA] ação: descrição
-
-### 8.3 Convenção de Commit
-
-```
-[C1] feat: cria GENESIS.md v0.1
-[C3] fix: corrige diagrama de Classe
-[C3] refactor: reestrutura Documento para M4
-```
-
-### 8.4 Estrutura de Pastas para Sprints
-
-**Estrutura:**
-
-```
-_sprints/
-  SXXX-Y.md              # Definição da Sprint
-
-_drafts/
-  SXXX-Y/                # Pasta da Sprint
-    TXX/                 # Subpasta por Task
-      M0_Nome.md         # Artefato M0
-      M1_Nome.md         # Artefato M1
-      M2_Nome.md         # Artefato M2
-      M3_Nome.md         # Artefato M3
-      M4_Nome.md         # Artefato M4 (opcional, pode ir direto para docs/)
-    recursos/            # Recursos compartilhados da sprint (opcional)
-      Matriz_X.md
-      Referencia_Y.md
-```
-
-**Exemplo concreto (S003-E):**
-
-```
-_sprints/
-  S003-E.md
-
-_drafts/
-  S003-E/
-    T06/
-      M0_Objeto_v2.md
-      M1_Objeto_v2.md
-      M2_Objeto_v2.md
-      M3_Objeto_v2.md
-      M4_Objeto_v2.md
-    T07/
-      M0_Classe_v2.md
-      ...
-    recursos/
-      Matriz_Selecao_Diagramas.md
-```
-
-**Regras:**
+| Contexto | Padrão | Exemplo |
+|----------|--------|---------|
+| **docs/** | `[DOM]_[CAM]_[SEQ]_[NOME].md` | `00_E_1_6_Documento.md` |
+| **_drafts/** | `TXX_[NOME].md` | `T12_Documento.md` |
+| **_sprints/** | `SXXX-Y.md` | `S003-E.md` |
 
 | Regra | Descrição |
 |-------|-----------|
-| Nomenclatura Task | `TXX` onde XX = número da task (T01, T02... T15) |
-| Nomenclatura Arquivo | `MX_NomeObjeto.md` onde X = etapa (0-4) |
-| Recursos compartilhados | Arquivos usados por múltiplas tasks vão em `recursos/` |
-| Ao concluir M4 | Arquivo final vai para `docs/`, artefatos intermediários podem ser deletados |
-| Ao fechar Sprint | Deletar pasta `_drafts/SXXX-Y/` (histórico preservado no Git) |
+| Versão | NUNCA no nome do arquivo (usar frontmatter) |
+| Espaços | Proibido (usar underscore) |
+| Caracteres | Apenas alfanumérico + underscore |
+| Case | PascalCase para nomes |
 
-### 8.5 Ciclo de Vida (Chat → _drafts/ → docs/)
-
-**Princípio:** O trabalho de cada etapa (M0-M4) acontece no chat. A persistência ocorre ao finalizar cada etapa.
+### 4.10 Ciclo de Vida
 
 ```
-┌─────────────┐     ┌─────────────────────┐     ┌─────────────┐
-│    Chat     │ ──► │  _drafts/SPRINT/TXX │ ──► │    docs/    │
-│  (trabalho) │     │     (rascunho)      │     │ (publicado) │
-└─────────────┘     └─────────────────────┘     └─────────────┘
+┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐
+│   M0    │──►│   M1    │──►│   M2    │──►│   M3    │──►│   M4    │
+│Problema │   │ Marco   │   │ Objeto  │   │ Classe  │   │Publicar │
+└─────────┘   └─────────┘   └─────────┘   └─────────┘   └─────────┘
+     │             │             │             │             │
+     └─────────────┴─────────────┴─────────────┴─────────────┘
+                              │
+                      _drafts/SPRINT/TXX_Nome.md
+                      (1 arquivo que evolui)
+                              │
+                              ▼ promover()
+                      docs/[DOM]_[CAM]_[SEQ]_Nome.md
 ```
 
-**Fluxo:**
+### 4.11 Métodos
 
-| Momento | Local | Ação |
-|---------|-------|------|
-| M0 em andamento | Chat | Desenvolver Problema (sintoma, significantes, causa, necessidade) |
-| M0 finalizado | _drafts/SPRINT/TXX/ | Persistir `M0_Nome.md` com `etapa: M0` |
-| M1 em andamento | Chat | Desenvolver Marco Teórico |
-| M1 finalizado | _drafts/SPRINT/TXX/ | Persistir `M1_Nome.md` com `etapa: M1` |
-| M2 finalizado | _drafts/SPRINT/TXX/ | Persistir `M2_Nome.md` com `etapa: M2` |
-| M3 finalizado | _drafts/SPRINT/TXX/ | Persistir `M3_Nome.md` com `etapa: M3` |
-| M4 finalizado | docs/ | Persistir arquivo final, deletar pasta TXX/ |
+#### validar(): bool
 
-### 8.6 Como criar uma Sprint
+| Etapa | Validações |
+|-------|------------|
+| M0 | sintoma, significantes, causa_raiz, necessidade |
+| M1 | conceitos com fonte, aplicação definida |
+| M2 | escopo, fronteiras, critérios verificáveis |
+| M3 | atributos, restrições, métodos, seções por tipo |
+| M4 | frontmatter completo, histórico atualizado, todas seções com diagrama |
 
-**Local:** `_sprints/SXXX-Y.md`
+#### promover(): Documento
 
-**Nomenclatura:** 
-- `S` = Sprint
-- `XXX` = Número sequencial (001, 002...)
-- `Y` = Domínio (E = Epistemologia, O = Ontologia, etc.)
+| Passo | Ação |
+|-------|------|
+| 1 | Verificar: etapa == M4 AND validar() == true |
+| 2 | Copiar para docs/ com nome definitivo |
+| 3 | Atualizar frontmatter (remover etapa, sprint_ref, task_ref) |
+| 4 | Atualizar GENESIS.md índice |
+| 5 | Deletar arquivo em _drafts/ |
 
-**Template mínimo:**
+#### versionar(): Documento
 
-```markdown
----
-nome: SXXX-Y
-tipo: Sprint
-status: EmAndamento
-data_inicio: YYYY-MM-DD
-data_fim: null
----
-
-# SXXX-Y: [Título da Sprint]
-
-## Objetivo
-[Uma frase descrevendo o objetivo]
-
-## Tarefas
-
-| id | Arquivo | Tarefa | Status |
-|----|---------|--------|--------|
-| T01 | arquivo.md | Descrição | ⏳ |
-| T02 | arquivo.md | Descrição | ⏳ |
-
-## Histórico
-
-| Data | Hora | Evento |
-|------|------|--------|
-| YYYY-MM-DD | HH:MM | Sprint iniciada |
-```
-
-**Nota:** Classe Sprint será formalizada em sprint futura.
+| Passo | Ação |
+|-------|------|
+| 1 | Incrementar versão no frontmatter |
+| 2 | Adicionar entrada no histórico |
 
 ---
 
-## 9. Referências
+## 5. Instruções de Uso
+
+### 5.1 Para COMO persistir
+
+Ver: **00_I_1_1_GitHub.md**
+
+| Ação | Método |
+|------|--------|
+| Criar arquivo | github:create_or_update_file |
+| Editar parcial | patch system |
+| Editar completo | substituição |
+| Commit | [CAMADA] tipo: descrição |
+
+### 5.2 Para COMO criar diagramas
+
+Ver: **00_E_1_4_1_Diagrama.md**
+
+| Recurso | Conteúdo |
+|---------|----------|
+| Matriz de Seleção | Qual diagrama usar |
+| Tipos | Tabela, Caixa, Fluxo, Rede, Lista |
+| Metodologias | Semiótica, Temporal, Estrutural |
+
+---
+
+## 6. Referências
+
+### Internas
 
 | Documento | Relação |
 |-----------|---------|
 | 00_E_Epistemologia | Pai |
 | 00_E_1_4_Classe | Classe base |
-| 00_E_1_5_Metodo | Anterior (M3) |
-| 00_E_1_4_1_Diagrama | Seleção de diagramas |
-| 00_E_1_1_Problema | Referencia ciclo de vida (7.5) |
-| GENESIS.md | Define índice de arquivos |
+| 00_E_1_4_1_Diagrama | COMO selecionar/criar diagramas |
+| 00_I_1_1_GitHub | COMO persistir |
+| GENESIS.md | Índice de arquivos |
+
+### Externas
+
+| Fonte | Conceito |
+|-------|----------|
+| Princeton University Records Management | Document Lifecycle |
+| Shannon (1948) | Information Theory, Entropy |
+| Hick (1952), Hyman (1953) | Cognitive Load |
+| SOLID | Single Responsibility Principle |
+| SemVer.org | Semantic Versioning |
 
 ---
 
@@ -307,12 +408,6 @@ data_fim: null
 | Versão | Data | Hora | Alteração |
 |--------|------|------|-----------|
 | 1.0 | 2024-11-27 | - | Criação |
-| 1.1 | 2024-11-27 | - | Regras de Formatação |
-| 1.2 | 2024-11-27 | - | Seção Diagrama |
-| 1.3 | 2025-12-01 | - | Migração para Frontmatter YAML |
-| 1.4 | 2025-12-01 | - | Ajuste estrutura; campo etapa |
-| 2.0 | 2025-12-03 | - | Reestruturação como classe M4. Novo path 00_E_1_6. |
-| 2.1 | 2025-12-03 | 14:45 | Adiciona ciclo de vida _drafts/ (8.3), instrução Sprint (8.4), timestamp no histórico. |
-| 2.2 | 2025-12-03 | 15:30 | Clarifica 8.3: trabalho no Chat, persistência ao finalizar etapa. |
-| 2.3 | 2025-12-03 | 20:00 | Reestrutura 8.3: subpastas TXX por task, recursos compartilhados, nomenclatura MX_Nome.md. Move Sprint para 8.5. |
-| 2.4 | 2025-12-03 | 23:20 | Adiciona instrução de diagrama (ref 00_E_1_4_1_Diagrama). Renumera seções 8.X. |
+| 2.0 | 2025-12-03 | - | Reestruturação como classe M4 |
+| 2.4 | 2025-12-03 | 23:20 | Última versão antes da revisão |
+| 3.0 | 2025-12-04 | 16:20 | **REVISÃO COMPLETA**: Marco teórico (Shannon, Hick-Hyman, SSOT, SRP). Postulado diagrama-first. Seção como subtipo com diagrama obrigatório. Seções por tipo (5 tipos). Separação de concerns: Documento (O QUE) cita GitHub (COMO persistir) e Diagrama.md (COMO visualizar). |
