@@ -1,32 +1,67 @@
 ---
 nome: 00_E_1_1_Problema
-versao: "2.1"
+versao: "3.0"
 tipo: Classe
 classe_ref: Classe
 origem: interno
-status: Draft
+status: Publicado
 ---
 
-# 00_E_1_1_Problema
+# Problema v3.0
 
-## 1. Definição
+## 1. Problema (M0)
 
-Problema é a classe que estrutura o ponto de partida do método epistemológico (M0). Transforma sintomas vagos em necessidades claras e acionáveis através de análise semiótica dos termos utilizados.
+### 1.1 Sintoma
 
-O output de M0 (Problema Definido) serve como filtro de escopo para M1 (Marco Teórico): quanto mais preciso o Problema, menor o universo de pesquisa e maior a relevância dos conceitos levantados.
+| Sintoma | Evidência |
+|---------|-----------|
+| Problema v2.1 não segue padrão Documento v3.0 | 7 seções ad-hoc vs 6 seções M0-M4 |
+| Tabela atributos sem Visibilidade | Viola Classe v3.0 |
+| Referências incompletas | Não cita Objeto (M2) |
+
+### 1.2 Glossário
+
+| Significante | Significado no Contexto |
+|--------------|-------------------------|
+| **problema** | Ponto de partida M0; transforma sintomas em necessidades acionáveis |
+| **sintoma** | Manifestação observável; o que se percebe |
+| **causa_raiz** | Origem fundamental; o que gera o sintoma |
+| **necessidade** | Ação requerida; verbo no infinitivo |
+| **signo** | Unidade de significação (Saussure): significante + significado |
+| **significante** | Forma/palavra/expressão utilizada |
+| **significado** | Conceito/ideia por trás da forma |
+| **ambiguidade** | Quando significante tem múltiplos significados |
+
+### 1.3 Causa Raiz
+
+| Causa | Consequência |
+|-------|--------------|
+| S003-E evoluiu docs em cascata | Problema foi primeiro, não absorveu padrões posteriores |
+| Padrão Documento v3.0 criado depois | Problema não retroatualizou |
+
+### 1.4 Necessidade
+
+| Necessidade | Ação |
+|-------------|------|
+| Padronizar estrutura | 6 seções M0-M4 conforme Documento v3.0 |
+| Adicionar Visibilidade | Coluna Visib. na tabela de atributos |
+| Completar referências | Adicionar Objeto nas referências |
 
 ---
 
-## 2. Marco Teórico
+## 2. Marco Teórico (M1)
 
-| Conceito | Definição | Aplicação em M0 |
-|----------|-----------|-----------------|
-| **Signo** | Unidade básica de significação, composta por significante + significado (Saussure) | Cada termo do sintoma é um signo a ser analisado |
-| **Significante** | A forma, palavra ou expressão utilizada | Os termos que aparecem na descrição do sintoma |
-| **Significado** | O conceito ou ideia por trás da forma | O que o termo realmente quer dizer no contexto |
-| **Ambiguidade** | Quando um significante tem múltiplos significados possíveis | Fonte de mal-entendidos que M0 deve resolver |
+### 2.1 Conceitos
 
-**Diagrama: Signo** (Metodologia: 1-Semiótica)
+| Conceito | Teoria | Aplicação |
+|----------|--------|-----------|
+| **Signo** | Saussure (1916) | Unidade básica; cada termo do sintoma é um signo |
+| **Significante** | Saussure | Forma/palavra que aparece na descrição |
+| **Significado** | Saussure | Conceito real no contexto específico |
+| **Ambiguidade** | Semiótica | Fonte de mal-entendidos que M0 resolve |
+| **Análise Semiótica** | Saussure | Método de extrair e mapear significantes |
+
+### 2.2 Diagrama: Signo
 
 ```
 ┌─────────────────────────────────┐
@@ -45,36 +80,65 @@ O output de M0 (Problema Definido) serve como filtro de escopo para M1 (Marco Te
    qual significado
 ```
 
-### Nota de Evolução
+### 2.3 Fontes
 
-Para casos complexos com múltiplas personas/stakeholders, existe aprofundamento possível com os conceitos de Langue (vocabulário do domínio) e Parole (forma individual de expressão). Adicionar quando necessário.
+| Fonte | Conceito |
+|-------|----------|
+| Saussure, F. *Curso de Linguística Geral* (1916) | Signo, Significante, Significado |
 
 ---
 
-## 3. Atributos
+## 3. Objeto (M2)
 
-| Atributo | Tipo | Obrigatório | Descrição |
-|----------|------|-------------|-----------|
-| nome | string | Sim | Identificador único do problema |
-| sintoma | string | Sim | Manifestação observável do problema |
-| significantes | string[] | Sim | Termos-chave extraídos do sintoma |
-| glossario | Glossario[] | Sim | Mapeamento significante → significado |
-| causa_raiz | string | Sim | Origem fundamental do sintoma |
-| tentativas_anteriores | string[] | Não | Soluções já tentadas |
-| necessidade | string | Sim | O que é necessário para resolver |
-| contexto | string | Não | Situação onde o problema ocorre |
-| impacto | string | Não | Consequências de não resolver |
-| frontmatter | Frontmatter | Sim | Metadados YAML |
+### 3.1 Definição
 
-### Glossario (subtipo)
+| Campo | Valor |
+|-------|-------|
+| **nome** | Problema |
+| **tipo_pesquisa** | Prescritivo |
+| **objetivo** | Estruturar ponto de partida M0; transformar sintomas em necessidades |
 
-| Atributo | Tipo | Descrição |
-|----------|------|-----------|
-| significante | string | Termo extraído do sintoma |
-| significado | string | Definição no contexto do problema |
-| ambiguidade | string | Outros significados possíveis (se houver) |
+### 3.2 Escopo e Fronteiras
 
-**Diagrama: Caixa POO** (Metodologia: 3-Estrutural)
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              CONTEXTO: M0-M4                                │
+│                                                                             │
+│   FRONTEIRAS                          ┌─────────────────────────────────┐   │
+│   ──────────                          │         ESCOPO                  │   │
+│                                       ├─────────────────────────────────┤   │
+│   ┌───────────────────┐               │  Atributos:                     │   │
+│   │ MarcoTeorico      │               │  - sintoma                      │   │
+│   │ (conceitos M1)    │               │  - significantes[]              │   │
+│   └───────────────────┘               │  - glossario[]                  │   │
+│                                       │  - causa_raiz                   │   │
+│   ┌───────────────────┐               │  - necessidade                  │   │
+│   │ Objeto            │               │                                 │   │
+│   │ (escopo M2)       │               │  Métodos:                       │   │
+│   └───────────────────┘               │  - extrair_significantes()      │   │
+│                                       │  - mapear_significados()        │   │
+│   ┌───────────────────┐               │  - detectar_ambiguidades()      │   │
+│   │ Classe            │               │  - validar()                    │   │
+│   │ (POO M3)          │               │                                 │   │
+│   └───────────────────┘               │  Fluxo M0:                      │   │
+│                                       │  sintoma → glossário → causa →  │   │
+│                                       │  necessidade                    │   │
+│                                       └─────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 3.3 Critérios
+
+| Critério | Verificação |
+|----------|-------------|
+| **Sucesso** | Problema definido permite M1 sem retorno |
+| **Insucesso** | M1 precisa voltar a M0 para esclarecer termos |
+
+---
+
+## 4. Classe (M3)
+
+### 4.1 Diagrama de Classe
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -82,23 +146,24 @@ Para casos complexos com múltiplas personas/stakeholders, existe aprofundamento
 ├─────────────────────────────────────────────────────────────────┤
 │  Atributos                                                      │
 │  ─────────                                                      │
-│  - nome: string                                                 │
-│  - sintoma: string                                              │
-│  - significantes: string[]                                      │
-│  - glossario: Glossario[]                                       │
-│  - causa_raiz: string                                           │
-│  - tentativas_anteriores: string[]                              │
-│  - necessidade: string                                          │
-│  - contexto: string                                             │
-│  - impacto: string                                              │
-│  - frontmatter: Frontmatter                                     │
+│  + nome: string                      [1]                        │
+│  + sintoma: string                   [1]                        │
+│  + significantes: string[]           [1..*]                     │
+│  + glossario: Glossario[]            [1..*]                     │
+│  + causa_raiz: string                [1]                        │
+│  - tentativas_anteriores: string[]   [0..*]                     │
+│  + necessidade: string               [1]                        │
+│  - contexto: string                  [0..1]                     │
+│  - impacto: string                   [0..1]                     │
+│  - frontmatter: Frontmatter          [1]      ◆── composição    │
 ├─────────────────────────────────────────────────────────────────┤
 │  Restrições                                                     │
 │  ──────────                                                     │
-│  - sintoma não é causa (observável vs origem)                   │
-│  - necessidade deve ser acionável                               │
-│  - causa_raiz deve explicar o sintoma                           │
-│  - todo significante deve ter significado mapeado               │
+│  R1: sintoma é observável (não abstrato)                        │
+│  R2: causa_raiz explica logicamente o sintoma                   │
+│  R3: necessidade é acionável (verbo infinitivo)                 │
+│  R4: todo significante tem significado no glossário             │
+│  R5: ambiguidades resolvidas antes de M1                        │
 ├─────────────────────────────────────────────────────────────────┤
 │  Métodos                                                        │
 │  ────────                                                       │
@@ -108,165 +173,148 @@ Para casos complexos com múltiplas personas/stakeholders, existe aprofundamento
 │  + validar(): bool                                              │
 │  + gerar_marco_teorico(): MarcoTeorico                          │
 └─────────────────────────────────────────────────────────────────┘
+                              │
+                              │ herda de
+                              ▼
+                    ┌───────────────────┐
+                    │      Classe       │
+                    └───────────────────┘
 ```
 
----
+### 4.2 Atributos
 
-## 4. Restrições
+| Atributo | Tipo | Card. | Visib. | Obrig. | Descrição |
+|----------|------|-------|--------|--------|-----------|
+| nome | string | [1] | + | Sim | Identificador único |
+| sintoma | string | [1] | + | Sim | Manifestação observável |
+| significantes | string[] | [1..*] | + | Sim | Termos-chave do sintoma |
+| glossario | Glossario[] | [1..*] | + | Sim | Mapeamento significante→significado |
+| causa_raiz | string | [1] | + | Sim | Origem do sintoma |
+| tentativas_anteriores | string[] | [0..*] | - | Não | Soluções já testadas |
+| necessidade | string | [1] | + | Sim | Ação para resolver |
+| contexto | string | [0..1] | - | Não | Situação onde ocorre |
+| impacto | string | [0..1] | - | Não | Consequências de não resolver |
+| frontmatter | Frontmatter | [1] | - | Sim | Metadados YAML |
 
-- Sintoma deve ser observável (não abstrato)
-- Causa raiz deve explicar logicamente o sintoma
-- Necessidade deve ser acionável (verbo no infinitivo)
-- Tentativas anteriores documentam o que já foi testado
-- Todo significante extraído deve ter significado mapeado no glossário
-- Ambiguidades identificadas devem ser resolvidas antes de avançar para M1
+### 4.3 Subtipo: Glossario
 
----
+| Atributo | Tipo | Card. | Visib. | Descrição |
+|----------|------|-------|--------|-----------|
+| significante | string | [1] | + | Termo extraído |
+| significado | string | [1] | + | Definição no contexto |
+| ambiguidade | string | [0..1] | + | Outros significados (se houver) |
 
-## 5. Fluxo (M0)
+### 4.4 Restrições
 
-**Diagrama: Fluxo** (Metodologia: 3-Estrutural)
+| Código | Restrição | Validação |
+|--------|-----------|-----------|
+| R1 | Sintoma é observável | Descreve fato, não interpretação |
+| R2 | Causa explica sintoma | Relação lógica verificável |
+| R3 | Necessidade acionável | Contém verbo no infinitivo |
+| R4 | Glossário completo | significantes.length == glossario.length |
+| R5 | Ambiguidades resolvidas | Nenhum significante com múltiplos significados |
+
+### 4.5 Métodos
+
+#### extrair_significantes(sintoma: string): string[]
+
+| Campo | Valor |
+|-------|-------|
+| Input | sintoma: string |
+| Output | string[] (termos-chave) |
+| Pós-condição | Todos termos relevantes identificados |
+
+#### mapear_significados(significantes: string[]): Glossario[]
+
+| Campo | Valor |
+|-------|-------|
+| Input | significantes: string[] |
+| Output | Glossario[] |
+| Pós-condição | Cada significante tem significado |
+
+#### detectar_ambiguidades(glossario: Glossario[]): string[]
+
+| Campo | Valor |
+|-------|-------|
+| Input | glossario: Glossario[] |
+| Output | string[] (termos ambíguos) |
+| Uso | Identificar o que precisa resolução |
+
+#### validar(): bool
+
+| Campo | Valor |
+|-------|-------|
+| Input | self |
+| Output | bool |
+| Validações | R1-R5 |
+
+#### gerar_marco_teorico(): MarcoTeorico
+
+| Campo | Valor |
+|-------|-------|
+| Input | self (Problema validado) |
+| Output | MarcoTeorico (estrutura inicial para M1) |
+| Pré-condição | validar() == true |
+
+### 4.6 Fluxo M0
 
 ```
 Sintoma (texto livre)
        │
        ▼
 ┌─────────────────────┐
-│ Extrair Significantes│ ──► Lista de termos-chave
+│extrair_significantes│ ──► Lista de termos-chave
 └─────────────────────┘
        │
        ▼
 ┌─────────────────────┐
-│ Mapear Significados │ ──► Tabela significante → significado
+│ mapear_significados │ ──► Tabela significante → significado
 └─────────────────────┘
        │
        ▼
 ┌─────────────────────┐
-│ Detectar Ambiguidade│ ──► Termos com múltiplos significados
+│detectar_ambiguidades│ ──► Termos com múltiplos significados
 └─────────────────────┘
        │
        ▼
 ┌─────────────────────┐
-│  Alinhar/Resolver   │ ──► Glossário validado
+│  Resolver/Alinhar   │ ──► Glossário validado
 └─────────────────────┘
        │
        ▼
 ┌─────────────────────┐
-│  Definir Causa Raiz │ ──► Origem do sintoma
+│  Definir causa_raiz │ ──► Origem do sintoma
 └─────────────────────┘
        │
        ▼
 ┌─────────────────────┐
-│ Definir Necessidade │ ──► Ação para resolver
+│ Definir necessidade │ ──► Ação para resolver
 └─────────────────────┘
        │
        ▼
-Problema Definido (input para M1)
+gerar_marco_teorico() ──► Input para M1
 ```
 
 ---
 
-## 6. INSTRUÇÃO: Como definir um Problema
+## 5. Referências
 
-### 6.1 Fontes de Input
-
-| Tipo | Exemplo | Processamento |
-|------|---------|---------------|
-| Áudio | Gravação de reunião, voice memo | Transcrever → extrair sintoma |
-| Texto | Email, mensagem, descrição livre | Identificar sintoma no texto |
-| Arquivo | Documento, relatório, ticket | Localizar seção com sintoma |
-| Conversa | Diálogo com usuário | Perguntar até sintoma emergir |
-
-### 6.2 Método de Extração (IA)
-
-**Passo 1: Capturar sintoma bruto**
-- Se áudio: transcrever e identificar reclamação/dor
-- Se texto/arquivo: localizar trecho que descreve o problema
-- Se conversa: perguntar "O que está acontecendo de errado?"
-
-**Passo 2: Extrair significantes**
-- Identificar termos-chave no sintoma bruto
-- Listar palavras que podem ter múltiplos significados
-
-**Passo 3: Mapear significados**
-- Para cada significante, perguntar ou inferir: "O que X significa neste contexto?"
-- Registrar ambiguidades encontradas
-
-**Passo 4: Resolver ambiguidades**
-- Se houver dúvida, perguntar ao usuário
-- Alinhar significante → significado único
-
-**Passo 5: Completar definição**
-- Identificar causa raiz: "Por que isso acontece?"
-- Definir necessidade: "O que precisa para resolver?"
-- Registrar tentativas anteriores: "O que já tentou?"
-
-### 6.3 Diagrama
-
-Ver **00_E_1_4_1_Diagrama.md** para método de seleção.
-
-**Diagramas recomendados para Problema (M0):**
-- Primário: **Signo** (desambiguação de termos)
-- Secundário: **Fluxo** (sequência sintoma → necessidade)
-
-### 6.4 Template de Output
-
-```markdown
-| Campo | Valor |
-|-------|-------|
-| **sintoma** | [extraído da fonte] |
-| **significantes** | [termo1, termo2, termo3] |
-| **causa_raiz** | [identificada no processo] |
-| **tentativas_anteriores** | [se houver] |
-| **necessidade** | [ação para resolver] |
-
-### Glossário
-
-| Significante | Significado | Ambiguidade |
-|--------------|-------------|-------------|
-| termo1 | [definição no contexto] | [resolvida: X] |
-| termo2 | [definição no contexto] | - |
-```
-
-### 6.5 Checklist
-
-- [ ] Fonte processada (áudio/texto/arquivo/conversa)
-- [ ] Sintoma extraído
-- [ ] Significantes identificados
-- [ ] Cada significante tem significado mapeado
-- [ ] Ambiguidades resolvidas
-- [ ] Causa raiz identificada
-- [ ] Necessidade é acionável
-- [ ] Tentativas anteriores documentadas (se houver)
-- [ ] Diagramas inseridos nas seções (Signo, Fluxo)
-
-### 6.6 Persistência
-
-**Ao finalizar M0, persistir o documento:**
-
-1. Criar arquivo `M0_[Nome].md` em `_drafts/SPRINT/TXX/`
-2. Preencher frontmatter com `etapa: M0`
-3. Commit com mensagem: `[C3] add: M0 [Nome] - problema definido`
-
-Ver: **00_E_1_6_Documento.md** (ciclo de vida e persistência)
-
----
-
-## 7. Referências
+### Internas
 
 | Documento | Relação |
 |-----------|---------|
 | 00_E_Epistemologia | Pai |
-| 00_E_1_4_Classe | Classe base |
-| 00_E_1_4_1_Diagrama | Seleção de diagramas |
-| 00_E_1_2_MarcoTeorico | Próximo (M1) |
+| 00_E_1_4_Classe | Superclasse (herança) |
+| 00_E_1_4_1_Diagrama | COMO selecionar diagramas |
+| 00_E_1_2_MarcoTeorico | Próximo (M1) - output |
+| 00_E_1_3_Objeto | Relação (M2 usa problema_ref) |
 | 00_E_1_6_Documento | Ciclo de vida (persistência) |
 
-### Referências Externas
+### Externas
 
-| Fonte | Conceito utilizado |
-|-------|-------------------|
-| Saussure, Ferdinand de. *Curso de Linguística Geral* (1916) | Signo, Significante, Significado |
+| Fonte | Conceito |
+|-------|----------|
+| Saussure, F. *Curso de Linguística Geral* (1916) | Signo, Significante, Significado |
 
 ---
 
@@ -274,6 +322,7 @@ Ver: **00_E_1_6_Documento.md** (ciclo de vida e persistência)
 
 | Versão | Data | Hora | Alteração |
 |--------|------|------|-----------|
-| 1.0 | 2025-12-03 | - | Criação. Classe base para M0 do framework epistemológico. |
-| 2.0 | 2025-12-03 | 14:30 | Adiciona Marco Teórico (Saussure). Análise semiótica. Fluxo M0 expandido. Método de extração para múltiplas fontes. |
-| 2.1 | 2025-12-03 | 22:45 | Adiciona instruções de diagrama (ref 00_E_1_4_1_Diagrama) e persistência ao final de M0. Reorganiza seções. |
+| 1.0 | 2025-12-03 | - | Criação |
+| 2.0 | 2025-12-03 | 14:30 | Marco Teórico Saussure, análise semiótica |
+| 2.1 | 2025-12-03 | 22:45 | Instruções diagrama e persistência |
+| 3.0 | 2025-12-04 | 13:00 | **PADRONIZAÇÃO S004-E**: 6 seções M0-M4 conforme Documento v3.0. Visibilidade (+/-) em atributos. Referência Objeto adicionada. Diagrama escopo. Consolidação de conteúdo. |
