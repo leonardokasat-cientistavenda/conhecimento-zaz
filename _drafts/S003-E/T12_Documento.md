@@ -2,7 +2,7 @@
 nome: 00_E_1_6_Documento
 versao: "3.0"
 tipo: Classe
-etapa: M1
+etapa: M3
 status: Draft
 sprint_ref: S003-E
 task_ref: T12
@@ -50,8 +50,6 @@ Documento v3.0 que incorpore marco teórico para justificar: ciclo de vida, atom
 
 **Fonte:** Princeton University Records Management; Document360
 
-**Insight crítico:** Práticas recomendadas sugerem que apenas versões finais sejam mantidas em repositório compartilhado; rascunhos podem ser deletados quando não mais úteis.
-
 ### 2.2 Atomic Commits (Git Best Practices)
 
 | Conceito | Definição | Aplicação GENESIS |
@@ -59,11 +57,8 @@ Documento v3.0 que incorpore marco teórico para justificar: ciclo de vida, atom
 | **Atomicidade** | Commit impossível de dividir mais; focado em uma única mudança lógica | Cada etapa Mx é um commit atômico |
 | **Granularidade** | Trade-off entre commits pequenos (rastreabilidade) e grandes (simplicidade) | 1 arquivo que evolui vs 5 arquivos separados |
 | **Revertibilidade** | Mudanças pequenas permitem reverter sem afetar outras | Se M2 falha, não perde M0+M1 |
-| **git bisect** | Busca binária para localizar commit que introduziu bug | Localizar onde entropia foi introduzida |
 
 **Fonte:** GitByBit; Stack Overflow; LeanIX Engineering
-
-**Insight crítico:** "Quão pequeno é pequeno?" - a granularidade ideal é um commit = uma mudança lógica completa, não fragmentos sem sentido isolado.
 
 ### 2.3 Information Theory + Cognitive Load
 
@@ -72,47 +67,27 @@ Documento v3.0 que incorpore marco teórico para justificar: ciclo de vida, atom
 | **Entropia (Shannon)** | Medida de incerteza/imprevisibilidade em um sistema | Mais arquivos para escolher = mais incerteza |
 | **Lei de Hick-Hyman** | Tempo de resposta aumenta com log do número de opções | Menos arquivos = menos overhead cognitivo |
 | **Channel Capacity** | Capacidade máxima de transmissão de informação | Tokens Claude = channel capacity limitado |
-| **Cognitive Load** | Carga mental para processar informação (intrínseca, estranha, germinativa) | Reduzir carga estranha (overhead navegação) |
 
-**Fonte:** Hick (1952); Hyman (1953); Shannon (1948); PMC/MDPI reviews
-
-**Insight crítico:** Maior entropia (mais opções) = maior carga cognitiva = mais tempo de resposta = mais tokens gastos.
+**Fonte:** Hick (1952); Hyman (1953); Shannon (1948)
 
 ### 2.4 Single Source of Truth (SSOT)
 
 | Conceito | Definição | Aplicação GENESIS |
 |----------|-----------|-------------------|
 | **SSOT** | Cada elemento de dado é masterizado em apenas um lugar | Cada conceito tem UM arquivo definitivo em docs/ |
-| **Atomic Content** | Conteúdo em componentes atômicos e reutilizáveis | Arquivos pequenos que se referenciam |
-| **Monorepo** | Um repositório como fonte única de verdade | conhecimento-zaz como monorepo |
+| **Separação de Concerns** | Cada classe sabe sobre sua própria responsabilidade | Documento sabe O QUE; GitHub sabe COMO |
 
-**Fonte:** Wikipedia; Atlassian; Perforce
-
-**Insight crítico:** SSOT elimina versões conflitantes e reduz duplicação.
+**Fonte:** Wikipedia; Atlassian
 
 ### 2.5 File Naming Conventions
 
 | Conceito | Definição | Aplicação GENESIS |
 |----------|-----------|-------------------|
 | **Versão no metadado** | Versão no frontmatter, não no nome do arquivo | frontmatter.versao: "3.0" |
-| **Evitar caracteres especiais** | Não usar < > | [ ] & $ + \ / : * ? " | Usar apenas alfanuméricos, hífens, underscores |
-| **Tamanho ideal** | 40-50 caracteres máximo | Nomes concisos |
+| **Evitar caracteres especiais** | Não usar vXX no nome | Causa conflitos Git |
 | **Geral → Específico** | Ordenar elementos do mais geral ao mais específico | [DOMINIO]_[CAMADA]_[SEQ]_[NOME] |
-| **SemVer** | Formato X.Y.Z (Major.Minor.Patch) | No frontmatter, não no nome |
 
-**Fonte:** Harvard Data Management; Princeton; SemVer.org; Canto
-
-**Insight crítico:** Git já versiona arquivos - versão no nome do arquivo é redundante e causa conflitos.
-
-### 2.6 Conceitos Consolidados
-
-| Conceito | Definição Operacional | Origem | Aplicação |
-|----------|----------------------|--------|-----------|
-| Lifecycle Stages | Fases sequenciais de maturidade do documento | DLM | M0→M4 |
-| Atomicidade | Unidade mínima de mudança com sentido completo | Git | 1 commit = 1 etapa Mx |
-| Entropia Contextual | Perda de precisão por excesso de opções/contexto | Shannon + GENESIS | Minimizar arquivos |
-| SSOT | Um lugar para cada verdade | SSOT | docs/ como fonte única |
-| SemVer no frontmatter | Versão como metadado, não como nome | File Naming | versao: "X.Y" |
+**Fonte:** Harvard Data Management; Princeton; SemVer.org
 
 ---
 
@@ -125,9 +100,9 @@ Documento v3.0 que incorpore marco teórico para justificar: ciclo de vida, atom
 | **marco_ref** | Seção 2 deste documento |
 | **tipo_pesquisa** | Prescritivo |
 | **objetivo** | Estruturar persistência de conhecimento minimizando tokens, reduzindo entropia, preservando rastreabilidade |
-| **escopo** | Ciclo de vida (M0-M4), nomenclatura, estrutura de pastas, frontmatter, versionamento |
-| **fronteiras** | Não cobre: conteúdo dos domínios, implementação de patches, sincronização com Outline |
-| **conceitos_usados** | DLM, Atomic Commits, Entropia, SSOT, SemVer |
+| **escopo** | Ciclo de vida (M0-M4), nomenclatura, estrutura de pastas, frontmatter, tipos de documento |
+| **fronteiras** | Não cobre: COMO persistir (ver 00_I_1_1_GitHub), conteúdo dos domínios, sincronização com Outline |
+| **conceitos_usados** | DLM, Atomic Commits, Entropia, SSOT, File Naming |
 | **criterio_sucesso** | Claude consegue persistir conhecimento seguindo convenções sem ambiguidade |
 | **criterio_insucesso** | Convenções geram conflito Git ou aumentam tokens gastos |
 
@@ -135,11 +110,204 @@ Documento v3.0 que incorpore marco teórico para justificar: ciclo de vida, atom
 
 ## 4. Classe (M3)
 
-*Pendente - próxima etapa*
+### 4.1 Definição
+
+Documento é a classe que estrutura O QUE persistir no sistema de conhecimento. Define frontmatter, seções, tipos e ciclo de vida M0-M4.
+
+**Separação de Concerns:**
+- **Documento** → O QUE persistir (estrutura, metadados, ciclo de vida)
+- **GitHub** → COMO persistir (commits, patches, branches) - ver `00_I_1_1_GitHub.md`
+
+### 4.2 Diagrama
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        DOCUMENTO                                │
+├─────────────────────────────────────────────────────────────────┤
+│  Atributos                                                      │
+│  ─────────                                                      │
+│  - nome: string                                                 │
+│  - frontmatter: Frontmatter                                     │
+│  - conteudo: Secao[]                                            │
+│  - historico: Versao[]                                          │
+│  - ciclo_vida: enum [M0, M1, M2, M3, M4]                        │
+│  - localizacao: enum [_drafts, docs]                            │
+├─────────────────────────────────────────────────────────────────┤
+│  Restrições                                                     │
+│  ──────────                                                     │
+│  - frontmatter obrigatório                                      │
+│  - versão no frontmatter, NUNCA no nome do arquivo              │
+│  - nome: [DOMINIO]_[CAMADA]_[SEQ]_[NOME].md                     │
+│  - drafts: _drafts/SPRINT/TXX_Nome.md                           │
+│  - histórico atualizado a cada versão                           │
+├─────────────────────────────────────────────────────────────────┤
+│  Métodos                                                        │
+│  ────────                                                       │
+│  + validar(): bool                                              │
+│  + promover(): Documento  // _drafts → docs                     │
+│  + versionar(): Documento                                       │
+└─────────────────────────────────────────────────────────────────┘
+         │
+         │ Para COMO persistir
+         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                         GITHUB                                  │
+│                   (00_I_1_1_GitHub.md)                          │
+├─────────────────────────────────────────────────────────────────┤
+│  - criar(): github:create_or_update_file                        │
+│  - editar(): patch (parcial) ou substituição (completa)         │
+│  - mover(): promover draft para docs                            │
+│  - commitar(): [CAMADA] tipo: descrição                         │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 4.3 Atributos
+
+| Atributo | Tipo | Obrigatório | Descrição |
+|----------|------|-------------|-----------|
+| nome | string | Sim | Identificador único, sem versão |
+| frontmatter | Frontmatter | Sim | Metadados YAML |
+| conteudo | Secao[] | Sim | Seções do documento |
+| historico | Versao[] | Sim | Registro de versões com timestamp |
+| ciclo_vida | enum | Sim | M0, M1, M2, M3, M4 |
+| localizacao | enum | Sim | _drafts ou docs |
+
+### 4.4 Frontmatter (Schema)
+
+```yaml
+---
+# Obrigatório
+nome: string           # Identificador único (ex: 00_E_1_6_Documento)
+versao: string         # SemVer (ex: "3.0")
+tipo: enum             # Classe | Framework | Catalogo | Metodo | Sprint
+status: enum           # Draft | Revisao | Publicado
+
+# Opcional (drafts)
+etapa: enum            # M0 | M1 | M2 | M3 | M4
+sprint_ref: string     # Ex: S003-E
+task_ref: string       # Ex: T12
+---
+```
+
+### 4.5 Nomenclatura
+
+| Contexto | Padrão | Exemplo |
+|----------|--------|---------|
+| **docs/** | `[DOM]_[CAM]_[SEQ]_[NOME].md` | `00_E_1_6_Documento.md` |
+| **_drafts/** | `TXX_[NOME].md` | `T12_Documento.md` |
+| **_sprints/** | `SXXX-Y.md` | `S003-E.md` |
+
+**Regras:**
+- Versão NUNCA no nome do arquivo
+- Sem espaços, sem caracteres especiais
+- PascalCase para nomes
+
+### 4.6 Ciclo de Vida
+
+```
+┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐
+│   M0    │──►│   M1    │──►│   M2    │──►│   M3    │──►│   M4    │
+│Problema │   │ Marco   │   │ Objeto  │   │ Classe  │   │Publicar │
+└─────────┘   └─────────┘   └─────────┘   └─────────┘   └─────────┘
+     │             │             │             │             │
+     └─────────────┴─────────────┴─────────────┴─────────────┘
+                              │
+                      _drafts/SPRINT/TXX_Nome.md
+                      (1 arquivo que evolui)
+                              │
+                              ▼ promover()
+                      docs/[DOM]_[CAM]_[SEQ]_Nome.md
+```
+
+### 4.7 Tipos de Documento
+
+| Tipo | Descrição | Seções Específicas |
+|------|-----------|-------------------|
+| Classe | Define estrutura POO | Atributos, Restrições, Métodos |
+| Framework | Orquestra métodos | Sequência, Etapas |
+| Catalogo | Lista instâncias | Tabela de objetos |
+| Metodo | Define processo | Input/Output, Submétodos |
+| Sprint | Ciclo de trabalho | Objetivo, Tarefas |
+
+### 4.8 Métodos
+
+#### validar(): bool
+
+Verifica se documento está correto para a etapa atual.
+
+| Etapa | Validações |
+|-------|------------|
+| M0 | sintoma, significantes, causa_raiz, necessidade |
+| M1 | conceitos com fonte, aplicação definida |
+| M2 | escopo, fronteiras, critérios verificáveis |
+| M3 | atributos, restrições, métodos |
+| M4 | frontmatter completo, histórico atualizado |
+
+#### promover(): Documento
+
+Move documento de _drafts/ para docs/.
+
+```
+Pré-condição: etapa == M4 AND validar() == true
+Ação: 
+  1. Copiar para docs/ com nome definitivo
+  2. Atualizar frontmatter (remover etapa, sprint_ref, task_ref)
+  3. Atualizar GENESIS.md índice
+  4. Deletar arquivo em _drafts/
+```
+
+#### versionar(): Documento
+
+Incrementa versão no frontmatter e registra no histórico.
 
 ---
 
-## 5. Referências
+## 5. INSTRUÇÃO: Como usar Documento
+
+### 5.1 Para COMO persistir (criar/editar arquivos)
+
+Ver: **00_I_1_1_GitHub.md**
+
+Inclui:
+- Criar arquivo novo
+- Editar via patch (parcial) ou substituição (completa)
+- Convenções de commit
+- Regras de token efficiency
+
+### 5.2 Checklist por Etapa
+
+**M0 (Problema):**
+- [ ] Sintoma observável
+- [ ] Significantes extraídos
+- [ ] Glossário com significados
+- [ ] Causa raiz identificada
+- [ ] Necessidade acionável
+
+**M1 (Marco Teórico):**
+- [ ] Conceitos com fonte rastreável
+- [ ] Aplicação no contexto GENESIS
+- [ ] Conceitos consolidados
+
+**M2 (Objeto):**
+- [ ] Escopo definido
+- [ ] Fronteiras claras
+- [ ] Critérios verificáveis
+
+**M3 (Classe):**
+- [ ] Diagrama POO
+- [ ] Atributos com tipos
+- [ ] Restrições
+- [ ] Métodos com I/O
+
+**M4 (Publicar):**
+- [ ] Frontmatter completo
+- [ ] Histórico atualizado
+- [ ] GENESIS.md atualizado
+- [ ] promover() executado
+
+---
+
+## 6. Referências
 
 ### Internas
 
@@ -148,19 +316,18 @@ Documento v3.0 que incorpore marco teórico para justificar: ciclo de vida, atom
 | 00_E_Epistemologia | Pai |
 | 00_E_1_4_Classe | Classe base |
 | 00_E_1_5_Metodo | Anterior (M3) |
+| 00_I_1_1_GitHub | COMO persistir (commits, patches) |
 | GENESIS.md | Define índice de arquivos |
 
 ### Externas
 
 | Fonte | Conceito |
 |-------|----------|
-| Princeton University Records Management | Document Lifecycle, Version Control Table |
+| Princeton University Records Management | Document Lifecycle |
 | Document360 | Lifecycle Stages |
-| GitByBit, Stack Overflow, LeanIX | Atomic Commits, Granularity |
-| Shannon (1948) | Information Theory, Entropy |
-| Hick (1952), Hyman (1953) | Hick-Hyman Law, Cognitive Load |
-| Wikipedia, Atlassian | SSOT |
-| Harvard Data Management | File Naming Conventions |
+| GitByBit, LeanIX | Atomic Commits |
+| Shannon (1948) | Information Theory |
+| Hick-Hyman | Cognitive Load |
 | SemVer.org | Semantic Versioning |
 
 ---
@@ -169,6 +336,7 @@ Documento v3.0 que incorpore marco teórico para justificar: ciclo de vida, atom
 
 | Versão | Data | Hora | Alteração |
 |--------|------|------|-----------|
-| 3.0-M0 | 2025-12-04 | 14:00 | Problema definido (sintoma, significantes, causa raiz, necessidade) |
-| 3.0-M1 | 2025-12-04 | 14:30 | Marco teórico consolidado (DLM, Atomic Commits, Information Theory, SSOT, File Naming) |
+| 3.0-M0 | 2025-12-04 | 14:00 | Problema definido |
+| 3.0-M1 | 2025-12-04 | 14:30 | Marco teórico consolidado |
 | 3.0-M2 | 2025-12-04 | 14:35 | Objeto delimitado |
+| 3.0-M3 | 2025-12-04 | 15:00 | Classe especificada. Separação: Documento (O QUE) cita GitHub (COMO) |
