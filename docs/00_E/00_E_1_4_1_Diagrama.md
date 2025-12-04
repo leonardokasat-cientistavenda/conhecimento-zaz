@@ -1,97 +1,111 @@
 ---
 nome: 00_E_1_4_1_Diagrama
-versao: "1.0"
+versao: "1.1"
 tipo: Classe
 classe_ref: Classe
 origem: interno
-status: Draft
+status: Publicado
 ---
 
-# 00_E_1_4_1_Diagrama
+# Diagrama v1.1
 
-## 1. Definição
+## 1. Problema (M0)
 
-Diagrama é um subtipo de Classe que estrutura representações visuais do conhecimento. Diagramas são usados **dentro das seções** dos documentos para dar contexto visual, não em uma seção única isolada.
+### 1.1 Sintoma
+
+| Sintoma | Evidência |
+|---------|-----------|
+| Diagramas em seção isolada | Perdem contexto visual |
+| Sem critério de seleção | Diagrama decorativo, não funcional |
+
+### 1.2 Glossário
+
+| Significante | Significado no Contexto |
+|--------------|-------------------------|
+| **diagrama** | Representação visual do conhecimento |
+| **diagrama-first** | Princípio: diagrama contextualiza seção |
+| **metodologia** | Critério de seleção (Semiótica, Carga, Estrutural) |
+
+### 1.3 Necessidade
+
+Diagrama como subtipo de Classe com método de seleção sistemático.
 
 ---
 
-## 2. Princípio de Uso
+## 2. Marco Teórico (M1)
 
-**Diagramas contextualizam seções, não existem isolados.**
+### 2.1 Conceitos
+
+| Conceito | Teoria | Aplicação |
+|----------|--------|-----------|
+| **Semiótica Visual** | Saussure | Diagrama como signo |
+| **Carga Cognitiva** | Miller | Máxima clareza, mínimo esforço |
+| **Estrutura** | POO | Diagrama reflete estrutura interna |
+
+### 2.2 Diagrama: Princípio de Uso
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                      DOCUMENTO                                  │
 ├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  ## Seção 1: Definição                                          │
-│  [texto]                                                        │
-│                                                                 │
-│  ## Seção 2: Marco Teórico                                      │
+│  ## Seção 1                                                     │
 │  [texto]                                                        │
 │  ```                                                            │
-│  [DIAGRAMA: Rede de Conceitos] ← contextualiza a seção          │
+│  [DIAGRAMA] ← contextualiza a seção                             │
 │  ```                                                            │
 │                                                                 │
-│  ## Seção 3: Atributos                                          │
+│  ## Seção 2                                                     │
 │  [texto]                                                        │
 │  ```                                                            │
-│  [DIAGRAMA: Caixa POO] ← contextualiza a seção                  │
+│  [DIAGRAMA] ← contextualiza a seção                             │
 │  ```                                                            │
-│                                                                 │
-│  ## Seção 4: Fluxo                                              │
-│  [texto]                                                        │
-│  ```                                                            │
-│  [DIAGRAMA: Fluxo] ← contextualiza a seção                      │
-│  ```                                                            │
-│                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 
-❌ ERRADO: Seção única "Diagramas" com todos os diagramas juntos
-✅ CERTO: Cada diagrama na seção que ele contextualiza
+❌ ERRADO: Seção única "Diagramas"
+✅ CERTO: Cada diagrama na seção que contextualiza
 ```
 
 ---
 
-## 3. Atributos
+## 3. Objeto (M2)
 
-| Atributo | Tipo | Card. | Visib. | Obrig. | Descrição |
-|----------|------|-------|--------|--------|-----------|
-| tipo | enum | [1] | + | Sim | Tipo do diagrama (ver Seção 4) |
-| conteudo | string | [1] | + | Sim | ASCII/UML do diagrama |
-| metodologia | enum | [1] | + | Sim | 1-Semiótica, 2-Carga, 3-Estrutural |
-| justificativa | string | [0..1] | + | Não | Por que este diagrama foi escolhido |
-| secao_contexto | string | [1] | + | Sim | Seção onde o diagrama aparece |
+### 3.1 Definição
 
----
+| Campo | Valor |
+|-------|-------|
+| **nome** | Diagrama |
+| **tipo_pesquisa** | Prescritivo |
+| **objetivo** | Representar visualmente conhecimento dentro de seções |
 
-## 4. Tipos de Diagrama
+### 3.2 Escopo e Fronteiras
 
-| Tipo | Uso | Metodologia Primária | Exemplo |
-|------|-----|---------------------|---------|
-| **Signo** | Desambiguação de termos | 1-Semiótica | Significante ↔ Significado |
-| **Fluxo** | Sequência de etapas | 3-Estrutural | Input → Processo → Output |
-| **Rede** | Conceitos relacionados | 3-Estrutural | Nós + Arestas |
-| **CaixaPOO** | Estrutura de classe | 3-Estrutural | Atributos + Métodos |
-| **Circulo** | Escopo/Fronteiras | 1-Semiótica | Dentro/Fora |
-| **Estado** | Transições de status | 3-Estrutural | Estado1 → Estado2 |
-| **Arvore** | Hierarquia | 3-Estrutural | Pai → Filhos |
-| **Tabela** | Dados estruturados | 2-Carga | Linhas × Colunas |
+| Escopo | Fronteiras |
+|--------|------------|
+| Diagramas ASCII/UML | Imagens externas |
+| Seleção por metodologia | Diagramas decorativos |
+| Contextualização de seções | Seção isolada "Diagramas" |
 
 ---
 
-## 5. Diagrama UML
+## 4. Classe (M3)
+
+### 4.1 Diagrama de Classe
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                         «class»                                 │
 │                         Diagrama                                │
 ├─────────────────────────────────────────────────────────────────┤
-│  - tipo: enum                        [1]                        │
-│  - conteudo: string                  [1]                        │
-│  - metodologia: enum                 [1]                        │
+│  + tipo: enum                        [1]                        │
+│  + conteudo: string                  [1]                        │
+│  + metodologia: enum                 [1]                        │
 │  - justificativa: string             [0..1]                     │
-│  - secao_contexto: string            [1]                        │
+│  + secao_contexto: string            [1]                        │
+├─────────────────────────────────────────────────────────────────┤
+│  R1: Diagrama em seção contextual                               │
+│  R2: Tipo válido                                                │
+│  R3: Metodologia documentada                                    │
+│  R4: ASCII legível                                              │
 ├─────────────────────────────────────────────────────────────────┤
 │  + selecionar(classe): Diagrama[]                               │
 │  + validar(): boolean                                           │
@@ -99,173 +113,58 @@ Diagrama é um subtipo de Classe que estrutura representações visuais do conhe
 └─────────────────────────────────────────────────────────────────┘
 ```
 
----
+### 4.2 Atributos
 
-## 6. Matriz de Seleção por Classe
+| Atributo | Tipo | Card. | Visib. | Obrig. | Descrição |
+|----------|------|-------|--------|--------|-----------|
+| tipo | enum | [1] | + | Sim | Signo, Fluxo, Rede, CaixaPOO, Circulo, Estado, Arvore, Tabela |
+| conteudo | string | [1] | + | Sim | ASCII/UML |
+| metodologia | enum | [1] | + | Sim | 1-Semiótica, 2-Carga, 3-Estrutural |
+| justificativa | string | [0..1] | - | Não | Por que este diagrama |
+| secao_contexto | string | [1] | + | Sim | Seção onde aparece |
 
-### 6.1 Quando usar cada diagrama
+### 4.3 Matriz de Seleção por Classe
 
-| Classe | Diagrama Primário | Diagrama Secundário | Seção Típica |
-|--------|-------------------|---------------------|--------------|
-| **Problema (M0)** | Signo | Fluxo M0 | Definição, Fluxo |
-| **MarcoTeorico (M1)** | Rede | Tabela | Marco Teórico |
-| **Objeto (M2)** | Circulo | Contextual | Escopo |
-| **Classe (M3)** | CaixaPOO | Relações | Atributos, Métodos |
-| **Metodo** | Fluxo | Sequência | Processo |
-| **Documento (M4)** | Estado | Timeline | Ciclo de Vida |
+| Classe | Diagrama Primário | Diagrama Secundário |
+|--------|-------------------|---------------------|
+| Problema (M0) | Signo | Fluxo M0 |
+| MarcoTeorico (M1) | Rede | Tabela |
+| Objeto (M2) | Circulo | Contextual |
+| Classe (M3) | CaixaPOO | Relações |
+| Documento (M4) | Estado | Timeline |
 
-### 6.2 Metodologias de Seleção
-
-| # | Metodologia | Princípio | Quando Usar |
-|---|-------------|-----------|-------------|
-| 1 | **Semiótica** | Diagrama como signo visual | Resolver ambiguidade, mostrar limites |
-| 2 | **Carga Cognitiva** | Máxima clareza, mínimo esforço | Muitos dados, comparações |
-| 3 | **Estrutural** | Refletir estrutura interna | Fluxos, hierarquias, relações |
-
-### 6.3 Heurística de Decisão
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                   SELEÇÃO DE DIAGRAMA                           │
-└─────────────────────────────────────────────────────────────────┘
-
-1. Identificar CLASSE do documento
-   └─► Consultar tabela 6.1
-
-2. Identificar SEÇÃO onde diagrama vai
-   └─► Diagrama contextualiza esta seção?
-
-3. Aplicar METODOLOGIA 3 (Estrutural)
-   └─► Estrutura interna sugere qual diagrama?
-
-4. Validar com METODOLOGIA 1 ou 2
-   └─► Semiótica: signo visual faz sentido?
-   └─► Carga: é legível?
-
-5. Documentar JUSTIFICATIVA (opcional)
-   └─► Por que este diagrama foi escolhido
-```
-
----
-
-## 7. Restrições
+### 4.4 Restrições
 
 | Código | Restrição | Validação |
 |--------|-----------|-----------|
-| R1 | Diagrama deve estar em seção contextual | secao_contexto != "Diagramas" |
-| R2 | Tipo deve ser válido | tipo ∈ {Signo, Fluxo, Rede, CaixaPOO, Circulo, Estado, Arvore, Tabela} |
+| R1 | Diagrama em seção contextual | secao_contexto != "Diagramas" |
+| R2 | Tipo válido | tipo ∈ {Signo, Fluxo, Rede...} |
 | R3 | Metodologia documentada | metodologia ∈ {1, 2, 3} |
-| R4 | Conteúdo em ASCII | conteudo usa caracteres ASCII |
+| R4 | ASCII legível | Caracteres ASCII |
 
----
+### 4.5 Métodos
 
-## 8. Métodos
-
-### 8.1 selecionar(classe: Classe): Diagrama[]
-
-**Descrição:** Seleciona diagramas apropriados para uma classe.
+#### selecionar(classe: Classe): Diagrama[]
 
 | Campo | Valor |
 |-------|-------|
 | Input | classe: Classe |
-| Output | Diagrama[] (lista ordenada por prioridade) |
-| Pré-condição | classe.tipo definido |
-| Pós-condição | Diagramas com metodologia justificada |
-
-**Processo:**
-
-```
-┌─────────────────┐
-│     CLASSE      │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────────────────────────────┐
-│  1. Consultar Matriz 6.1                │
-│     - Primário por tipo de classe       │
-│     - Secundário se necessário          │
-└────────────────┬────────────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────────────┐
-│  2. Aplicar Metodologia 3 (Estrutural)  │
-│     - Verificar estrutura interna       │
-└────────────────┬────────────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────────────┐
-│  3. Validar com Metodologia 1 ou 2      │
-│     - Semiótica: signo claro?           │
-│     - Carga: legível?                   │
-└────────────────┬────────────────────────┘
-                 │
-                 ▼
-         ┌───────────────┐
-         │  Diagrama[]   │
-         └───────────────┘
-```
-
-### 8.2 validar(): boolean
-
-| Campo | Valor |
-|-------|-------|
-| Input | self |
-| Output | boolean |
-| Validações | R1-R4 |
-
-### 8.3 renderizar(): string
-
-| Campo | Valor |
-|-------|-------|
-| Input | self |
-| Output | string (ASCII formatado) |
+| Output | Diagrama[] |
+| Processo | 1. Consultar matriz → 2. Aplicar metodologia 3 → 3. Validar |
 
 ---
 
-## 9. INSTRUÇÃO: Como usar Diagrama
+## 5. Referências
 
-### 9.1 Ao criar documento
-
-1. **Identificar** tipo da classe (M0, M1, M2, M3, M4)
-2. **Consultar** Matriz 6.1 para diagramas recomendados
-3. **Inserir** diagrama NA SEÇÃO que ele contextualiza
-4. **Documentar** metodologia usada (opcional mas recomendado)
-
-### 9.2 Template de Diagrama em Seção
-
-```markdown
-## X. [Nome da Seção]
-
-[Texto explicativo da seção]
-
-**Diagrama: [Tipo]** (Metodologia: [1/2/3])
-
-```
-[conteudo ASCII do diagrama]
-```
-
-[Texto continuação se necessário]
-```
-
-### 9.3 Checklist
-
-- [ ] Diagrama está NA SEÇÃO que contextualiza (não em seção isolada)
-- [ ] Tipo é apropriado para a classe (ver Matriz 6.1)
-- [ ] Metodologia aplicada (preferencialmente 3-Estrutural)
-- [ ] ASCII legível e formatado
-- [ ] Diagrama agrega valor (não é decorativo)
-
----
-
-## 10. Referências
+### Internas
 
 | Documento | Relação |
 |-----------|---------|
 | 00_E_1_4_Classe | Classe pai |
+| 00_E_Epistemologia | Avô |
 | 00_E_1_1_Problema | Usa Signo + Fluxo |
 | 00_E_1_2_MarcoTeorico | Usa Rede |
 | 00_E_1_3_Objeto | Usa Círculo |
-| 00_E_1_5_Metodo | Usa Fluxo |
 | 00_E_1_6_Documento | Usa Estado |
 
 ---
@@ -274,4 +173,5 @@ Diagrama é um subtipo de Classe que estrutura representações visuais do conhe
 
 | Versão | Data | Hora | Alteração |
 |--------|------|------|-----------|
-| 1.0 | 2025-12-03 | 22:30 | Criação. Subtipo de Classe para diagramas. Princípio: diagramas contextualizam seções. Matriz de seleção por classe. 3 metodologias. 8 tipos de diagrama. |
+| 1.0 | 2025-12-03 | 22:30 | Criação. Subtipo de Classe. Matriz seleção. |
+| 1.1 | 2025-12-04 | 13:30 | **PADRONIZAÇÃO S004-E**: Adiciona M0-M2 explícitos. Status Publicado. Refs atualizadas. T6. |
