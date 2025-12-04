@@ -5,7 +5,7 @@ tipo: Framework
 classe_ref: Framework
 origem: interno
 status: Draft
-etapa: M2
+etapa: M3
 sprint_ref: S004-E
 task_ref: T08
 ---
@@ -459,7 +459,367 @@ task_ref: T08
 
 ## 4. Classe (M3)
 
-_A desenvolver_
+### 4.1 Identificação
+
+| Campo | Valor |
+|-------|-------|
+| **Nome** | Epistemologia |
+| **Tipo** | Framework |
+| **Versão** | 3.2 |
+| **Superclasse** | MetaSistema (conceitual) |
+| **Natureza** | Reflexiva + Generativa |
+
+### 4.2 Atributos
+
+#### 4.2.1 Atributos de Identificação
+
+| Atributo | Tipo | Obrigatório | Descrição |
+|----------|------|-------------|-----------|
+| `nome` | String | ✅ | Identificador único: "Epistemologia" |
+| `versao` | SemVer | ✅ | Versão semântica (ex: "3.2") |
+| `tipo` | Enum | ✅ | "Framework" |
+| `camada` | Integer | ✅ | 3 (Framework/Epistemologia) |
+| `status` | Enum | ✅ | Draft, Review, Published |
+
+#### 4.2.2 Atributos Estruturais
+
+| Atributo | Tipo | Obrigatório | Descrição |
+|----------|------|-------------|-----------|
+| `classes_estruturais` | Array[Classe] | ✅ | [Problema, MarcoTeorico, Objeto, Classe, Documento] |
+| `modulos_opcionais` | Array[Modulo] | ⚪ | [Raciocinio, Catalogo, Analise, ...] |
+| `meta_sistemas_derivados` | Array[MetaSistema] | ⚪ | Instâncias geradas (Ontologia local) |
+| `propriedades_herdaveis` | Array[Propriedade] | ✅ | [ReducaoEntropica, Recursividade, Persistencia] |
+
+#### 4.2.3 Atributos de Relação
+
+| Atributo | Tipo | Obrigatório | Descrição |
+|----------|------|-------------|-----------|
+| `pai` | Referência | ✅ | GENESIS (Camada 1) |
+| `depende_de` | Array[Referência] | ✅ | [GitHub, Frontmatter] |
+| `eh_dependencia_de` | Array[Referência] | ⚪ | Meta Sistemas que usam Epistemologia |
+
+#### 4.2.4 Diagrama de Atributos
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    ATRIBUTOS: EPISTEMOLOGIA                                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  IDENTIFICAÇÃO:                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  nome: "Epistemologia"                                              │    │
+│  │  versao: "3.2"                                                      │    │
+│  │  tipo: Framework                                                    │    │
+│  │  camada: 3                                                          │    │
+│  │  status: Draft | Review | Published                                 │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  ESTRUTURAIS:                                                               │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  classes_estruturais: [                                             │    │
+│  │      Problema (M0),                                                 │    │
+│  │      MarcoTeorico (M1),                                             │    │
+│  │      Objeto (M2),                                                   │    │
+│  │      Classe (M3),                                                   │    │
+│  │      Documento (M4)                                                 │    │
+│  │  ]                                                                  │    │
+│  │                                                                     │    │
+│  │  modulos_opcionais: [                                               │    │
+│  │      Raciocinio?,                                                   │    │
+│  │      Catalogo?,                                                     │    │
+│  │      Analise?,                                                      │    │
+│  │      ...                                                            │    │
+│  │  ]                                                                  │    │
+│  │                                                                     │    │
+│  │  meta_sistemas_derivados: [                                         │    │
+│  │      Vendas,                                                        │    │
+│  │      Glossario,                                                     │    │
+│  │      ...                                                            │    │
+│  │  ]                                                                  │    │
+│  │                                                                     │    │
+│  │  propriedades_herdaveis: [                                          │    │
+│  │      ReducaoEntropica,                                              │    │
+│  │      Recursividade,                                                 │    │
+│  │      Persistencia                                                   │    │
+│  │  ]                                                                  │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  RELAÇÕES:                                                                  │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  pai: GENESIS                                                       │    │
+│  │  depende_de: [GitHub, Frontmatter]                                  │    │
+│  │  eh_dependencia_de: [MetaSistemas...]                               │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.3 Métodos
+
+#### 4.3.1 Método Principal: ciclo_m0_m4()
+
+| Campo | Valor |
+|-------|-------|
+| **Nome** | ciclo_m0_m4 |
+| **Entrada** | dominio: String, problema: Problema |
+| **Saída** | MetaSistema |
+| **Descrição** | Executa o ciclo completo M0→M1→M2→M3→M4 para criar um Meta Sistema |
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    MÉTODO: ciclo_m0_m4()                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ENTRADA:                                                                   │
+│  ├── dominio: String (ex: "Vendas")                                         │
+│  └── problema: Problema (sintomas, causas, necessidades)                    │
+│                                                                             │
+│  PROCESSO:                                                                  │
+│  ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    │
+│  │   M0    │───▶│   M1    │───▶│   M2    │───▶│   M3    │───▶│   M4    │    │
+│  │Problema │    │ Marco   │    │ Objeto  │    │ Classe  │    │Documento│    │
+│  └─────────┘    └─────────┘    └─────────┘    └─────────┘    └─────────┘    │
+│       │              │              │              │              │         │
+│       ▼              ▼              ▼              ▼              ▼         │
+│  identifica     fundamenta      delimita      especifica     persiste      │
+│  sintomas       teoricamente    escopo        atributos      versiona      │
+│  causas                         fronteiras    métodos                      │
+│  necessidades                                                              │
+│                                                                             │
+│  SAÍDA:                                                                     │
+│  └── MetaSistema (com classes, módulos compostos, ontologia local)          │
+│                                                                             │
+│  VALIDAÇÕES:                                                                │
+│  ├── Cada etapa deve completar antes da próxima                             │
+│  ├── Propriedades herdadas devem ser verificadas                            │
+│  └── Documento final deve ter frontmatter válido                            │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 4.3.2 Método: compor_modulo()
+
+| Campo | Valor |
+|-------|-------|
+| **Nome** | compor_modulo |
+| **Entrada** | meta_sistema: MetaSistema, modulo: Modulo |
+| **Saída** | MetaSistema (atualizado) |
+| **Descrição** | Adiciona um módulo opcional a um Meta Sistema |
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    MÉTODO: compor_modulo()                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ENTRADA:                                                                   │
+│  ├── meta_sistema: MetaSistema (ex: Vendas)                                 │
+│  └── modulo: Modulo (ex: Raciocinio)                                        │
+│                                                                             │
+│  PROCESSO:                                                                  │
+│  1. Verificar compatibilidade do módulo                                     │
+│  2. Importar classes do módulo para o Meta Sistema                          │
+│  3. Atualizar dependências                                                  │
+│  4. Herdar propriedades do módulo                                           │
+│                                                                             │
+│  SAÍDA:                                                                     │
+│  └── MetaSistema com módulo integrado                                       │
+│                                                                             │
+│  EXEMPLO:                                                                   │
+│  Vendas.compor_modulo(Raciocinio)                                           │
+│  → Vendas agora tem: Hipótese, Evidência, Inferência, Decisão               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 4.3.3 Método: gerar_meta_sistema()
+
+| Campo | Valor |
+|-------|-------|
+| **Nome** | gerar_meta_sistema |
+| **Entrada** | nome: String, modulos: Array[Modulo] |
+| **Saída** | MetaSistema |
+| **Descrição** | Cria um novo Meta Sistema Derivado com módulos selecionados |
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    MÉTODO: gerar_meta_sistema()                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ENTRADA:                                                                   │
+│  ├── nome: String (ex: "Vendas")                                            │
+│  └── modulos: Array[Modulo] (ex: [Raciocinio, Analise])                     │
+│                                                                             │
+│  PROCESSO:                                                                  │
+│  1. Criar estrutura base (Par E/O local)                                    │
+│  2. Herdar classes estruturais (M0-M4)                                      │
+│  3. Compor módulos selecionados                                             │
+│  4. Herdar propriedades (ReducaoEntropica, etc.)                            │
+│  5. Registrar como filho de Epistemologia                                   │
+│                                                                             │
+│  SAÍDA:                                                                     │
+│  └── MetaSistema pronto para uso                                            │
+│                                                                             │
+│  EXEMPLO:                                                                   │
+│  Epistemologia.gerar_meta_sistema("Vendas", [Raciocinio, Analise])          │
+│  → MetaSistema Vendas com M0-M4 + Raciocínio + Análise                      │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 4.3.4 Método: aplicar_recursivamente()
+
+| Campo | Valor |
+|-------|-------|
+| **Nome** | aplicar_recursivamente |
+| **Entrada** | classe: Classe |
+| **Saída** | Classe (evoluída) |
+| **Descrição** | Aplica M0-M4 a uma classe da própria Epistemologia (reflexividade) |
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    MÉTODO: aplicar_recursivamente()                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ENTRADA:                                                                   │
+│  └── classe: Classe (ex: Problema, Objeto, Classe...)                       │
+│                                                                             │
+│  PROCESSO:                                                                  │
+│  1. Identificar problema da classe atual                                    │
+│  2. Fundamentar teoricamente (M1)                                           │
+│  3. Delimitar objeto (M2)                                                   │
+│  4. Especificar atributos/métodos (M3)                                      │
+│  5. Persistir documento (M4)                                                │
+│                                                                             │
+│  SAÍDA:                                                                     │
+│  └── Classe evoluída com M0-M4 aplicado                                     │
+│                                                                             │
+│  EXEMPLO:                                                                   │
+│  Epistemologia.aplicar_recursivamente(Classe)                               │
+│  → Classe "Classe" passa por M0-M4 e se atualiza                            │
+│                                                                             │
+│  NOTA: Este é o mecanismo de auto-evolução (Autopoiesis)                    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 4.3.5 Método: herdar_propriedades()
+
+| Campo | Valor |
+|-------|-------|
+| **Nome** | herdar_propriedades |
+| **Entrada** | meta_sistema: MetaSistema |
+| **Saída** | MetaSistema (com propriedades) |
+| **Descrição** | Garante que propriedades anti-entrópicas sejam herdadas |
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    MÉTODO: herdar_propriedades()                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ENTRADA:                                                                   │
+│  └── meta_sistema: MetaSistema                                              │
+│                                                                             │
+│  PROCESSO:                                                                  │
+│  Para cada propriedade em propriedades_herdaveis:                           │
+│  ├── ReducaoEntropica: aplicar diagrama-first, SSOT                         │
+│  ├── Recursividade: garantir que M0-M4 funcione                             │
+│  └── Persistencia: configurar GitHub + frontmatter                          │
+│                                                                             │
+│  SAÍDA:                                                                     │
+│  └── MetaSistema com propriedades garantidas                                │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.4 Tabela Consolidada de Métodos
+
+| Método | Entrada | Saída | Responsabilidade |
+|--------|---------|-------|------------------|
+| `ciclo_m0_m4()` | dominio, problema | MetaSistema | Executar ciclo completo |
+| `compor_modulo()` | meta_sistema, modulo | MetaSistema | Adicionar módulo opcional |
+| `gerar_meta_sistema()` | nome, modulos[] | MetaSistema | Criar novo Meta Sistema |
+| `aplicar_recursivamente()` | classe | Classe | Auto-evolução |
+| `herdar_propriedades()` | meta_sistema | MetaSistema | Garantir propriedades |
+
+### 4.5 Diagrama de Classe Completo
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         CLASSE: EPISTEMOLOGIA                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                         IDENTIFICAÇÃO                               │    │
+│  ├─────────────────────────────────────────────────────────────────────┤    │
+│  │  nome: String = "Epistemologia"                                     │    │
+│  │  versao: SemVer = "3.2"                                             │    │
+│  │  tipo: Enum = Framework                                             │    │
+│  │  camada: Integer = 3                                                │    │
+│  │  status: Enum = {Draft, Review, Published}                          │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                         ATRIBUTOS                                   │    │
+│  ├─────────────────────────────────────────────────────────────────────┤    │
+│  │  + classes_estruturais: Array[Classe]                               │    │
+│  │  + modulos_opcionais: Array[Modulo]                                 │    │
+│  │  + meta_sistemas_derivados: Array[MetaSistema]                      │    │
+│  │  + propriedades_herdaveis: Array[Propriedade]                       │    │
+│  │  + pai: Referência → GENESIS                                        │    │
+│  │  + depende_de: Array[Referência]                                    │    │
+│  │  + eh_dependencia_de: Array[Referência]                             │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                         MÉTODOS                                     │    │
+│  ├─────────────────────────────────────────────────────────────────────┤    │
+│  │  + ciclo_m0_m4(dominio, problema) → MetaSistema                     │    │
+│  │  + compor_modulo(meta_sistema, modulo) → MetaSistema                │    │
+│  │  + gerar_meta_sistema(nome, modulos[]) → MetaSistema                │    │
+│  │  + aplicar_recursivamente(classe) → Classe                          │    │
+│  │  + herdar_propriedades(meta_sistema) → MetaSistema                  │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                         RELAÇÕES                                    │    │
+│  ├─────────────────────────────────────────────────────────────────────┤    │
+│  │                                                                     │    │
+│  │  GENESIS ◄───────── pai ─────────── EPISTEMOLOGIA                   │    │
+│  │                                          │                          │    │
+│  │                                          │ gera                     │    │
+│  │                                          ▼                          │    │
+│  │                                    META SISTEMAS                    │    │
+│  │                                    [Vendas, Glossário, ...]         │    │
+│  │                                          │                          │    │
+│  │                                          │ compõe                   │    │
+│  │                                          ▼                          │    │
+│  │                                    MÓDULOS                          │    │
+│  │                                    [Raciocínio?, Catálogo?, ...]    │    │
+│  │                                                                     │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.6 Validações
+
+| Validação | Regra | Erro se falhar |
+|-----------|-------|----------------|
+| `versao` | Deve seguir SemVer | "Versão inválida" |
+| `classes_estruturais` | Deve ter exatamente 5 | "Classes estruturais incompletas" |
+| `pai` | Deve referenciar GENESIS | "Epistemologia sem pai" |
+| `ciclo_m0_m4` | Todas as etapas devem completar | "Ciclo incompleto" |
+| `modulo` | Deve existir antes de compor | "Módulo não encontrado" |
+
+### 4.7 Invariantes
+
+| Invariante | Descrição |
+|------------|-----------|
+| **Reflexividade** | Epistemologia pode aplicar M0-M4 a si mesma |
+| **Generatividade** | Todo MetaSistema é gerado via `gerar_meta_sistema()` |
+| **Composição** | Módulos são opcionais, nunca obrigatórios |
+| **Hierarquia** | Todo MetaSistema tem Par E/O local |
+| **Persistência** | Todo artefato tem frontmatter válido |
 
 ---
 
@@ -498,3 +858,4 @@ _A desenvolver_
 | 3.2-M0 | 2025-12-04 | 23:15 | Tese corrigida: foco em criar Meta Sistemas |
 | 3.2-M1 | 2025-12-04 | 23:15 | Marco: Mandelbrot adicionado, conceitos separados |
 | 3.2-M2 | 2025-12-04 | 23:15 | Objeto: GENESIS como propósito maior |
+| 3.2-M3 | 2025-12-04 | 23:45 | Classe: Atributos e Métodos especificados |
