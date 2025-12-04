@@ -1,6 +1,6 @@
 ---
 nome: GENESIS
-versao: "0.9"
+versao: "0.10"
 tipo: Framework
 classe_ref: Framework
 origem: interno
@@ -197,10 +197,10 @@ status: Draft
 
 | Campo | Valor |
 |-------|-------|
-| **id** | S003-E |
+| **id** | S004-E |
 | **camada_foco** | Camada 3 (Framework) |
 | **status** | EmAndamento |
-| **detalhes** | Ver /_sprints/S003-E.md |
+| **detalhes** | Ver /_sprints/S004-E.md |
 
 Sprint detalhada movida para o arquivo do Meta Sistema.
 Cada camada gerencia sua própria sprint.
@@ -233,12 +233,13 @@ Cada camada gerencia sua própria sprint.
 
 | path | versao | status | updated_at | camada | depende_de |
 |------|--------|--------|------------|--------|------------|
-| /genesis/GENESIS.md | 0.9 | Draft | 2025-12-04 | 1 | null |
+| /genesis/GENESIS.md | 0.10 | Draft | 2025-12-04 | 1 | null |
 | /docs/00_E/00_E_Epistemologia.md | 2.2 | Draft | 2025-12-03 | 3 | GENESIS.md |
-| /docs/00_E/00_E_1_1_Problema.md | 2.0 | Draft | 2025-12-03 | 3 | 00_E_Epistemologia.md |
-| /docs/00_E/00_E_1_2_MarcoTeorico.md | 2.0 | Draft | 2025-12-03 | 3 | 00_E_Epistemologia.md |
+| /docs/00_E/00_E_1_1_Problema.md | 2.1 | Draft | 2025-12-03 | 3 | 00_E_Epistemologia.md |
+| /docs/00_E/00_E_1_2_MarcoTeorico.md | 2.1 | Draft | 2025-12-03 | 3 | 00_E_Epistemologia.md |
 | /docs/00_E/00_E_1_3_Objeto.md | 2.0 | Draft | 2025-12-03 | 3 | 00_E_Epistemologia.md |
-| /docs/00_E/00_E_1_4_Classe.md | 2.0 | Draft | 2025-12-03 | 3 | 00_E_Epistemologia.md |
+| /docs/00_E/00_E_1_4_Classe.md | 3.0 | Publicado | 2025-12-03 | 3 | 00_E_Epistemologia.md |
+| /docs/00_E/00_E_1_4_1_Diagrama.md | 1.0 | Publicado | 2025-12-03 | 3 | 00_E_1_4_Classe.md |
 | /docs/00_E/00_E_1_5_Metodo.md | 2.0 | Draft | 2025-12-03 | 3 | 00_E_Epistemologia.md |
 | /docs/00_E/00_E_1_6_Documento.md | 3.0 | Publicado | 2025-12-04 | 3 | 00_E_Epistemologia.md |
 | /docs/00_I_1_1_GitHub.md | 2.0 | Publicado | 2025-12-04 | 2 | GENESIS.md |
@@ -276,3 +277,4 @@ SE usuário menciona Camada N
 | 0.7 | 2025-12-03 | Sprint S002-E concluída. Classes M0-M4 criadas. Camada 3 estabilizada. |
 | 0.8 | 2025-12-03 | Sprint S003-E em andamento (T1-T6, T12-T13 concluídas). Atualiza índice: Objeto v2.0, Documento v2.3, Github_Instructions v1.2. |
 | 0.9 | 2025-12-04 | T13 concluída: GitHub.md v2.0 consolida Github_Instructions + Patch_System. Atualiza índice com deprecated. Documento.md v3.0 publicado. |
+| 0.10 | 2025-12-04 | S003-E fechada (16/17 tasks). S004-E iniciada: Integridade e Consistência. Adiciona Diagrama.md ao índice. |
