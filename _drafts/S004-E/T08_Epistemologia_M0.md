@@ -1,6 +1,6 @@
 ---
 nome: 00_E_Epistemologia
-versao: "3.0"
+versao: "3.1"
 tipo: Framework
 classe_ref: Framework
 origem: interno
@@ -10,7 +10,7 @@ sprint_ref: S004-E
 task_ref: T08
 ---
 
-# Epistemologia v3.0
+# Epistemologia v3.1
 
 ## 1. Problema (M0)
 
@@ -18,28 +18,28 @@ task_ref: T08
 
 | Sintoma | Evidência |
 |---------|-----------|
+| Humanos gastam energia excessiva em atividades cognitivas | Retrabalho, decisões inconsistentes, conhecimento perdido |
+| LLMs têm fluência mas não estrutura | Alucinação, loops, amnésia entre sessões |
 | Projetos anteriores entraram em loop | Sistema ZAZ, Metodologia Vendas - progresso perdido |
-| IA alucina sem estrutura | Complexidade sem método gera inconsistência |
-| Conhecimento não persiste entre sessões | Cada conversa recomeça do zero |
-| Impossível construir meta sistemas derivados | Meta sistemas complexos travados |
+| Impossível construir sistemas que "pensam" | Sem estrutura para raciocínio, apenas predição de tokens |
 
 ### 1.2 Significantes e Glossário
 
 | Significante | Significado no Contexto |
 |--------------|-------------------------|
-| **Epistemologia** | Meta Sistema Base (reflexivo) que cria Meta Sistemas Derivados |
+| **Epistemologia** | Meta Sistema Base que cria Meta Sistemas + fornece Módulos opcionais |
+| **Inteligência Híbrida** | Humano + LLM + Epistemologia = capacidade cognitiva amplificada |
+| **Raciocínio Estruturado** | Pensamento que segue método explícito (não apenas predição estatística) |
+| **Módulo** | Conjunto de classes opcionais que Meta Sistemas podem compor |
+| **Composição** | Princípio: Meta Sistemas escolhem quais módulos usar (vs herança forçada) |
+| **Dispêndio de Energia** | Esforço cognitivo humano para executar atividades |
+| **Automação Cognitiva** | LLM executa atividades estruturadas com supervisão humana mínima |
 | **Ontologia** | Camada de instâncias - conhecimento validado (emerge da execução) |
 | **Entropia Epistêmica** | Degradação do conhecimento por falta de estrutura explícita |
-| **Entropia Contextual** | Perda de precisão em conversas longas (problema de Claude) |
-| **Bootstrap Circular** | Dependência mútua entre componentes na inicialização |
-| **STUB** | Versão mínima hardcoded que quebra o ciclo circular |
 | **Meta Sistema Derivado** | Sistema construído SOBRE a Epistemologia (Clabject) |
-| **Sub-Meta Sistema** | Componente de um Meta Sistema Derivado (também Clabject) |
 | **Clabject** | Elemento que é Classe (para baixo) e Objeto (para cima) simultaneamente |
 | **Par E/O Local** | Cada nível tem sua própria Epistemologia (classes) e Ontologia (instâncias) |
 | **Composição Fractal** | Estrutura auto-similar que se repete em cada nível |
-| **Classe** | Molde estrutural que pode ser instanciado em múltiplos domínios |
-| **Framework** | Orquestração de métodos com objetivo específico |
 | **M0-M4** | Ciclo recursivo: Problema → Marco → Objeto → Classe → Documento |
 
 ### 1.3 Pré-requisitos Resolvidos (GENESIS)
@@ -48,53 +48,26 @@ task_ref: T08
 |----------|---------------|--------|
 | Bootstrap Circular | GENESIS (STUB v0.10) | ✅ Resolvido |
 | Entropia Contextual | GENESIS (arquivos atômicos + índice) | ✅ Resolvido |
-| **Como criar Meta Sistemas** | **Epistemologia (M0-M4)** | 🔄 Em definição |
-
-**Relação GENESIS ↔ Epistemologia:**
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         CICLO RECURSIVO                                     │
-│                                                                             │
-│   GENESIS v0.10 (STUB)                                                      │
-│   ├── Resolve: Bootstrap Circular + Entropia Contextual                     │
-│   ├── Natureza: Infraestrutura de inicialização                             │
-│   └── Status: Versão mínima funcional                                       │
-│        │                                                                    │
-│        │ habilita                                                           │
-│        ▼                                                                    │
-│   EPISTEMOLOGIA v3.0 (Framework)                                            │
-│   ├── Resolve: Como criar Meta Sistemas anti-entrópicos                     │
-│   ├── Natureza: Fábrica de Meta Sistemas                                    │
-│   └── Status: Em definição (esta sprint)                                    │
-│        │                                                                    │
-│        │ retroalimenta (método G4: refatorar_stub)                          │
-│        ▼                                                                    │
-│   GENESIS v1.0 (refatorado)                                                 │
-│   ├── Aplicar M0-M4 ao próprio GENESIS                                      │
-│   └── Status: Futuro (após Epistemologia estável)                           │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+| **Como amplificar capacidade cognitiva** | **Epistemologia (M0-M4 + Módulos)** | 🔄 Em definição |
 
 ### 1.4 Causa Raiz
 
 | Causa | Consequência |
 |-------|--------------|
-| Conhecimento sem estrutura explícita | Degrada com tempo (máquina e humano) |
-| Sem método recursivo | Cada domínio reinventa a roda |
-| Sem persistência versionada | Decisões e aprendizados perdidos |
-| Sem separação Epistemologia/Ontologia | Confunde "como conhecer" com "o que existe" |
+| LLMs predizem tokens, não raciocinam | Alta fluência, baixa estrutura |
+| Humanos têm energia cognitiva limitada | Fadiga, erros, inconsistência |
+| Sem método para estruturar raciocínio | Cada interação reinventa a roda |
+| Sem separação entre estrutura e execução | Confunde "como pensar" com "o que fazer" |
 
 ### 1.5 Necessidade
 
 | Necessidade | Critério de Sucesso |
 |-------------|---------------------|
-| **Método recursivo M0-M4** | Qualquer objeto passa pelo mesmo ciclo |
-| **Classes reutilizáveis** | Problema, Objeto, Classe, Documento aplicáveis a qualquer domínio |
-| **Redução entrópica** | Diagramas > Prosa; Estrutura explícita > Implícita |
-| **Persistência versionada** | GitHub + frontmatter + histórico |
-| **Criar Meta Sistemas Derivados** | N meta sistemas construíveis com propriedades herdadas |
+| **Gerar raciocínio estruturado** | LLM segue método explícito, não apenas prediz |
+| **Reduzir dispêndio de energia humana** | Humano supervisiona, não executa cada passo |
+| **Acumular conhecimento validado** | Ontologia cresce entre sessões |
+| **Criar Meta Sistemas de domínio** | N domínios (Vendas, Marketing, etc.) construíveis |
+| **Compor com módulos opcionais** | Raciocínio, Catálogo, Análise como bibliotecas |
 
 ### 1.6 Diagrama do Problema
 
@@ -102,42 +75,70 @@ task_ref: T08
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           PROBLEMA CENTRAL                                  │
 │                                                                             │
-│   "Como CRIAR meta sistemas com propriedades anti-entrópicas                │
-│    que sirvam de fundação para sub-meta sistemas?"                          │
+│   "Como construir Meta Sistemas que amplifiquem a capacidade cognitiva      │
+│    humana, gerando raciocínio estruturado que reduza o dispêndio de         │
+│    energia na execução de atividades?"                                      │
 │                                                                             │
 └──────────────────────────────────┬──────────────────────────────────────────┘
                                    │
                                    │ resolve via
                                    ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│              EPISTEMOLOGIA (Meta Sistema Base - Reflexivo)                  │
+│                    INTELIGÊNCIA HÍBRIDA                                     │
+│                                                                             │
+│   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                     │
+│   │   HUMANO    │    │     LLM     │    │EPISTEMOLOGIA│                     │
+│   │             │    │             │    │             │                     │
+│   │  Intenção   │ +  │  Fluência   │ +  │  Estrutura  │  =  AMPLIFICAÇÃO    │
+│   │  Supervisão │    │  Execução   │    │  Método     │      COGNITIVA      │
+│   │  Validação  │    │  Geração    │    │  Módulos    │                     │
+│   └─────────────┘    └─────────────┘    └─────────────┘                     │
+│                                                                             │
+└──────────────────────────────────┬──────────────────────────────────────────┘
+                                   │
+                                   │ estruturado por
+                                   ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│              EPISTEMOLOGIA (Meta Sistema Base)                              │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  PRÉ-REQUISITO: GENESIS (STUB) resolve Bootstrap + Entropia Contextual     │
+│  CLASSES ESTRUTURAIS (obrigatórias - M0-M4):                                │
+│  ┌─────────┬─────────┬─────────┬─────────┬─────────┐                        │
+│  │Problema │ Marco   │ Objeto  │ Classe  │Documento│                        │
+│  │ (M0)    │ (M1)    │ (M2)    │ (M3)    │ (M4)    │                        │
+│  └─────────┴─────────┴─────────┴─────────┴─────────┘                        │
 │                                                                             │
-│  FORNECE:                                                                   │
-│  • Classes fundacionais (Problema, Marco, Objeto, Classe, Documento)        │
-│  • Método M0-M4                                                             │
-│  • Propriedades herdáveis (redução entrópica, recursividade, persistência)  │
-│                                                                             │
-│  ESTRUTURA FRACTAL (auto-similar em cada nível):                            │
-│  ┌────────────────────────────────────────────────────────────────────┐     │
-│  │                         CLABJECT                                   │     │
-│  │  ┌─────────────────────────────────────────────────────────────┐   │     │
-│  │  │  EPISTEMOLOGIA LOCAL    │    ONTOLOGIA LOCAL                │   │     │
-│  │  │  (Classes do nível)     │    (Instâncias geradas)           │   │     │
-│  │  │          │              │           ▲                       │   │     │
-│  │  │          │   executa    │           │                       │   │     │
-│  │  │          └──────────────┼───────────┘                       │   │     │
-│  │  └─────────────────────────────────────────────────────────────┘   │     │
-│  │                            │                                       │     │
-│  │                            │ repete estrutura                      │     │
-│  │                            ▼                                       │     │
-│  │                    N SUB-META SISTEMAS                             │     │
-│  │                    (mesma estrutura)                               │     │
-│  └────────────────────────────────────────────────────────────────────┘     │
+│  MÓDULOS OPCIONAIS (composição):                                            │
+│  ┌─────────────┬─────────────┬─────────────┬─────────────┐                  │
+│  │ Raciocínio  │ Catálogo    │ Análise     │ ...         │                  │
+│  │ (Hipótese,  │ (Item,      │ (Métrica,   │             │                  │
+│  │  Evidência, │  Categoria, │  Dimensão,  │             │                  │
+│  │  Inferência,│  Tag)       │  Agregação) │             │                  │
+│  │  Decisão)   │             │             │             │                  │
+│  └─────────────┴─────────────┴─────────────┴─────────────┘                  │
 │                                                                             │
 │  PROPRIEDADES HERDADAS: Redução Entrópica │ Persistência │ Recursividade   │
+│                                                                             │
+└──────────────────────────────────┬──────────────────────────────────────────┘
+                                   │
+                                   │ gera
+                                   ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│              META SISTEMAS DERIVADOS (Camada 4)                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Meta Sistema "Vendas"                                                      │
+│  ├── USA: M0-M4 (obrigatório)                                               │
+│  ├── USA: Módulo Raciocínio (para decisões de venda)                        │
+│  ├── USA: Módulo Análise (para métricas)                                    │
+│  └── Classes próprias: Pipeline, Oportunidade, Cliente                      │
+│                                                                             │
+│  Meta Sistema "Glossário"                                                   │
+│  ├── USA: M0-M4 (obrigatório)                                               │
+│  ├── USA: Módulo Catálogo (para organizar termos)                           │
+│  └── Classes próprias: Termo, Definição                                     │
+│                                                                             │
+│  Meta Sistema [N]...                                                        │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -146,35 +147,33 @@ task_ref: T08
 
 | Atributo | Descrição | Critério de Validação |
 |----------|-----------|----------------------|
-| **Recursividade** | Sistema usa si mesmo para evoluir | Classes aplicam M0-M4 a si mesmas |
+| **Amplificação Cognitiva** | Humano + LLM + Epistemologia > Humano sozinho | Atividades executadas com menos energia |
+| **Raciocínio Estruturado** | LLM segue método, não apenas prediz | Decisões rastreáveis, não alucinadas |
+| **Composição Modular** | Meta Sistemas escolhem módulos | Princípio SOLID: composição sobre herança |
 | **Redução Entrópica** | Estrutura explícita resiste a degradação | Diagrama-first, SSOT, atomicidade |
 | **Persistência** | Conhecimento sobrevive entre sessões | GitHub + versionamento + histórico |
-| **Reutilização** | Classes aplicáveis a qualquer domínio | Problema, Objeto, Classe funcionam em N domínios |
-| **Composição Fractal** | Estrutura se repete em cada nível | Clabject + Par E/O local |
-| **Herança E→O→E** | Ontologia de cima vira Epistemologia de baixo | Cadeia de instanciação |
+| **Recursividade** | Sistema usa si mesmo para evoluir | Classes aplicam M0-M4 a si mesmas |
 
 ### 1.8 Tese
 
-> **Epistemologia é o Meta Sistema Base (reflexivo) que resolve o problema de CRIAR Meta Sistemas Derivados com propriedades anti-entrópicas.**
+> **Epistemologia é o Meta Sistema Base que resolve o problema de GERAR RACIOCÍNIO ESTRUTURADO para amplificar capacidade cognitiva humana.**
 >
-> **Pré-requisito:** GENESIS (STUB) resolve Bootstrap Circular e Entropia Contextual.
+> **Contexto:**
+> - LLMs têm fluência mas não estrutura (predizem tokens, não raciocinam)
+> - Humanos têm intenção mas energia limitada (fadiga, inconsistência)
+> - Juntos, sem método, produzem entropia (loops, alucinação, retrabalho)
 >
-> **Estrutura:** Hierarquia de Clabjects com composição fractal (auto-similar).
+> **Solução - Inteligência Híbrida:**
+> - **Humano:** Intenção + Supervisão + Validação
+> - **LLM:** Fluência + Execução + Geração
+> - **Epistemologia:** Estrutura + Método + Módulos
 >
-> **Propriedades herdadas por todos os níveis:**
-> 1. Redução Entrópica
-> 2. Recursividade (M0-M4)
-> 3. Persistência
-> 4. Reutilização
+> **Arquitetura:**
+> 1. **Classes Estruturais (M0-M4):** Obrigatórias para qualquer Meta Sistema
+> 2. **Módulos Opcionais:** Composição flexível (Raciocínio, Catálogo, Análise, ...)
+> 3. **Propriedades Herdadas:** Redução entrópica, persistência, recursividade
 >
-> **Mecanismo:** Cada Meta Sistema é simultaneamente:
-> - **Classe** (define Sub-Meta Sistemas abaixo)
-> - **Instância** (é definido pelo nível acima)
-> - **Par E/O local** (epistemologia própria → ontologia própria)
->
-> **Emergência:** Ontologia (conhecimento validado) emerge da execução de cada nível.
->
-> **Retroalimentação:** Após estabilização, Epistemologia retroalimenta GENESIS (v0.10 → v1.0) via método G4.
+> **Propósito final:** Criar Meta Sistemas de domínio (Vendas, Marketing, etc.) que executem atividades com supervisão humana mínima, reduzindo dispêndio de energia.
 
 ---
 
@@ -184,198 +183,237 @@ task_ref: T08
 
 | Conceito | Teoria | Aplicação no Sistema |
 |----------|--------|---------------------|
-| **Entropia** | Shannon (1948) - Information Theory | Estrutura explícita reduz incerteza; diagrama-first |
+| **Entropia** | Shannon (1948) | Estrutura explícita reduz incerteza |
 | **Autopoiesis** | Maturana & Varela (1980) | Sistema se autoproduz via recursividade |
-| **Recursividade** | Gödel, Turing, Hofstadter | M0-M4 aplicado a si mesmo |
-| **Epistemologia vs Ontologia** | Filosofia clássica | Classes (como conhecer) ≠ Instâncias (o que existe) |
-| **Knowledge Management** | Nonaka & Takeuchi, von Krogh | Ciclo de criação e persistência de conhecimento |
-| **Meta Object Facility** | OMG (1997) | Hierarquia de meta-níveis, Clabject, Strict Metamodeling |
-| **Fractal Organizations** | BCG, Sociocracy 3.0 | Auto-similaridade, herança de propriedades |
-| **Model of Hierarchical Complexity** | Commons | Coordenação hierárquica, emergência |
+| **Cognição Distribuída** | Hutchins (1995) | Cognição não está só na mente, está no sistema |
+| **Composição sobre Herança** | SOLID Principles | Módulos opcionais, não hierarquia rígida |
+| **Meta Object Facility** | OMG (1997) | Clabject, Strict Metamodeling |
+| **Fractal Organizations** | BCG (2022) | Auto-similaridade, herança de propriedades |
 
 ### 2.2 Teoria da Informação (Shannon)
 
-| Princípio | Fonte | Aplicação |
-|-----------|-------|-----------|
-| Entropia como incerteza | Shannon (1948) | Conhecimento sem estrutura = alta entropia = degrada |
-| Padrões reduzem entropia | Quanta Magazine | Diagrama-first: estrutura visual reduz incerteza |
-| Redundância controlada | Information Theory | Frontmatter + histórico = redundância útil |
+| Princípio | Aplicação |
+|-----------|-----------|
+| Entropia como incerteza | Conhecimento sem estrutura = alta entropia = degrada |
+| Padrões reduzem entropia | Diagrama-first: estrutura visual reduz incerteza |
+| Redundância controlada | Frontmatter + histórico = redundância útil |
 
-**Insight central:** Mensagens estruturadas requerem menos bits para comunicar a mesma informação. Aplicado a conhecimento: estrutura explícita (diagramas, classes, atributos) reduz a "entropia epistêmica" - a degradação do conhecimento ao longo do tempo.
+**Insight:** Mensagens estruturadas requerem menos bits. Conhecimento estruturado requer menos energia cognitiva para processar.
 
-### 2.3 Autopoiesis (Maturana & Varela)
+### 2.3 Cognição Distribuída (Hutchins)
 
-| Princípio | Fonte | Aplicação |
-|-----------|-------|-----------|
-| Auto-produção | Maturana & Varela (1980) | Sistema gera seus próprios componentes |
-| Clausura operacional | Luhmann (1986) | Sistema opera sobre si mesmo recursivamente |
-| Distinção sistema/ambiente | Teoria de Sistemas | Epistemologia (interno) ≠ Domínios (externo) |
+| Princípio | Aplicação |
+|-----------|-----------|
+| Cognição não está só na mente | Sistema (Humano + LLM + Epistemologia) pensa junto |
+| Artefatos externos são parte do processo cognitivo | Documentos, diagramas, classes são "memória externa" |
+| Coordenação entre agentes | Humano supervisiona, LLM executa, Epistemologia estrutura |
 
-**Insight central:** Sistemas autopoiéticos reproduzem seus componentes através de operações internas. Epistemologia é autopoiética: usa M0-M4 para definir as próprias classes de M0-M4.
-
-**Extensão para nosso contexto:** Autopoiesis **generativa** - não apenas se autoproduz, mas produz outros sistemas da mesma natureza (Meta Sistemas Derivados).
-
-### 2.4 Recursividade e Meta-Programação
-
-| Princípio | Fonte | Aplicação |
-|-----------|-------|-----------|
-| Auto-referência | Gödel (1931), Hofstadter | Sistema pode referenciar a si mesmo |
-| Turing-completude | Turing (1936) | Sistema pode modificar suas próprias instruções |
-| Recursive Self-Improvement | AI Research | Sistema melhora a si mesmo iterativamente |
-
-**Insight central:** Sistemas recursivos que operam sobre si mesmos podem evoluir sem intervenção externa. M0-M4 aplicado às classes de M0-M4 = evolução endógena.
-
-### 2.5 Epistemologia vs Ontologia
-
-| Aspecto | Epistemologia | Ontologia |
-|---------|---------------|-----------|
-| **Pergunta** | "Como conhecer?" | "O que existe?" |
-| **Natureza** | Método, processo | Entidade, fato |
-| **Artefato** | Classe, Framework | Instância, Dado |
-| **Estabilidade** | Estrutural | Contextual |
-| **Exemplo** | Classe "Produto" | Produto "ZAZ Energy v1.0" |
-
-**Insight central:** Separar "como conhecer" de "o que existe" permite que o método (Epistemologia) seja reutilizado em N domínios, enquanto as instâncias (Ontologia) são específicas de cada domínio.
-
-**Extensão - Par E/O Local:** Cada nível da hierarquia tem seu próprio par E/O. A Ontologia de um nível pode virar Epistemologia do nível inferior (herança E→O→E).
-
-### 2.6 Knowledge Management
-
-| Modelo | Fonte | Aplicação |
-|--------|-------|-----------|
-| SECI (Socialização→Externalização→Combinação→Internalização) | Nonaka & Takeuchi | M0-M4 como externalização estruturada |
-| Organizational Epistemology | von Krogh & Roos | Classes como "conhecimento codificado" |
-| Applied Epistemology | Garfield | KM como "epistemologia aplicada" |
-
-**Insight central:** Knowledge Management é epistemologia aplicada - gerenciar "o que sabemos e como sabemos". M0-M4 operacionaliza isso com ciclo explícito.
-
-### 2.7 Meta Object Facility (MOF) - OMG
-
-| Princípio | Fonte | Aplicação |
-|-----------|-------|-----------|
-| Hierarquia de meta-níveis | OMG MOF (1997) | Epistemologia → Meta Sistema → Sub-Meta Sistema → Ontologia |
-| Clabject | MOF Specification | Elemento que é Classe (para baixo) e Objeto (para cima) |
-| Strict Metamodeling | ISO 19502 | Cada nível é instância estrita do nível superior |
-| Reflexividade | MOF M3 | Epistemologia define a si mesma via M0-M4 |
-
-**Insight central:** MOF prova que hierarquias de meta-níveis são viáveis e padronizáveis. A arquitetura de 4 camadas (M3→M2→M1→M0) é padrão ISO usado em UML, CWM, etc.
-
-**Diferencial nosso:** MOF foca em software/UML. Nossa Epistemologia foca em **conhecimento** e adiciona:
-- Par E/O explícito em cada nível
-- M0-M4 como método (não confundir com camadas M3/M2/M1/M0 do MOF)
-- Propriedades anti-entrópicas herdáveis
-
-### 2.8 Fractal Organizations
-
-| Princípio | Fonte | Aplicação |
-|-----------|-------|-----------|
-| Auto-similaridade | BCG (2022), Sociocracy 3.0 | Mesma estrutura (E + O + N Subs) em qualquer nível |
-| Herança de propriedades | Fractal Organization Theory | Redução entrópica, persistência fluem para todos os níveis |
-| Autonomia local | Raye (2013) | Cada Meta Sistema tem sua epistemologia local |
-| Democratização de dados | BCG | Informação flui das bordas para o centro e vice-versa |
-
-**Insight central:** Organizações fractais são mais adaptáveis porque a mesma estrutura se repete em cada nível, permitindo autonomia local com coerência global.
-
-**Aplicação:** Meta Sistemas são "organizações fractais de conhecimento" - cada um tem a mesma estrutura (Par E/O + Sub-Meta Sistemas) mas contexto próprio.
-
-### 2.9 Model of Hierarchical Complexity (MHC)
-
-| Princípio | Fonte | Aplicação |
-|-----------|-------|-----------|
-| Coordenação hierárquica | Commons (MHC) | Meta Sistema coordena Sub-Meta Sistemas |
-| Emergência | Complexity Theory | Ontologia emerge da execução (não é pré-definida) |
-| Metasistemático | MHC Stage 12 | Criar metasistemas de sistemas |
-
-**Insight central:** Níveis superiores coordenam níveis inferiores. Propriedades emergem da composição, não são impostas de cima.
-
-### 2.10 Diagrama: Marco Teórico Consolidado
+**Insight central:** Inteligência Híbrida não é metáfora - é cognição distribuída entre agentes com capacidades complementares.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                 MARCO TEÓRICO EPISTEMOLOGIA (Consolidado)                   │
+│                    COGNIÇÃO DISTRIBUÍDA                                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ANTES (Cognição Centralizada):                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  HUMANO faz tudo: pensar, estruturar, executar, validar, persistir  │    │
+│  │  Resultado: Fadiga, inconsistência, conhecimento perdido            │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  DEPOIS (Cognição Distribuída):                                             │
+│  ┌─────────────┬─────────────┬─────────────┐                                │
+│  │   HUMANO    │     LLM     │EPISTEMOLOGIA│                                │
+│  ├─────────────┼─────────────┼─────────────┤                                │
+│  │  Intenção   │  Geração    │  Estrutura  │                                │
+│  │  Validação  │  Execução   │  Método     │                                │
+│  │  Decisão    │  Fluência   │  Persistência│                               │
+│  │  final      │             │  Módulos    │                                │
+│  └─────────────┴─────────────┴─────────────┘                                │
+│  Resultado: Amplificação cognitiva, menos energia, conhecimento acumula    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 2.4 Composição sobre Herança (SOLID)
+
+| Princípio | Aplicação |
+|-----------|-----------|
+| Composição é mais flexível que herança | Módulos opcionais, não hierarquia rígida |
+| Acoplamento fraco | Meta Sistema não depende de módulo específico |
+| Coesão alta | Cada módulo tem responsabilidade única |
+
+**Insight:** Módulo Raciocínio não é "pai" dos Meta Sistemas - é biblioteca que eles podem usar ou não.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    COMPOSIÇÃO vs HERANÇA                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  HERANÇA (rígida - NÃO usamos):                                             │
+│                                                                             │
+│  Epistemologia                                                              │
+│       └── Raciocínio (pai obrigatório)                                      │
+│               ├── Vendas (herda Raciocínio)                                 │
+│               └── Marketing (herda Raciocínio)                              │
+│                                                                             │
+│  Problema: Todo Meta Sistema é FORÇADO a usar Raciocínio                    │
+│                                                                             │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│                                                                             │
+│  COMPOSIÇÃO (flexível - USAMOS):                                            │
+│                                                                             │
+│  Epistemologia                                                              │
+│       ├── Módulo Raciocínio (opcional)                                      │
+│       ├── Módulo Catálogo (opcional)                                        │
+│       ├── Módulo Análise (opcional)                                         │
+│       │                                                                     │
+│       ├── Meta Sistema Vendas                                               │
+│       │   └── USA: M0-M4 + Raciocínio + Análise                             │
+│       │                                                                     │
+│       └── Meta Sistema Glossário                                            │
+│           └── USA: M0-M4 + Catálogo (não precisa de Raciocínio)             │
+│                                                                             │
+│  Vantagem: Cada Meta Sistema escolhe o que precisa                          │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 2.5 LLMs - Capacidades e Limitações
+
+| Aspecto | Capacidade | Limitação |
+|---------|------------|-----------|
+| **Fluência** | Gera texto coerente | Não garante verdade |
+| **Padrões** | Reconhece padrões estatísticos | Não raciocina logicamente |
+| **Contexto** | Usa janela de contexto | Limitada, sem memória persistente |
+| **Execução** | Segue instruções | Não cria método próprio |
+
+**Insight:** LLM é motor potente sem direção. Epistemologia é o chassis que dá estrutura.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    LLM - ARQUITETURA SIMPLIFICADA                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  TREINAMENTO (offline):                                                     │
+│  Corpus massivo → Padrões estatísticos → Pesos neurais                      │
+│                                                                             │
+│  INFERÊNCIA (runtime):                                                      │
+│  Prompt → Contexto (tokens) → Predição → Resposta                           │
+│                                                                             │
+│  LIMITAÇÕES:                                                                │
+│  • Sem memória persistente entre sessões                                    │
+│  • Contexto limitado (janela de tokens)                                     │
+│  • Não "sabe" - prediz estatisticamente                                     │
+│  • Alucina quando padrões são ambíguos                                      │
+│  • Não aprende durante inferência                                           │
+│                                                                             │
+│  SOLUÇÃO (Epistemologia):                                                   │
+│  • GitHub = memória persistente                                             │
+│  • M0-M4 = método explícito                                                 │
+│  • Módulos = raciocínio estruturado                                         │
+│  • Frontmatter = estado do conhecimento                                     │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 2.6 Autopoiesis Generativa
+
+| Princípio | Aplicação |
+|-----------|-----------|
+| Auto-produção | Sistema gera seus próprios componentes |
+| Generatividade | Não apenas se reproduz, mas gera OUTROS sistemas |
+| Clausura operacional | Opera sobre si mesmo recursivamente |
+
+**Extensão:** Epistemologia é autopoiética E generativa - produz a si mesma E produz Meta Sistemas Derivados.
+
+### 2.7 Meta Object Facility (MOF) - OMG
+
+| Princípio | Aplicação |
+|-----------|-----------|
+| Clabject | Meta Sistema é Classe (para baixo) e Objeto (para cima) |
+| Strict Metamodeling | Cada nível é instância estrita do superior |
+| Reflexividade | Epistemologia define a si mesma via M0-M4 |
+
+**Diferencial:** MOF foca em software/UML. Epistemologia foca em conhecimento + raciocínio + módulos opcionais.
+
+### 2.8 Fractal Organizations
+
+| Princípio | Aplicação |
+|-----------|-----------|
+| Auto-similaridade | Mesma estrutura em cada nível |
+| Herança de propriedades | Redução entrópica flui para todos os níveis |
+| Autonomia local | Cada Meta Sistema tem sua epistemologia local |
+
+### 2.9 Diagrama: Marco Teórico Consolidado
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                 MARCO TEÓRICO EPISTEMOLOGIA v3.1 (Consolidado)              │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  FUNDAMENTOS TEÓRICOS:                                                      │
-│  ┌─────────────┬─────────────┬─────────────┬─────────────┬─────────────┐    │
-│  │ Shannon     │ Autopoiesis │ MOF (OMG)   │ Fractal Org │ MHC         │    │
-│  │ (1948)      │ (1980)      │ (1997)      │ (2022)      │ (Commons)   │    │
-│  ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤    │
-│  │ Entropia    │ Auto-       │ Clabject    │ Auto-       │ Coordenação │    │
-│  │ Redução     │ produção    │ Strict Meta │ similaridade│ Hierárquica │    │
-│  │             │ Generativa  │ Reflexivo   │ Herança     │ Emergência  │    │
-│  └──────┬──────┴──────┬──────┴──────┬──────┴──────┬──────┴──────┬──────┘    │
-│         │             │             │             │             │           │
-│         ▼             ▼             ▼             ▼             ▼           │
+│  ┌───────────┬───────────┬───────────┬───────────┬───────────┬───────────┐  │
+│  │ Shannon   │ Hutchins  │ SOLID     │ Autopoie- │ MOF       │ Fractal   │  │
+│  │ (1948)    │ (1995)    │ Principles│ sis (1980)│ (1997)    │ Org (2022)│  │
+│  ├───────────┼───────────┼───────────┼───────────┼───────────┼───────────┤  │
+│  │ Entropia  │ Cognição  │ Composição│ Auto-     │ Clabject  │ Auto-     │  │
+│  │ Redução   │ Distri-   │ sobre     │ produção  │ Strict    │ similari- │  │
+│  │           │ buída     │ Herança   │ Generativa│ Meta      │ dade      │  │
+│  └─────┬─────┴─────┬─────┴─────┬─────┴─────┬─────┴─────┬─────┴─────┬─────┘  │
+│        │           │           │           │           │           │        │
+│        ▼           ▼           ▼           ▼           ▼           ▼        │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │                    PROPRIEDADES DERIVADAS                           │    │
 │  ├─────────────────────────────────────────────────────────────────────┤    │
-│  │                                                                     │    │
+│  │  • Amplificação Cognitiva (Hutchins + LLM)                          │    │
+│  │  • Composição Modular (SOLID)                                       │    │
+│  │  • Raciocínio Estruturado (Método explícito)                        │    │
 │  │  • Redução Entrópica (Shannon)                                      │    │
-│  │  • Recursividade + Reflexividade (Autopoiesis + MOF)                │    │
-│  │  • Composição Fractal + Par E/O Local (Fractal + MOF)               │    │
-│  │  • Herança de Propriedades (Fractal)                                │    │
-│  │  • Coordenação + Emergência (MHC)                                   │    │
+│  │  • Recursividade + Generatividade (Autopoiesis + MOF)               │    │
+│  │  • Composição Fractal (Fractal + MOF)                               │    │
 │  │  • Persistência (KM)                                                │    │
-│  │                                                                     │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
-│  CONCEITO CENTRAL - CLABJECT COM PAR E/O:                                   │
+│  CONCEITO CENTRAL - INTELIGÊNCIA HÍBRIDA:                                   │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │                                                                     │    │
-│  │  NÍVEL SUPERIOR (olha como OBJETO)                                  │    │
-│  │         │                                                           │    │
-│  │         ▼                                                           │    │
-│  │  ┌─────────────────────────────────────────────────────────────┐    │    │
-│  │  │              META SISTEMA (CLABJECT)                        │    │    │
-│  │  │  ┌───────────────────┬───────────────────┐                  │    │    │
-│  │  │  │ EPISTEMOLOGIA     │ ONTOLOGIA         │                  │    │    │
-│  │  │  │ LOCAL             │ LOCAL             │                  │    │    │
-│  │  │  │ (Classes)         │ (Instâncias)      │                  │    │    │
-│  │  │  │        │          │       ▲           │                  │    │    │
-│  │  │  │        └──executa─┼───────┘           │                  │    │    │
-│  │  │  └───────────────────┴───────────────────┘                  │    │    │
-│  │  └─────────────────────────────────────────────────────────────┘    │    │
-│  │         │                                                           │    │
-│  │         ▼                                                           │    │
-│  │  NÍVEL INFERIOR (olha como CLASSE)                                  │    │
-│  │                                                                     │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-│  HERANÇA E→O→E (Ontologia de cima vira Epistemologia de baixo):            │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                                                                     │    │
-│  │  EPISTEMOLOGIA BASE                                                 │    │
-│  │  ├── E: Classes fundacionais                                        │    │
-│  │  └── O: "Meta Sistema Mercado" ◄──────────────────────┐             │    │
-│  │              │                                        │             │    │
-│  │              ▼                                        │             │    │
-│  │  META SISTEMA MERCADO                                 │             │    │
-│  │  ├── E: Classe "Segmento" (herdou de cima) ◄──────────┘             │    │
-│  │  └── O: "Segmento PMEs" ◄─────────────────────────────┐             │    │
-│  │              │                                        │             │    │
-│  │              ▼                                        │             │    │
-│  │  SUB-SISTEMA SEGMENTO                                 │             │    │
-│  │  ├── E: Classe "Persona" (herdou de cima) ◄───────────┘             │    │
-│  │  └── O: "Persona João, dono de PME"                                 │    │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────────┐  │    │
+│  │  │   HUMANO    │  │     LLM     │  │       EPISTEMOLOGIA         │  │    │
+│  │  │  Intenção   │  │  Fluência   │  │  ┌───────────────────────┐  │  │    │
+│  │  │  Supervisão │ +│  Execução   │ +│  │ Classes (M0-M4)       │  │  │    │
+│  │  │  Validação  │  │  Geração    │  │  ├───────────────────────┤  │  │    │
+│  │  │             │  │             │  │  │ Módulos Opcionais:    │  │  │    │
+│  │  │             │  │             │  │  │ • Raciocínio          │  │  │    │
+│  │  │             │  │             │  │  │ • Catálogo            │  │  │    │
+│  │  │             │  │             │  │  │ • Análise             │  │  │    │
+│  │  │             │  │             │  │  │ • ...                 │  │  │    │
+│  │  │             │  │             │  │  └───────────────────────┘  │  │    │
+│  │  └─────────────┘  └─────────────┘  └─────────────────────────────┘  │    │
+│  │         │                │                       │                  │    │
+│  │         └────────────────┼───────────────────────┘                  │    │
+│  │                          ▼                                          │    │
+│  │              AMPLIFICAÇÃO COGNITIVA                                 │    │
+│  │              (menos energia, mais resultado)                        │    │
 │  │                                                                     │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 2.11 Síntese: Propriedades Fundamentadas
+### 2.10 Síntese: Propriedades Fundamentadas
 
 | Propriedade | Fundamento Teórico | Operacionalização |
 |-------------|-------------------|-------------------|
-| **Redução Entrópica** | Shannon - estrutura reduz incerteza | Diagrama-first, SSOT, atomicidade |
-| **Recursividade** | Autopoiesis + MOF - sistema se autoproduz e é reflexivo | M0-M4 aplicado a si mesmo |
-| **Composição Fractal** | Fractal Orgs - auto-similaridade | Mesma estrutura em cada nível |
-| **Clabject** | MOF - elemento dual | Meta Sistema é Classe e Objeto simultaneamente |
-| **Par E/O Local** | Filosofia + MOF | Cada nível tem epistemologia e ontologia próprias |
-| **Herança E→O→E** | MOF Strict Metamodeling | Ontologia de cima vira Epistemologia de baixo |
-| **Coordenação Hierárquica** | MHC | Meta Sistema coordena Sub-Meta Sistemas |
-| **Emergência** | MHC + Complexity | Ontologia emerge da execução |
-| **Persistência** | KM - conhecimento codificado | GitHub + frontmatter + histórico |
+| **Amplificação Cognitiva** | Hutchins - Cognição Distribuída | Humano + LLM + Epistemologia |
+| **Raciocínio Estruturado** | Método explícito + Módulo Raciocínio | Hipótese → Evidência → Inferência → Decisão |
+| **Composição Modular** | SOLID - Composição sobre Herança | Módulos opcionais, não hierarquia forçada |
+| **Redução Entrópica** | Shannon | Diagrama-first, SSOT, atomicidade |
+| **Recursividade** | Autopoiesis + MOF | M0-M4 aplicado a si mesmo |
+| **Generatividade** | Autopoiesis estendida | Epistemologia gera Meta Sistemas |
+| **Composição Fractal** | Fractal Orgs + MOF | Mesma estrutura em cada nível |
+| **Clabject** | MOF | Meta Sistema é Classe e Objeto |
+| **Persistência** | KM | GitHub + frontmatter + histórico |
 
 ---
 
@@ -383,18 +421,19 @@ task_ref: T08
 
 ### 3.1 Definição
 
-**Epistemologia** é o Meta Sistema Base (reflexivo) que:
-- **Cria** Meta Sistemas Derivados com propriedades anti-entrópicas
-- **Define** as classes fundacionais reutilizáveis em qualquer domínio
-- **Fornece** o método M0-M4 para estruturação de conhecimento
-- **Garante** herança de propriedades para todos os níveis da hierarquia
+**Epistemologia** é o Meta Sistema Base que:
+- **Amplifica** capacidade cognitiva humana via Inteligência Híbrida
+- **Fornece** classes estruturais obrigatórias (M0-M4)
+- **Oferece** módulos opcionais para composição (Raciocínio, Catálogo, Análise, ...)
+- **Gera** Meta Sistemas Derivados com propriedades herdadas
+- **Reduz** dispêndio de energia na execução de atividades
 
 ### 3.2 Tipo
 
 | Aspecto | Valor |
 |---------|-------|
 | **Tipo** | Framework |
-| **Natureza** | Meta Sistema Base (reflexivo) |
+| **Natureza** | Meta Sistema Base (reflexivo + generativo) |
 | **Camada** | 3 (Framework/Epistemologia) |
 
 ### 3.3 Fronteiras
@@ -404,27 +443,34 @@ task_ref: T08
 | **Superior** | GENESIS (Camada 1) - infraestrutura de bootstrap |
 | **Inferior** | Meta Sistemas Derivados (Camada 4+) - consumidores |
 | **Lateral** | Infraestrutura (00_I) - ferramentas de persistência |
+| **Lateral** | LLM - motor de execução (fluência, geração) |
+| **Lateral** | Humano - intenção, supervisão, validação |
 
 ### 3.4 O que É vs O que NÃO É
 
 | Epistemologia É | Epistemologia NÃO É |
 |-----------------|---------------------|
+| Amplificador cognitivo (com Humano + LLM) | Inteligência artificial autônoma |
+| Classes estruturais obrigatórias (M0-M4) | Conteúdo de domínio específico |
+| Módulos opcionais para composição | Hierarquia rígida de herança |
 | Fábrica de Meta Sistemas | O conhecimento em si (Ontologia) |
-| Método de estruturação (M0-M4) | Conteúdo de domínio específico |
-| Classes fundacionais reutilizáveis | Instâncias de um domínio |
-| Propriedades herdáveis | Dados brutos |
-| Reflexiva (define a si mesma) | Dependente de domínio externo |
+| Método de estruturação | Execução sem supervisão |
+| Reflexiva e generativa | Dependente de domínio externo |
 
 ### 3.5 Componentes
 
-| Componente | Tipo | Função |
-|------------|------|--------|
-| **Problema (M0)** | Classe | Identifica sintomas, causas, necessidades |
-| **Marco Teórico (M1)** | Classe | Fundamenta teoricamente |
-| **Objeto (M2)** | Classe | Define escopo e fronteiras |
-| **Classe (M3)** | Classe | Especifica atributos e métodos |
-| **Documento (M4)** | Classe | Persiste e versiona |
-| **M0-M4** | Método | Ciclo recursivo de estruturação |
+| Componente | Tipo | Obrigatório? | Função |
+|------------|------|--------------|--------|
+| **Problema (M0)** | Classe | ✅ Sim | Identifica sintomas, causas, necessidades |
+| **Marco Teórico (M1)** | Classe | ✅ Sim | Fundamenta teoricamente |
+| **Objeto (M2)** | Classe | ✅ Sim | Define escopo e fronteiras |
+| **Classe (M3)** | Classe | ✅ Sim | Especifica atributos e métodos |
+| **Documento (M4)** | Classe | ✅ Sim | Persiste e versiona |
+| **M0-M4** | Método | ✅ Sim | Ciclo recursivo de estruturação |
+| **Módulo Raciocínio** | Módulo | ⚪ Não | Hipótese, Evidência, Inferência, Decisão |
+| **Módulo Catálogo** | Módulo | ⚪ Não | Item, Categoria, Tag |
+| **Módulo Análise** | Módulo | ⚪ Não | Métrica, Dimensão, Agregação |
+| **Módulo [N]** | Módulo | ⚪ Não | Extensível conforme necessidade |
 
 ### 3.6 Entradas e Saídas
 
@@ -432,7 +478,8 @@ task_ref: T08
 |---------|-------|
 | Domínio não estruturado | Meta Sistema Derivado funcional |
 | Problema identificado | Classes do domínio |
-| Necessidade de conhecimento | Ontologia (instâncias validadas) |
+| Necessidade de raciocínio | Decisões estruturadas (se usar Módulo Raciocínio) |
+| Atividade a executar | Atividade executada com menos energia humana |
 
 ### 3.7 Dependências
 
@@ -441,56 +488,69 @@ task_ref: T08
 | GENESIS | Infraestrutura de bootstrap |
 | GitHub | Persistência versionada |
 | Frontmatter | Metadados estruturados |
+| LLM | Motor de execução (fluência, geração) |
+| Humano | Intenção, supervisão, validação |
 
 | É dependência de | Para |
 |------------------|------|
-| Meta Sistemas Derivados | Classes fundacionais |
-| Sub-Meta Sistemas | Herança de propriedades |
+| Meta Sistemas Derivados | Classes + Módulos |
+| Módulos | Extensão de capacidades |
 | Ontologia | Método de criação |
 
 ### 3.8 Diagrama do Objeto
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                        OBJETO: EPISTEMOLOGIA                                │
+│                        OBJETO: EPISTEMOLOGIA v3.1                           │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  DEFINIÇÃO: Meta Sistema Base (reflexivo) que cria Meta Sistemas Derivados  │
+│  DEFINIÇÃO: Meta Sistema Base que amplifica capacidade cognitiva humana     │
+│             via classes estruturais + módulos opcionais                     │
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │                         FRONTEIRAS                                  │    │
 │  │                                                                     │    │
-│  │  ▲ GENESIS (Camada 1) - infraestrutura                              │    │
+│  │  ▲ GENESIS (Camada 1)                                               │    │
 │  │  │                                                                  │    │
 │  │  │  ┌───────────────────────────────────────────────────────────┐   │    │
 │  │  │  │              EPISTEMOLOGIA (Camada 3)                     │   │    │
 │  │  │  │                                                           │   │    │
-│  │  │  │  COMPONENTES:                                             │   │    │
+│  │  │  │  CLASSES ESTRUTURAIS (obrigatórias):                      │   │    │
 │  │  │  │  ┌─────────┬─────────┬─────────┬─────────┬─────────┐      │   │    │
 │  │  │  │  │Problema │ Marco   │ Objeto  │ Classe  │Documento│      │   │    │
 │  │  │  │  │ (M0)    │ (M1)    │ (M2)    │ (M3)    │ (M4)    │      │   │    │
 │  │  │  │  └─────────┴─────────┴─────────┴─────────┴─────────┘      │   │    │
-│  │  │  │                       │                                   │   │    │
-│  │  │  │  MÉTODO: M0-M4 ◄──────┘                                   │   │    │
 │  │  │  │                                                           │   │    │
-│  │  │  │  PROPRIEDADES HERDÁVEIS:                                  │   │    │
+│  │  │  │  MÓDULOS OPCIONAIS (composição):                          │   │    │
+│  │  │  │  ┌───────────┬───────────┬───────────┬───────────┐        │   │    │
+│  │  │  │  │Raciocínio │ Catálogo  │ Análise   │ ...       │        │   │    │
+│  │  │  │  │(Hipótese, │ (Item,    │ (Métrica, │           │        │   │    │
+│  │  │  │  │ Evidência,│  Categoria│  Dimensão,│           │        │   │    │
+│  │  │  │  │ Inferência│  Tag)     │  Agregação│           │        │   │    │
+│  │  │  │  │ Decisão)  │           │           │           │        │   │    │
+│  │  │  │  └───────────┴───────────┴───────────┴───────────┘        │   │    │
+│  │  │  │                                                           │   │    │
+│  │  │  │  PROPRIEDADES HERDADAS:                                   │   │    │
+│  │  │  │  • Amplificação Cognitiva                                 │   │    │
 │  │  │  │  • Redução Entrópica                                      │   │    │
 │  │  │  │  • Recursividade                                          │   │    │
 │  │  │  │  • Persistência                                           │   │    │
-│  │  │  │  • Composição Fractal                                     │   │    │
 │  │  │  │                                                           │   │    │
 │  │  │  └───────────────────────────────────────────────────────────┘   │    │
 │  │  │                                                                  │    │
-│  │  ▼ META SISTEMAS DERIVADOS (Camada 4+) - consumidores               │    │
+│  │  ▼ META SISTEMAS DERIVADOS (Camada 4+)                              │    │
 │  │                                                                     │    │
-│  │  ◄──► INFRAESTRUTURA (00_I) - ferramentas                           │    │
+│  │  ◄──► LLM (motor de execução)                                       │    │
+│  │  ◄──► HUMANO (intenção, supervisão, validação)                      │    │
+│  │  ◄──► INFRAESTRUTURA 00_I (ferramentas)                             │    │
 │  │                                                                     │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 │  ENTRADAS:                      SAÍDAS:                                     │
 │  • Domínio não estruturado      • Meta Sistema Derivado                     │
 │  • Problema identificado        • Classes do domínio                        │
-│  • Necessidade                  • Ontologia (instâncias)                    │
+│  • Atividade a executar         • Atividade executada (menos energia)       │
+│                                 • Decisões estruturadas (com Raciocínio)    │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -516,23 +576,19 @@ _A desenvolver_
 | 00_E_1_4_Classe | Filho - Classe usada em M3 |
 | 00_E_1_6_Documento | Filho - Classe usada em M4 |
 | 00_I_1_1_GitHub | Infraestrutura - COMO persistir |
+| **_backlog/Modulo_Raciocinio.md** | **Futuro - Módulo a desenvolver** |
 
 ### Externas
 
 | Fonte | Conceito |
 |-------|----------|
 | Shannon, C. (1948). A Mathematical Theory of Communication | Entropia, Information Theory |
+| Hutchins, E. (1995). Cognition in the Wild | Cognição Distribuída |
 | Maturana, H. & Varela, F. (1980). Autopoiesis and Cognition | Autopoiesis, Auto-produção |
-| Luhmann, N. (1986). Social Systems | Autopoiesis social, Clausura operacional |
-| Nonaka, I. & Takeuchi, H. (1995). The Knowledge Creating Company | SECI, Knowledge Management |
-| von Krogh, G. & Roos, J. (1995). Organizational Epistemology | Epistemologia organizacional |
-| Garfield, S. (2019). Knowledge Management and Epistemology | KM como epistemologia aplicada |
-| Hofstadter, D. (1979). Gödel, Escher, Bach | Recursividade, Auto-referência |
-| OMG (1997). Meta Object Facility Specification | Clabject, Strict Metamodeling, ISO 19502 |
+| Martin, R. (2000). Design Principles and Design Patterns | SOLID, Composição sobre Herança |
+| OMG (1997). Meta Object Facility Specification | Clabject, Strict Metamodeling |
 | BCG (2022). The Organization of the Future Is Fractal | Auto-similaridade, Herança |
-| Sociocracy 3.0. Fractal Organization Pattern | Composição fractal |
-| Commons, M. Model of Hierarchical Complexity | Coordenação hierárquica, Emergência |
-| Raye, J. (2013). Fractal Organization Theory | Autonomia local, Fluxo de informação |
+| Nonaka, I. & Takeuchi, H. (1995). The Knowledge Creating Company | Knowledge Management |
 
 ---
 
@@ -540,10 +596,7 @@ _A desenvolver_
 
 | Versão | Data | Hora | Alteração |
 |--------|------|------|-----------|
-| 2.2 | 2025-12-03 | 14:20 | Última versão antes revisão |
-| 3.0-M0 | 2025-12-04 | 19:30 | M0 completo: Problema central definido. |
-| 3.0-M0.1 | 2025-12-04 | 19:45 | Diagrama generalizado: Meta Sistema [N]. |
-| 3.0-M0.2 | 2025-12-04 | 20:00 | Pré-requisitos GENESIS. Ciclo recursivo. |
-| 3.0-M1 | 2025-12-04 | 20:30 | M1: Marco Teórico com 5 fundamentos. |
-| 3.0-M1.1 | 2025-12-04 | 21:00 | M1 expandido: MOF, Fractal Orgs, MHC. Conceitos Clabject, Par E/O Local, Herança E→O→E. Diagrama consolidado. |
-| 3.0-M2 | 2025-12-04 | 21:15 | M2 completo: Objeto definido com fronteiras, componentes, entradas/saídas, dependências. |
+| 3.0-M2 | 2025-12-04 | 21:15 | M2 completo anterior |
+| 3.1-M0 | 2025-12-04 | 22:30 | Refatoração: Problema = Amplificação Cognitiva |
+| 3.1-M1 | 2025-12-04 | 22:30 | Marco Teórico: +Cognição Distribuída, +SOLID, +LLM |
+| 3.1-M2 | 2025-12-04 | 22:30 | Objeto: +Módulos opcionais, +fronteiras LLM/Humano |
