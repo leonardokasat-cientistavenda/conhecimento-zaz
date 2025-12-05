@@ -226,13 +226,14 @@ task_ref: T02
 - **Resolve** Bootstrap Circular via STUB
 - **Reduz** Entropia Contextual via arquivos atômicos + índice
 - **Orquestra** hierarquia de responsabilidades (Propósito → Método → Capacidades)
+- **Roteia** usuários para o Meta Sistema adequado
 
 ### 3.2 Tipo
 
 | Aspecto | Valor |
 |---------|-------|
 | **Tipo** | Framework |
-| **Natureza** | Propósito + Orquestração |
+| **Natureza** | Propósito + Orquestração + Roteamento |
 | **Camada** | 1 (Stub/GENESIS) |
 
 ### 3.3 Fronteiras
@@ -249,9 +250,9 @@ task_ref: T02
 |-----------|---------------|
 | Propósito (PORQUÊ) | Método (isso é Epistemologia) |
 | Visão de Inteligência Híbrida | Implementação de classes M0-M4 |
-| Orquestrador de responsabilidades | Executor de domínios |
-| Resolve Bootstrap e Entropia | Define conteúdo de negócio |
-| Framework de propósito | Catálogo de instâncias (Ontologia) |
+| Roteador para Meta Sistemas | Executor de domínios |
+| Catálogo de Meta Sistemas | Conteúdo de negócio |
+| Framework de propósito | Instâncias de Ontologia |
 
 ### 3.5 Hierarquia de Responsabilidades
 
@@ -267,6 +268,7 @@ task_ref: T02
 │  │  • Define visão: Inteligência Híbrida                                    │
 │  │  • Resolve: Bootstrap Circular, Entropia Contextual                      │
 │  │  • Orquestra: hierarquia Propósito → Método → Capacidades                │
+│  │  • Roteia: usuário → Meta Sistema adequado                               │
 │  │                                                                          │
 │  └──────────────────────────────────────────────────────────────────────────│
 │       │                                                                     │
@@ -302,7 +304,7 @@ task_ref: T02
 | Componente | Tipo | Camada | Função |
 |------------|------|--------|--------|
 | **Axiomas** | Conceitos | 0 | POO, Recursividade, Meta-Programação, Semiótica |
-| **GENESIS** | Framework | 1 | Propósito, Bootstrap, Orquestração |
+| **GENESIS** | Framework | 1 | Propósito, Bootstrap, Orquestração, Roteamento |
 | **Infraestrutura** | Ferramentas | 2 | GitHub, Estrutura de Pastas |
 | **Epistemologia** | Framework | 3 | Método M0-M4, Classes estruturais |
 | **Módulos** | Extensões | 3+ | Raciocínio, Catálogo, Análise |
@@ -315,6 +317,7 @@ task_ref: T02
 | Necessidade de amplificação cognitiva | Sistema estruturado funcional |
 | Domínio não estruturado | Meta Sistema Derivado |
 | Conversa com LLM | Conhecimento persistido |
+| Input do usuário | Roteamento para Meta Sistema |
 
 ### 3.8 Dependências
 
@@ -336,8 +339,8 @@ task_ref: T02
 │                        OBJETO: GENESIS v1.0                                 │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  DEFINIÇÃO: Framework de propósito que define Inteligência Híbrida          │
-│             e orquestra hierarquia Propósito → Método → Capacidades         │
+│  DEFINIÇÃO: Framework de propósito que define Inteligência Híbrida,         │
+│             orquestra hierarquia e roteia para Meta Sistemas                │
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │                         FRONTEIRAS                                  │    │
@@ -357,36 +360,23 @@ task_ref: T02
 │  │  │  │  • Bootstrap Circular (via STUB)                          │   │    │
 │  │  │  │  • Entropia Contextual (via arquivos + índice)            │   │    │
 │  │  │  │                                                           │   │    │
-│  │  │  │  ORQUESTRA:                                               │   │    │
-│  │  │  │  • Epistemologia (método)                                 │   │    │
-│  │  │  │  • Módulos (capacidades)                                  │   │    │
+│  │  │  │  ROTEIA:                                                  │   │    │
+│  │  │  │  • Usuário → Meta Sistema adequado                        │   │    │
 │  │  │  │                                                           │   │    │
 │  │  │  └───────────────────────────────────────────────────────────┘   │    │
 │  │  │                           │                                      │    │
-│  │  │                           │ orquestra                            │    │
+│  │  │                           │ roteia para                          │    │
 │  │  │                           ▼                                      │    │
 │  │  │  ┌───────────────────────────────────────────────────────────┐   │    │
-│  │  │  │              EPISTEMOLOGIA (C3)                           │   │    │
-│  │  │  │  Método M0-M4 + Classes estruturais                       │   │    │
-│  │  │  └───────────────────────────────────────────────────────────┘   │    │
-│  │  │                           │                                      │    │
-│  │  │                           │ estende via                          │    │
-│  │  │                           ▼                                      │    │
-│  │  │  ┌───────────────────────────────────────────────────────────┐   │    │
-│  │  │  │              MÓDULOS OPCIONAIS                            │   │    │
-│  │  │  │  Raciocínio, Catálogo, Análise, ...                       │   │    │
+│  │  │  │              META SISTEMAS (C3+)                          │   │    │
+│  │  │  │  Epistemologia, Vendas, Glossário, ...                    │   │    │
 │  │  │  └───────────────────────────────────────────────────────────┘   │    │
 │  │  │                                                                  │    │
-│  │  ▼ DOMÍNIOS (C4): Vendas, Glossário, ...                            │    │
+│  │  ▼ DOMÍNIOS (C4): Instâncias específicas                            │    │
 │  │                                                                     │    │
 │  │  ◄──► INFRAESTRUTURA (C2): GitHub, Estrutura de Pastas              │    │
 │  │                                                                     │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-│  ENTRADAS:                      SAÍDAS:                                     │
-│  • Necessidade cognitiva        • Sistema estruturado                       │
-│  • Domínio não estruturado      • Meta Sistema Derivado                     │
-│  • Conversa com LLM             • Conhecimento persistido                   │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -403,11 +393,74 @@ task_ref: T02
 | **Tipo** | Framework |
 | **Versão** | 1.0 |
 | **Camada** | 1 (Stub/GENESIS) |
-| **Natureza** | Propósito + Orquestração |
+| **Natureza** | Propósito + Orquestração + Roteamento |
 
-### 4.2 Atributos
+### 4.2 Classe: MetaSistema
 
-#### 4.2.1 Atributos de Identificação
+GENESIS mantém um catálogo de Meta Sistemas para roteamento. Cada Meta Sistema deve implementar os atributos abaixo para ser "roteável".
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        META_SISTEMA                             │
+├─────────────────────────────────────────────────────────────────┤
+│  Atributos                                                      │
+│  ─────────                                                      │
+│  + nome: string                    # Ex: "Epistemologia"        │
+│  + problema_que_resolve: string    # Descrição do problema      │
+│  + triggers: string[]              # Palavras-chave de ativação │
+│  + exemplos_uso: string[]          # Frases típicas do usuário  │
+│  + nao_resolve: string[]           # O que NÃO faz              │
+│  + arquivo_raiz: string            # Entry point do sistema     │
+│  + pai: MetaSistema | null         # null = raiz                │
+│  + sub_meta_sistemas: MetaSistema[]# Filhos                     │
+│  + nivel: int                      # 0 = raiz, 1 = filho, etc.  │
+│  + cobertura: enum                 # Completo | Parcial | Stub  │
+├─────────────────────────────────────────────────────────────────┤
+│  Restrições                                                     │
+│  ──────────                                                     │
+│  R1: contexto_roteamento obrigatório (problema + triggers)      │
+│  R2: sem contexto_roteamento = invisível para GENESIS           │
+│  R3: cobertura define se resolve 100% ou parcial                │
+├─────────────────────────────────────────────────────────────────┤
+│  Instâncias (atual)                                             │
+│  ──────────────────                                             │
+│  - Epistemologia: "estruturar conhecimento", C3                 │
+├─────────────────────────────────────────────────────────────────┤
+│  Instâncias (futuro)                                            │
+│  ──────────────────                                             │
+│  - Vendas: "gerenciar pipeline", C4                             │
+│  - Glossário: "catalogar termos", C4                            │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### Estrutura Hierárquica
+
+```
+Vendas (nível 0, raiz)
+├── problema_que_resolve: "gerenciar processo comercial"
+├── cobertura: Parcial
+├── pai: null
+└── sub_meta_sistemas:
+    │
+    ├── Prospecção (nível 1)
+    │   ├── problema_que_resolve: "gerar leads qualificados"
+    │   ├── cobertura: Completo
+    │   ├── pai: Vendas
+    │   └── sub_meta_sistemas:
+    │       └── Qualificação (nível 2)
+    │           ├── problema_que_resolve: "filtrar leads por fit"
+    │           ├── cobertura: Stub
+    │           └── pai: Prospecção
+    │
+    └── Fechamento (nível 1)
+        ├── problema_que_resolve: "converter oportunidade"
+        ├── cobertura: Stub
+        └── pai: Vendas
+```
+
+### 4.3 Atributos GENESIS
+
+#### 4.3.1 Atributos de Identificação
 
 | Atributo | Tipo | Obrigatório | Descrição |
 |----------|------|-------------|-----------|
@@ -417,7 +470,7 @@ task_ref: T02
 | `camada` | Integer | ✅ | 1 |
 | `status` | Enum | ✅ | Draft, Review, Published |
 
-#### 4.2.2 Atributos de Propósito
+#### 4.3.2 Atributos de Propósito
 
 | Atributo | Tipo | Obrigatório | Descrição |
 |----------|------|-------------|-----------|
@@ -425,147 +478,228 @@ task_ref: T02
 | `tese` | String | ✅ | Declaração do propósito central |
 | `problemas_resolvidos` | Array[String] | ✅ | [Bootstrap Circular, Entropia Contextual] |
 
-#### 4.2.3 Atributos Estruturais
+#### 4.3.3 Atributos Estruturais
 
 | Atributo | Tipo | Obrigatório | Descrição |
 |----------|------|-------------|-----------|
 | `camadas` | Array[Camada] | ✅ | [Axiomas, Stub, Infra, Framework, Domínios] |
+| `catalogo_meta_sistemas` | Array[MetaSistema] | ✅ | Meta Sistemas disponíveis para roteamento |
 | `indice_arquivos` | Array[Arquivo] | ✅ | Catálogo de arquivos do sistema |
-| `hierarquia` | Hierarquia | ✅ | Propósito → Método → Capacidades |
 
-#### 4.2.4 Atributos de Relação
+#### 4.3.4 Atributos de Relação
 
 | Atributo | Tipo | Obrigatório | Descrição |
 |----------|------|-------------|-----------|
 | `depende_de` | Array[Referência] | ✅ | [Axiomas, Infraestrutura] |
 | `eh_dependencia_de` | Array[Referência] | ✅ | [Epistemologia, Módulos, Domínios] |
 
-#### 4.2.5 Diagrama de Atributos
+### 4.4 Métodos
+
+#### 4.4.1 Diagrama Resumido
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         ATRIBUTOS: GENESIS                                  │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  IDENTIFICAÇÃO:                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  nome: "GENESIS"                                                    │    │
-│  │  versao: "1.0"                                                      │    │
-│  │  tipo: Framework                                                    │    │
-│  │  camada: 1                                                          │    │
-│  │  status: Draft | Review | Published                                 │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-│  PROPÓSITO:                                                                 │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  visao: "Inteligência Híbrida"                                      │    │
-│  │  tese: "Amplificar capacidade cognitiva humana via sistema          │    │
-│  │         estruturado: Humano + LLM + Sistema"                        │    │
-│  │  problemas_resolvidos: [                                            │    │
-│  │      "Bootstrap Circular",                                          │    │
-│  │      "Entropia Contextual"                                          │    │
-│  │  ]                                                                  │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-│  ESTRUTURAIS:                                                               │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  camadas: [                                                         │    │
-│  │      {id: 0, nome: "Axiomas", status: "Imutável"},                   │    │
-│  │      {id: 1, nome: "Stub", status: "Atual"},                         │    │
-│  │      {id: 2, nome: "Infraestrutura", status: "Estável"},             │    │
-│  │      {id: 3, nome: "Framework", status: "Estável"},                  │    │
-│  │      {id: 4, nome: "Domínios", status: "Futuro"}                     │    │
-│  │  ]                                                                  │    │
-│  │                                                                     │    │
-│  │  indice_arquivos: [...]  // Catálogo de arquivos                    │    │
-│  │                                                                     │    │
-│  │  hierarquia: {                                                      │    │
-│  │      proposito: "GENESIS",                                          │    │
-│  │      metodo: "Epistemologia",                                       │    │
-│  │      capacidades: ["Raciocínio", "Catálogo", "Análise"]             │    │
-│  │  }                                                                  │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-│  RELAÇÕES:                                                                  │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  depende_de: [Axiomas, Infraestrutura]                              │    │
-│  │  eh_dependencia_de: [Epistemologia, Módulos, Domínios]              │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                       GENESIS - MÉTODOS                         │
+└─────────────────────────────────────────────────────────────────┘
+
+                          input_usuario
+                                │
+                                ▼
+                    ┌───────────────────────┐
+                    │  1. definir_problema  │
+                    └───────────────────────┘
+                                │
+                                │ {dominio, acao, necessidade}
+                                │
+                                ▼
+                    ┌───────────────────────┐
+                    │      2. rotear        │
+                    └───────────────────────┘
+                                │
+                                │ {meta_sistema, cobertura, nivel}
+                                │
+                                ▼
+                    ┌───────────────────────┐
+                    │  3. confirmar_rota    │
+                    └───────────────────────┘
+                                │
+                                │ boolean
+                                │
+                                ▼
+                    ┌───────────────────────┐
+                    │   4. executar_rota    │
+                    └───────────────────────┘
+                                │
+                                ▼
+                       contexto_meta_sistema
 ```
 
-### 4.3 Métodos
+#### 4.4.2 Diagrama Detalhado
 
-#### 4.3.1 carregar_contexto()
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                  GENESIS - MÉTODOS (DETALHADO)                  │
+└─────────────────────────────────────────────────────────────────┘
+
+
+                          input_usuario
+                                │
+                                │
+════════════════════════════════════════════════════════════════════
+                     1. definir_problema()
+════════════════════════════════════════════════════════════════════
+                                │
+                                │  Usa: Classe Problema (M0)
+                                │       da Epistemologia
+                                │
+                                ▼
+                    extrair_significantes()
+                                │
+                                ▼
+                     mapear_significados()
+                                │
+                                ▼
+                   identificar_necessidade()
+                                │
+                                ▼
+                    Output: {dominio, acao, necessidade}
+                                │
+                                │
+════════════════════════════════════════════════════════════════════
+                          2. rotear()
+════════════════════════════════════════════════════════════════════
+                                │
+                                ▼
+                      recuperar_catalogo()
+                                │
+                                ▼
+                       MetaSistema[]
+                                │
+                                ▼
+                 match_semantico(problema, catalogo)
+                                │
+                                │
+              ┌─────────────────┼─────────────────┐
+              │                 │                 │
+              ▼                 ▼                 ▼
+        Match 100%        Match parcial       Sem match
+              │                 │                 │
+              ▼                 ▼                 ▼
+      cobertura:          cobertura:        cobertura:
+       Completo            Parcial             null
+              │                 │                 │
+              └─────────────────┼─────────────────┘
+                                │
+                                ▼
+              Output: {meta_sistema, cobertura, nivel}
+                                │
+                                │
+════════════════════════════════════════════════════════════════════
+                      3. confirmar_rota()
+════════════════════════════════════════════════════════════════════
+                                │
+              ┌─────────────────┼─────────────────┐
+              │                 │                 │
+              ▼                 ▼                 ▼
+         Completo           Parcial             null
+              │                 │                 │
+              ▼                 ▼                 ▼
+       "Encontrei        "Encontrei [X]     "Não encontrei
+        [X]. Deseja       mas não cobre      meta-sistema.
+        entrar?"          [Y]. Criar sub?"   Criar novo?"
+              │                 │                 │
+              └─────────────────┼─────────────────┘
+                                │
+                                ▼
+                        usuario_confirma()
+                                │
+                                ▼
+                         Output: boolean
+                                │
+                                │
+════════════════════════════════════════════════════════════════════
+                       4. executar_rota()
+════════════════════════════════════════════════════════════════════
+                                │
+              ┌─────────────────┼─────────────────┐
+              │                 │                 │
+              ▼                 ▼                 ▼
+      ┌───────────┐     ┌───────────┐     ┌───────────┐
+      │  CASO A   │     │  CASO B   │     │  CASO C   │
+      │Resolve 100│     │  Parcial  │     │Não existe │
+      └───────────┘     └───────────┘     └───────────┘
+              │                 │                 │
+              ▼                 ▼                 ▼
+        carregar_       Identifica         Usuário
+        contexto()       andar             confirma
+              │                 │                 │
+              ▼                 ▼                 ▼
+        Entra no         Usuário           Epistemologia
+        Meta Sistema     confirma          .ciclo_m0_m4()
+              │                 │                 │
+              ▼                 ▼                 ▼
+        Segue métodos    Epistemologia     Novo Meta
+        do domínio       .ciclo_m0_m4()    Sistema (raiz)
+                         (dentro do pai)        │
+                                │                 │
+                                ▼                 ▼
+                         Sub-Meta-Sistema   Indexa no
+                         criado             GENESIS
+                                │
+                                ▼
+                         Indexa no pai
+                         E no GENESIS
+```
+
+#### 4.4.3 Especificação dos Métodos
+
+##### definir_problema(input_usuario)
 
 | Campo | Valor |
 |-------|-------|
-| **Nome** | carregar_contexto |
-| **Entrada** | path_genesis: String |
-| **Saída** | Contexto (arquivos carregados) |
-| **Descrição** | Lê GENESIS.md e arquivos dependentes conforme índice |
+| **Nome** | definir_problema |
+| **Entrada** | input_usuario: String |
+| **Saída** | {dominio, acao, necessidade} |
+| **Usa** | Classe Problema (M0) da Epistemologia |
+| **Descrição** | Aplica M0 para extrair significantes e identificar necessidade |
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    MÉTODO: carregar_contexto()                              │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  ENTRADA: path_genesis (ex: "genesis/GENESIS.md")                           │
-│                                                                             │
-│  PROCESSO:                                                                  │
-│  ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐                   │
-│  │ Ler     │───▶│Identificar───▶│ Carregar│───▶│ Retornar│                  │
-│  │ GENESIS │    │dependên- │    │ arquivos│    │ contexto│                  │
-│  │         │    │cias      │    │         │    │         │                  │
-│  └─────────┘    └─────────┘    └─────────┘    └─────────┘                   │
-│                                                                             │
-│  REGRA: SE usuário menciona Camada N                                        │
-│         ENTÃO carregar Arquivos onde camada <= N                            │
-│         ORDENADO por depende_de (dependências primeiro)                     │
-│                                                                             │
-│  SAÍDA: Contexto {arquivos_carregados, camada_atual, sprint_atual}          │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-#### 4.3.2 resolver_dependencia()
+##### rotear(problema)
 
 | Campo | Valor |
 |-------|-------|
-| **Nome** | resolver_dependencia |
-| **Entrada** | indice: Indice, path: String |
-| **Saída** | Array[Arquivo] |
-| **Descrição** | Identifica e carrega arquivos referenciados |
+| **Nome** | rotear |
+| **Entrada** | problema: {dominio, acao, necessidade} |
+| **Saída** | {meta_sistema, cobertura, nivel} |
+| **Descrição** | Consulta catálogo e faz match semântico |
 
-#### 4.3.3 validar_camada()
-
-| Campo | Valor |
-|-------|-------|
-| **Nome** | validar_camada |
-| **Entrada** | camada_id: Integer |
-| **Saída** | Boolean |
-| **Descrição** | Verifica se camada anterior está estável |
-
-#### 4.3.4 refatorar_stub()
+##### confirmar_rota(rota)
 
 | Campo | Valor |
 |-------|-------|
-| **Nome** | refatorar_stub |
-| **Entrada** | descobertas: Array, versao_atual: SemVer |
-| **Saída** | GENESIS (nova versão) |
-| **Descrição** | Atualiza GENESIS com conhecimento gerado |
+| **Nome** | confirmar_rota |
+| **Entrada** | rota: {meta_sistema, cobertura, nivel} |
+| **Saída** | boolean |
+| **Descrição** | Apresenta opção ao usuário e aguarda confirmação |
 
-### 4.4 Tabela Consolidada de Métodos
+##### executar_rota(rota_confirmada)
+
+| Campo | Valor |
+|-------|-------|
+| **Nome** | executar_rota |
+| **Entrada** | rota_confirmada: {meta_sistema, cobertura, nivel, confirmado: true} |
+| **Saída** | contexto_meta_sistema |
+| **Descrição** | Carrega contexto ou chama Epistemologia para criar novo |
+
+### 4.5 Tabela Consolidada de Métodos
 
 | Método | Entrada | Saída | Responsabilidade |
 |--------|---------|-------|------------------|
-| `carregar_contexto()` | path_genesis | Contexto | Carregar sistema na memória |
-| `resolver_dependencia()` | indice, path | Array[Arquivo] | Resolver referências |
-| `validar_camada()` | camada_id | Boolean | Verificar estabilidade |
-| `refatorar_stub()` | descobertas, versao | GENESIS | Evoluir GENESIS |
+| `definir_problema()` | input_usuario | {dominio, acao, necessidade} | Aplicar M0 ao input |
+| `rotear()` | problema | {meta_sistema, cobertura, nivel} | Match semântico com catálogo |
+| `confirmar_rota()` | rota | boolean | Validar com usuário |
+| `executar_rota()` | rota_confirmada | contexto | Carregar ou criar Meta Sistema |
 
-### 4.5 Diagrama de Classe Completo
+### 4.6 Diagrama de Classe Completo
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -589,8 +723,8 @@ task_ref: T02
 │  │  + tese: String                                                     │    │
 │  │  + problemas_resolvidos: Array[String]                              │    │
 │  │  + camadas: Array[Camada]                                           │    │
+│  │  + catalogo_meta_sistemas: Array[MetaSistema]                       │    │
 │  │  + indice_arquivos: Array[Arquivo]                                  │    │
-│  │  + hierarquia: Hierarquia                                           │    │
 │  │  + depende_de: Array[Referência]                                    │    │
 │  │  + eh_dependencia_de: Array[Referência]                             │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
@@ -598,10 +732,10 @@ task_ref: T02
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │                         MÉTODOS                                     │    │
 │  ├─────────────────────────────────────────────────────────────────────┤    │
-│  │  + carregar_contexto(path_genesis) → Contexto                       │    │
-│  │  + resolver_dependencia(indice, path) → Array[Arquivo]              │    │
-│  │  + validar_camada(camada_id) → Boolean                              │    │
-│  │  + refatorar_stub(descobertas, versao) → GENESIS                    │    │
+│  │  + definir_problema(input_usuario) → {dominio, acao, necessidade}   │    │
+│  │  + rotear(problema) → {meta_sistema, cobertura, nivel}              │    │
+│  │  + confirmar_rota(rota) → boolean                                   │    │
+│  │  + executar_rota(rota_confirmada) → contexto_meta_sistema           │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
@@ -612,81 +746,159 @@ task_ref: T02
 │  │                                            │                        │    │
 │  │  INFRAESTRUTURA (C2) ◄── depende_de ──────┤                        │    │
 │  │                                            │                        │    │
-│  │                                            │ eh_dependencia_de      │    │
+│  │                                            │ roteia para            │    │
 │  │                                            ▼                        │    │
-│  │                                      EPISTEMOLOGIA (C3)             │    │
-│  │                                            │                        │    │
-│  │                                            ▼                        │    │
-│  │                                      MÓDULOS / DOMÍNIOS             │    │
+│  │                                    catalogo_meta_sistemas           │    │
+│  │                                    [Epistemologia, ...]             │    │
 │  │                                                                     │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.6 Validações
+### 4.7 Validações
 
 | Validação | Regra | Erro se falhar |
 |-----------|-------|----------------|
 | `versao` | Deve seguir SemVer | "Versão inválida" |
 | `camadas` | Deve ter exatamente 5 | "Camadas incompletas" |
 | `visao` | Não pode ser vazio | "GENESIS sem propósito" |
-| `indice_arquivos` | Deve ser consistente | "Índice desatualizado" |
+| `catalogo_meta_sistemas` | Ao menos 1 (Epistemologia) | "Catálogo vazio" |
+| `MetaSistema.contexto_roteamento` | Obrigatório para roteamento | "Meta Sistema invisível" |
 
-### 4.7 Invariantes
+### 4.8 Invariantes
 
 | Invariante | Descrição |
 |------------|-----------|
 | **Propósito Explícito** | GENESIS sempre define Inteligência Híbrida |
+| **Catálogo Atualizado** | Todo Meta Sistema está indexado |
+| **Roteamento Funcional** | Sempre existe ao menos 1 Meta Sistema (Epistemologia) |
 | **Hierarquia Clara** | Propósito → Método → Capacidades |
-| **Índice Atualizado** | Toda mudança reflete no índice |
-| **Bootstrap Resolvido** | STUB permite inicialização |
 
 ---
 
 ## 5. Fluxo de Uso
 
-### 5.1 Como Usar GENESIS
+### 5.1 Fluxo Completo: Usuário → GENESIS → Meta Sistema
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         FLUXO: USAR GENESIS                                 │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  1. INICIALIZAÇÃO                                                           │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  Claude lê genesis/GENESIS.md                                       │    │
-│  │       │                                                             │    │
-│  │       ▼                                                             │    │
-│  │  Identifica camada relevante para a pergunta                        │    │
-│  │       │                                                             │    │
-│  │       ▼                                                             │    │
-│  │  Carrega arquivos dependentes conforme índice                       │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-│  2. EXECUÇÃO                                                                │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  SE criar novo conhecimento:                                        │    │
-│  │       │                                                             │    │
-│  │       ▼                                                             │    │
-│  │  Aplicar M0-M4 via Epistemologia                                    │    │
-│  │       │                                                             │    │
-│  │       ▼                                                             │    │
-│  │  Persistir em _drafts/ ou docs/                                     │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-│  3. ATUALIZAÇÃO                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  Atualizar índice no GENESIS.md                                     │    │
-│  │       │                                                             │    │
-│  │       ▼                                                             │    │
-│  │  Atualizar changelog                                                │    │
-│  │       │                                                             │    │
-│  │       ▼                                                             │    │
-│  │  Commit com convenção [CAMADA] tipo: descrição                      │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│            FLUXO: USUÁRIO → GENESIS → META SISTEMA              │
+└─────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│                          1. USUÁRIO                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  Input: "Claude, quero documentar meu processo de vendas"       │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │                    APLICA M0 (mini)                     │    │
+│  ├─────────────────────────────────────────────────────────┤    │
+│  │  sintoma: "processo de vendas não documentado"          │    │
+│  │  significantes: [documentar, processo, vendas]          │    │
+│  │  necessidade: "estruturar conhecimento de vendas"       │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                 │
+│  Output: {                                                      │
+│      dominio: "vendas",                                         │
+│      acao: "documentar/estruturar",                             │
+│      necessidade: "estruturar conhecimento de vendas"           │
+│  }                                                              │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    2. GENESIS - ROTEAMENTO                      │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  rotear(problema)                                               │
+│       │                                                         │
+│       ▼                                                         │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │           CATÁLOGO META_SISTEMAS                        │    │
+│  ├─────────────────────────────────────────────────────────┤    │
+│  │                                                         │    │
+│  │  Epistemologia                                          │    │
+│  │  ├── resolve: "estruturar qualquer domínio"             │    │
+│  │  └── triggers: [documentar, estruturar, classe, M0-M4]  │    │
+│  │                                                         │    │
+│  │  Vendas (se existir)                                    │    │
+│  │  ├── resolve: "gerenciar processo comercial"            │    │
+│  │  └── triggers: [vendas, pipeline, lead, CRM]            │    │
+│  │                                                         │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│       │                                                         │
+│       ▼                                                         │
+│  match_semantico()                                              │
+│       │                                                         │
+│       ▼                                                         │
+│  Output: {meta_sistema, cobertura, nivel}                       │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                   3. DECISÃO DE ROTEAMENTO                      │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  CASO A: Meta Sistema existe E resolve completamente    │    │
+│  │  ─────────────────────────────────────────────────────  │    │
+│  │  → Roteia direto para Meta Sistema                      │    │
+│  │  → Usuário segue métodos do Meta Sistema                │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  CASO B: Meta Sistema existe MAS resolve parcialmente   │    │
+│  │  ─────────────────────────────────────────────────────  │    │
+│  │  → Identifica em qual "andar" parou                     │    │
+│  │  → Pergunta: "Quer criar sub-meta-sistema para [X]?"    │    │
+│  │  → SE sim: chama Epistemologia.ciclo_m0_m4()            │    │
+│  │            para criar dentro do Meta Sistema pai        │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  CASO C: Meta Sistema NÃO existe                        │    │
+│  │  ─────────────────────────────────────────────────────  │    │
+│  │  → Pergunta: "Não existe Meta Sistema para [X].         │    │
+│  │              Quer criar?"                               │    │
+│  │  → SE sim: chama Epistemologia.ciclo_m0_m4()            │    │
+│  │            para criar novo Meta Sistema raiz            │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+              ┌─────────────────┼─────────────────┐
+              │                 │                 │
+              ▼                 ▼                 ▼
+      ┌───────────┐     ┌───────────┐     ┌───────────┐
+      │  CASO A   │     │  CASO B   │     │  CASO C   │
+      │Resolve 100│     │  Parcial  │     │Não existe │
+      └───────────┘     └───────────┘     └───────────┘
+              │                 │                 │
+              ▼                 ▼                 ▼
+        Entra no         Identifica         Usuário
+        Meta Sistema      andar             confirma
+              │                 │                 │
+              ▼                 ▼                 ▼
+        Segue métodos    Usuário           Epistemologia
+        do domínio       confirma          .ciclo_m0_m4()
+                                │                 │
+                                ▼                 ▼
+                         Epistemologia     Novo Meta
+                         .ciclo_m0_m4()    Sistema (raiz)
+                         (dentro do pai)        │
+                                │                 ▼
+                                ▼           Indexa no
+                         Sub-Meta-Sistema   GENESIS
+                         criado
+                                │
+                                ▼
+                         Indexa no pai
+                         E no GENESIS
 ```
 
 ### 5.2 Comparativo: LLM Sozinho vs LLM + GENESIS
@@ -713,16 +925,16 @@ task_ref: T02
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  Sessão 1: "Vamos criar um sistema"                                 │    │
 │  │       ↓                                                             │    │
-│  │  [Aplica M0-M4, persiste em GitHub]                                 │    │
+│  │  [GENESIS roteia → Epistemologia → Aplica M0-M4 → Persiste]         │    │
 │  │       ↓                                                             │    │
 │  │  Sessão 2: "Continua o sistema"                                     │    │
 │  │       ↓                                                             │    │
-│  │  [Lê GENESIS → carrega contexto → continua de onde parou]           │    │
+│  │  [GENESIS roteia → Meta Sistema existente → Continua]               │    │
 │  │       ↓                                                             │    │
 │  │  Sessão N: Progresso acumulativo                                    │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
-│  GENESIS = "memória externa estruturada" para o LLM                         │
+│  GENESIS = roteador inteligente + memória externa estruturada               │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -735,7 +947,8 @@ task_ref: T02
 
 | Documento | Relação |
 |-----------|---------|
-| 00_E/00_E_Epistemologia.md | Filho - Método M0-M4 |
+| 00_E/00_E_Epistemologia.md | Meta Sistema base - Método M0-M4 |
+| 00_E/00_E_1_1_Problema.md | Classe usada por definir_problema() |
 | 00_I/00_I_1_1_GitHub.md | Infraestrutura - Persistência |
 | 00_E/00_E_1_6_Documento.md | Define estrutura de documentos |
 | _backlog/Modulo_Raciocinio.md | Futuro - Módulo opcional |
@@ -758,4 +971,5 @@ task_ref: T02
 |--------|------|------|-----------|
 | 0.1 | 2025-12-02 | - | STUB inicial. Seções 0-7. |
 | 0.10 | 2025-12-04 | - | Última versão STUB antes da refatoração |
-| 1.0 | 2025-12-04 | - | **REFATORAÇÃO COMPLETA**: Aplicado M0-M4. Propósito explícito (Inteligência Híbrida). Hierarquia clara (Propósito → Método → Capacidades). Marco teórico fundamentado. |
+| 1.0-draft | 2025-12-05 | 16:47 | **REFATORAÇÃO COMPLETA**: Aplicado M0-M4. Propósito explícito (Inteligência Híbrida). Hierarquia clara. Marco teórico fundamentado. |
+| 1.0-draft | 2025-12-05 | 17:30 | **M3 ATUALIZADO**: Classe MetaSistema para catálogo. Métodos novos (definir_problema, rotear, confirmar_rota, executar_rota). Diagramas flowchart. |
