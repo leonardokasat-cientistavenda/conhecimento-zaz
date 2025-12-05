@@ -1,280 +1,324 @@
 ---
 nome: GENESIS
-versao: "0.10"
+versao: "1.0"
 tipo: Framework
 classe_ref: Framework
 origem: interno
-status: Draft
+status: Publicado
+camada: C1
 ---
 
-# GENESIS
+# GENESIS v1.0
 
-## 0. PROBLEMA
+## 1. Problema (M0)
 
-| Campo | Valor |
-|-------|-------|
-| **sintoma** | Conversas longas com Claude perdem precisão. Conceitos rediscutidos. Decisões esquecidas. Loop. |
-| **causa_raiz** | **Entropia Contextual:** Claude não persiste estado; contexto dilui conforme histórico cresce. **Bootstrap Circular:** Para definir o sistema de instruções, precisa do sistema funcionando; dependências mútuas travam inicialização. |
-| **tentativas_anteriores** | Projetos "Sistema ZAZ" e "Metodologia Vendas" avançaram mas entraram em loop após várias iterações. |
-| **necessidade** | Sistema que resolva bootstrap via STUB e reduza entropia via arquivos atômicos com índice versionado. |
+### 1.1 Glossário
 
----
+| Significante | Significado no Contexto |
+|--------------|-------------------------|
+| **GENESIS** | Framework de propósito que define a visão de Inteligência Híbrida |
+| **Inteligência Híbrida** | Amplificação cognitiva via Humano + LLM + Sistema |
+| **Entropia Contextual** | Perda de precisão em conversas longas; informação degrada |
+| **Bootstrap Circular** | Dependência mútua entre componentes na inicialização |
+| **STUB** | Versão mínima hardcoded que quebra ciclo circular |
 
-## 1. DEFINIÇÃO (M1)
-
-| Campo | Valor |
-|-------|-------|
-| **nome** | GENESIS |
-| **tipo_pesquisa** | Prescritivo |
-| **objetivo** | Sistema de instruções que permite ao Claude manter contexto entre conversas, reduzindo Entropia Contextual e Bootstrap Circular. Base para o Meta Sistema Epistemológico que cataloga conhecimento da ZAZ. |
-| **escopo** | Estrutura de arquivos, regras de carregamento, índice de dependências, definição de camadas |
-| **fronteiras** | Não cobre: conteúdo dos domínios, regras de negócio, execução do M0-M4 (isso é do Meta Sistema) |
-| **criterio_sucesso** | Claude lê GENESIS → carrega dependências → executa tarefas sem loop → Meta Sistema pode ser construído sobre ele |
-| **criterio_insucesso** | Loop em 3-4 trocas OU impossibilidade de construir camada superior |
-
----
-
-## 2. MARCO TEÓRICO
-
-| Conceito | Definição |
-|----------|----------|
-| **POO** | Estruturação por classes, atributos, métodos, herança. Objetos encapsulam estado e comportamento. |
-| **Recursividade** | Sistema que opera sobre si mesmo. Output de um ciclo vira input do próximo. |
-| **Meta-Programação** | Código/instruções que geram ou modificam código/instruções. |
-| **Bootstrap Circular** | Dependência mútua entre componentes na inicialização. A precisa de B, B precisa de A. |
-| **STUB** | Versão mínima hardcoded que quebra o ciclo circular. Permite iniciar para depois refatorar. |
-| **Entropia Contextual** | Perda de precisão em conversas longas. Informação degrada conforme contexto cresce. |
-| **Epistemologia** | Estudo de como conhecer. Define classes, métodos, frameworks. Estrutura. |
-| **Ontologia** | Estudo do que existe. Armazena instâncias, descobertas, catálogos. Conteúdo. |
-| **Semiótica** | Estudo dos signos. Significante (forma/nome) deve alinhar com Significado (conceito). Desalinhamento gera ambiguidade. |
-
----
-
-## 3. DIAGRAMA
+### 1.2 Diagrama do Problema
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                          PROBLEMA                               │
-│  Entropia Contextual + Bootstrap Circular                       │
-│  → Conversas perdem precisão → Loops → Decisões esquecidas      │
-└──────────────────────────┬──────────────────────────────────────┘
-                           │
-                           │ resolve via STUB
-                           ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                          GENESIS                                │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  Camada 0: AXIOMAS (imutável)                                   │
-│  ┌─────────┬─────────────┬─────────────┬──────────┬──────────┐  │
-│  │   POO   │Recursividade│Meta-Program.│Semiótica │Epist/Onto│  │
-│  └─────────┴─────────────┴─────────────┴──────────┴──────────┘  │
-│                           │                                     │
-│  Camada 1: STUB           │                                     │
-│  ┌────────────────────────┴────────────────────────────────┐    │
-│  │  GENESIS.md v0.1 (este documento)                       │    │
-│  └────────────────────────┬────────────────────────────────┘    │
-│                           │                                     │
-│  Camada 2: INFRAESTRUTURA │                                     │
-│  ┌──────────┬─────────────┴───────┬──────────────────────┐      │
-│  │  GitHub  │  Claude Instructions │  Estrutura Pastas   │      │
-│  └──────────┴─────────────────────┴──────────────────────┘      │
-│                                                                 │
-└──────────────────────────┬──────────────────────────────────────┘
-                           │ habilita
-                           ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                 META SISTEMA EPISTEMOLÓGICO                     │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  Camada 3: FRAMEWORK (M0-M4)                                    │
-│  ┌──────────────────┬────────────────┬─────────────────────┐    │
-│  │  Problema (M0)   │  Objeto (M2)   │   Documento (M4)    │    │
-│  │  MarcoTeor.(M1)  │  Classe (M3)   │                     │    │
-│  └──────────────────┴────────────────┴─────────────────────┘    │
-│                           │                                     │
-│  Camada 4: DOMÍNIOS       │                                     │
-│  ┌──────────┬─────────────┴──────┬─────────────┬───────────┐    │
-│  │ Mercado  │      Produto       │   Empresa   │    GTM    │    │
-│  │          │  └─ Energia        │             │           │    │
-│  │          │  └─ Vouchers       │             │           │    │
-│  │          │  └─ ...            │             │           │    │
-│  └──────────┴────────────────────┴─────────────┴───────────┘    │
-│                                                                 │
-└──────────────────────────┬──────────────────────────────────────┘
-                           │ retroalimenta
-                           ▼
-┌─────────────────────────────────────────────────────────────────┐
-│              GENESIS v1.0+ (refatorado)                         │
-│         Stub substituído por versão informada                   │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           PROBLEMA CENTRAL                                  │
+│                                                                             │
+│  "Como amplificar capacidade cognitiva humana usando LLMs,                  │
+│   sem que o conhecimento degrade e o progresso se perca?"                   │
+│                                                                             │
+└──────────────────────────────────┬──────────────────────────────────────────┘
+                                   │
+                                   ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         SUBPROBLEMAS                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  ┌─────────────────────┐  ┌─────────────────────┐  ┌─────────────────────┐  │
+│  │  BOOTSTRAP CIRCULAR │  │ ENTROPIA CONTEXTUAL │  │  FALTA DE PROPÓSITO │  │
+│  ├─────────────────────┤  ├─────────────────────┤  ├─────────────────────┤  │
+│  │ Para definir o      │  │ Conversas longas    │  │ Para que serve      │  │
+│  │ sistema, precisa    │  │ perdem precisão.    │  │ tudo isso?          │  │
+│  │ do sistema.         │  │ Contexto dilui.     │  │ Qual a visão?       │  │
+│  ├─────────────────────┤  ├─────────────────────┤  ├─────────────────────┤  │
+│  │ Solução: STUB       │  │ Solução: Arquivos   │  │ Solução:            │  │
+│  │ hardcoded           │  │ atômicos + índice   │  │ Inteligência        │  │
+│  │                     │  │                     │  │ Híbrida             │  │
+│  └─────────────────────┘  └─────────────────────┘  └─────────────────────┘  │
+└──────────────────────────────────┬──────────────────────────────────────────┘
+                                   │
+                                   ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              GENESIS                                        │
+│  Framework de propósito que define Inteligência Híbrida:                    │
+│  Humano (intenção) + LLM (fluência) + Sistema (estrutura)                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 1.3 Tese
+
+> **GENESIS é o Framework de propósito que define a visão de Inteligência Híbrida: amplificar capacidade cognitiva humana via sistema estruturado.**
+>
+> - GENESIS define o PROPÓSITO (porquê)
+> - Epistemologia implementa o MÉTODO (como)
+> - Módulos fornecem CAPACIDADES (o quê)
+>
+> **Resultado:** Sistema que reduz dispêndio de energia humana na execução de atividades cognitivas, com conhecimento que persiste e acumula.
+
+---
+
+## 2. Marco Teórico (M1)
+
+### 2.1 Fundamentos
+
+| Conceito | Teoria | Aplicação no GENESIS |
+|----------|--------|----------------------|
+| **Cognição Distribuída** | Hutchins (1995) | Cognição não está só na mente, está no sistema Humano+LLM+Sistema |
+| **Entropia** | Shannon (1948) | Estrutura explícita reduz incerteza e degradação |
+| **Autopoiesis** | Maturana & Varela (1980) | Sistema se autoproduz e gera outros (Meta Sistemas) |
+| **Bootstrap** | Computer Science | STUB quebra dependência circular; refatora depois |
+| **Composição** | SOLID Principles | Módulos opcionais, não forçados |
+
+### 2.2 Síntese: Inteligência Híbrida
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    SÍNTESE: INTELIGÊNCIA HÍBRIDA                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                      │
+│  │   HUMANO    │    │     LLM     │    │   SISTEMA   │                      │
+│  │  Intenção   │ +  │  Fluência   │ +  │  Estrutura  │ = AMPLIFICAÇÃO       │
+│  │  Supervisão │    │  Execução   │    │  Persistên- │   COGNITIVA          │
+│  │  Validação  │    │  Geração    │    │  cia        │                      │
+│  └─────────────┘    └─────────────┘    └─────────────┘                      │
+│                                                                             │
+│  Cognição distribuída entre os três componentes.                            │
+│  Sistema reduz entropia e persiste conhecimento.                            │
+│  Resultado: menos energia humana, mais progresso acumulado.                 │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 4. CLASSES
+## 3. Objeto (M2)
 
-### 4.1 Classe: Camada
+### 3.1 Definição
+
+**GENESIS** é o Framework de propósito que:
+- **Define** a visão de Inteligência Híbrida (amplificação cognitiva)
+- **Resolve** Bootstrap Circular via STUB
+- **Reduz** Entropia Contextual via arquivos atômicos + índice
+- **Roteia** usuários para o Meta Sistema adequado
+
+### 3.2 Fronteiras
+
+| GENESIS É | GENESIS NÃO É |
+|-----------|---------------|
+| Propósito (PORQUÊ) | Método (isso é Epistemologia) |
+| Visão de Inteligência Híbrida | Implementação de classes M0-M4 |
+| Roteador para Meta Sistemas | Executor de domínios |
+| Catálogo de Meta Sistemas | Conteúdo de negócio |
+
+### 3.3 Hierarquia de Responsabilidades
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    HIERARQUIA DE RESPONSABILIDADES                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  GENESIS (Camada 1) ─── PROPÓSITO (PORQUÊ)                                  │
+│  │  • Define visão: Inteligência Híbrida                                    │
+│  │  • Resolve: Bootstrap Circular, Entropia Contextual                      │
+│  │  • Roteia: usuário → Meta Sistema adequado                               │
+│  │                                                                          │
+│  └──► EPISTEMOLOGIA (Camada 3) ─── MÉTODO (COMO)                            │
+│       │  • Ciclo M0-M4 obrigatório                                          │
+│       │  • Hierarquia fractal                                               │
+│       │                                                                     │
+│       └──► MÓDULOS ─── CAPACIDADES (O QUÊ)                                  │
+│            Raciocínio, Catálogo, Análise                                    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 4. Classe (M3)
+
+### 4.1 Classe: MetaSistema
+
+GENESIS mantém catálogo de Meta Sistemas para roteamento.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                           CAMADA                                │
+│                        META_SISTEMA                             │
 ├─────────────────────────────────────────────────────────────────┤
 │  Atributos                                                      │
 │  ─────────                                                      │
-│  - id: int                                                      │
-│  - nome: string                                                 │
-│  - responsabilidade: string                                     │
-│  - componentes: string[]                                        │
-│  - status: enum [Imutável, Atual, Pendente, Parcial, Futuro]    │
-│  - depende_de: Camada | null                                    │
+│  + nome: string                    # Ex: "Epistemologia"        │
+│  + problema_que_resolve: string    # Descrição do problema      │
+│  + triggers: string[]              # Palavras-chave de ativação │
+│  + exemplos_uso: string[]          # Frases típicas do usuário  │
+│  + arquivo_raiz: string            # Entry point do sistema     │
+│  + pai: MetaSistema | null         # null = raiz                │
+│  + cobertura: enum                 # Completo | Parcial | Stub  │
 ├─────────────────────────────────────────────────────────────────┤
 │  Restrições                                                     │
 │  ──────────                                                     │
-│  - depende_de.status == "Estável" para iniciar                  │
-│  - id sequencial (0, 1, 2...)                                   │
+│  R1: problema_que_resolve + triggers obrigatórios               │
+│  R2: sem eles = invisível para GENESIS                          │
 ├─────────────────────────────────────────────────────────────────┤
-│  Métodos                                                        │
-│  ────────                                                       │
-│  + inicializar(): void                                          │
-│  + validar(): bool                                              │
-│  + listar_componentes(): string[]                               │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-#### Instâncias
-
-| id | nome | responsabilidade | componentes | status | depende_de |
-|----|------|------------------|-------------|--------|------------|
-| 0 | Axiomas | Conceitos assumidos | POO, Recursividade, Meta-Programação, Semiótica, Epistemologia, Ontologia | Imutável | null |
-| 1 | Stub | Quebra bootstrap | GENESIS.md v0.1 | Atual | Camada 0 |
-| 2 | Infraestrutura | Persistência e contexto | GitHub, Claude Instructions, Estrutura Pastas | Estável | Camada 1 |
-| 3 | Framework | Método de conhecimento | M0-M4, Problema, MarcoTeorico, Objeto, Classe, Metodo, Documento | Estável | Camada 2 |
-| 4 | Domínios | Aplicação em negócio | Mercado, Produto, Empresa, GTM | Futuro | Camada 3 |
-
----
-
-### 4.2 Classe: Método
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                           MÉTODO                                │
-├─────────────────────────────────────────────────────────────────┤
-│  Atributos                                                      │
-│  ─────────                                                      │
-│  - id: string                                                   │
-│  - nome: string                                                 │
-│  - descricao: string                                            │
-│  - input: string[]                                              │
-│  - output: string[]                                             │
-│  - executa_em: Camada                                           │
-├─────────────────────────────────────────────────────────────────┤
-│  Restrições                                                     │
+│  Instâncias                                                     │
 │  ──────────                                                     │
-│  - executa_em.status != "Futuro"                                │
-│  - input deve existir antes da execução                         │
-├─────────────────────────────────────────────────────────────────┤
-│  Métodos                                                        │
-│  ────────                                                       │
-│  + executar(): output                                           │
-│  + validar_input(): bool                                        │
+│  - Epistemologia: "estruturar conhecimento", C3                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-#### Instâncias
+### 4.2 Classe: GENESIS
 
-| id | nome | descricao | input | output | executa_em |
-|----|------|-----------|-------|--------|------------|
-| G1 | carregar_contexto | Lê GENESIS.md e arquivos dependentes | path_genesis | contexto_carregado | Camada 1 |
-| G2 | resolver_dependencia | Identifica e carrega arquivos referenciados | índice, path | arquivos_carregados | Camada 2 |
-| G3 | validar_camada | Verifica se camada anterior está estável | camada_id | bool | Camada 2 |
-| G4 | refatorar_stub | Atualiza GENESIS com conhecimento gerado | descobertas, versão_atual | GENESIS v+1 | Camada 1 |
-| G5 | aplicar_patch | Edita arquivo via _patches/*.md | arquivo_patch | arquivo_atualizado | Camada 2 |
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           CLASSE: GENESIS                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Atributos                                                                  │
+│  ─────────                                                                  │
+│  + nome: String = "GENESIS"                                                 │
+│  + versao: SemVer                                                           │
+│  + visao: String = "Inteligência Híbrida"                                   │
+│  + catalogo_meta_sistemas: Array[MetaSistema]                               │
+│  + indice_arquivos: Array[Arquivo]                                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Métodos                                                                    │
+│  ────────                                                                   │
+│  + definir_problema(input) → {dominio, acao, necessidade}                   │
+│  + rotear(problema) → {meta_sistema, cobertura}                             │
+│  + confirmar_rota(rota) → boolean                                           │
+│  + executar_rota(rota) → contexto_meta_sistema                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.3 Métodos: Fluxo de Roteamento
+
+```
+                          input_usuario
+                                │
+════════════════════════════════════════════════════════════════════
+                     1. definir_problema()
+════════════════════════════════════════════════════════════════════
+                                │
+                                │  Usa: Classe Problema (M0)
+                                │       da Epistemologia
+                                ▼
+                    Output: {dominio, acao, necessidade}
+                                │
+════════════════════════════════════════════════════════════════════
+                          2. rotear()
+════════════════════════════════════════════════════════════════════
+                                │
+                                ▼
+                 match_semantico(problema, catalogo)
+                                │
+              ┌─────────────────┼─────────────────┐
+              │                 │                 │
+              ▼                 ▼                 ▼
+        Match 100%        Match parcial       Sem match
+        cobertura:        cobertura:          cobertura:
+         Completo          Parcial              null
+                                │
+════════════════════════════════════════════════════════════════════
+                      3. confirmar_rota()
+════════════════════════════════════════════════════════════════════
+                                │
+              ┌─────────────────┼─────────────────┐
+              ▼                 ▼                 ▼
+       "Encontrei        "Encontrei [X]     "Não encontrei.
+        [X]. Entrar?"     mas não cobre      Criar novo?"
+                          [Y]. Criar sub?"
+                                │
+                         usuario_confirma()
+                                │
+════════════════════════════════════════════════════════════════════
+                       4. executar_rota()
+════════════════════════════════════════════════════════════════════
+                                │
+              ┌─────────────────┼─────────────────┐
+              ▼                 ▼                 ▼
+        Completo            Parcial           Não existe
+              │                 │                 │
+              ▼                 ▼                 ▼
+        carregar_        Epistemologia      Epistemologia
+        contexto()       .ciclo_m0_m4()     .ciclo_m0_m4()
+              │          (sub-sistema)      (novo raiz)
+              ▼                 │                 │
+        Entra no                ▼                 ▼
+        Meta Sistema      Indexa no          Indexa no
+                          catálogo           catálogo
+```
+
+### 4.4 Métodos: Tabela Resumo
+
+| Método | Entrada | Saída | Responsabilidade |
+|--------|---------|-------|------------------|
+| `definir_problema()` | input_usuario | {dominio, acao, necessidade} | Aplicar M0 ao input |
+| `rotear()` | problema | {meta_sistema, cobertura} | Match semântico com catálogo |
+| `confirmar_rota()` | rota | boolean | Validar com usuário |
+| `executar_rota()` | rota_confirmada | contexto | Carregar ou criar + indexar |
 
 ---
 
-## 5. SPRINT ATUAL
-
-| Campo | Valor |
-|-------|-------|
-| **id** | S004-E |
-| **camada_foco** | Camada 3 (Framework) |
-| **status** | EmAndamento |
-| **detalhes** | Ver /_sprints/S004-E.md |
-
-Sprint detalhada movida para o arquivo do Meta Sistema.
-Cada camada gerencia sua própria sprint.
-
----
-
-## 6. ÍNDICE DE ARQUIVOS
+## 5. Comparativo: LLM Sozinho vs LLM + GENESIS
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                         ARQUIVO                                 │
-├─────────────────────────────────────────────────────────────────┤
-│  Atributos                                                      │
-│  ─────────                                                      │
-│  - path: string                                                 │
-│  - versao: string                                               │
-│  - status: enum [Estável, Draft, Deprecated]                    │
-│  - updated_at: datetime                                         │
-│  - camada: Camada                                               │
-│  - depende_de: Arquivo[]                                        │
-├─────────────────────────────────────────────────────────────────┤
-│  Restrições                                                     │
-│  ──────────                                                     │
-│  - Claude carrega arquivo se updated_at > última leitura        │
-│  - Carregar depende_de antes do arquivo                         │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### Instâncias
-
-| path | versao | status | updated_at | camada | depende_de |
-|------|--------|--------|------------|--------|------------|
-| /genesis/GENESIS.md | 0.10 | Draft | 2025-12-04 | 1 | null |
-| /docs/00_E/00_E_Epistemologia.md | 2.2 | Draft | 2025-12-03 | 3 | GENESIS.md |
-| /docs/00_E/00_E_1_1_Problema.md | 2.1 | Draft | 2025-12-03 | 3 | 00_E_Epistemologia.md |
-| /docs/00_E/00_E_1_2_MarcoTeorico.md | 2.1 | Draft | 2025-12-03 | 3 | 00_E_Epistemologia.md |
-| /docs/00_E/00_E_1_3_Objeto.md | 2.0 | Draft | 2025-12-03 | 3 | 00_E_Epistemologia.md |
-| /docs/00_E/00_E_1_4_Classe.md | 3.0 | Publicado | 2025-12-03 | 3 | 00_E_Epistemologia.md |
-| /docs/00_E/00_E_1_4_1_Diagrama.md | 1.0 | Publicado | 2025-12-03 | 3 | 00_E_1_4_Classe.md |
-| /docs/00_E/00_E_1_5_Metodo.md | 2.0 | Draft | 2025-12-03 | 3 | 00_E_Epistemologia.md |
-| /docs/00_E/00_E_1_6_Documento.md | 3.0 | Publicado | 2025-12-04 | 3 | 00_E_Epistemologia.md |
-| /docs/00_I_1_1_GitHub.md | 2.0 | Publicado | 2025-12-04 | 2 | GENESIS.md |
-
-### Arquivos Deprecated
-
-| path | redireciona_para |
-|------|------------------|
-| /docs/00_E/00_E_1_2_Metodo.md | 00_E_1_5_Metodo.md |
-| /docs/00_E/00_E_1_3_Framework.md | 00_E_Epistemologia.md (Seção 4) |
-| /docs/00_E/00_E_1_4_Documento.md | 00_E_1_6_Documento.md |
-| /docs/00_I_1_1_Github_Instructions.md | 00_I_1_1_GitHub.md |
-| /docs/00_O/00_O_1_2_6_Patch_System.md | 00_I_1_1_GitHub.md |
-
-### Regra de Carregamento
-
-```
-SE usuário menciona Camada N
-   ENTÃO carregar todos Arquivos onde camada <= N
-   ORDENADO por depende_de (dependências primeiro)
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    LLM SOZINHO vs LLM + GENESIS                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  LLM SOZINHO:                                                               │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  Sessão 1 → progresso → Sessão 2 → esqueceu tudo → Sessão N → loop  │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  LLM + GENESIS:                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  Sessão 1 → roteia → persiste → Sessão 2 → continua → progresso     │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  GENESIS = roteador inteligente + memória externa estruturada               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 7. CHANGELOG
+## 6. Referências
 
-| versao | data | alteracao |
-|--------|------|----------|
-| 0.1 | 2025-12-02 | Criação. Seções 0-7 definidas. Stub inicial. |
-| 0.2 | 2025-12-02 | Camada 2 estabilizada. Infraestrutura funcional. |
-| 0.3 | 2025-12-02 | Adiciona método G5 (aplicar_patch). Atualiza índice com Patch_System. |
-| 0.4 | 2025-12-02 | Sprint S001 concluída. T11 finalizada. |
-| 0.5 | 2025-12-02 | Define Sprint S002. Handoff para integração Camada 3. |
-| 0.6 | 2025-12-02 | Move Sprint para 00_E_Epistemologia.md. Cada camada gerencia própria sprint. |
-| 0.7 | 2025-12-03 | Sprint S002-E concluída. Classes M0-M4 criadas. Camada 3 estabilizada. |
-| 0.8 | 2025-12-03 | Sprint S003-E em andamento (T1-T6, T12-T13 concluídas). Atualiza índice: Objeto v2.0, Documento v2.3, Github_Instructions v1.2. |
-| 0.9 | 2025-12-04 | T13 concluída: GitHub.md v2.0 consolida Github_Instructions + Patch_System. Atualiza índice com deprecated. Documento.md v3.0 publicado. |
-| 0.10 | 2025-12-04 | S003-E fechada (16/17 tasks). S004-E iniciada: Integridade e Consistência. Adiciona Diagrama.md ao índice. |
+### Internas
+
+| Documento | Relação |
+|-----------|---------|
+| docs/00_I_1_2_Protocolo_LLM.md | Como LLM acessa GENESIS |
+| docs/00_E/00_E_Epistemologia.md | Meta Sistema base - Método M0-M4 |
+| docs/00_I_1_1_GitHub.md | Infraestrutura - Persistência |
+
+### Externas
+
+| Fonte | Conceito |
+|-------|----------|
+| Hutchins (1995) | Cognição Distribuída |
+| Shannon (1948) | Entropia |
+| Maturana & Varela (1980) | Autopoiesis |
+
+---
+
+## Histórico
+
+| Versão | Data | Alteração |
+|--------|------|-----------|
+| 0.1 | 2025-12-02 | STUB inicial |
+| 0.10 | 2025-12-04 | Última versão STUB |
+| 1.0 | 2025-12-05 | **PUBLICAÇÃO** - Refatoração completa M0-M4. Propósito explícito (Inteligência Híbrida). Sprint S005-G concluída. |
