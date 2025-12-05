@@ -1,6 +1,6 @@
 ---
 nome: T11_Modulo_Raciocinio
-versao: "0.4"
+versao: "0.5"
 tipo: Draft
 classe_ref: Modulo
 origem: interno
@@ -81,6 +81,7 @@ task_ref: T11
 │  Métodos do Módulo:                                                         │
 │  + ciclo_raciocinio(problema) → Decisão                                     │
 │  + validar_etapa(etapa) → bool                                              │
+│  + persistir(decisao) → void                                                │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -206,7 +207,141 @@ task_ref: T11
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.6 Método: ciclo_raciocinio()
+### 4.6 Persistência
+
+#### 4.6.1 Regras
+
+| Regra | Especificação |
+|-------|---------------|
+| **Quando** | Sempre. A cada etapa do ciclo H→E→I→D |
+| **Onde** | `_decisoes/` (pasta raiz, mesmo nível de `_drafts/`) |
+| **Formato** | Markdown (.md) |
+| **Operação** | Substituição completa (arquivo pequeno ~2-5KB) |
+
+#### 4.6.2 Nomenclatura
+
+```
+Padrão: D_YYYY-MM-DD_slug-do-problema.md
+
+Exemplos:
+  D_2025-12-05_onde-colocar-modulos.md
+  D_2025-12-05_desconto-cliente-acme.md
+  D_2025-12-06_arquitetura-api-v2.md
+
+Regras do slug:
+  - Lowercase
+  - Hífens no lugar de espaços
+  - Sem acentos
+  - Máximo 50 caracteres
+```
+
+#### 4.6.3 Estrutura do Arquivo
+
+```markdown
+---
+nome: D_2025-12-05_onde-colocar-modulos
+tipo: Decisao
+status: EmAndamento | Aprovada | Rejeitada
+etapa: Hipoteses | Evidencias | Inferencias | Decisao
+meta_sistema_ref: Epistemologia
+created_at: 2025-12-05T14:30:00
+updated_at: 2025-12-05T14:45:00
+---
+
+# Decisão: Onde colocar os módulos?
+
+## 1. Hipóteses
+
+| ID | Enunciado | Critério de Teste | Status |
+|----|-----------|-------------------|--------|
+| H1 | Módulos dentro da Epistemologia | Verificar hierarquia | Pendente |
+| H2 | Módulos em pasta separada | Verificar precedentes | Pendente |
+
+## 2. Evidências
+
+| ID | Descrição | Fonte | Peso | Hipótese |
+|----|-----------|-------|------|----------|
+| E1 | Hierarquia GENESIS→Epistemologia→Módulos | GENESIS.md | Positivo | H1 |
+| E2 | Classes M0-M4 estão dentro | docs/00_E/ | Positivo | H1 |
+
+## 3. Inferências
+
+| ID | Premissas | Regra | Conclusão |
+|----|-----------|-------|-----------|
+| I1 | Módulos são filhos; Filhos dentro do pai | Hierarquia | Módulos dentro |
+
+## 4. Decisão
+
+| Campo | Valor |
+|-------|-------|
+| Escolha | Dentro da Epistemologia |
+| Justificativa | 3 evidências convergentes |
+| Confiança | 0.9 |
+| Status | Aprovada |
+```
+
+#### 4.6.4 Ciclo de Vida
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      CICLO DE VIDA DO ARQUIVO                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1. CRIAR                                                                   │
+│     └─ Ao iniciar ciclo_raciocinio()                                        │
+│     └─ status: EmAndamento, etapa: Hipoteses                                │
+│     └─ Seções 2, 3, 4 vazias                                                │
+│                                                                             │
+│  2. ATUALIZAR (a cada etapa)                                                │
+│     └─ Após validar_etapa("hipoteses") → preenche seção 1                   │
+│     └─ Após validar_etapa("evidencias") → preenche seção 2                  │
+│     └─ Após validar_etapa("inferencias") → preenche seção 3                 │
+│     └─ Após validar_etapa("decisao") → preenche seção 4                     │
+│     └─ Sempre atualiza: updated_at, etapa                                   │
+│                                                                             │
+│  3. FINALIZAR                                                               │
+│     └─ Humano aprova → status: Aprovada                                     │
+│     └─ Humano rejeita → status: Rejeitada + motivo                          │
+│                                                                             │
+│  4. ARQUIVAR (opcional)                                                     │
+│     └─ Mover para _decisoes/arquivo/ após 30 dias                           │
+│     └─ Ou deletar se não for relevante                                      │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 4.6.5 Método persistir()
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        persistir(decisao: Decisao)                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Input: decisao (objeto Decisão com estado atual)                           │
+│  Output: void (side effect: arquivo criado/atualizado)                      │
+│                                                                             │
+│  1. Gerar nome do arquivo                                                   │
+│     └─ slug = slugify(decisao.problema)                                     │
+│     └─ path = "_decisoes/D_{data}_{slug}.md"                                │
+│                                                                             │
+│  2. Verificar se arquivo existe                                             │
+│     └─ SE não existe → criar com template vazio                             │
+│     └─ SE existe → obter SHA para atualização                               │
+│                                                                             │
+│  3. Montar conteúdo                                                         │
+│     └─ Frontmatter (YAML)                                                   │
+│     └─ Seções preenchidas até etapa atual                                   │
+│                                                                             │
+│  4. Salvar                                                                  │
+│     └─ github:create_or_update_file()                                       │
+│     └─ Commit: "[DECISAO] update: {slug} - etapa {etapa}"                   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 4.7 Método: ciclo_raciocinio()
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -216,24 +351,31 @@ task_ref: T11
 │  Input: problema (string) - pergunta que requer decisão                     │
 │  Output: Decisão - com histórico completo                                   │
 │                                                                             │
+│  0. INICIALIZAR                                                             │
+│     └─ Criar objeto Decisão                                                 │
+│     └─ persistir(decisao) → cria arquivo                                    │
+│                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  1. GERAR HIPÓTESES                                                 │    │
 │  │     └─ Para cada opção possível, criar Hipótese                     │    │
-│  │        └─ validar_etapa("hipoteses") → humano aprova?               │    │
+│  │     └─ persistir(decisao)                                           │    │
+│  │     └─ validar_etapa("hipoteses") → humano aprova?                  │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                 │                                           │
 │                                 ▼                                           │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  2. COLETAR EVIDÊNCIAS                                              │    │
 │  │     └─ Para cada hipótese, buscar evidências (positivas E negativas)│    │
-│  │        └─ validar_etapa("evidencias") → humano aprova?              │    │
+│  │     └─ persistir(decisao)                                           │    │
+│  │     └─ validar_etapa("evidencias") → humano aprova?                 │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                 │                                           │
 │                                 ▼                                           │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  3. CONSTRUIR INFERÊNCIAS                                           │    │
 │  │     └─ Conectar evidências → conclusões via regras lógicas          │    │
-│  │        └─ validar_etapa("inferencias") → humano aprova?             │    │
+│  │     └─ persistir(decisao)                                           │    │
+│  │     └─ validar_etapa("inferencias") → humano aprova?                │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                 │                                           │
 │                                 ▼                                           │
@@ -242,7 +384,8 @@ task_ref: T11
 │  │     └─ Escolher opção com base nas inferências                      │    │
 │  │     └─ Calcular confiança                                           │    │
 │  │     └─ Gerar justificativa                                          │    │
-│  │        └─ validar_etapa("decisao") → humano aprova?                 │    │
+│  │     └─ persistir(decisao)                                           │    │
+│  │     └─ validar_etapa("decisao") → humano aprova?                    │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                 │                                           │
 │                                 ▼                                           │
@@ -251,7 +394,9 @@ task_ref: T11
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.7 Exemplo de Uso
+---
+
+### 4.8 Exemplo de Uso
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -326,4 +471,5 @@ task_ref: T11
 | 0.1 | 2025-12-05 | M0 inicial - Problema definido |
 | 0.2 | 2025-12-05 | M1 - Marco Teórico |
 | 0.3 | 2025-12-05 | M2 - Objeto (escopo, fronteiras) |
-| 0.4 | 2025-12-05 | M3 - Classes (Hipótese, Evidência, Inferência, Decisão) + ciclo_raciocinio() |
+| 0.4 | 2025-12-05 | M3 - Classes (Hipótese, Evidência, Inferência, Decisão) |
+| 0.5 | 2025-12-05 | M3 - Persistência (pasta, nomenclatura, estrutura, ciclo de vida) |
