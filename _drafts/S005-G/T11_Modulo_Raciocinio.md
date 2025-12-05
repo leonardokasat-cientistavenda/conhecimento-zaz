@@ -1,11 +1,11 @@
 ---
 nome: T11_Modulo_Raciocinio
-versao: "0.2"
+versao: "0.3"
 tipo: Draft
 classe_ref: Modulo
 origem: interno
 status: Draft
-etapa: M1
+etapa: M2
 sprint_ref: S005-G
 task_ref: T11
 ---
@@ -31,7 +31,6 @@ task_ref: T11
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           PROBLEMA CENTRAL                                  │
-│                                                                             │
 │  "Como estruturar o ATO DE PENSAR para que decisões sejam                   │
 │   rastreáveis, reproduzíveis e validáveis?"                                 │
 └──────────────────────────────────┬──────────────────────────────────────────┘
@@ -42,21 +41,10 @@ task_ref: T11
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  ┌───────────────────┐  ┌───────────────────┐  ┌───────────────────┐        │
 │  │  ALUCINAÇÃO       │  │  IRREPRODUCÍVEL   │  │  INAUDITÁVEL      │        │
-│  ├───────────────────┤  ├───────────────────┤  ├───────────────────┤        │
 │  │ LLM gera decisões │  │ Mesma pergunta,   │  │ Humano não sabe   │        │
 │  │ sem evidências    │  │ respostas         │  │ quais passos LLM  │        │
 │  │ rastreáveis       │  │ diferentes        │  │ seguiu            │        │
 │  └───────────────────┘  └───────────────────┘  └───────────────────┘        │
-└──────────────────────────────────┬──────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                            CAUSAS RAIZ                                      │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  • LLM prediz estatisticamente, não raciocina → alta fluência, baixa lógica │
-│  • Sem estrutura explícita → cada raciocínio é "caixa preta"                │
-│  • Etapas misturadas → hipótese, evidência, inferência não separadas        │
-│  • Sem validação intermediária → erro propaga para decisão                  │
 └──────────────────────────────────┬──────────────────────────────────────────┘
                                    │
                                    ▼
@@ -87,112 +75,122 @@ task_ref: T11
 
 | Conceito | Teoria | Aplicação no Módulo |
 |----------|--------|---------------------|
-| **Toulmin Model** | Toulmin (1958) | Estrutura de argumento: Data → Warrant → Claim |
-| **Falsificabilidade** | Popper (1959) | Hipóteses devem ser testáveis e refutáveis |
+| **Toulmin Model** | Toulmin (1958) | Estrutura: Data → Warrant → Claim |
+| **Falsificabilidade** | Popper (1959) | Hipóteses testáveis e refutáveis |
 | **Vieses Cognitivos** | Kahneman (2011) | Estrutura reduz vieses do Sistema 1 |
 | **Chain of Thought** | Wei et al. (2022) | Raciocínio passo-a-passo melhora LLMs |
 | **Composição** | SOLID | Módulo opcional, não forçado por herança |
 
-### 2.2 Toulmin Model (Base Principal)
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    TOULMIN MODEL OF ARGUMENTATION                           │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│                         ┌─────────────┐                                     │
-│                         │    CLAIM    │ ◄── Conclusão/Decisão               │
-│                         │  (Decisão)  │                                     │
-│                         └──────▲──────┘                                     │
-│                                │                                            │
-│                           therefore                                         │
-│                                │                                            │
-│                         ┌──────┴──────┐                                     │
-│                         │   WARRANT   │ ◄── Regra geral/Inferência          │
-│                         │ (Inferência)│                                     │
-│                         └──────▲──────┘                                     │
-│                                │                                            │
-│                             since                                           │
-│                                │                                            │
-│                         ┌──────┴──────┐                                     │
-│                         │    DATA     │ ◄── Fatos/Evidências                │
-│                         │ (Evidência) │                                     │
-│                         └─────────────┘                                     │
-│                                                                             │
-│  Elementos adicionais:                                                      │
-│  • QUALIFIER: grau de certeza ("provavelmente", "certamente")               │
-│  • REBUTTAL: exceções, contra-argumentos                                    │
-│  • BACKING: suporte adicional para o warrant                                │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 2.3 Mapeamento Toulmin → Módulo Raciocínio
+### 2.2 Mapeamento Toulmin → Módulo Raciocínio
 
 | Toulmin | Classe do Módulo | Função |
 |---------|------------------|--------|
-| Data | **Evidência** | Fatos concretos que suportam/refutam |
-| Warrant | **Inferência** | Regra lógica que conecta evidência à decisão |
+| Data | **Evidência** | Fatos concretos |
+| Warrant | **Inferência** | Regra lógica |
 | Claim | **Decisão** | Conclusão final |
-| Qualifier | atributo `confianca` em Decisão | Grau de certeza |
-| Rebuttal | Evidência com `peso: negativo` | Contra-argumentos |
-| Backing | Evidência que suporta Inferência | Suporte à regra |
-| *(adicional)* | **Hipótese** | Proposição inicial a ser testada |
-
-### 2.4 Falsificabilidade (Popper)
-
-| Princípio | Aplicação |
-|-----------|-----------|
-| Hipótese deve ser testável | Atributo `criterio_teste` obrigatório |
-| Hipótese deve ser refutável | Evidência pode ter `peso: negativo` |
-| Buscar refutação, não confirmação | Método `buscar_evidencia_contraria()` |
-
-### 2.5 Vieses Cognitivos (Kahneman)
-
-| Viés | Como o Módulo Mitiga |
-|------|---------------------|
-| **Confirmação** | Exige evidências contrárias explícitas |
-| **Ancoragem** | Hipóteses separadas, não contaminam evidências |
-| **Disponibilidade** | Evidências documentadas, não apenas lembradas |
-| **Overconfidence** | Atributo `confianca` força calibração |
-
-### 2.6 Chain of Thought (Wei et al.)
-
-| Técnica | Aplicação no Módulo |
-|---------|---------------------|
-| Raciocínio passo-a-passo | Ciclo Hipótese → Evidência → Inferência → Decisão |
-| Explicitação de etapas | Cada classe é uma etapa visível |
-| Verificabilidade | Humano valida cada passo |
-
-### 2.7 Síntese: Por que este Marco Teórico
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         SÍNTESE DO MARCO TEÓRICO                            │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  PROBLEMA: LLM não raciocina, apenas prediz                                 │
-│                                                                             │
-│  SOLUÇÃO TEÓRICA:                                                           │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  Toulmin      → Estrutura formal de argumentação                    │    │
-│  │  Popper       → Hipóteses testáveis e refutáveis                    │    │
-│  │  Kahneman     → Mitigação de vieses cognitivos                      │    │
-│  │  Chain of     → Raciocínio explícito melhora outputs                │    │
-│  │  Thought                                                            │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-│  RESULTADO: Estrutura que força raciocínio explícito,                       │
-│             testável e auditável                                            │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+| Qualifier | atributo `confianca` | Grau de certeza |
+| Rebuttal | Evidência `peso: negativo` | Contra-argumentos |
+| *(adicional)* | **Hipótese** | Proposição inicial |
 
 ---
 
 ## 3. Objeto (M2)
 
-*A definir na próxima etapa.*
+### 3.1 Definição
+
+| Campo | Valor |
+|-------|-------|
+| **nome** | Módulo Raciocínio |
+| **tipo** | Módulo (conjunto de classes opcionais) |
+| **objetivo** | Estruturar o ato de pensar para decisões rastreáveis |
+| **camada** | C3 (Framework - filho da Epistemologia) |
+
+### 3.2 Escopo
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         ESCOPO DO MÓDULO RACIOCÍNIO                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  INCLUI (Classes):                                                          │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │  • Hipótese    - proposição testável                                  │  │
+│  │  • Evidência   - dado que suporta/refuta                              │  │
+│  │  • Inferência  - conexão lógica                                       │  │
+│  │  • Decisão     - escolha final rastreável                             │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+│  INCLUI (Métodos):                                                          │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │  • ciclo_raciocinio()  - orquestra H→E→I→D                            │  │
+│  │  • validar_etapa()     - checkpoint humano                            │  │
+│  │  • persistir()         - salva decisão com histórico                  │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+│  INCLUI (Comportamentos):                                                   │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │  • Composição opcional por Meta Sistemas                              │  │
+│  │  • Validação intermediária em cada etapa                              │  │
+│  │  • Rastreabilidade de decisões                                        │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 3.3 Fronteiras
+
+| Módulo Raciocínio É | Módulo Raciocínio NÃO É |
+|---------------------|-------------------------|
+| Classes para estruturar pensamento | Método para criar conhecimento (isso é M0-M4) |
+| Opcional (composição) | Obrigatório (herança) |
+| Ciclo H→E→I→D | Ciclo M0→M1→M2→M3→M4 |
+| Para DECIDIR | Para DOCUMENTAR |
+| Usado por Meta Sistemas que decidem | Usado por todos Meta Sistemas |
+
+### 3.4 Relação com Epistemologia
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    EPISTEMOLOGIA vs MÓDULO RACIOCÍNIO                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  EPISTEMOLOGIA (obrigatório):          MÓDULO RACIOCÍNIO (opcional):        │
+│  ┌─────────────────────────────┐       ┌─────────────────────────────┐      │
+│  │  M0 → M1 → M2 → M3 → M4     │       │  H → E → I → D              │      │
+│  │  Estrutura CONHECIMENTO     │       │  Estrutura PENSAMENTO       │      │
+│  │  "O que é isso?"            │       │  "O que fazer?"             │      │
+│  │  Output: Documento          │       │  Output: Decisão            │      │
+│  └─────────────────────────────┘       └─────────────────────────────┘      │
+│               │                                     │                       │
+│               │         RELAÇÃO                     │                       │
+│               └──────────────┬──────────────────────┘                       │
+│                              │                                              │
+│                              ▼                                              │
+│               ┌─────────────────────────────┐                               │
+│               │  Epistemologia CONTÉM       │                               │
+│               │  Módulo Raciocínio como     │                               │
+│               │  filho opcional             │                               │
+│               └─────────────────────────────┘                               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 3.5 Entradas e Saídas
+
+| Entrada | Saída |
+|---------|-------|
+| Problema que requer decisão | Decisão rastreável |
+| Contexto do Meta Sistema | Histórico: hipóteses + evidências + inferências |
+| Dados disponíveis | Confiança calibrada |
+
+### 3.6 Critérios de Sucesso
+
+| Critério | Métrica |
+|----------|---------|
+| Rastreabilidade | Toda decisão tem hipóteses, evidências, inferências documentadas |
+| Reprodutibilidade | Mesmo input + mesmo método = mesma conclusão |
+| Validabilidade | Humano pode aprovar/rejeitar em cada etapa |
+| Auditabilidade | Histórico completo persistido |
 
 ---
 
@@ -228,3 +226,4 @@ task_ref: T11
 |--------|------|-----------|
 | 0.1 | 2025-12-05 | M0 inicial - Problema definido |
 | 0.2 | 2025-12-05 | M1 - Marco Teórico (Toulmin, Popper, Kahneman, CoT) |
+| 0.3 | 2025-12-05 | M2 - Objeto (escopo, fronteiras, relação Epistemologia) |
