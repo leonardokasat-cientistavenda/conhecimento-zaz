@@ -38,7 +38,7 @@ O draft contém M0-M4 completos, incluindo:
 
 ### 2.3 Próxima Ação
 
-**T06: Enxugar GENESIS** - Remover redundâncias do draft antes de publicar.
+**T09: Atualizar Epistemologia** - Adicionar `contexto_roteamento` para integração com GENESIS.
 
 ---
 
@@ -51,9 +51,9 @@ O draft contém M0-M4 completos, incluindo:
 | T03 | M1 GENESIS | Marco Teórico | ✅ |
 | T04 | M2 GENESIS | Objeto: Fronteiras | ✅ |
 | T05 | M3 GENESIS | Classe: Atributos, métodos | ✅ |
-| T06 | Enxugar GENESIS | Remover redundâncias do draft | ⬜ |
-| T07 | Criar Protocolo LLM | `docs/00_I/00_I_1_X_Protocolo_LLM.md` | ⬜ |
-| T08 | M4 GENESIS + Índice | Documento final v1.0 | ⬜ |
+| T06 | Enxugar GENESIS | Remover redundâncias do draft | ✅ |
+| T07 | Criar Protocolo LLM | `docs/00_I_1_2_Protocolo_LLM.md` | ✅ |
+| T08 | Publicar GENESIS v1.0 | Substituir STUB por Framework | ✅ |
 | T09 | Atualizar Epistemologia | Adicionar `contexto_roteamento` | ⬜ |
 | T10 | Comparar GENESIS × Epistemologia | Remover sobreposições | ⬜ |
 | T11 | Mapear Módulos | Documentar módulos | ⬜ |
@@ -120,3 +120,4 @@ HUMANO (intenção) + LLM (fluência) + SISTEMA (estrutura) = AMPLIFICAÇÃO
 |--------|------|------|-----------|
 | 0.1 | 2025-12-04 | 23:30 | Sprint criada |
 | 0.2 | 2025-12-05 | - | Tasks revisadas, estado para reinício |
+| 0.3 | 2025-12-05 | - | T06-T08 concluídas. GENESIS v1.0 publicado. Protocolo LLM criado. |
