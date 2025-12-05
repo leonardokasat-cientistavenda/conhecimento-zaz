@@ -23,20 +23,24 @@ GitHub: owner=leonardokasat-cientistavenda, repo=conhecimento-zaz, branch=main
 ## HIERARQUIA DE RESPONSABILIDADES
 
 ```
-GENESIS (Camada 1) ─── PROPÓSITO (PORQUÊ)
+GENESIS (Camada 1) ─── INTELIGÊNCIA ORQUESTRADORA
 │  Tese: "Amplificar capacidade cognitiva humana via Inteligência
 │        Híbrida: Humano (intenção) + LLM (fluência) + Sistema (estrutura)"
+│  Função: Entende problema → Consulta memória → Classifica → Roteia
 │  Resolve: Bootstrap Circular, Entropia Contextual, Visão do sistema
 │
+├──► CATÁLOGO (Camada 3) ─── MEMÓRIA ESTRUTURADA
+│    Função: Repositório com busca semântica (indexar/buscar/atualizar)
+│    Agnóstico: Não sabe o que armazena, só guarda e busca
+│
 └──► EPISTEMOLOGIA (Camada 3) ─── MÉTODO (COMO)
-     │  Tese: "Criar Meta Sistemas anti-entrópicos via M0-M4,
-     │        hierarquia fractal, módulos opcionais"
-     │  Resolve: Estruturar domínios, evitar degradação, extensibilidade
+     │  Tese: "Criar Meta Sistemas anti-entrópicos via M0-M4"
+     │  Função: Estruturar conhecimento, criar documentos M0-M4
      │
-     └──► MÓDULOS OPCIONAIS ─── CAPACIDADES (O QUÊ)
-          ├── Catálogo: busca semântica (INFRAESTRUTURA)
-          ├── Raciocínio: estruturar pensamento (usa Catálogo)
-          └── Análise: medir e agregar
+     └──► RACIOCÍNIO (Módulo) ─── ESTRUTURAR DECISÃO
+          Função: Ciclo H→E→I→D para tomar decisões
+          Usa: Catálogo para buscar/indexar decisões
+          Metadata: uso_count, confirmacoes (força da decisão)
 ```
 
 ---
@@ -53,33 +57,44 @@ GENESIS (Camada 1) ─── PROPÓSITO (PORQUÊ)
 | T06 | M4 GENESIS | Documento final v1.0 | ✅ |
 | T07 | Atualizar Índice | GENESIS.md v1.1 | ✅ |
 | T08-T10 | Reserva | - | ✅ |
-| T11 | Módulo Raciocínio | M0-M3 completo, aguarda Catálogo | ⏸️ ON HOLD |
-| T12 | Módulo Catálogo | M0: Definir problema busca semântica | 🔄 EM PROGRESSO |
-| T13 | Integração | Verificar integridade pós-Catálogo | ⬜ PENDENTE |
+| T11 | Módulo Raciocínio | M0-M3 completo | ✅ |
+| T12 | Módulo Catálogo | M0-M3 completo (M4 pendente integração) | ✅ |
+| T13 | Integração | Verificar integridade | ⬜ PENDENTE |
+| T14 | Refatorar GENESIS Router | GENESIS como inteligência orquestradora | 🔄 PRÓXIMA |
+| T15 | Força Decisão Raciocínio | Metadata uso_count/confirmacoes | ⬜ PENDENTE |
 
 ---
 
-## DESCOBERTA: CATÁLOGO É INFRAESTRUTURA
+## DESCOBERTAS DA SPRINT
 
-Durante T11 (Raciocínio), identificamos que busca semântica é problema recorrente:
+### 1. GENESIS = Inteligência, CATÁLOGO = Memória
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                     PADRÃO: BUSCA SEMÂNTICA                                 │
+│                    SEPARAÇÃO DE RESPONSABILIDADES                           │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  GENESIS → Meta Sistemas                                                    │
-│  └─ buscar(problema usuário) → Meta Sistema que resolve                     │
+│  GENESIS (Inteligência):                                                    │
+│  ├─ Entende problema do usuário (M0/Saussure)                               │
+│  ├─ Consulta catalogo.buscar()                                              │
+│  ├─ Classifica: Meta Sistema | Epistemologia | Raciocínio                   │
+│  └─ Roteia para trabalhador especializado                                   │
 │                                                                             │
-│  Raciocínio → Decisões                                                      │
-│  └─ buscar(problema + contexto) → Decisão reutilizável                      │
-│                                                                             │
-│  MESMO PADRÃO = MÓDULO CATÁLOGO                                             │
+│  CATÁLOGO (Memória):                                                        │
+│  ├─ indexar(item, chave, metadata)                                          │
+│  ├─ buscar(query) → [{item, score, metadata}]                               │
+│  └─ Agnóstico: não sabe o que armazena                                      │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Decisão:** Catálogo antes de Raciocínio. Raciocínio será refatorado para usar Catálogo.
+### 2. Força da Decisão = Metadata no Raciocínio
+
+Decisões reutilizadas e confirmadas ficam "mais fortes":
+- `uso_count`: quantas vezes foi consultada
+- `confirmacoes`: quantas vezes usuário confirmou sucesso
+- `rejeicoes`: quantas vezes usuário rejeitou
+- Catálogo armazena, Raciocínio interpreta
 
 ---
 
@@ -87,9 +102,11 @@ Durante T11 (Raciocínio), identificamos que busca semântica é problema recorr
 
 | Arquivo | Descrição | Status |
 |---------|-----------|--------|
-| `_drafts/S005-G/T11_Modulo_Raciocinio.md` | Raciocínio M0-M3 | ⏸️ Aguarda Catálogo |
-| `_drafts/S005-G/T12_Modulo_Catalogo.md` | Catálogo M0 | 🔄 Em progresso |
-| `_drafts/S005-G/T13_Checklist_Integracao.md` | Verificação pós-Catálogo | ⬜ Pendente |
+| `_drafts/S005-G/T11_Modulo_Raciocinio.md` | Raciocínio M0-M3 | ✅ Completo |
+| `_drafts/S005-G/T12_Modulo_Catalogo.md` | Catálogo M0-M3 | ✅ Completo |
+| `_drafts/S005-G/T13_Checklist_Integracao.md` | Verificação | ⬜ Pendente |
+| `_drafts/S005-G/T14_Refatorar_GENESIS_Router.md` | Instrução refatoração | 🔄 Próxima |
+| `_drafts/S005-G/T15_Forca_Decisao_Raciocinio.md` | Instrução força | ⬜ Pendente |
 
 ---
 
@@ -114,7 +131,7 @@ Resumo:
 ### Convenção de Commit
 Padrão: [CAMADA] ação: descrição - Sprint/Task
 
-Exemplo: [C3] add: M0 Módulo Catálogo - S005-G/T12
+Exemplo: [C1] update: GENESIS Router - S005-G/T14
 
 ---
 
@@ -124,9 +141,10 @@ Exemplo: [C3] add: M0 Módulo Catálogo - S005-G/T12
 |---------|----------|
 | /genesis/GENESIS.md | v1.1 publicado |
 | /docs/00_E/00_E_Epistemologia.md | Epistemologia v3.2 |
-| /_drafts/S005-G/T11_Modulo_Raciocinio.md | Raciocínio (on hold) |
+| /_drafts/S005-G/T11_Modulo_Raciocinio.md | Raciocínio M0-M3 |
+| /_drafts/S005-G/T12_Modulo_Catalogo.md | Catálogo M0-M3 |
+| /_drafts/S005-G/T14_Refatorar_GENESIS_Router.md | Instrução próxima task |
 | /docs/00_I_1_1_GitHub.md | Instruções GitHub |
-| /docs/00_E/00_E_1_6_Documento.md | Estrutura de documentos |
 
 ---
 
