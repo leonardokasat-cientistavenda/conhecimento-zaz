@@ -1,16 +1,37 @@
 ---
 nome: 00_E_Epistemologia
-versao: "3.2"
+versao: "3.3"
 tipo: Framework
 classe_ref: Framework
 origem: interno
 status: Published
 etapa: M4
-sprint_ref: S004-E
-task_ref: T08
+sprint_ref: S005-G
+task_ref: T09
+
+# ATRIBUTOS DE ROTEAMENTO (Interface com GENESIS)
+problema_que_resolve: "Como estruturar qualquer domínio de conhecimento de forma anti-entrópica"
+triggers:
+  - estruturar
+  - classe
+  - M0-M4
+  - documentar
+  - conhecimento
+  - meta sistema
+  - framework
+  - epistemologia
+exemplos_uso:
+  - "quero documentar um processo"
+  - "preciso criar classes para vendas"
+  - "como aplico M0-M4"
+  - "quero estruturar meu conhecimento"
+  - "como crio um meta sistema"
+arquivo_raiz: "docs/00_E/00_E_Epistemologia.md"
+cobertura: Completo
+pai: null
 ---
 
-# Epistemologia v3.2
+# Epistemologia v3.3
 
 ## 1. Problema (M0)
 
@@ -268,7 +289,7 @@ task_ref: T08
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                 MARCO TEÓRICO EPISTEMOLOGIA v3.2                            │
+│                 MARCO TEÓRICO EPISTEMOLOGIA v3.3                            │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  FUNDAMENTOS:                                                               │
@@ -399,7 +420,7 @@ task_ref: T08
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                        OBJETO: EPISTEMOLOGIA v3.2                           │
+│                        OBJETO: EPISTEMOLOGIA v3.3                           │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  DEFINIÇÃO: Meta Sistema Base que cria Meta Sistemas anti-entrópicos        │
@@ -465,7 +486,7 @@ task_ref: T08
 |-------|-------|
 | **Nome** | Epistemologia |
 | **Tipo** | Framework |
-| **Versão** | 3.2 |
+| **Versão** | 3.3 |
 | **Superclasse** | MetaSistema (conceitual) |
 | **Natureza** | Reflexiva + Generativa |
 
@@ -476,12 +497,23 @@ task_ref: T08
 | Atributo | Tipo | Obrigatório | Descrição |
 |----------|------|-------------|-----------|
 | `nome` | String | ✅ | Identificador único: "Epistemologia" |
-| `versao` | SemVer | ✅ | Versão semântica (ex: "3.2") |
+| `versao` | SemVer | ✅ | Versão semântica (ex: "3.3") |
 | `tipo` | Enum | ✅ | "Framework" |
 | `camada` | Integer | ✅ | 3 (Framework/Epistemologia) |
 | `status` | Enum | ✅ | Draft, Review, Published |
 
-#### 4.2.2 Atributos Estruturais
+#### 4.2.2 Atributos de Roteamento (Interface com GENESIS)
+
+| Atributo | Tipo | Obrigatório | Descrição |
+|----------|------|-------------|-----------|
+| `problema_que_resolve` | String | ✅ | Descrição do problema que o Meta Sistema endereça |
+| `triggers` | Array[String] | ✅ | Palavras-chave que ativam o roteamento (mín. 3) |
+| `exemplos_uso` | Array[String] | ✅ | Frases típicas do usuário (mín. 2) |
+| `arquivo_raiz` | String | ✅ | Path do entry point do Meta Sistema |
+| `cobertura` | Enum | ⚪ | Completo, Parcial, Stub |
+| `pai` | Referência | ⚪ | Meta Sistema pai (null = raiz) |
+
+#### 4.2.3 Atributos Estruturais
 
 | Atributo | Tipo | Obrigatório | Descrição |
 |----------|------|-------------|-----------|
@@ -490,15 +522,15 @@ task_ref: T08
 | `meta_sistemas_derivados` | Array[MetaSistema] | ⚪ | Instâncias geradas (Ontologia local) |
 | `propriedades_herdaveis` | Array[Propriedade] | ✅ | [ReducaoEntropica, Recursividade, Persistencia] |
 
-#### 4.2.3 Atributos de Relação
+#### 4.2.4 Atributos de Relação
 
 | Atributo | Tipo | Obrigatório | Descrição |
 |----------|------|-------------|-----------|
-| `pai` | Referência | ✅ | GENESIS (Camada 1) |
+| `genesis_pai` | Referência | ✅ | GENESIS (Camada 1) |
 | `depende_de` | Array[Referência] | ✅ | [GitHub, Frontmatter] |
 | `eh_dependencia_de` | Array[Referência] | ⚪ | Meta Sistemas que usam Epistemologia |
 
-#### 4.2.4 Diagrama de Atributos
+#### 4.2.5 Diagrama de Atributos
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -508,10 +540,20 @@ task_ref: T08
 │  IDENTIFICAÇÃO:                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  nome: "Epistemologia"                                              │    │
-│  │  versao: "3.2"                                                      │    │
+│  │  versao: "3.3"                                                      │    │
 │  │  tipo: Framework                                                    │    │
 │  │  camada: 3                                                          │    │
 │  │  status: Draft | Review | Published                                 │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  ROTEAMENTO (Interface GENESIS):                                            │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  problema_que_resolve: "Como estruturar qualquer domínio..."        │    │
+│  │  triggers: [estruturar, classe, M0-M4, documentar, ...]             │    │
+│  │  exemplos_uso: ["quero documentar um processo", ...]                │    │
+│  │  arquivo_raiz: "docs/00_E/00_E_Epistemologia.md"                    │    │
+│  │  cobertura: Completo | Parcial | Stub                               │    │
+│  │  pai: null (é raiz)                                                 │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 │  ESTRUTURAIS:                                                               │
@@ -546,7 +588,7 @@ task_ref: T08
 │                                                                             │
 │  RELAÇÕES:                                                                  │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  pai: GENESIS                                                       │    │
+│  │  genesis_pai: GENESIS                                               │    │
 │  │  depende_de: [GitHub, Frontmatter]                                  │    │
 │  │  eh_dependencia_de: [MetaSistemas...]                               │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
@@ -592,7 +634,8 @@ task_ref: T08
 │  VALIDAÇÕES:                                                                │
 │  ├── Cada etapa deve completar antes da próxima                             │
 │  ├── Propriedades herdadas devem ser verificadas                            │
-│  └── Documento final deve ter frontmatter válido                            │
+│  ├── Documento final deve ter frontmatter válido                            │
+│  └── Atributos de roteamento devem estar preenchidos (R-ROTEAMENTO)         │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -654,7 +697,7 @@ task_ref: T08
 │  │                         IDENTIFICAÇÃO                               │    │
 │  ├─────────────────────────────────────────────────────────────────────┤    │
 │  │  nome: String = "Epistemologia"                                     │    │
-│  │  versao: SemVer = "3.2"                                             │    │
+│  │  versao: SemVer = "3.3"                                             │    │
 │  │  tipo: Enum = Framework                                             │    │
 │  │  camada: Integer = 3                                                │    │
 │  │  status: Enum = {Draft, Review, Published}                          │    │
@@ -663,11 +706,22 @@ task_ref: T08
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │                         ATRIBUTOS                                   │    │
 │  ├─────────────────────────────────────────────────────────────────────┤    │
+│  │  # Roteamento (Interface GENESIS)                                   │    │
+│  │  + problema_que_resolve: String                                     │    │
+│  │  + triggers: Array[String]                                          │    │
+│  │  + exemplos_uso: Array[String]                                      │    │
+│  │  + arquivo_raiz: String                                             │    │
+│  │  + cobertura: Enum                                                  │    │
+│  │  + pai: Referência | null                                           │    │
+│  │                                                                     │    │
+│  │  # Estruturais                                                      │    │
 │  │  + classes_estruturais: Array[Classe]                               │    │
 │  │  + modulos_opcionais: Array[Modulo]                                 │    │
 │  │  + meta_sistemas_derivados: Array[MetaSistema]                      │    │
 │  │  + propriedades_herdaveis: Array[Propriedade]                       │    │
-│  │  + pai: Referência → GENESIS                                        │    │
+│  │                                                                     │    │
+│  │  # Relações                                                         │    │
+│  │  + genesis_pai: Referência → GENESIS                                │    │
 │  │  + depende_de: Array[Referência]                                    │    │
 │  │  + eh_dependencia_de: Array[Referência]                             │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
@@ -709,9 +763,38 @@ task_ref: T08
 |-----------|-------|----------------|
 | `versao` | Deve seguir SemVer | "Versão inválida" |
 | `classes_estruturais` | Deve ter exatamente 5 | "Classes estruturais incompletas" |
-| `pai` | Deve referenciar GENESIS | "Epistemologia sem pai" |
+| `genesis_pai` | Deve referenciar GENESIS | "Epistemologia sem pai" |
 | `ciclo_m0_m4` | Todas as etapas devem completar | "Ciclo incompleto" |
 | `modulo` | Deve existir antes de compor | "Módulo não encontrado" |
+
+#### 4.6.1 Restrição R-ROTEAMENTO
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    RESTRIÇÃO: R-ROTEAMENTO                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  REGRA:                                                                     │
+│  Todo Meta Sistema criado via ciclo_m0_m4() DEVE ter atributos de           │
+│  roteamento para ser localizável pelo GENESIS.                              │
+│                                                                             │
+│  ATRIBUTOS OBRIGATÓRIOS:                                                    │
+│  ├── problema_que_resolve: string (mínimo 10 caracteres)                    │
+│  ├── triggers: string[] (mínimo 3 itens)                                    │
+│  ├── exemplos_uso: string[] (mínimo 2 itens)                                │
+│  └── arquivo_raiz: string (path válido no repositório)                      │
+│                                                                             │
+│  CONSEQUÊNCIA:                                                              │
+│  └── Sem esses atributos = Meta Sistema invisível para GENESIS              │
+│                                                                             │
+│  FONTE:                                                                     │
+│  └── GENESIS v1.0, Classe MetaSistema (Seção 4.1)                           │
+│                                                                             │
+│  VALIDAÇÃO:                                                                 │
+│  └── Verificar no M4 (Documento) antes de publicar                          │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
 ### 4.7 Invariantes
 
@@ -722,6 +805,7 @@ task_ref: T08
 | **Composição** | Módulos são opcionais, nunca obrigatórios |
 | **Hierarquia** | Todo MetaSistema tem Par E/O local |
 | **Persistência** | Todo artefato tem frontmatter válido |
+| **Localizabilidade** | Todo MetaSistema tem atributos de roteamento (R-ROTEAMENTO) |
 
 ---
 
@@ -762,3 +846,4 @@ task_ref: T08
 | 3.2-M2 | 2025-12-04 | 23:15 | Objeto: GENESIS como propósito maior |
 | 3.2-M3 | 2025-12-04 | 23:45 | Classe: Atributos e Métodos especificados |
 | 3.2-M4 | 2025-12-04 | 16:30 | Publicado em docs/00_E/ |
+| 3.3 | 2025-12-05 | - | **Interface GENESIS**: Atributos de roteamento no frontmatter. Seção 4.2.2 Atributos de Roteamento. Restrição R-ROTEAMENTO (4.6.1). Invariante Localizabilidade. Sprint S005-G/T09. |
