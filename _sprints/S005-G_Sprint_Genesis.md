@@ -34,40 +34,9 @@ GENESIS (Camada 1) ─── PROPÓSITO (PORQUÊ)
      │  Resolve: Estruturar domínios, evitar degradação, extensibilidade
      │
      └──► MÓDULOS OPCIONAIS ─── CAPACIDADES (O QUÊ)
-          ├── Raciocínio: estruturar pensamento
-          ├── Catálogo: organizar itens
+          ├── Catálogo: busca semântica (INFRAESTRUTURA)
+          ├── Raciocínio: estruturar pensamento (usa Catálogo)
           └── Análise: medir e agregar
-```
-
----
-
-## INSIGHT CENTRAL: INTELIGÊNCIA HÍBRIDA
-
-```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   HUMANO    │    │     LLM     │    │  SISTEMA    │
-│  Intenção   │ +  │  Fluência   │ +  │  (GENESIS+  │  =  AMPLIFICAÇÃO
-│  Supervisão │    │  Execução   │    │  EPISTEMO-  │      COGNITIVA
-│  Validação  │    │  Geração    │    │  LOGIA)     │
-└─────────────┘    └─────────────┘    └─────────────┘
-
-PROBLEMA: Humanos têm energia limitada, LLMs alucinam, juntos sem método = entropia
-SOLUÇÃO: Sistema estrutura, LLM executa, Humano supervisiona, conhecimento persiste
-RESULTADO: Atividades com menos dispêndio de energia, conhecimento anti-entrópico
-```
-
----
-
-## ARQUITETURA LLM + SISTEMA
-
-```
-LLM SOZINHO:
-Sessão 1 progride → Sessão 2 esquece → Sessão N loop/entropia
-
-LLM + SISTEMA (GENESIS):
-Sessão 1 aplica M0-M4 → Sessão 2 lê GENESIS, continua → Sessão N progresso acumulativo
-
-GENESIS = "memória externa estruturada" para o LLM
 ```
 
 ---
@@ -76,56 +45,51 @@ GENESIS = "memória externa estruturada" para o LLM
 
 | # | Task | Descrição | Status |
 |---|------|-----------|--------|
-| T01 | Ler GENESIS atual | Entender STUB v0.10 | 🔄 |
-| T02 | M0 GENESIS | Problema: Bootstrap + Visão (Inteligência Híbrida) | ⬜ |
-| T03 | M1 GENESIS | Marco Teórico: Cognição Distribuída, Entropia, etc. | ⬜ |
-| T04 | M2 GENESIS | Objeto: Fronteiras, o que é/não é | ⬜ |
-| T05 | M3 GENESIS | Classe: Atributos, métodos, relações | ⬜ |
-| T06 | M4 GENESIS | Documento final v1.0 | ⬜ |
-| T07 | Mapear Módulos | Documentar módulos (Raciocínio, Catálogo, Análise) | ⬜ |
-| T08 | Atualizar Índice | Refletir nova estrutura no GENESIS.md | ⬜ |
+| T01 | Ler GENESIS atual | Entender STUB v0.10 | ✅ |
+| T02 | M0 GENESIS | Problema: Bootstrap + Visão | ✅ |
+| T03 | M1 GENESIS | Marco Teórico | ✅ |
+| T04 | M2 GENESIS | Objeto: Fronteiras | ✅ |
+| T05 | M3 GENESIS | Classe: Atributos, métodos | ✅ |
+| T06 | M4 GENESIS | Documento final v1.0 | ✅ |
+| T07 | Atualizar Índice | GENESIS.md v1.1 | ✅ |
+| T08-T10 | Reserva | - | ✅ |
+| T11 | Módulo Raciocínio | M0-M3 completo, aguarda Catálogo | ⏸️ ON HOLD |
+| T12 | Módulo Catálogo | M0: Definir problema busca semântica | 🔄 EM PROGRESSO |
+| T13 | Integração | Verificar integridade pós-Catálogo | ⬜ PENDENTE |
 
 ---
 
-## CONCEITOS TEÓRICOS A INCORPORAR
+## DESCOBERTA: CATÁLOGO É INFRAESTRUTURA
 
-| Conceito | Fonte | Aplicação no GENESIS |
-|----------|-------|---------------------|
-| **Cognição Distribuída** | Hutchins (1995) | Cognição não está só na mente, está no sistema |
-| **Entropia** | Shannon (1948) | Estrutura reduz incerteza e degradação |
-| **Autopoiesis** | Maturana & Varela | Sistema se autoproduz e gera outros |
-| **Hierarquia Fractal** | Mandelbrot | Mesma estrutura em cada nível |
-| **Composição sobre Herança** | SOLID | Módulos opcionais, não forçados |
+Durante T11 (Raciocínio), identificamos que busca semântica é problema recorrente:
 
----
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     PADRÃO: BUSCA SEMÂNTICA                                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  GENESIS → Meta Sistemas                                                    │
+│  └─ buscar(problema usuário) → Meta Sistema que resolve                     │
+│                                                                             │
+│  Raciocínio → Decisões                                                      │
+│  └─ buscar(problema + contexto) → Decisão reutilizável                      │
+│                                                                             │
+│  MESMO PADRÃO = MÓDULO CATÁLOGO                                             │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
-## TESE PROPOSTA PARA GENESIS v1.0
-
-> **GENESIS é o Framework de propósito que define a visão de Inteligência Híbrida: amplificar capacidade cognitiva humana via sistema estruturado.**
->
-> **Contexto:**
-> - Humanos têm energia cognitiva limitada
-> - LLMs têm fluência mas não estrutura
-> - Juntos, sem método, produzem entropia
->
-> **Solução:**
-> - GENESIS define o PROPÓSITO (porquê)
-> - Epistemologia implementa o MÉTODO (como)
-> - Módulos fornecem CAPACIDADES (o quê)
->
-> **Resultado:** Sistema que reduz dispêndio de energia humana na execução de atividades cognitivas.
+**Decisão:** Catálogo antes de Raciocínio. Raciocínio será refatorado para usar Catálogo.
 
 ---
 
-## DIFERENÇA STUB vs v1.0
+## ARQUIVOS DA SPRINT
 
-| Aspecto | STUB v0.10 | v1.0 (após refatoração) |
-|---------|------------|------------------------|
-| **Natureza** | Hardcoded mínimo | Framework completo |
-| **M0-M4** | Não aplicado | Aplicado |
-| **Propósito** | Implícito | Explícito (Inteligência Híbrida) |
-| **Módulos** | Não mapeados | Mapeados |
-| **Relação Epistemologia** | Dependência mútua | Hierarquia clara |
+| Arquivo | Descrição | Status |
+|---------|-----------|--------|
+| `_drafts/S005-G/T11_Modulo_Raciocinio.md` | Raciocínio M0-M3 | ⏸️ Aguarda Catálogo |
+| `_drafts/S005-G/T12_Modulo_Catalogo.md` | Catálogo M0 | 🔄 Em progresso |
+| `_drafts/S005-G/T13_Checklist_Integracao.md` | Verificação pós-Catálogo | ⬜ Pendente |
 
 ---
 
@@ -150,7 +114,7 @@ Resumo:
 ### Convenção de Commit
 Padrão: [CAMADA] ação: descrição - Sprint/Task
 
-Exemplo: [C1] update: M0 GENESIS - Inteligência Híbrida - S005-G/T02
+Exemplo: [C3] add: M0 Módulo Catálogo - S005-G/T12
 
 ---
 
@@ -158,21 +122,11 @@ Exemplo: [C1] update: M0 GENESIS - Inteligência Híbrida - S005-G/T02
 
 | Arquivo | Conteúdo |
 |---------|----------|
-| /genesis/GENESIS.md | STUB atual v0.10 |
-| /_sprints/S005-G_Sprint_Genesis.md | Sprint completa com contexto |
-| /docs/00_E/00_E_Epistemologia.md | Epistemologia v3.2 (referência de M0-M4) |
-| /_backlog/Modulo_Raciocinio.md | Módulo Raciocínio detalhado |
+| /genesis/GENESIS.md | v1.1 publicado |
+| /docs/00_E/00_E_Epistemologia.md | Epistemologia v3.2 |
+| /_drafts/S005-G/T11_Modulo_Raciocinio.md | Raciocínio (on hold) |
 | /docs/00_I_1_1_GitHub.md | Instruções GitHub |
 | /docs/00_E/00_E_1_6_Documento.md | Estrutura de documentos |
-
----
-
-## SEQUÊNCIA DE SPRINTS
-
-```
-S004-E (concluída) → S005-G (atual) → S006-E (Raciocínio)
-        ✅                🔄               Backlog
-```
 
 ---
 
