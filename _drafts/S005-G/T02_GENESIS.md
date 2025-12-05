@@ -645,10 +645,11 @@ Vendas (nível 0, raiz)
                                 ▼                 ▼
                          Sub-Meta-Sistema   Indexa no
                          criado             GENESIS
-                                │
+                                │           (automático)
                                 ▼
                          Indexa no pai
                          E no GENESIS
+                         (automático)
 ```
 
 #### 4.4.3 Especificação dos Métodos
@@ -688,7 +689,7 @@ Vendas (nível 0, raiz)
 | **Nome** | executar_rota |
 | **Entrada** | rota_confirmada: {meta_sistema, cobertura, nivel, confirmado: true} |
 | **Saída** | contexto_meta_sistema |
-| **Descrição** | Carrega contexto ou chama Epistemologia para criar novo |
+| **Descrição** | Carrega contexto ou chama Epistemologia para criar novo. Inclui indexação automática de novos Meta Sistemas no catálogo (menor entropia que método separado). |
 
 ### 4.5 Tabela Consolidada de Métodos
 
@@ -697,7 +698,7 @@ Vendas (nível 0, raiz)
 | `definir_problema()` | input_usuario | {dominio, acao, necessidade} | Aplicar M0 ao input |
 | `rotear()` | problema | {meta_sistema, cobertura, nivel} | Match semântico com catálogo |
 | `confirmar_rota()` | rota | boolean | Validar com usuário |
-| `executar_rota()` | rota_confirmada | contexto | Carregar ou criar Meta Sistema |
+| `executar_rota()` | rota_confirmada | contexto | Carregar ou criar Meta Sistema + indexar automaticamente |
 
 ### 4.6 Diagrama de Classe Completo
 
@@ -858,6 +859,7 @@ Vendas (nível 0, raiz)
 │  │  → Pergunta: "Quer criar sub-meta-sistema para [X]?"    │    │
 │  │  → SE sim: chama Epistemologia.ciclo_m0_m4()            │    │
 │  │            para criar dentro do Meta Sistema pai        │    │
+│  │  → Indexa automaticamente no catálogo                   │    │
 │  └─────────────────────────────────────────────────────────┘    │
 │                                                                 │
 │  ┌─────────────────────────────────────────────────────────┐    │
@@ -867,6 +869,7 @@ Vendas (nível 0, raiz)
 │  │              Quer criar?"                               │    │
 │  │  → SE sim: chama Epistemologia.ciclo_m0_m4()            │    │
 │  │            para criar novo Meta Sistema raiz            │    │
+│  │  → Indexa automaticamente no catálogo                   │    │
 │  └─────────────────────────────────────────────────────────┘    │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
@@ -894,11 +897,12 @@ Vendas (nível 0, raiz)
                                 │                 ▼
                                 ▼           Indexa no
                          Sub-Meta-Sistema   GENESIS
-                         criado
+                         criado             (automático)
                                 │
                                 ▼
                          Indexa no pai
                          E no GENESIS
+                         (automático)
 ```
 
 ### 5.2 Comparativo: LLM Sozinho vs LLM + GENESIS
@@ -947,6 +951,7 @@ Vendas (nível 0, raiz)
 
 | Documento | Relação |
 |-----------|---------|
+| 00_I/00_I_1_X_Protocolo_LLM.md | **Pré-requisito** - Como LLM acessa GENESIS (Chave → Fechadura) |
 | 00_E/00_E_Epistemologia.md | Meta Sistema base - Método M0-M4 |
 | 00_E/00_E_1_1_Problema.md | Classe usada por definir_problema() |
 | 00_I/00_I_1_1_GitHub.md | Infraestrutura - Persistência |
@@ -973,3 +978,4 @@ Vendas (nível 0, raiz)
 | 0.10 | 2025-12-04 | - | Última versão STUB antes da refatoração |
 | 1.0-draft | 2025-12-05 | 16:47 | **REFATORAÇÃO COMPLETA**: Aplicado M0-M4. Propósito explícito (Inteligência Híbrida). Hierarquia clara. Marco teórico fundamentado. |
 | 1.0-draft | 2025-12-05 | 17:30 | **M3 ATUALIZADO**: Classe MetaSistema para catálogo. Métodos novos (definir_problema, rotear, confirmar_rota, executar_rota). Diagramas flowchart. |
+| 1.0-draft | 2025-12-05 | 18:00 | **AJUSTES**: executar_rota() inclui indexação automática. Referência ao Protocolo_LLM.md como pré-requisito. |
