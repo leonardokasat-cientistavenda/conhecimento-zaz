@@ -1,11 +1,11 @@
 ---
 nome: T11_Modulo_Raciocinio
-versao: "0.3"
+versao: "0.4"
 tipo: Draft
 classe_ref: Modulo
 origem: interno
 status: Draft
-etapa: M2
+etapa: M3
 sprint_ref: S005-G
 task_ref: T11
 ---
@@ -24,179 +24,278 @@ task_ref: T11
 | **Evidência** | Dado concreto que suporta ou refuta hipótese |
 | **Inferência** | Conexão lógica entre premissas e conclusão |
 | **Decisão** | Escolha final baseada em raciocínio estruturado |
-| **Composição** | Padrão onde módulo é usado opcionalmente (vs herança obrigatória) |
 
-### 1.2 Diagrama do Problema
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           PROBLEMA CENTRAL                                  │
-│  "Como estruturar o ATO DE PENSAR para que decisões sejam                   │
-│   rastreáveis, reproduzíveis e validáveis?"                                 │
-└──────────────────────────────────┬──────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                              SINTOMAS                                       │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  ┌───────────────────┐  ┌───────────────────┐  ┌───────────────────┐        │
-│  │  ALUCINAÇÃO       │  │  IRREPRODUCÍVEL   │  │  INAUDITÁVEL      │        │
-│  │ LLM gera decisões │  │ Mesma pergunta,   │  │ Humano não sabe   │        │
-│  │ sem evidências    │  │ respostas         │  │ quais passos LLM  │        │
-│  │ rastreáveis       │  │ diferentes        │  │ seguiu            │        │
-│  └───────────────────┘  └───────────────────┘  └───────────────────┘        │
-└──────────────────────────────────┬──────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                             SOLUÇÃO                                         │
-│  MÓDULO RACIOCÍNIO: Classes que estruturam o ato de pensar                  │
-│  ┌───────────┐    ┌───────────┐    ┌───────────┐    ┌───────────┐           │
-│  │ Hipótese  │ →  │ Evidência │ →  │ Inferência│ →  │  Decisão  │           │
-│  └───────────┘    └───────────┘    └───────────┘    └───────────┘           │
-│  Composição: Meta Sistemas ESCOLHEM se usam o módulo                        │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 1.3 Tese
+### 1.2 Tese
 
 > **Módulo Raciocínio é conjunto de classes opcionais (Hipótese, Evidência, Inferência, Decisão) que estruturam o ato de pensar, tornando decisões rastreáveis, reproduzíveis e validáveis.**
 >
 > - Epistemologia estrutura CONHECIMENTO (o que sabemos)
 > - Módulo Raciocínio estrutura PENSAMENTO (como decidimos)
->
-> **Princípio:** Composição sobre herança - Meta Sistemas escolhem se usam o módulo.
 
 ---
 
 ## 2. Marco Teórico (M1)
 
-### 2.1 Fundamentos
-
-| Conceito | Teoria | Aplicação no Módulo |
-|----------|--------|---------------------|
-| **Toulmin Model** | Toulmin (1958) | Estrutura: Data → Warrant → Claim |
-| **Falsificabilidade** | Popper (1959) | Hipóteses testáveis e refutáveis |
-| **Vieses Cognitivos** | Kahneman (2011) | Estrutura reduz vieses do Sistema 1 |
-| **Chain of Thought** | Wei et al. (2022) | Raciocínio passo-a-passo melhora LLMs |
-| **Composição** | SOLID | Módulo opcional, não forçado por herança |
-
-### 2.2 Mapeamento Toulmin → Módulo Raciocínio
-
-| Toulmin | Classe do Módulo | Função |
-|---------|------------------|--------|
-| Data | **Evidência** | Fatos concretos |
-| Warrant | **Inferência** | Regra lógica |
-| Claim | **Decisão** | Conclusão final |
-| Qualifier | atributo `confianca` | Grau de certeza |
-| Rebuttal | Evidência `peso: negativo` | Contra-argumentos |
-| *(adicional)* | **Hipótese** | Proposição inicial |
+| Conceito | Teoria | Aplicação |
+|----------|--------|-----------|
+| **Toulmin Model** | Toulmin (1958) | Data → Warrant → Claim |
+| **Falsificabilidade** | Popper (1959) | Hipóteses testáveis |
+| **Vieses Cognitivos** | Kahneman (2011) | Estrutura mitiga vieses |
+| **Chain of Thought** | Wei et al. (2022) | Raciocínio explícito |
 
 ---
 
 ## 3. Objeto (M2)
 
-### 3.1 Definição
+### 3.1 Fronteiras
 
-| Campo | Valor |
-|-------|-------|
-| **nome** | Módulo Raciocínio |
-| **tipo** | Módulo (conjunto de classes opcionais) |
-| **objetivo** | Estruturar o ato de pensar para decisões rastreáveis |
-| **camada** | C3 (Framework - filho da Epistemologia) |
-
-### 3.2 Escopo
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         ESCOPO DO MÓDULO RACIOCÍNIO                         │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  INCLUI (Classes):                                                          │
-│  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │  • Hipótese    - proposição testável                                  │  │
-│  │  • Evidência   - dado que suporta/refuta                              │  │
-│  │  • Inferência  - conexão lógica                                       │  │
-│  │  • Decisão     - escolha final rastreável                             │  │
-│  └───────────────────────────────────────────────────────────────────────┘  │
-│                                                                             │
-│  INCLUI (Métodos):                                                          │
-│  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │  • ciclo_raciocinio()  - orquestra H→E→I→D                            │  │
-│  │  • validar_etapa()     - checkpoint humano                            │  │
-│  │  • persistir()         - salva decisão com histórico                  │  │
-│  └───────────────────────────────────────────────────────────────────────┘  │
-│                                                                             │
-│  INCLUI (Comportamentos):                                                   │
-│  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │  • Composição opcional por Meta Sistemas                              │  │
-│  │  • Validação intermediária em cada etapa                              │  │
-│  │  • Rastreabilidade de decisões                                        │  │
-│  └───────────────────────────────────────────────────────────────────────┘  │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 3.3 Fronteiras
-
-| Módulo Raciocínio É | Módulo Raciocínio NÃO É |
-|---------------------|-------------------------|
-| Classes para estruturar pensamento | Método para criar conhecimento (isso é M0-M4) |
-| Opcional (composição) | Obrigatório (herança) |
+| É | NÃO É |
+|---|-------|
+| Estrutura PENSAMENTO | Estrutura CONHECIMENTO (M0-M4) |
 | Ciclo H→E→I→D | Ciclo M0→M1→M2→M3→M4 |
 | Para DECIDIR | Para DOCUMENTAR |
-| Usado por Meta Sistemas que decidem | Usado por todos Meta Sistemas |
-
-### 3.4 Relação com Epistemologia
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    EPISTEMOLOGIA vs MÓDULO RACIOCÍNIO                       │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  EPISTEMOLOGIA (obrigatório):          MÓDULO RACIOCÍNIO (opcional):        │
-│  ┌─────────────────────────────┐       ┌─────────────────────────────┐      │
-│  │  M0 → M1 → M2 → M3 → M4     │       │  H → E → I → D              │      │
-│  │  Estrutura CONHECIMENTO     │       │  Estrutura PENSAMENTO       │      │
-│  │  "O que é isso?"            │       │  "O que fazer?"             │      │
-│  │  Output: Documento          │       │  Output: Decisão            │      │
-│  └─────────────────────────────┘       └─────────────────────────────┘      │
-│               │                                     │                       │
-│               │         RELAÇÃO                     │                       │
-│               └──────────────┬──────────────────────┘                       │
-│                              │                                              │
-│                              ▼                                              │
-│               ┌─────────────────────────────┐                               │
-│               │  Epistemologia CONTÉM       │                               │
-│               │  Módulo Raciocínio como     │                               │
-│               │  filho opcional             │                               │
-│               └─────────────────────────────┘                               │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 3.5 Entradas e Saídas
-
-| Entrada | Saída |
-|---------|-------|
-| Problema que requer decisão | Decisão rastreável |
-| Contexto do Meta Sistema | Histórico: hipóteses + evidências + inferências |
-| Dados disponíveis | Confiança calibrada |
-
-### 3.6 Critérios de Sucesso
-
-| Critério | Métrica |
-|----------|---------|
-| Rastreabilidade | Toda decisão tem hipóteses, evidências, inferências documentadas |
-| Reprodutibilidade | Mesmo input + mesmo método = mesma conclusão |
-| Validabilidade | Humano pode aprovar/rejeitar em cada etapa |
-| Auditabilidade | Histórico completo persistido |
+| Opcional (composição) | Obrigatório (herança) |
 
 ---
 
 ## 4. Classe (M3)
 
-*A definir na próxima etapa.*
+### 4.1 Diagrama Geral do Módulo
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         MÓDULO RACIOCÍNIO                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌───────────────┐      ┌───────────────┐      ┌───────────────┐           │
+│  │   HIPÓTESE    │─────▶│   EVIDÊNCIA   │─────▶│  INFERÊNCIA   │           │
+│  └───────────────┘  1:N └───────────────┘  N:1 └───────────────┘           │
+│         │                                              │                    │
+│         │                      1:N                     │                    │
+│         └──────────────────────┬───────────────────────┘                    │
+│                                ▼                                            │
+│                       ┌───────────────┐                                     │
+│                       │    DECISÃO    │                                     │
+│                       └───────────────┘                                     │
+│                                                                             │
+│  Métodos do Módulo:                                                         │
+│  + ciclo_raciocinio(problema) → Decisão                                     │
+│  + validar_etapa(etapa) → bool                                              │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.2 Classe: Hipótese
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              HIPÓTESE                                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Atributos                                                                  │
+│  ──────────                                                                 │
+│  + id: string                      # Identificador único                    │
+│  + enunciado: string               # "Se X, então Y"                        │
+│  + criterio_teste: string          # Como verificar (Popper)                │
+│  + status: enum                    # Pendente | Confirmada | Refutada       │
+│  + confianca_inicial: float        # 0.0 a 1.0                              │
+│  + evidencias: Evidencia[]         # Referências                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Restrições                                                                 │
+│  ──────────                                                                 │
+│  R1: enunciado deve ser testável (não pode ser "talvez X")                  │
+│  R2: criterio_teste obrigatório (falsificabilidade)                         │
+│  R3: confianca_inicial entre 0.0 e 1.0                                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Métodos                                                                    │
+│  ────────                                                                   │
+│  + adicionar_evidencia(e: Evidencia): void                                  │
+│  + atualizar_status(): void        # Baseado nas evidências                 │
+│  + calcular_confianca(): float     # Baseado no peso das evidências         │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.3 Classe: Evidência
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              EVIDÊNCIA                                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Atributos                                                                  │
+│  ──────────                                                                 │
+│  + id: string                      # Identificador único                    │
+│  + descricao: string               # O que foi observado                    │
+│  + fonte: string                   # De onde veio (documento, dado, etc.)   │
+│  + tipo: enum                      # Fato | Dado | Observacao | Testemunho  │
+│  + peso: enum                      # Positivo | Negativo | Neutro           │
+│  + forca: float                    # 0.0 a 1.0 (quão forte é)               │
+│  + hipotese_ref: string            # ID da hipótese que suporta/refuta      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Restrições                                                                 │
+│  ──────────                                                                 │
+│  R1: fonte obrigatória (rastreabilidade)                                    │
+│  R2: peso obrigatório (Toulmin: rebuttal = peso negativo)                   │
+│  R3: forca entre 0.0 e 1.0                                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Métodos                                                                    │
+│  ────────                                                                   │
+│  + validar_fonte(): bool           # Fonte existe e é acessível?            │
+│  + calcular_impacto(): float       # forca * peso_numerico                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.4 Classe: Inferência
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                             INFERÊNCIA                                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Atributos                                                                  │
+│  ──────────                                                                 │
+│  + id: string                      # Identificador único                    │
+│  + premissas: string[]             # Lista de premissas (evidências usadas) │
+│  + regra: string                   # Warrant - regra lógica aplicada        │
+│  + conclusao: string               # O que se conclui                       │
+│  + metodo_logico: enum             # Deducao | Inducao | Abducao            │
+│  + evidencias_ref: string[]        # IDs das evidências usadas              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Restrições                                                                 │
+│  ──────────                                                                 │
+│  R1: mínimo 1 premissa                                                      │
+│  R2: regra obrigatória (Toulmin: warrant)                                   │
+│  R3: conclusao deve seguir logicamente das premissas + regra                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Métodos                                                                    │
+│  ────────                                                                   │
+│  + validar_logica(): bool          # Conclusão segue das premissas?         │
+│  + listar_premissas(): string[]    # Retorna premissas formatadas           │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.5 Classe: Decisão
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              DECISÃO                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Atributos                                                                  │
+│  ──────────                                                                 │
+│  + id: string                      # Identificador único                    │
+│  + problema: string                # Pergunta original                      │
+│  + opcoes: string[]                # Alternativas consideradas              │
+│  + escolha: string                 # Opção selecionada                      │
+│  + justificativa: string           # Por que esta opção                     │
+│  + confianca: float                # 0.0 a 1.0 (Toulmin: qualifier)         │
+│  + hipoteses_ref: string[]         # IDs das hipóteses consideradas         │
+│  + inferencias_ref: string[]       # IDs das inferências usadas             │
+│  + data: datetime                  # Quando foi decidido                    │
+│  + status: enum                    # Pendente | Aprovada | Rejeitada        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Restrições                                                                 │
+│  ──────────                                                                 │
+│  R1: mínimo 2 opções (se só tem 1, não é decisão)                           │
+│  R2: escolha deve estar em opcoes                                           │
+│  R3: justificativa obrigatória (rastreabilidade)                            │
+│  R4: mínimo 1 inferência referenciada                                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Métodos                                                                    │
+│  ────────                                                                   │
+│  + gerar_historico(): Historico    # Monta trilha completa H→E→I→D          │
+│  + aprovar(): void                 # Humano aprova                          │
+│  + rejeitar(motivo: string): void  # Humano rejeita com motivo              │
+│  + recalcular_confianca(): float   # Baseado nas inferências                │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.6 Método: ciclo_raciocinio()
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        ciclo_raciocinio(problema)                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Input: problema (string) - pergunta que requer decisão                     │
+│  Output: Decisão - com histórico completo                                   │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  1. GERAR HIPÓTESES                                                 │    │
+│  │     └─ Para cada opção possível, criar Hipótese                     │    │
+│  │        └─ validar_etapa("hipoteses") → humano aprova?               │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                 │                                           │
+│                                 ▼                                           │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  2. COLETAR EVIDÊNCIAS                                              │    │
+│  │     └─ Para cada hipótese, buscar evidências (positivas E negativas)│    │
+│  │        └─ validar_etapa("evidencias") → humano aprova?              │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                 │                                           │
+│                                 ▼                                           │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  3. CONSTRUIR INFERÊNCIAS                                           │    │
+│  │     └─ Conectar evidências → conclusões via regras lógicas          │    │
+│  │        └─ validar_etapa("inferencias") → humano aprova?             │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                 │                                           │
+│                                 ▼                                           │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  4. TOMAR DECISÃO                                                   │    │
+│  │     └─ Escolher opção com base nas inferências                      │    │
+│  │     └─ Calcular confiança                                           │    │
+│  │     └─ Gerar justificativa                                          │    │
+│  │        └─ validar_etapa("decisao") → humano aprova?                 │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                 │                                           │
+│                                 ▼                                           │
+│                          Retorna: Decisão                                   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.7 Exemplo de Uso
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  EXEMPLO: "Onde colocar os módulos?"                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  HIPÓTESES:                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  H1: enunciado="Módulos devem ficar dentro da Epistemologia"        │    │
+│  │      criterio_teste="Verificar se hierarquia suporta"               │    │
+│  │  H2: enunciado="Módulos devem ficar em pasta separada"              │    │
+│  │      criterio_teste="Verificar se há precedentes"                   │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  EVIDÊNCIAS:                                                                │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  E1: descricao="Hierarquia: GENESIS→Epistemologia→Módulos"          │    │
+│  │      fonte="GENESIS.md", peso=Positivo, hipotese_ref=H1             │    │
+│  │  E2: descricao="Classes M0-M4 estão dentro da Epistemologia"        │    │
+│  │      fonte="docs/00_E/", peso=Positivo, hipotese_ref=H1             │    │
+│  │  E3: descricao="Princípio SOLID: filhos dentro do pai"              │    │
+│  │      fonte="SOLID Principles", peso=Positivo, hipotese_ref=H1       │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  INFERÊNCIA:                                                                │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  I1: premissas=["Módulos são filhos da Epistemologia",              │    │
+│  │                 "Filhos ficam dentro do pai"]                       │    │
+│  │      regra="Hierarquia de composição"                               │    │
+│  │      conclusao="Módulos devem ficar dentro da Epistemologia"        │    │
+│  │      metodo_logico=Deducao                                          │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  DECISÃO:                                                                   │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  D1: problema="Onde colocar os módulos?"                            │    │
+│  │      opcoes=["Dentro da Epistemologia", "Pasta separada"]           │    │
+│  │      escolha="Dentro da Epistemologia"                              │    │
+│  │      justificativa="3 evidências convergentes + princípio SOLID"    │    │
+│  │      confianca=0.9                                                  │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -225,5 +324,6 @@ task_ref: T11
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 0.1 | 2025-12-05 | M0 inicial - Problema definido |
-| 0.2 | 2025-12-05 | M1 - Marco Teórico (Toulmin, Popper, Kahneman, CoT) |
-| 0.3 | 2025-12-05 | M2 - Objeto (escopo, fronteiras, relação Epistemologia) |
+| 0.2 | 2025-12-05 | M1 - Marco Teórico |
+| 0.3 | 2025-12-05 | M2 - Objeto (escopo, fronteiras) |
+| 0.4 | 2025-12-05 | M3 - Classes (Hipótese, Evidência, Inferência, Decisão) + ciclo_raciocinio() |
