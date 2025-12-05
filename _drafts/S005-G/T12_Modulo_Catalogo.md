@@ -1,11 +1,11 @@
 ---
 nome: T12_Modulo_Catalogo
-versao: "0.2"
+versao: "0.3"
 tipo: Draft
 classe_ref: Modulo
 origem: interno
 status: Draft
-etapa: M1
+etapa: M3
 sprint_ref: S005-G
 task_ref: T12
 ---
@@ -18,28 +18,38 @@ task_ref: T12
 
 | Significante | Significado no Contexto |
 |--------------|-------------------------|
-| **Catálogo** | Índice estruturado que permite busca semântica |
-| **Busca Semântica** | Encontrar item por significado, não apenas texto exato |
-| **Chave** | Descrição semântica do que um item resolve/contém |
-| **Match** | Correspondência entre query e chave com score de relevância |
-| **Indexar** | Registrar item no catálogo com sua chave semântica |
+| **Catálogo** | Repositório com busca semântica para armazenar e recuperar itens |
+| **Item** | Qualquer objeto indexado (Meta Sistema, Decisão, Documento, etc.) |
+| **Chave Semântica** | Descrição textual que permite busca por significado |
+| **Metadata** | Dados adicionais do item (uso_count, confirmacoes, etc.) |
+| **Score** | Pontuação de relevância retornada pela busca |
 
-### 1.2 Contexto: Por que Catálogo?
+### 1.2 Contexto: Escopo Redefinido
 
-Durante desenvolvimento do Módulo Raciocínio (T11), identificamos problema recorrente:
+Durante discussão sobre responsabilidades GENESIS ↔ Catálogo, identificamos confusão:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                      PROBLEMA IDENTIFICADO                                  │
+│                      CONFUSÃO IDENTIFICADA                                  │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  GENESIS precisa rotear usuário → Meta Sistema correto                      │
-│  └─ Como? Busca semântica: problema ↔ domínio do Meta Sistema               │
+│  ✗ ESCOPO INFLADO (errado):                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  Catálogo que:                                                      │    │
+│  │  • Entende problema do usuário         ← Função do GENESIS!         │    │
+│  │  • Classifica tipo de problema         ← Função do GENESIS!         │    │
+│  │  • Decide se cria novo Meta Sistema    ← Função do GENESIS!         │    │
+│  │  • Roteia para trabalhador             ← Função do GENESIS!         │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
-│  Raciocínio precisa reutilizar decisões anteriores                          │
-│  └─ Como? Busca semântica: problema+contexto ↔ decisão existente            │
-│                                                                             │
-│  MESMO PADRÃO, MESMA SOLUÇÃO                                                │
+│  ✓ ESCOPO CORRETO:                                                          │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  Catálogo que:                                                      │    │
+│  │  • Armazena itens com chave semântica                               │    │
+│  │  • Busca itens por similaridade                                     │    │
+│  │  • Retorna resultados com score                                     │    │
+│  │  • Armazena metadata (mas não interpreta)                           │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -49,7 +59,8 @@ Durante desenvolvimento do Módulo Raciocínio (T11), identificamos problema rec
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           PROBLEMA CENTRAL                                  │
-│  "Como encontrar o item certo em um conjunto, usando linguagem natural?"    │
+│  "Como persistir e recuperar conhecimento de forma que sistemas             │
+│   possam consultar sem perder informação (anti-entropia)?"                  │
 └──────────────────────────────────────┬──────────────────────────────────────┘
                                        │
                                        ▼
@@ -57,61 +68,74 @@ Durante desenvolvimento do Módulo Raciocínio (T11), identificamos problema rec
 │                              SINTOMAS                                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  ┌───────────────────┐  ┌───────────────────┐  ┌───────────────────┐        │
-│  │  BUSCA FALHA      │  │  DUPLICAÇÃO       │  │  ACOPLAMENTO      │        │
-│  │ Texto exato não   │  │ Cada módulo       │  │ Lógica de busca   │        │
-│  │ encontra por      │  │ implementa sua    │  │ espalhada em      │        │
-│  │ significado       │  │ própria busca     │  │ vários lugares    │        │
+│  │  CONHECIMENTO     │  │  BUSCA EXATA      │  │  DUPLICAÇÃO       │        │
+│  │  PERDIDO          │  │  FALHA            │  │  DE LÓGICA        │        │
+│  │ Sessão termina,   │  │ "vendas" não      │  │ Cada módulo       │        │
+│  │ conhecimento some │  │ encontra          │  │ implementa sua    │        │
+│  │                   │  │ "comercial"       │  │ própria busca     │        │
 │  └───────────────────┘  └───────────────────┘  └───────────────────┘        │
 └──────────────────────────────────────┬──────────────────────────────────────┘
                                        │
                                        ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                             SOLUÇÃO                                         │
-│  MÓDULO CATÁLOGO: Interface genérica de busca semântica                     │
+│  CATÁLOGO: Memória estruturada com busca semântica                          │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │  indexar(item, chave) → registra no catálogo                          │  │
-│  │  buscar(query) → item[] com score                                     │  │
-│  │  match(query, threshold) → melhor item ou null                        │  │
+│  │  indexar(item, chave, metadata) → void                                │  │
+│  │  buscar(query, top_k, threshold) → [{item, score}]                    │  │
+│  │  remover(item_id) → void                                              │  │
 │  └───────────────────────────────────────────────────────────────────────┘  │
-│  Composição: Qualquer módulo/sistema pode usar Catálogo                     │
+│                                                                             │
+│  Catálogo = Memória | GENESIS = Inteligência que usa a memória              │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 1.4 Casos de Uso Identificados
+### 1.4 Relação com GENESIS
 
-| Quem Usa | Catálogo de | Query | Resultado |
-|----------|-------------|-------|-----------|
-| **GENESIS** | Meta Sistemas | "como vender mais" | Meta Sistema Vendas |
-| **Raciocínio** | Decisões | "desconto cliente ACME" | Decisão anterior similar |
-| **Epistemologia** | Documentos | "como criar M0" | Doc 00_E_1_1_Problema.md |
-| **[Futuro]** | Qualquer | Qualquer | Item relevante |
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    GENESIS USA CATÁLOGO COMO FERRAMENTA                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  GENESIS (Inteligência Orquestradora):                                      │
+│  │                                                                          │
+│  ├─ ENTENDE problema (M0/Saussure)                                          │
+│  │                                                                          │
+│  ├─ CONSULTA memória                                                        │
+│  │   └─ catalogo.buscar(query) ← USA CATÁLOGO                               │
+│  │                                                                          │
+│  ├─ CLASSIFICA natureza do problema                                         │
+│  │   ├─ Conhecimento existente? → Meta Sistema                              │
+│  │   ├─ Criar conhecimento? → Epistemologia                                 │
+│  │   └─ Tomar decisão? → Raciocínio                                         │
+│  │                                                                          │
+│  └─ ROTEIA para trabalhador especializado                                   │
+│                                                                             │
+│  CATÁLOGO (Memória Estruturada):                                            │
+│  │                                                                          │
+│  ├─ Armazena Meta Sistemas indexados por triggers                           │
+│  ├─ Armazena Decisões indexadas por contexto                                │
+│  ├─ Armazena Documentos indexados por conteúdo                              │
+│  └─ Não sabe o que é Meta Sistema, Decisão, etc. (agnóstico)                │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
 ### 1.5 Tese
 
-> **Módulo Catálogo é infraestrutura de busca semântica que permite encontrar itens por significado, não apenas por texto exato.**
+> **Módulo Catálogo é infraestrutura de memória estruturada com busca semântica.**
 >
-> - Interface genérica: indexar(), buscar(), match()
-> - Reutilizável: qualquer módulo/sistema pode compor
-> - Centralizado: lógica de busca em um só lugar
+> - **Interface genérica:** indexar(), buscar(), remover()
+> - **Agnóstico ao domínio:** não sabe o que armazena
+> - **Armazena metadata:** mas não interpreta (quem interpreta é o consumidor)
 >
-> **Princípio:** Catálogo é infraestrutura. Outros módulos dependem dele.
-
-### 1.6 Perguntas Abertas para M1
-
-| Pergunta | Impacto |
-|----------|---------|
-| Como calcular similaridade semântica? | Embeddings? Keywords? Híbrido? |
-| Onde persistir o índice? | Arquivo? Memória? |
-| Como atualizar índice quando item muda? | Automático? Manual? |
-| Qual threshold padrão para match? | 0.7? 0.8? Configurável? |
+> **Princípio:** Catálogo = Memória burra. GENESIS = Inteligência que usa memória.
 
 ---
 
 ## 2. Marco Teórico (M1)
 
 ### 2.1 Fundamentos de Information Retrieval
-
-O problema de busca semântica pertence ao campo de **Information Retrieval (IR)**, que estuda como encontrar documentos relevantes dado uma query. A evolução do campo produziu três paradigmas principais:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -126,143 +150,31 @@ O problema de busca semântica pertence ao campo de **Information Retrieval (IR)
 │  │ Exact match     │     │ Meaning match   │     │ Best of both    │        │
 │  │ Fast, precise   │     │ Context-aware   │     │ RRF fusion      │        │
 │  └─────────────────┘     └─────────────────┘     └─────────────────┘        │
-│         ▲                       ▲                       ▲                   │
-│         │                       │                       │                   │
-│    "apple pie"              "dessert"            "apple pie recipe"         │
-│    encontra exato         encontra similar       encontra ambos             │
+│                                                                             │
+│  DECISÃO PARA CATÁLOGO: Hybrid Search (BM25 + Embeddings + RRF)             │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 2.2 Keyword Search: BM25 (Best Matching 25)
+### 2.2 BM25 (Keyword Search)
 
 **Fonte:** Robertson & Zaragoza, "The Probabilistic Relevance Framework: BM25 and Beyond" (2009)
 
-BM25 é o algoritmo padrão para busca por palavras-chave, usado em Elasticsearch, Lucene, e engines de busca web. Ele melhora o TF-IDF clássico com três componentes:
+- Match exato de termos
+- Eficiente, não requer modelo externo
+- Bom para termos técnicos específicos
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         FÓRMULA BM25 SIMPLIFICADA                           │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  Score(D, Q) = Σ IDF(qi) × TF_saturado(qi, D)                               │
-│                                                                             │
-│  Onde:                                                                      │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │ TF (Term Frequency)  │ Quantas vezes termo aparece no documento     │    │
-│  │ IDF (Inverse Doc F.) │ Raridade do termo no corpus (raro = +peso)   │    │
-│  │ Saturação (k1)       │ Evita que repetição excessiva inflacione     │    │
-│  │ Normalização (b)     │ Ajusta por tamanho do documento              │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-│  Parâmetros típicos: k1 = 1.2, b = 0.75                                     │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+### 2.3 Embeddings (Semantic Search)
 
-**Forças do BM25:**
-- Preciso para termos específicos (nomes, códigos, IDs)
-- Computacionalmente eficiente
-- Não requer treinamento ou modelos externos
-- Funciona bem com termos técnicos/domínio
+**Fonte:** Reimers & Gurevych, "Sentence-BERT" (2019)
 
-**Fraquezas do BM25:**
-- Não entende sinônimos ("carro" ≠ "automóvel")
-- Ignora contexto semântico
-- Match puramente lexical
-
-### 2.3 Semantic Search: Embeddings
-
-**Fonte:** Manning et al., "Introduction to Information Retrieval" (2008); Reimers & Gurevych, "Sentence-BERT" (2019)
-
-Busca semântica usa embeddings (vetores densos) para representar significado. Textos similares em significado ficam próximos no espaço vetorial.
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         COMO EMBEDDINGS FUNCIONAM                           │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  Texto → Modelo de Embedding → Vetor [0.12, -0.45, 0.78, ...]               │
-│                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                     ESPAÇO VETORIAL                                 │    │
-│  │                                                                     │    │
-│  │        "como aumentar vendas"  ●────┐                               │    │
-│  │                                      ├─── PRÓXIMOS (similar)        │    │
-│  │        "estratégia comercial"  ●────┘                               │    │
-│  │                                                                     │    │
-│  │                                                                     │    │
-│  │        "receita de bolo"       ●──────── DISTANTE (diferente)       │    │
-│  │                                                                     │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-│  Similaridade = Cosine(vetor_query, vetor_documento)                        │
-│  Range: -1 (oposto) a 1 (idêntico), tipicamente 0.7-1.0 para similares      │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-**Forças dos Embeddings:**
+- Vetores densos representam significado
 - Entende sinônimos e paráfrases
-- Captura contexto semântico
-- Funciona com queries em linguagem natural
+- Requer modelo de embedding (LLM)
 
-**Fraquezas dos Embeddings:**
-- Requer modelo de embedding (custo, latência)
-- Pode falhar com termos fora do vocabulário de treino
-- Menos preciso para termos técnicos específicos
+### 2.4 Reciprocal Rank Fusion (RRF)
 
-### 2.4 Hybrid Search: O Melhor dos Dois Mundos
-
-**Fonte:** Cormack et al., "Reciprocal Rank Fusion" (CIKM 2009); Weaviate, Elastic, Azure AI Search documentation
-
-Hybrid Search combina keyword search (BM25) e semantic search (embeddings) para obter precisão de termos exatos + compreensão semântica.
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         ARQUITETURA HYBRID SEARCH                           │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│                           Query do Usuário                                  │
-│                                 │                                           │
-│                    ┌────────────┴────────────┐                              │
-│                    ▼                         ▼                              │
-│           ┌─────────────────┐       ┌─────────────────┐                     │
-│           │  BM25 Search    │       │  Vector Search  │                     │
-│           │  (Keywords)     │       │  (Embeddings)   │                     │
-│           └────────┬────────┘       └────────┬────────┘                     │
-│                    │                         │                              │
-│                    ▼                         ▼                              │
-│           ┌─────────────────┐       ┌─────────────────┐                     │
-│           │ Ranked List A   │       │ Ranked List B   │                     │
-│           │ 1. Doc X        │       │ 1. Doc Y        │                     │
-│           │ 2. Doc Y        │       │ 2. Doc X        │                     │
-│           │ 3. Doc Z        │       │ 3. Doc W        │                     │
-│           └────────┬────────┘       └────────┬────────┘                     │
-│                    │                         │                              │
-│                    └────────────┬────────────┘                              │
-│                                 ▼                                           │
-│                    ┌─────────────────────────┐                              │
-│                    │  Reciprocal Rank Fusion │                              │
-│                    │       (RRF)             │                              │
-│                    └────────────┬────────────┘                              │
-│                                 ▼                                           │
-│                    ┌─────────────────────────┐                              │
-│                    │   Final Ranked List     │                              │
-│                    │   1. Doc X (aparece     │                              │
-│                    │      bem em ambos)      │                              │
-│                    │   2. Doc Y              │                              │
-│                    │   3. Doc Z              │                              │
-│                    └─────────────────────────┘                              │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 2.5 Reciprocal Rank Fusion (RRF)
-
-**Fonte:** Cormack, Clarke & Grossman, "Reciprocal Rank Fusion" (CIKM 2009)
-
-RRF é o algoritmo padrão para combinar resultados de múltiplos sistemas de busca. Vantagem principal: **não requer normalização de scores** - usa apenas posições (ranks).
+**Fonte:** Cormack et al., "Reciprocal Rank Fusion" (CIKM 2009)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -272,126 +184,274 @@ RRF é o algoritmo padrão para combinar resultados de múltiplos sistemas de bu
 │  RRF_score(d) = Σ  1 / (k + rank(d))                                        │
 │                                                                             │
 │  Onde:                                                                      │
-│  - d = documento                                                            │
-│  - k = constante de suavização (tipicamente 60)                             │
-│  - rank(d) = posição do documento em cada lista (1, 2, 3...)                │
+│  - k = 60 (constante de suavização, valor empírico padrão)                  │
+│  - rank(d) = posição do documento em cada lista                             │
 │                                                                             │
-│  EXEMPLO:                                                                   │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                                                                     │    │
-│  │  Doc X: rank 1 em BM25, rank 2 em Vector                            │    │
-│  │  RRF(X) = 1/(60+1) + 1/(60+2) = 0.0164 + 0.0161 = 0.0325            │    │
-│  │                                                                     │    │
-│  │  Doc Y: rank 3 em BM25, rank 1 em Vector                            │    │
-│  │  RRF(Y) = 1/(60+3) + 1/(60+1) = 0.0159 + 0.0164 = 0.0323            │    │
-│  │                                                                     │    │
-│  │  Doc Z: rank 2 em BM25, não aparece em Vector                       │    │
-│  │  RRF(Z) = 1/(60+2) + 0 = 0.0161                                     │    │
-│  │                                                                     │    │
-│  │  Resultado: X > Y > Z (docs que aparecem em ambos ganham)           │    │
-│  │                                                                     │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-│  Por que k=60?                                                              │
-│  - Valor empírico que balanceia top-ranks vs consenso                       │
-│  - k baixo → prioriza posição #1                                            │
-│  - k alto → prioriza consenso entre sistemas                                │
+│  Vantagem: Não requer normalização de scores entre sistemas diferentes      │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 2.6 Threshold de Similaridade
+### 2.5 Threshold vs Top-K
 
-**Fonte:** Análise empírica de múltiplos sistemas de embedding
+| Abordagem | Quando Usar | Comportamento |
+|-----------|-------------|---------------|
+| **Top-K** | "Me dê as K melhores opções" | Sempre retorna K itens |
+| **Threshold** | "Existe algo relevante?" | Pode retornar vazio |
+| **Combinado** | Recomendado | Top-K filtrado por threshold |
 
-A escolha de threshold depende do contexto e do modelo de embedding usado:
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    GUIDELINES PARA THRESHOLD                                │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  ABORDAGEM TOP-K vs THRESHOLD                                       │    │
-│  │                                                                     │    │
-│  │  Top-K: Retorna os K melhores, independente de score                │    │
-│  │         → Bom para: "Me dê as 3 melhores opções"                    │    │
-│  │         → Sempre retorna algo, mesmo irrelevante                    │    │
-│  │                                                                     │    │
-│  │  Threshold: Retorna apenas scores acima do limite                   │    │
-│  │         → Bom para: "Existe algo relevante?"                        │    │
-│  │         → Pode retornar vazio (match() → null)                      │    │
-│  │                                                                     │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  VALORES TÍPICOS DE THRESHOLD (Cosine Similarity)                   │    │
-│  │                                                                     │    │
-│  │  0.85+ │ Alta precisão, poucos resultados                           │    │
-│  │  0.75  │ Balanceado (recomendado como default)                      │    │
-│  │  0.60  │ Alto recall, mais resultados (pode incluir ruído)          │    │
-│  │  <0.60 │ Geralmente irrelevante                                     │    │
-│  │                                                                     │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-│  RECOMENDAÇÃO: Threshold configurável com default 0.75                      │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 2.7 Decisão de Arquitetura: Qual Abordagem Usar?
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                 DECISÃO DE ARQUITETURA PARA CATÁLOGO                        │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  CONTEXTO DO GENESIS:                                                       │
-│  - Catálogo pequeno (dezenas, não milhões de itens)                         │
-│  - Queries em linguagem natural                                             │
-│  - Precisa entender sinônimos ("vendas" ≈ "comercial")                      │
-│  - Alguns termos técnicos específicos (nomes de Meta Sistemas)              │
-│                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                   OPÇÃO ESCOLHIDA: HYBRID SEARCH                    │    │
-│  │                                                                     │    │
-│  │  1. BM25 para match exato de termos técnicos                        │    │
-│  │  2. Embeddings (via LLM) para semântica                             │    │
-│  │  3. RRF para fusão dos resultados                                   │    │
-│  │                                                                     │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-│  SIMPLIFICAÇÃO PARA MVP:                                                    │
-│  Como o catálogo é pequeno e o LLM já está presente:                        │
-│  - Usar LLM para gerar embeddings (sem infra adicional)                     │
-│  - Implementar BM25 simples (TF-IDF básico)                                 │
-│  - RRF com k=60 (valor padrão)                                              │
-│  - Threshold default 0.75, configurável por catálogo                        │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 2.8 Síntese: Princípios do Marco Teórico
-
-| Princípio | Fonte | Aplicação no Catálogo |
-|-----------|-------|----------------------|
-| **Hybrid Search** | IR moderno | Combina precisão (keywords) + compreensão (embeddings) |
-| **BM25** | Robertson (2009) | Busca por termos exatos, nomes técnicos |
-| **Embeddings** | Sentence-BERT | Busca por significado, sinônimos |
-| **RRF** | Cormack (2009) | Fusão de rankings sem normalização |
-| **Top-K + Threshold** | Prática IR | Retornar melhores K acima de threshold |
+**Valores típicos de threshold (cosine similarity):**
+- 0.85+: Alta precisão, poucos resultados
+- 0.75: Balanceado (default recomendado)
+- 0.60: Alto recall, mais ruído
 
 ---
 
 ## 3. Objeto (M2)
 
-*A definir na próxima etapa.*
+### 3.1 Fronteiras
+
+| É | NÃO É |
+|---|-------|
+| Repositório com busca semântica | Orquestrador/Router |
+| Agnóstico ao tipo de item | Específico para Meta Sistemas |
+| Armazena metadata | Interpreta metadata |
+| Infraestrutura (Camada 3) | Inteligência de negócio |
+| Usado por GENESIS, Raciocínio, etc. | Ponto de entrada do usuário |
+
+### 3.2 Entradas e Saídas
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         ENTRADAS E SAÍDAS                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  indexar(item, chave, metadata?)                                            │
+│  ├─ Input:                                                                  │
+│  │   • item: any (objeto a armazenar)                                       │
+│  │   • chave: string (descrição semântica para busca)                       │
+│  │   • metadata?: object (dados adicionais opcionais)                       │
+│  └─ Output: void                                                            │
+│                                                                             │
+│  buscar(query, options?)                                                    │
+│  ├─ Input:                                                                  │
+│  │   • query: string (texto de busca)                                       │
+│  │   • options?: { top_k?: number, threshold?: float }                      │
+│  └─ Output: [{ item, score, metadata }]                                     │
+│                                                                             │
+│  remover(item_id)                                                           │
+│  ├─ Input:                                                                  │
+│  │   • item_id: string                                                      │
+│  └─ Output: void                                                            │
+│                                                                             │
+│  atualizar_metadata(item_id, metadata)                                      │
+│  ├─ Input:                                                                  │
+│  │   • item_id: string                                                      │
+│  │   • metadata: object (merge com existente)                               │
+│  └─ Output: void                                                            │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 3.3 Quem Usa o Catálogo
+
+| Consumidor | O que indexa | O que busca | Metadata típica |
+|------------|--------------|-------------|-----------------|
+| **GENESIS** | Meta Sistemas | Query do usuário | cobertura, pai |
+| **Raciocínio** | Decisões | Problema similar | uso_count, confirmacoes |
+| **Epistemologia** | Documentos | Conteúdo | versao, status |
+
+**Nota sobre metadata de Raciocínio:**
+A "força" de uma decisão (uso_count, confirmacoes) é metadata armazenada no Catálogo, mas **interpretada** pelo Raciocínio. Catálogo não sabe o que significa, só guarda.
 
 ---
 
 ## 4. Classe (M3)
 
-*A definir na próxima etapa.*
+### 4.1 Diagrama da Classe
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              CATÁLOGO                                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Atributos                                                                  │
+│  ──────────                                                                 │
+│  - indice: Map<id, {item, chave, embedding, metadata}>                      │
+│  - config: {                                                                │
+│      default_top_k: number,      # default: 5                               │
+│      default_threshold: float,   # default: 0.75                            │
+│      rrf_k: number               # default: 60                              │
+│    }                                                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Métodos Públicos                                                           │
+│  ────────────────                                                           │
+│  + indexar(item, chave, metadata?): void                                    │
+│  + buscar(query, options?): ResultadoBusca[]                                │
+│  + remover(item_id): void                                                   │
+│  + atualizar_metadata(item_id, metadata): void                              │
+│  + listar(): ItemIndexado[]                                                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Métodos Privados                                                           │
+│  ────────────────                                                           │
+│  - gerar_embedding(texto): float[]                                          │
+│  - busca_bm25(query): RankedList                                            │
+│  - busca_vector(query_embedding): RankedList                                │
+│  - fusao_rrf(listas: RankedList[]): ResultadoBusca[]                        │
+│  - gerar_id(item): string                                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Tipos                                                                      │
+│  ─────                                                                      │
+│  ItemIndexado = { id, item, chave, metadata }                               │
+│  ResultadoBusca = { item, score, metadata }                                 │
+│  RankedList = { id, rank }[]                                                │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.2 Método: indexar()
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    indexar(item, chave, metadata?)                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1. Gerar ID único para o item                                              │
+│     └─ id = gerar_id(item) ou hash da chave                                 │
+│                                                                             │
+│  2. Gerar embedding da chave semântica                                      │
+│     └─ embedding = gerar_embedding(chave)                                   │
+│                                                                             │
+│  3. Armazenar no índice                                                     │
+│     └─ indice.set(id, {                                                     │
+│          item: item,                                                        │
+│          chave: chave,                                                      │
+│          embedding: embedding,                                              │
+│          metadata: metadata || {}                                           │
+│        })                                                                   │
+│                                                                             │
+│  4. Persistir índice (se configurado)                                       │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.3 Método: buscar()
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    buscar(query, options?)                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Input:                                                                     │
+│  - query: string                                                            │
+│  - options: { top_k?: number, threshold?: float }                           │
+│                                                                             │
+│  1. Extrair parâmetros                                                      │
+│     └─ top_k = options.top_k || config.default_top_k                        │
+│     └─ threshold = options.threshold || config.default_threshold            │
+│                                                                             │
+│  2. Executar busca BM25 (keyword)                                           │
+│     └─ lista_bm25 = busca_bm25(query)                                       │
+│                                                                             │
+│  3. Executar busca vetorial (semantic)                                      │
+│     └─ query_embedding = gerar_embedding(query)                             │
+│     └─ lista_vector = busca_vector(query_embedding)                         │
+│                                                                             │
+│  4. Fusão via RRF                                                           │
+│     └─ resultados = fusao_rrf([lista_bm25, lista_vector])                   │
+│                                                                             │
+│  5. Filtrar por threshold                                                   │
+│     └─ resultados = resultados.filter(r => r.score >= threshold)            │
+│                                                                             │
+│  6. Limitar a top_k                                                         │
+│     └─ resultados = resultados.slice(0, top_k)                              │
+│                                                                             │
+│  7. Retornar com metadata                                                   │
+│     └─ return resultados.map(r => ({                                        │
+│          item: indice.get(r.id).item,                                       │
+│          score: r.score,                                                    │
+│          metadata: indice.get(r.id).metadata                                │
+│        }))                                                                  │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.4 Método: atualizar_metadata()
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    atualizar_metadata(item_id, metadata)                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Propósito: Permitir que consumidores atualizem metadata sem reindexar      │
+│                                                                             │
+│  Exemplo de uso pelo Raciocínio:                                            │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  // Decisão foi usada novamente                                     │    │
+│  │  catalogo.atualizar_metadata(decisao_id, {                          │    │
+│  │    uso_count: uso_count + 1                                         │    │
+│  │  })                                                                 │    │
+│  │                                                                     │    │
+│  │  // Decisão foi confirmada como boa                                 │    │
+│  │  catalogo.atualizar_metadata(decisao_id, {                          │    │
+│  │    confirmacoes: confirmacoes + 1,                                  │    │
+│  │    ultima_confirmacao: "2025-12-05"                                 │    │
+│  │  })                                                                 │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  Implementação:                                                             │
+│  1. Obter entrada existente                                                 │
+│     └─ entrada = indice.get(item_id)                                        │
+│  2. Merge metadata                                                          │
+│     └─ entrada.metadata = { ...entrada.metadata, ...metadata }              │
+│  3. Persistir                                                               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.5 Persistência
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         PERSISTÊNCIA DO ÍNDICE                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Opções para MVP:                                                           │
+│                                                                             │
+│  OPÇÃO A: Arquivo JSON (simples)                                            │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  _catalogo/                                                         │    │
+│  │  ├── meta_sistemas.json                                             │    │
+│  │  ├── decisoes.json                                                  │    │
+│  │  └── documentos.json                                                │    │
+│  │                                                                     │    │
+│  │  Cada arquivo contém:                                               │    │
+│  │  {                                                                  │    │
+│  │    "versao": "1.0",                                                 │    │
+│  │    "itens": [                                                       │    │
+│  │      { "id": "...", "chave": "...", "embedding": [...], "meta": {} }│    │
+│  │    ]                                                                │    │
+│  │  }                                                                  │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  OPÇÃO B: Inline no documento (SSOT)                                        │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  Cada Meta Sistema/Decisão tem sua chave semântica no frontmatter   │    │
+│  │  Catálogo lê e monta índice em memória ao inicializar               │    │
+│  │  Não há arquivo separado de índice                                  │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  RECOMENDAÇÃO: Opção B (SSOT, menos sincronização)                          │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.6 Restrições
+
+| Regra | Especificação |
+|-------|---------------|
+| R1 | chave não pode ser vazia (mínimo 10 caracteres) |
+| R2 | item_id deve ser único no catálogo |
+| R3 | threshold deve estar entre 0.0 e 1.0 |
+| R4 | top_k deve ser >= 1 |
 
 ---
 
@@ -402,16 +462,15 @@ A escolha de threshold depende do contexto e do modelo de embedding usado:
 | Documento | Relação |
 |-----------|---------|
 | docs/00_E/00_E_Epistemologia.md | Pai - contém este módulo |
-| _drafts/S005-G/T11_Modulo_Raciocinio.md | Depende deste módulo |
-| genesis/GENESIS.md | Usa para rotear Meta Sistemas |
+| genesis/GENESIS.md | Principal consumidor |
+| _drafts/S005-G/T11_Modulo_Raciocinio.md | Consumidor (indexa decisões) |
 
 ### Externas
 
 | Referência | Aplicação |
 |------------|-----------|
-| Robertson & Zaragoza, "BM25 and Beyond" (2009) | Fundamentação BM25 |
+| Robertson & Zaragoza, "BM25 and Beyond" (2009) | Algoritmo BM25 |
 | Cormack et al., "Reciprocal Rank Fusion" (CIKM 2009) | Algoritmo RRF |
-| Manning et al., "Introduction to IR" (2008) | Fundamentos gerais |
 | Reimers & Gurevych, "Sentence-BERT" (2019) | Embeddings semânticos |
 
 ---
@@ -422,3 +481,4 @@ A escolha de threshold depende do contexto e do modelo de embedding usado:
 |--------|------|-----------|
 | 0.1 | 2025-12-05 | M0 inicial - Problema e casos de uso |
 | 0.2 | 2025-12-05 | M1 Marco Teórico - BM25, Embeddings, Hybrid Search, RRF |
+| 0.3 | 2025-12-05 | Refatoração M0-M3: escopo reduzido para repositório com busca |
