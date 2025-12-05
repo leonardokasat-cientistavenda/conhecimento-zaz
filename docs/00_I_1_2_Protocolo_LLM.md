@@ -219,6 +219,10 @@ Antes de editar arquivo existente:
    - **Substituição** (API com SHA): reescritas completas, seções grandes
 
 Sempre perguntar: "Edição pequena (patch) ou reescrita (substituição)?"
+Após criar patch:
+1. Informar usuário: "Patch criado. GitHub Action leva ~15s."
+2. Continuar próxima task sem aguardar
+3. Verificar aplicação apenas se necessário para próxima ação
 
 ---
 
@@ -265,3 +269,4 @@ github:create_or_update_file(path="...", content="...", message="...")
 |--------|------|-----------|
 | 1.0 | 2025-12-05 | Criação - S005-G/T07 |
 | 1.1 | 2025-12-05 | Adiciona REGRA DE EDIÇÃO - S005-G/T07 |
+| 1.2 | 2025-12-05 | Adiciona comportamento pós-patch - S005-G/T07 |
