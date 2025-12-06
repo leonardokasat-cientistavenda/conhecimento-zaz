@@ -1,22 +1,17 @@
-# Prompt para Sprint S005-G: Refatoração do GENESIS
+# Sprint S005-G: Refatoração do GENESIS
 
 ## CONTEXTO
-
-IMPORTANTE: Todos os arquivos estão no GitHub, NÃO no Google Drive.
-Usar ferramenta github:get_file_contents para leitura.
 
 Repositório GitHub: leonardokasat-cientistavenda/conhecimento-zaz
 Arquivo raiz: /genesis/GENESIS.md
 
-GitHub: owner=leonardokasat-cientistavenda, repo=conhecimento-zaz, branch=main
-
 ---
 
-## SPRINT ATUAL: S005-G
+## SPRINT S005-G - CONCLUÍDA ✅
 
-**Objetivo:** Refatorar GENESIS de STUB (v0.10) para Framework completo (v1.0), aplicando M0-M4 e incorporando o propósito maior: **Inteligência Híbrida para amplificar capacidade cognitiva humana**.
+**Objetivo:** Refatorar GENESIS de STUB (v0.10) para Framework completo (v1.2), aplicando M0-M4 e incorporando o propósito maior: **Inteligência Híbrida para amplificar capacidade cognitiva humana**.
 
-**Arquivo da Sprint:** /_sprints/S005-G_Sprint_Genesis.md
+**Resultado:** Framework GENESIS completo com módulos Catálogo e Raciocínio integrados e publicados.
 
 ---
 
@@ -27,20 +22,19 @@ GENESIS (Camada 1) ─── INTELIGÊNCIA ORQUESTRADORA
 │  Tese: "Amplificar capacidade cognitiva humana via Inteligência
 │        Híbrida: Humano (intenção) + LLM (fluência) + Sistema (estrutura)"
 │  Função: entender(CONHECER|DECIDIR) → buscar(Catálogo) → rotear(reutiliza|cria)
-│  Resolve: Bootstrap Circular, Entropia Contextual, Visão do sistema
 │
 ├──► CATÁLOGO (Camada 3) ─── MEMÓRIA ESTRUTURADA
 │    Função: Repositório com busca semântica (indexar/buscar/atualizar)
-│    Agnóstico: Não sabe o que armazena, só guarda e busca
+│    Arquivo: docs/00_E/00_E_2_1_Modulo_Catalogo.md
 │
 ├──► EPISTEMOLOGIA (Camada 3) ─── MÉTODO (CONHECER)
 │    Tese: "Criar Meta Sistemas anti-entrópicos via M0-M4"
-│    Função: Estruturar conhecimento, criar documentos M0-M4
+│    Arquivo: docs/00_E/00_E_Epistemologia.md
 │
 └──► RACIOCÍNIO (Módulo) ─── ESTRUTURAR DECISÃO (DECIDIR)
      Função: Ciclo H→E→I→D para tomar decisões
      Usa: Catálogo para buscar/indexar decisões
-     Metadata: uso_count, confirmacoes (força da decisão)
+     Arquivo: docs/00_E/00_E_2_2_Modulo_Raciocinio.md
 ```
 
 ---
@@ -57,11 +51,22 @@ GENESIS (Camada 1) ─── INTELIGÊNCIA ORQUESTRADORA
 | T06 | M4 GENESIS | Documento final v1.0 | ✅ |
 | T07 | Atualizar Índice | GENESIS.md v1.1 | ✅ |
 | T08-T10 | Reserva | - | ✅ |
-| T11 | Módulo Raciocínio | M0-M3 completo | ✅ |
-| T12 | Módulo Catálogo | M0-M3 completo | ✅ |
-| T13 | Integração | Verificar integridade | 🔄 PRÓXIMA |
-| T14 | Refatorar GENESIS Router | GENESIS v1.1 - Inteligência Orquestradora | ✅ |
-| T15 | Força Decisão Raciocínio | Metadata uso_count/confirmacoes | ⬜ PENDENTE |
+| T11 | Módulo Raciocínio | M0-M3 → M4 publicado | ✅ |
+| T12 | Módulo Catálogo | M0-M3 → M4 publicado | ✅ |
+| T13 | Integração | Verificar integridade + publicar módulos | ✅ |
+| T14 | Refatorar GENESIS Router | GENESIS v1.1 → v1.2 | ✅ |
+| T15 | Força Decisão Raciocínio | Incorporado em T13 (metadata) | ✅ |
+
+---
+
+## ENTREGÁVEIS FINAIS
+
+| Arquivo | Versão | Descrição |
+|---------|--------|-----------|
+| `genesis/GENESIS.md` | **v1.2** | Inteligência Orquestradora com referências corretas |
+| `docs/00_E/00_E_Epistemologia.md` | v3.4 | Framework de criação de Meta Sistemas |
+| `docs/00_E/00_E_2_1_Modulo_Catalogo.md` | **v1.0** | Memória estruturada com busca semântica |
+| `docs/00_E/00_E_2_2_Modulo_Raciocinio.md` | **v1.0** | Ciclo H→E→I→D integrado com Catálogo |
 
 ---
 
@@ -70,114 +75,53 @@ GENESIS (Camada 1) ─── INTELIGÊNCIA ORQUESTRADORA
 ### 1. GENESIS = Inteligência, CATÁLOGO = Memória
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    SEPARAÇÃO DE RESPONSABILIDADES                           │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  GENESIS (Inteligência):                                                    │
-│  ├─ entender(): classifica CONHECER vs DECIDIR                              │
-│  ├─ buscar(): consulta Catálogo                                             │
-│  └─ rotear(): reutiliza existente ou cria novo                              │
-│                                                                             │
-│  CATÁLOGO (Memória):                                                        │
-│  ├─ indexar(item, chave, metadata)                                          │
-│  ├─ buscar(query) → [{item, score, metadata}]                               │
-│  └─ Agnóstico: não sabe o que armazena                                      │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+GENESIS (Inteligência):
+├─ entender(): classifica CONHECER vs DECIDIR
+├─ buscar(): consulta Catálogo
+└─ rotear(): reutiliza existente ou cria novo
+
+CATÁLOGO (Memória):
+├─ indexar(item, chave, metadata)
+├─ buscar(query) → [{item, score, metadata}]
+└─ Agnóstico: não sabe o que armazena
 ```
 
-### 2. Fluxo GENESIS v1.1
+### 2. Raciocínio Integrado com Catálogo
 
 ```
-User Input
-    │
-    ▼
-entender() → CONHECER ou DECIDIR?
-    │
-    ├─ CONHECER ──► buscar(MetaSistema) ──► existe? ──► roteia para MS
-    │                                         └─ não? ──► Epistemologia cria
-    │
-    └─ DECIDIR ──► buscar(Decisão) ──► existe? ──► aplica decisão
-                                         └─ não? ──► Raciocínio gera
+ANTES: problema → ciclo H→E→I→D → decisão → persiste arquivo
+       (sempre cria nova decisão, nunca reutiliza)
+
+DEPOIS: problema
+        → Catalogo.buscar(problema)
+        → EXISTE? aplica + atualiza metadata
+        → NÃO EXISTE? ciclo H→E→I→D → indexa no Catálogo
 ```
 
-### 3. Força da Decisão = Metadata no Raciocínio
+### 3. Força da Decisão = Metadata
 
 Decisões reutilizadas e confirmadas ficam "mais fortes":
 - `uso_count`: quantas vezes foi consultada
-- `confirmacoes`: quantas vezes usuário confirmou sucesso
+- `confirmacoes`: quantas vezes usuário confirmou
 - `rejeicoes`: quantas vezes usuário rejeitou
-- Catálogo armazena, Raciocínio interpreta
 
 ---
 
-## ARQUIVOS DA SPRINT
+## PRÓXIMA SPRINT
 
-| Arquivo | Descrição | Status |
-|---------|-----------|--------|
-| `genesis/GENESIS.md` | **v1.1 Inteligência Orquestradora** | ✅ Publicado |
-| `_drafts/S005-G/T11_Modulo_Raciocinio.md` | Raciocínio M0-M3 | ✅ Completo |
-| `_drafts/S005-G/T12_Modulo_Catalogo.md` | Catálogo M0-M3 | ✅ Completo |
-| `_drafts/S005-G/T13_Checklist_Integracao.md` | Verificação | 🔄 Próxima |
-| `_drafts/S005-G/T14_Refatorar_GENESIS_Router.md` | Instrução (concluída) | ✅ |
-| `_drafts/S005-G/T15_Forca_Decisao_Raciocinio.md` | Instrução força | ⬜ Pendente |
+**S006-E: Implementação do Catálogo**
+- Implementar busca semântica real (BM25 + Embeddings + RRF)
+- Criar pasta `_catalogo/` para índice persistido
+- Testar fluxo completo GENESIS → Catálogo → Raciocínio
 
 ---
 
-## PRÓXIMOS PASSOS
-
-1. **T13 Integração** - Verificar integridade do sistema
-2. **Publicar Catálogo** - M4 (documento final)
-3. **Atualizar Epistemologia** - Adicionar atributos de roteamento
-4. **Atualizar Raciocínio** - Integrar com Catálogo
-
----
-
-## REGRAS DE OPERAÇÃO
-
-### Regra de Carregamento
-Antes de qualquer resposta:
-1. Ler github:get_file_contents(path="genesis/GENESIS.md")
-2. Ler github:get_file_contents(path="_sprints/S005-G_Sprint_Genesis.md")
-3. Identificar task atual
-
-### Regra de Criação de Arquivos
-Antes de criar/editar, ler:
-- /docs/00_I_1_1_GitHub.md (regras GitHub + token efficiency)
-- /docs/00_E/00_E_1_6_Documento.md (estrutura pastas + ciclo M0-M4)
-
-Resumo:
-1. Criar arquivos DIRETO no GitHub (sem preview no chat)
-2. Informar apenas: "Arquivo criado: [path] - [resumo]"
-3. Estrutura drafts: `_drafts/SPRINT/TXX_Nome.md` (1 arquivo que evolui M0→M4)
-
-### Convenção de Commit
-Padrão: [CAMADA] ação: descrição - Sprint/Task
-
-Exemplo: [C1] update: GENESIS Router - S005-G/T14
-
----
-
-## REFERÊNCIAS IMPORTANTES
+## REFERÊNCIAS
 
 | Arquivo | Conteúdo |
 |---------|----------|
-| /genesis/GENESIS.md | **v1.1 publicado** |
-| /docs/00_E/00_E_Epistemologia.md | Epistemologia v3.2 |
-| /_drafts/S005-G/T11_Modulo_Raciocinio.md | Raciocínio M0-M3 |
-| /_drafts/S005-G/T12_Modulo_Catalogo.md | Catálogo M0-M3 |
-| /docs/00_I_1_1_GitHub.md | Instruções GitHub |
-
----
-
-## COMO ACESSAR ARQUIVOS
-
-Listar pasta:
-github:get_file_contents(owner="leonardokasat-cientistavenda", repo="conhecimento-zaz", path="docs")
-
-Ler arquivo:
-github:get_file_contents(owner="leonardokasat-cientistavenda", repo="conhecimento-zaz", path="genesis/GENESIS.md")
-
-Criar/atualizar arquivo:
-github:create_or_update_file(owner="leonardokasat-cientistavenda", repo="conhecimento-zaz", branch="main", path="...", content="...", message="...")
+| genesis/GENESIS.md | v1.2 - Inteligência Orquestradora |
+| docs/00_E/00_E_Epistemologia.md | v3.4 - Framework M0-M4 |
+| docs/00_E/00_E_2_1_Modulo_Catalogo.md | v1.0 - Memória estruturada |
+| docs/00_E/00_E_2_2_Modulo_Raciocinio.md | v1.0 - Ciclo H→E→I→D |
+| docs/00_I_1_1_GitHub.md | v2.0 - Instruções de persistência |
