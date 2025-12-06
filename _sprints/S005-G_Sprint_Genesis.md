@@ -26,21 +26,21 @@ GitHub: owner=leonardokasat-cientistavenda, repo=conhecimento-zaz, branch=main
 GENESIS (Camada 1) ─── INTELIGÊNCIA ORQUESTRADORA
 │  Tese: "Amplificar capacidade cognitiva humana via Inteligência
 │        Híbrida: Humano (intenção) + LLM (fluência) + Sistema (estrutura)"
-│  Função: Entende problema → Consulta memória → Classifica → Roteia
+│  Função: entender(CONHECER|DECIDIR) → buscar(Catálogo) → rotear(reutiliza|cria)
 │  Resolve: Bootstrap Circular, Entropia Contextual, Visão do sistema
 │
 ├──► CATÁLOGO (Camada 3) ─── MEMÓRIA ESTRUTURADA
 │    Função: Repositório com busca semântica (indexar/buscar/atualizar)
 │    Agnóstico: Não sabe o que armazena, só guarda e busca
 │
-└──► EPISTEMOLOGIA (Camada 3) ─── MÉTODO (COMO)
-     │  Tese: "Criar Meta Sistemas anti-entrópicos via M0-M4"
-     │  Função: Estruturar conhecimento, criar documentos M0-M4
-     │
-     └──► RACIOCÍNIO (Módulo) ─── ESTRUTURAR DECISÃO
-          Função: Ciclo H→E→I→D para tomar decisões
-          Usa: Catálogo para buscar/indexar decisões
-          Metadata: uso_count, confirmacoes (força da decisão)
+├──► EPISTEMOLOGIA (Camada 3) ─── MÉTODO (CONHECER)
+│    Tese: "Criar Meta Sistemas anti-entrópicos via M0-M4"
+│    Função: Estruturar conhecimento, criar documentos M0-M4
+│
+└──► RACIOCÍNIO (Módulo) ─── ESTRUTURAR DECISÃO (DECIDIR)
+     Função: Ciclo H→E→I→D para tomar decisões
+     Usa: Catálogo para buscar/indexar decisões
+     Metadata: uso_count, confirmacoes (força da decisão)
 ```
 
 ---
@@ -58,9 +58,9 @@ GENESIS (Camada 1) ─── INTELIGÊNCIA ORQUESTRADORA
 | T07 | Atualizar Índice | GENESIS.md v1.1 | ✅ |
 | T08-T10 | Reserva | - | ✅ |
 | T11 | Módulo Raciocínio | M0-M3 completo | ✅ |
-| T12 | Módulo Catálogo | M0-M3 completo (M4 pendente integração) | ✅ |
-| T13 | Integração | Verificar integridade | ⬜ PENDENTE |
-| T14 | Refatorar GENESIS Router | GENESIS como inteligência orquestradora | 🔄 PRÓXIMA |
+| T12 | Módulo Catálogo | M0-M3 completo | ✅ |
+| T13 | Integração | Verificar integridade | 🔄 PRÓXIMA |
+| T14 | Refatorar GENESIS Router | GENESIS v1.1 - Inteligência Orquestradora | ✅ |
 | T15 | Força Decisão Raciocínio | Metadata uso_count/confirmacoes | ⬜ PENDENTE |
 
 ---
@@ -75,10 +75,9 @@ GENESIS (Camada 1) ─── INTELIGÊNCIA ORQUESTRADORA
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  GENESIS (Inteligência):                                                    │
-│  ├─ Entende problema do usuário (M0/Saussure)                               │
-│  ├─ Consulta catalogo.buscar()                                              │
-│  ├─ Classifica: Meta Sistema | Epistemologia | Raciocínio                   │
-│  └─ Roteia para trabalhador especializado                                   │
+│  ├─ entender(): classifica CONHECER vs DECIDIR                              │
+│  ├─ buscar(): consulta Catálogo                                             │
+│  └─ rotear(): reutiliza existente ou cria novo                              │
 │                                                                             │
 │  CATÁLOGO (Memória):                                                        │
 │  ├─ indexar(item, chave, metadata)                                          │
@@ -88,7 +87,22 @@ GENESIS (Camada 1) ─── INTELIGÊNCIA ORQUESTRADORA
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 2. Força da Decisão = Metadata no Raciocínio
+### 2. Fluxo GENESIS v1.1
+
+```
+User Input
+    │
+    ▼
+entender() → CONHECER ou DECIDIR?
+    │
+    ├─ CONHECER ──► buscar(MetaSistema) ──► existe? ──► roteia para MS
+    │                                         └─ não? ──► Epistemologia cria
+    │
+    └─ DECIDIR ──► buscar(Decisão) ──► existe? ──► aplica decisão
+                                         └─ não? ──► Raciocínio gera
+```
+
+### 3. Força da Decisão = Metadata no Raciocínio
 
 Decisões reutilizadas e confirmadas ficam "mais fortes":
 - `uso_count`: quantas vezes foi consultada
@@ -102,11 +116,21 @@ Decisões reutilizadas e confirmadas ficam "mais fortes":
 
 | Arquivo | Descrição | Status |
 |---------|-----------|--------|
+| `genesis/GENESIS.md` | **v1.1 Inteligência Orquestradora** | ✅ Publicado |
 | `_drafts/S005-G/T11_Modulo_Raciocinio.md` | Raciocínio M0-M3 | ✅ Completo |
 | `_drafts/S005-G/T12_Modulo_Catalogo.md` | Catálogo M0-M3 | ✅ Completo |
-| `_drafts/S005-G/T13_Checklist_Integracao.md` | Verificação | ⬜ Pendente |
-| `_drafts/S005-G/T14_Refatorar_GENESIS_Router.md` | Instrução refatoração | 🔄 Próxima |
+| `_drafts/S005-G/T13_Checklist_Integracao.md` | Verificação | 🔄 Próxima |
+| `_drafts/S005-G/T14_Refatorar_GENESIS_Router.md` | Instrução (concluída) | ✅ |
 | `_drafts/S005-G/T15_Forca_Decisao_Raciocinio.md` | Instrução força | ⬜ Pendente |
+
+---
+
+## PRÓXIMOS PASSOS
+
+1. **T13 Integração** - Verificar integridade do sistema
+2. **Publicar Catálogo** - M4 (documento final)
+3. **Atualizar Epistemologia** - Adicionar atributos de roteamento
+4. **Atualizar Raciocínio** - Integrar com Catálogo
 
 ---
 
@@ -139,11 +163,10 @@ Exemplo: [C1] update: GENESIS Router - S005-G/T14
 
 | Arquivo | Conteúdo |
 |---------|----------|
-| /genesis/GENESIS.md | v1.1 publicado |
+| /genesis/GENESIS.md | **v1.1 publicado** |
 | /docs/00_E/00_E_Epistemologia.md | Epistemologia v3.2 |
 | /_drafts/S005-G/T11_Modulo_Raciocinio.md | Raciocínio M0-M3 |
 | /_drafts/S005-G/T12_Modulo_Catalogo.md | Catálogo M0-M3 |
-| /_drafts/S005-G/T14_Refatorar_GENESIS_Router.md | Instrução próxima task |
 | /docs/00_I_1_1_GitHub.md | Instruções GitHub |
 
 ---
