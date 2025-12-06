@@ -1,14 +1,16 @@
 ---
 nome: GENESIS
-versao: "1.1"
+versao: "1.2"
 tipo: Framework
 classe_ref: Framework
 origem: interno
 status: Publicado
 camada: C1
+depende_de:
+  - 00_E_2_1_Modulo_Catalogo
 ---
 
-# GENESIS v1.1
+# GENESIS v1.2
 
 ## 1. Problema (M0)
 
@@ -372,8 +374,8 @@ camada: C1
 |-----------|---------|
 | docs/00_I_1_2_Protocolo_LLM.md | Como LLM acessa GENESIS |
 | docs/00_E/00_E_Epistemologia.md | Cria conhecimento (CONHECER) |
-| _drafts/S005-G/T11_Modulo_Raciocinio.md | Toma decisão (DECIDIR) |
-| _drafts/S005-G/T12_Modulo_Catalogo.md | Memória estruturada |
+| docs/00_E/00_E_2_2_Modulo_Raciocinio.md | Toma decisão (DECIDIR) |
+| docs/00_E/00_E_2_1_Modulo_Catalogo.md | Memória estruturada |
 
 ### Externas
 
@@ -392,4 +394,5 @@ camada: C1
 | 0.1 | 2025-12-02 | STUB inicial |
 | 0.10 | 2025-12-04 | Última versão STUB |
 | 1.0 | 2025-12-05 | Refatoração completa M0-M4. Propósito explícito (Inteligência Híbrida). |
-| 1.1 | 2025-12-05 | **Inteligência Orquestradora.** M2+M3 refatorados: entender (CONHECER/DECIDIR) → buscar (Catálogo) → rotear (reutiliza ou cria). S005-G/T14. |
+| 1.1 | 2025-12-05 | Inteligência Orquestradora. M2+M3 refatorados: entender → buscar → rotear. |
+| 1.2 | 2025-12-06 | **Referências atualizadas:** Catálogo e Raciocínio publicados em docs/00_E/. Sprint S005-G/T13. |
