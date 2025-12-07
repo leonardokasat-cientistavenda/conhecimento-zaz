@@ -1,13 +1,13 @@
 ---
 nome: 00_I_1_1_GitHub
-versao: "2.0"
+versao: "2.1"
 tipo: Classe
 classe_ref: Classe
 origem: interno
 status: Publicado
 ---
 
-# GitHub v2.0
+# GitHub v2.1
 
 ## 1. Problema (M0)
 
@@ -28,6 +28,8 @@ status: Publicado
 | **criar** | Novo arquivo que não existia |
 | **editar** | Modificar arquivo existente (patch ou substituição) |
 | **commit** | Unidade atômica de mudança no Git |
+| **backlog** | Fila de itens aguardando promoção para sprint |
+| **sprint** | Ciclo de trabalho focado em objetivo específico |
 
 ### 1.3 Causa Raiz
 
@@ -81,6 +83,7 @@ status: Publicado
 | Edição: Substituição | Método de edição completa |
 | Token Efficiency | Regras de economia |
 | Implementação Patch | PATCH.md, GitHub Action, script Python |
+| **Ciclo Backlog→Sprint** | Processo de promoção e arquivamento |
 
 ### 3.3 Fronteiras
 
@@ -118,7 +121,8 @@ status: Publicado
 │                                       │  ├─ docs/ (publicado)           │   │
 │                                       │  ├─ _drafts/ (M0-M3)            │   │
 │                                       │  ├─ _patches/ (sistema)         │   │
-│                                       │  └─ naming: NN_X_N_N_Nome.md    │   │
+│                                       │  ├─ _backlog/ (fila)            │   │
+│                                       │  └─ _sprints/ (controle)        │   │
 │                                       │                                 │   │
 │                                       │  Workflows                      │   │
 │                                       │  ├─ criar                       │   │
@@ -126,8 +130,10 @@ status: Publicado
 │                                       │  ├─ mover                       │   │
 │                                       │  └─ commitar                    │   │
 │                                       │                                 │   │
-│                                       │  Token Efficiency               │   │
-│                                       │  └─ NÃO duplicar chat + GitHub  │   │
+│                                       │  Ciclo Backlog→Sprint           │   │
+│                                       │  ├─ promover                    │   │
+│                                       │  ├─ executar                    │   │
+│                                       │  └─ arquivar                    │   │
 │                                       └─────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -155,7 +161,7 @@ status: Publicado
 │  - NÃO duplicar conteúdo (chat + GitHub)                                    │
 │  - Commit sempre com formato [CAMADA] tipo: descrição                       │
 │  - Versão no frontmatter, NUNCA no nome do arquivo                          │
-│  - Push direto em main permitido (sem branch obrigatório)                   │
+│  - Push direto em main permitido (TEMPORÁRIO - ver Seção 6)                 │
 │  - Deletar arquivos em docs/ requer confirmação explícita                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Métodos                                                                    │
@@ -165,6 +171,8 @@ status: Publicado
 │  + mover(origem, destino): Arquivo                                          │
 │  + commitar(message): Commit                                                │
 │  + aplicar_patch(patch_file): Arquivo                                       │
+│  + promover_backlog(item, sprint): Sprint                                   │
+│  + arquivar_sprint(sprint): Histórico                                       │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -187,6 +195,8 @@ status: Publicado
 │  - restricted: Map = {delete_file: "requer confirmação",                    │
 │                       merge_pull_request: "requer confirmação"}             │
 │  - forbidden: string[] = ["deletar arquivos em docs/ sem confirmação"]      │
+│                                                                             │
+│  NOTA: Ver Seção 6 sobre autonomia temporária                               │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -195,7 +205,7 @@ status: Publicado
 │  - commit_format: string = "[CAMADA] tipo: descrição"                       │
 │  - camadas: Map = {C0: Axiomas, C1: Stub, C2: Infra, C3: Framework,         │
 │                    C4: Domínios}                                            │
-│  - tipos: string[] = [add, update, fix, cleanup]                            │
+│  - tipos: string[] = [add, update, fix, cleanup, promote]                   │
 │  - branch_format: string = "tipo/descricao-curta"                           │
 │  - versioning: string = "SemVer"                                            │
 │  - idioma: string = "português"                                             │
@@ -209,6 +219,7 @@ status: Publicado
 │      {path: "_drafts/", purpose: "M0-M3", status: "Draft"},                 │
 │      {path: "_patches/", purpose: "patches", status: "Sistema"},            │
 │      {path: "_sprints/", purpose: "controle sprints", status: "Sistema"},   │
+│      {path: "_backlog/", purpose: "fila de itens", status: "Sistema"},      │
 │      {path: "_inbox/", purpose: "triagem", status: "Triagem"}               │
 │    ]                                                                        │
 │  - naming_pattern: string = "NN_X_N_N_Nome.md"                               │
@@ -318,7 +329,8 @@ status: Publicado
 │  ├─ add: novo arquivo                                           │
 │  ├─ update: atualização                                         │
 │  ├─ fix: correção                                               │
-│  └─ cleanup: limpeza                                            │
+│  ├─ cleanup: limpeza                                            │
+│  └─ promote: backlog → sprint                                   │
 │                                                                 │
 │  Exemplo: [C3] add: M0 Problema para Objeto v2                  │
 └─────────────────────────────────────────────────────────────────┘
@@ -471,13 +483,136 @@ if __name__ == '__main__':
 
 ---
 
-## 5. Referências
+## 5. Ciclo Backlog → Sprint → Publicado
+
+### 5.1 Diagrama do Ciclo
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         CICLO DE VIDA DO CONHECIMENTO                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  _backlog/BACKLOG.md        _sprints/S00X.md           docs/                │
+│  ┌─────────────────┐        ┌─────────────────┐        ┌─────────────────┐  │
+│  │                 │        │                 │        │                 │  │
+│  │  Item com M0    │──────► │  Sprint ativa   │──────► │   Publicado     │  │
+│  │  (aguardando)   │promover│  (executando)   │concluir│   (oficial)     │  │
+│  │                 │        │                 │        │                 │  │
+│  └─────────────────┘        └─────────────────┘        └─────────────────┘  │
+│         │                          │                          │             │
+│         │                          │                          │             │
+│         ▼                          ▼                          ▼             │
+│     Remover do               Manter em                   Versionado         │
+│     BACKLOG.md              _sprints/ como               em docs/           │
+│                              histórico                                      │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 5.2 Método: promover_backlog(item, sprint)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    promover_backlog()                           │
+├─────────────────────────────────────────────────────────────────┤
+│  Input: item (seção do BACKLOG.md), sprint (ex: S006-C)         │
+│  Output: Arquivo _sprints/S006-C_Nome.md criado                 │
+│                                                                 │
+│  Passos:                                                        │
+│  1. Ler _backlog/BACKLOG.md                                     │
+│  2. Extrair seção M0 do item                                    │
+│  3. Ler arquivo detalhado se existir (ex: Evolucao_Catalogo.md) │
+│  4. Criar _sprints/S00X_Nome.md com:                            │
+│     - Contexto (repo, branch)                                   │
+│     - M0 copiado do backlog                                     │
+│     - Tasks expandidas (T01, T02, etc.)                         │
+│     - Referências                                               │
+│  5. Remover item do BACKLOG.md                                  │
+│  6. Commit: [C0] promote: Item → S00X                           │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 5.3 Método: arquivar_sprint(sprint)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     arquivar_sprint()                           │
+├─────────────────────────────────────────────────────────────────┤
+│  Input: sprint (ex: S005-G)                                     │
+│  Output: Sprint marcada como concluída                          │
+│                                                                 │
+│  Passos:                                                        │
+│  1. Atualizar status no frontmatter para "Concluída"            │
+│  2. Adicionar data de conclusão                                 │
+│  3. Manter arquivo em _sprints/ (histórico)                     │
+│  4. NÃO deletar - serve como documentação                       │
+│  5. Commit: [C0] archive: S00X concluída                        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 5.4 Referência
+
+Para detalhes completos do backlog, ver: `_backlog/BACKLOG.md`
+
+---
+
+## 6. Autonomia Temporária
+
+### 6.1 Contexto
+
+Durante o desenvolvimento inicial do GENESIS (Sprints S001-S005), algumas restrições foram **temporariamente relaxadas** para acelerar iteração:
+
+| Restrição Original | Status Atual | Razão |
+|--------------------|--------------|-------|
+| Branch obrigatório para mudanças | ⚠️ Suspenso | Iteração rápida em desenvolvimento |
+| PR review antes de merge | ⚠️ Suspenso | Único desenvolvedor |
+| Push direto em main proibido | ⚠️ Permitido | Desenvolvimento ativo |
+
+### 6.2 Compromisso de Devolução
+
+**Quando devolver:** Após Catálogo MVP estável (estimativa: S007)
+
+**O que restaurar:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                  RESTRIÇÕES A RESTAURAR                         │
+├─────────────────────────────────────────────────────────────────┤
+│  1. Branch obrigatório para todas as mudanças                   │
+│     - Formato: tipo/descricao-curta                             │
+│     - Exemplo: feature/catalogo-mvp                             │
+│                                                                 │
+│  2. Pull Request obrigatório                                    │
+│     - Título seguindo convenção de commit                       │
+│     - Descrição com contexto                                    │
+│                                                                 │
+│  3. Push direto em main proibido                                │
+│     - Exceção: hotfixes críticos com justificativa              │
+│                                                                 │
+│  4. Review antes de merge                                       │
+│     - Auto-review aceitável para único desenvolvedor            │
+│     - Checklist de validação                                    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 6.3 Rastreamento
+
+| Sprint | Autonomia | Justificativa |
+|--------|-----------|---------------|
+| S001-S005 | Expandida | Desenvolvimento inicial, iteração rápida |
+| S006-C | Expandida | Catálogo MVP - última sprint com autonomia |
+| S007+ | **Restaurada** | Sistema estável, processo maduro |
+
+---
+
+## 7. Referências
 
 | Documento | Relação |
 |-----------|---------|
 | 00_E_1_6_Documento | Define O QUE persistir (cita este documento) |
 | 00_E_1_4_1_Diagrama | COMO selecionar diagramas |
 | GENESIS.md | Índice de arquivos |
+| _backlog/BACKLOG.md | Fila de itens com M0 estruturado |
 
 ---
 
@@ -488,4 +623,5 @@ if __name__ == '__main__':
 | 1.0 | 2025-12-02 | - | Criação como Github_Instructions |
 | 1.1 | 2025-12-02 | - | Adiciona token_efficiency |
 | 1.2 | 2025-12-03 | 19:55 | Refatora token_efficiency, convenções [CAMADA] |
-| 2.0 | 2025-12-04 | 12:20 | **CONSOLIDAÇÃO**: Absorve Patch_System. Reestrutura como Classe M0-M3. Deprecia Github_Instructions e Patch_System. |
+| 2.0 | 2025-12-04 | 12:20 | **CONSOLIDAÇÃO**: Absorve Patch_System. Reestrutura como Classe M0-M3. |
+| 2.1 | 2025-12-07 | 10:58 | **CICLO SPRINT**: Adiciona Seção 5 (Backlog→Sprint→Publicado), Seção 6 (Autonomia Temporária). Referência a _backlog/BACKLOG.md. |
