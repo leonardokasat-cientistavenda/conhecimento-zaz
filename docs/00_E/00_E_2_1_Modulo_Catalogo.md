@@ -1,17 +1,17 @@
 ---
 nome: 00_E_2_1_Modulo_Catalogo
-versao: "1.0"
+versao: "1.1"
 tipo: Modulo
 classe_ref: Modulo
 origem: interno
 status: Publicado
 etapa: M4
-sprint_ref: S005-G
-task_ref: T13
+sprint_ref: S006-C
+task_ref: T05
 camada: C3
 ---
 
-# Módulo Catálogo v1.0
+# Módulo Catálogo v1.1
 
 ## 1. Problema (M0)
 
@@ -24,6 +24,7 @@ camada: C3
 | **Chave Semântica** | Descrição textual que permite busca por significado |
 | **Metadata** | Dados adicionais do item (uso_count, confirmacoes, etc.) |
 | **Score** | Pontuação de relevância retornada pela busca |
+| **Trigger** | Frase que ativa o item na busca (match exato = alta relevância) |
 
 ### 1.2 Diagrama do Problema
 
@@ -287,6 +288,52 @@ Vantagem: Não requer normalização de scores entre sistemas diferentes
 | R3 | threshold deve estar entre 0.0 e 1.0 |
 | R4 | top_k deve ser >= 1 |
 
+### 4.7 Implementação Atual (MVP)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    IMPLEMENTAÇÃO MVP: ÍNDICE YAML                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Arquivo: _catalogo/indice.yaml                                             │
+│                                                                             │
+│  ESTRUTURA DO ITEM:                                                         │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  - id: "ms_epistemologia"           # Identificador único            │    │
+│  │    tipo: MetaSistema                # Tipo do item                   │    │
+│  │    nome: "Epistemologia"            # Nome legível                   │    │
+│  │    chave: "criar meta sistemas..."  # Palavras-chave semânticas      │    │
+│  │    arquivo: "docs/00_E/..."         # Path do arquivo                │    │
+│  │    triggers:                        # Frases que ativam              │    │
+│  │      - "como estruturar conhecimento"                               │    │
+│  │      - "criar meta sistema"                                         │    │
+│  │    metadata:                        # Dados adicionais               │    │
+│  │      versao: "3.4"                                                  │    │
+│  │      camada: C3                                                     │    │
+│  │      status: Publicado                                              │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  ALGORITMO DE BUSCA (MVP):                                                  │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  1. Ler _catalogo/indice.yaml                                       │    │
+│  │  2. Para cada item:                                                 │    │
+│  │     - Match exato em trigger → ALTA relevância                      │    │
+│  │     - Match parcial em chave → MÉDIA relevância                     │    │
+│  │     - Sem match → ignorar                                           │    │
+│  │  3. Selecionar item com maior relevância                            │    │
+│  │  4. Carregar arquivo do item selecionado                            │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  LIMITAÇÕES DO MVP:                                                         │
+│  - Busca por string matching (sem embeddings)                               │
+│  - Índice estático (edição manual)                                          │
+│  - Sem score numérico (apenas ranking)                                      │
+│                                                                             │
+│  EVOLUÇÃO FUTURA: Ver _backlog/Evolucao_Catalogo.md                         │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
 ---
 
 ## 5. Referências
@@ -295,6 +342,8 @@ Vantagem: Não requer normalização de scores entre sistemas diferentes
 
 | Documento | Relação |
 |-----------|---------|
+| _catalogo/indice.yaml | Implementação MVP do índice |
+| _catalogo/README.md | Instruções de uso |
 | docs/00_E/00_E_Epistemologia.md | Pai - contém este módulo |
 | genesis/GENESIS.md | Principal consumidor |
 | docs/00_E/00_E_2_2_Modulo_Raciocinio.md | Consumidor - indexa decisões |
@@ -315,3 +364,4 @@ Vantagem: Não requer normalização de scores entre sistemas diferentes
 |--------|------|-----------|
 | 0.1-0.3 | 2025-12-05 | Desenvolvimento M0-M3 em _drafts/ |
 | 1.0 | 2025-12-06 | **Publicação M4.** Interface consolidada: indexar, buscar, atualizar_metadata. Algoritmo Hybrid Search (BM25 + Embeddings + RRF). Sprint S005-G/T13. |
+| 1.1 | 2025-12-07 | **Implementação MVP.** Seção 4.7 com índice YAML (_catalogo/indice.yaml). Termo "trigger" no glossário. Referências ao índice e README. Sprint S006-C/T05. |
