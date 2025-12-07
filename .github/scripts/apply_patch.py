@@ -4,7 +4,11 @@ import re
 import yaml
 
 def parse_patch(patch_content):
-    """Parse PATCH.md file."""
+    """Parse PATCH.md file.
+    
+    Supports both ``` and ````` as delimiters.
+    Use ````` when content contains ``` (e.g., ASCII diagrams).
+    """
     parts = patch_content.split('---')
     if len(parts) < 3:
         raise ValueError("Invalid patch format: missing frontmatter")
@@ -14,20 +18,36 @@ def parse_patch(patch_content):
     
     edits = []
     
-    # Parse FIND/REPLACE blocks
-    find_replace = re.findall(
+    # Try 5 backticks first (for content with ``` inside)
+    find_replace_5 = re.findall(
+        r'FIND:\s*`````[^\n]*\n(.*?)`````\s*REPLACE:\s*`````[^\n]*\n(.*?)`````',
+        body, re.DOTALL
+    )
+    for find, replace in find_replace_5:
+        edits.append(('replace', find.strip(), replace.strip()))
+    
+    # Then try 3 backticks (standard)
+    find_replace_3 = re.findall(
         r'FIND:\s*```[^\n]*\n(.*?)```\s*REPLACE:\s*```[^\n]*\n(.*?)```',
         body, re.DOTALL
     )
-    for find, replace in find_replace:
+    for find, replace in find_replace_3:
         edits.append(('replace', find.strip(), replace.strip()))
     
-    # Parse APPEND_AFTER/ADD blocks
-    append_after = re.findall(
+    # Parse APPEND_AFTER/ADD blocks (5 backticks)
+    append_after_5 = re.findall(
+        r'APPEND_AFTER:\s*`````[^\n]*\n(.*?)`````\s*ADD:\s*`````[^\n]*\n(.*?)`````',
+        body, re.DOTALL
+    )
+    for after, add in append_after_5:
+        edits.append(('append', after.strip(), add.strip()))
+    
+    # Parse APPEND_AFTER/ADD blocks (3 backticks)
+    append_after_3 = re.findall(
         r'APPEND_AFTER:\s*```[^\n]*\n(.*?)```\s*ADD:\s*```[^\n]*\n(.*?)```',
         body, re.DOTALL
     )
-    for after, add in append_after:
+    for after, add in append_after_3:
         edits.append(('append', after.strip(), add.strip()))
     
     return frontmatter, edits
