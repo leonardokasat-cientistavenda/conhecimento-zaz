@@ -1,6 +1,6 @@
 ---
 nome: BACKLOG
-versao: "1.1"
+versao: "1.2"
 tipo: Sistema
 origem: interno
 status: Ativo
@@ -53,20 +53,19 @@ LLM deve:
 
 | # | Item | Prioridade | Dependências | Status |
 |---|------|------------|--------------|--------|
-| ~~1~~ | ~~Catálogo MVP~~ | ~~🔴 Alta~~ | ~~-~~ | ✅ Promovido → S006-C |
-| 2 | Módulo Autonomia | 🟡 Média | Catálogo | ⬜ Aguardando |
+| 2 | Módulo Autonomia | 🟡 Média | - | ⬜ Aguardando |
 | 3 | Processo de Sprint | 🟡 Média | - | ⬜ Aguardando |
-| 4 | Tools Externas | 🟢 Baixa | Catálogo, Autonomia | ⬜ Aguardando |
+| 4 | Tools Externas | 🟢 Baixa | Autonomia | ⬜ Aguardando |
 | 5 | MCP Server | 🟢 Baixa | Tools Externas | ⬜ Aguardando |
-| 6 | Pipelines Compostos | 🟢 Baixa | Catálogo | ⬜ Aguardando |
-| 7 | Meta Sistemas de Domínio | 🟡 Média | Catálogo | ⬜ Aguardando |
+| 6 | Pipelines Compostos | 🟢 Baixa | - | ⬜ Aguardando |
+| 7 | Meta Sistemas de Domínio | 🟡 Média | - | ⬜ Aguardando |
 
 ---
 
-## Itens Promovidos
+## Itens Concluídos
 
-| Item | Sprint | Data |
-|------|--------|------|
+| Item | Sprint | Concluído |
+|------|--------|-----------|
 | Catálogo MVP | S006-C | 2025-12-07 |
 
 ---
@@ -74,7 +73,7 @@ LLM deve:
 ## 2. Módulo Autonomia
 
 **Prioridade:** 🟡 Média
-**Dependências:** Catálogo MVP
+**Dependências:** -
 **Arquivo detalhado:** `_backlog/Modulo_Autonomia.md`
 
 ### M0.1 Glossário
@@ -144,7 +143,7 @@ LLM deve:
 ## 4. Tools Externas
 
 **Prioridade:** 🟢 Baixa
-**Dependências:** Catálogo, Autonomia
+**Dependências:** Autonomia
 **Arquivo detalhado:** -
 
 ### M0.1 Glossário
@@ -204,7 +203,7 @@ LLM deve:
 ## 6. Pipelines Compostos
 
 **Prioridade:** 🟢 Baixa
-**Dependências:** Catálogo
+**Dependências:** -
 **Arquivo detalhado:** -
 
 ### M0.1 Glossário
@@ -232,7 +231,7 @@ LLM deve:
 ## 7. Meta Sistemas de Domínio
 
 **Prioridade:** 🟡 Média
-**Dependências:** Catálogo MVP
+**Dependências:** -
 **Arquivo detalhado:** -
 
 ### M0.1 Glossário
@@ -261,7 +260,7 @@ LLM deve:
 
 | Arquivo | Status | Descrição |
 |---------|--------|-----------|
-| `_backlog/Evolucao_Catalogo.md` | ✅ Existe | Fases de implementação do Catálogo |
+| `_backlog/Evolucao_Catalogo.md` | ✅ Histórico | Fases de implementação do Catálogo (concluído) |
 | `_backlog/Modulo_Autonomia.md` | ✅ Existe | Especificação do módulo |
 | `_backlog/Modulo_Raciocinio.md` | ⚠️ Depreciar | Já publicado em docs/ |
 
@@ -272,4 +271,5 @@ LLM deve:
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-07 | Criação. 7 itens com M0 estruturado. Instruções de ciclo de vida. |
-| 1.1 | 2025-12-07 | **Catálogo MVP promovido** para S006-C. Índice atualizado. Seção "Itens Promovidos" adicionada. |
+| 1.1 | 2025-12-07 | Catálogo MVP promovido para S006-C. Índice atualizado. Seção "Itens Promovidos" adicionada. |
+| 1.2 | 2025-12-07 | **Catálogo MVP concluído.** Removido do índice. Seção renomeada para "Itens Concluídos". Dependências atualizadas (Catálogo não é mais dependência). Sprint S006-C/T06. |
