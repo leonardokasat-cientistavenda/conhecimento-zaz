@@ -23,7 +23,7 @@ GitHub: owner=leonardokasat-cientistavenda, repo=conhecimento-zaz, branch=main
 
 | Etapa | Descrição | Status |
 |-------|-----------|--------|
-| M0 | Problema + Glossário + Tese | ⬜ |
+| M0 | Problema + Glossário + Tese | ✅ |
 | M1 | Marco Teórico | ⬜ |
 | M2 | Objeto (fronteiras) | ⬜ |
 | M3 | Classe (atributos, métodos) | ⬜ |
@@ -74,7 +74,23 @@ Responder:
 
 ## CONTEÚDO (será preenchido via patch)
 
-<!-- M0, M1, M2, M3 serão adicionados aqui durante execução -->
+## M0: Problema
+
+### Glossário
+
+| Significante | Significado no Contexto |
+|--------------|-------------------------|
+| **Sprint** | Ciclo de trabalho focado com objetivo específico e tasks definidas |
+| **Task** | Unidade atômica de trabalho dentro de uma Sprint (T01, T02...) |
+| **Backlog** | Fila organizada de itens aguardando execução futura |
+| **Captura** | Ação explícita do usuário para persistir contexto/fork no backlog |
+| **Fork** | Desvio/descoberta durante conversa que merece trabalho futuro |
+| **Promoção** | Transição de item do Backlog para Sprint ativa |
+| **Draft** | Arquivo em desenvolvimento durante Sprint (_drafts/) |
+| **Publicação** | Transição de Draft para documento oficial (docs/) |
+| **Arquivamento** | Conclusão de Sprint com registro histórico |
+
+### Diagrama do Problema
 
 ---
 
