@@ -1,6 +1,6 @@
 ---
 nome: GENESIS
-versao: "1.2"
+versao: "1.3"
 tipo: Framework
 classe_ref: Framework
 origem: interno
@@ -10,7 +10,7 @@ depende_de:
   - 00_E_2_1_Modulo_Catalogo
 ---
 
-# GENESIS v1.2
+# GENESIS v1.3
 
 ## 1. Problema (M0)
 
@@ -25,6 +25,10 @@ depende_de:
 | **STUB** | Versão mínima hardcoded que quebra ciclo circular |
 | **CONHECER** | Natureza de problema: buscar/criar conhecimento estruturado |
 | **DECIDIR** | Natureza de problema: tomar decisão baseada em contexto |
+| **Contexto Especializado** | LLM operando com Meta Sistema carregado |
+| **Tool** | Capacidade executável que o LLM pode chamar (API, código, integração) |
+| **Loop Humano** | Humano controla cada transição de contexto (padrão GENESIS) |
+| **Módulo Autonomia** | Módulo opcional que controla nível de autonomia do loop |
 
 ### 1.2 Diagrama do Problema
 
@@ -372,10 +376,12 @@ depende_de:
 
 | Documento | Relação |
 |-----------|---------|
+| genesis/GENESIS_Arquitetura.md | Visão técnica detalhada (contextos, tools, posicionamento) |
 | docs/00_I_1_2_Protocolo_LLM.md | Como LLM acessa GENESIS |
 | docs/00_E/00_E_Epistemologia.md | Cria conhecimento (CONHECER) |
 | docs/00_E/00_E_2_2_Modulo_Raciocinio.md | Toma decisão (DECIDIR) |
 | docs/00_E/00_E_2_1_Modulo_Catalogo.md | Memória estruturada |
+| docs/00_I/00_I_0_1_Glossario.md | Glossário Central do sistema |
 
 ### Externas
 
@@ -395,4 +401,5 @@ depende_de:
 | 0.10 | 2025-12-04 | Última versão STUB |
 | 1.0 | 2025-12-05 | Refatoração completa M0-M4. Propósito explícito (Inteligência Híbrida). |
 | 1.1 | 2025-12-05 | Inteligência Orquestradora. M2+M3 refatorados: entender → buscar → rotear. |
-| 1.2 | 2025-12-06 | **Referências atualizadas:** Catálogo e Raciocínio publicados em docs/00_E/. Sprint S005-G/T13. |
+| 1.2 | 2025-12-06 | Referências atualizadas: Catálogo e Raciocínio publicados em docs/00_E/. |
+| 1.3 | 2025-12-07 | **Glossário M0.1 expandido:** termos Loop/Autonomia/Tools/Contexto. Referências: GENESIS_Arquitetura e Glossário Central. |
