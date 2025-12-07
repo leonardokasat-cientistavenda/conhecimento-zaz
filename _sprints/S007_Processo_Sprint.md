@@ -27,7 +27,7 @@ GitHub: owner=leonardokasat-cientistavenda, repo=conhecimento-zaz, branch=main
 | M1 | Marco Teórico | ✅ |
 | M2 | Objeto (fronteiras) | ✅ |
 | M3 | Classe (atributos, métodos) | ✅ |
-| M4 | Documento Final | ⬜ |
+| M4 | Documento Final | ✅ |
 
 ---
 
@@ -292,8 +292,9 @@ Mesmo item surge em S009 → origem: [S007, S009]  ← indica criticidade
 │  │ titulo: String      │       │ codigo: String      │                      │
 │  │ origem: [Sprint]    │       │ objetivo: String    │                      │
 │  │ status: Enum        │       │ status: Enum        │                      │
-│  │ resolvido_em: Sprint│       │ tasks: [Task]       │                      │
-│  │ tipo: Enum          │  ◄──  │ entregavel: String  │                      │
+│  │ promovido_em: Sprint│       │ tasks: [Task]       │                      │
+│  │ resolvido_em: Sprint│       │ entregavel: String  │                      │
+│  │ tipo: Enum          │  ◄──  │ backlog_origem: Path│                      │
 │  │ sistema_afetado: Str│       │ data_inicio: Date   │                      │
 │  │ contexto: Markdown  │       │ data_fim: Date?     │                      │
 │  └─────────────────────┘       └─────────────────────┘                      │
@@ -477,7 +478,9 @@ Mesmo item surge em S009 → origem: [S007, S009]  ← indica criticidade
 │     Mantém histórico, limpa raiz                                │
 │                                                                 │
 │  4. BACKLOG ITEMS                                               │
-│     Itens da sprint: status → Resolvido, resolvido_em: [sprint] │
+│     _backlog/[item].md → _backlog/_archive/[item].md            │
+│     Atualizar: status → Resolvido, resolvido_em: [sprint]       │
+│     Mantém histórico, limpa backlog principal                   │
 │                                                                 │
 │  5. SPRINT FILE                                                 │
 │     _sprints/[sprint].md: status → Concluída, data_fim: hoje    │
@@ -517,7 +520,120 @@ Mesmo item surge em S009 → origem: [S007, S009]  ← indica criticidade
 | **CAPTURA-EXPLICITA** | Só captura por comando do usuário | Controle humano |
 | **ARQUIVAR-LIMPA** | Arquivar deve deixar workspace limpo | Reduz entropia |
 
-<!-- M4 será adicionado aqui durante execução -->
+---
+
+## M4: Documento Final
+
+### Localização
+
+**Publicar em:** `docs/00_I/00_I_2_Processo_Sprint.md`
+
+### Estrutura do Documento Final
+
+O documento publicado deve conter:
+
+```
+---
+nome: 00_I_2_Processo_Sprint
+versao: "1.0"
+tipo: Classe
+classe_ref: Classe
+origem: interno
+status: Publicado
+camada: C2
+sprint_ref: S007
+
+# ATRIBUTOS DE ROTEAMENTO
+problema_que_resolve: "Como gerenciar conhecimento emergente em conversas LLM"
+triggers:
+  - sprint
+  - backlog
+  - captura
+  - promover
+  - arquivar
+  - task
+exemplos_uso:
+  - "quero capturar isso no backlog"
+  - "como promover item para sprint"
+  - "como arquivar a sprint"
+arquivo_raiz: "docs/00_I/00_I_2_Processo_Sprint.md"
+---
+
+# Processo de Sprint v1.0
+
+## 1. Problema (M0)
+[Consolidado do M0 acima - Glossário, Diagrama, Tese]
+
+## 2. Marco Teórico (M1)
+[Consolidado do M1 acima - Fundamentos, Síntese, Adaptação LLM]
+
+## 3. Objeto (M2)
+[Consolidado do M2 acima - Definição, Fronteiras, Componentes, Relações]
+
+## 4. Classe (M3)
+[Consolidado do M3 acima - Classes, Estados, Métodos, Artefatos, Restrições]
+
+## 5. Referências
+[Internas e Externas]
+
+## Histórico
+[Versões]
+```
+
+### Checklist de Publicação
+
+| Item | Status |
+|------|--------|
+| M0-M3 completos | ✅ |
+| Frontmatter com atributos de roteamento | ⬜ |
+| Consolidar em documento único | ⬜ |
+| Criar arquivo em docs/00_I/ | ⬜ |
+| Indexar no Catálogo | ⬜ |
+| Arquivar sprint | ⬜ |
+
+### Estrutura de Backlog Item (Atualizada)
+
+```yaml
+# _backlog/[slug].md (pendente)
+# _backlog/_archive/[slug].md (resolvido)
+---
+titulo: "Descrição curta"
+origem:
+  - S007              # sprint(s) onde surgiu
+promovido_em: S007    # sprint para qual foi promovido (null se minor)
+resolvido_em: S007    # sprint onde foi resolvido
+status: Pendente      # ou Resolvido
+tipo: Minor           # Minor | Feature | Bug
+sistema_afetado: GitHub/Patches
+---
+
+## Contexto
+
+[Descrição suficiente para retomada - input para M0 quando desenvolver]
+```
+
+### Estrutura de Sprint (Atualizada)
+
+```yaml
+# _sprints/[codigo]_[nome].md
+---
+codigo: S007
+objetivo: "Aplicar M0-M4 ao conceito de Sprint"
+backlog_origem: _backlog/processo_sprint.md  # de onde veio
+status: Ativa         # Ativa | Concluída
+data_inicio: 2025-12-07
+data_fim: null        # preenchido ao arquivar
+entregavel: docs/00_I/00_I_2_Processo_Sprint.md
+---
+```
+
+### Passos para Finalizar S007
+
+1. **Criar documento final** em `docs/00_I/00_I_2_Processo_Sprint.md`
+2. **Arquivar patches** da S007 para `_patches/_archive/S007/`
+3. **Criar entrada retroativa** no backlog para o fix de backticks
+4. **Atualizar sprint file** com status Concluída
+5. **Commit final**: `[C2] archive: S007 concluída`
 
 ---
 
