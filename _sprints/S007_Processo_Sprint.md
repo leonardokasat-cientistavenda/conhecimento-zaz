@@ -24,7 +24,7 @@ GitHub: owner=leonardokasat-cientistavenda, repo=conhecimento-zaz, branch=main
 | Etapa | Descrição | Status |
 |-------|-----------|--------|
 | M0 | Problema + Glossário + Tese | ✅ |
-| M1 | Marco Teórico | ⬜ |
+| M1 | Marco Teórico | ✅ |
 | M2 | Objeto (fronteiras) | ⬜ |
 | M3 | Classe (atributos, métodos) | ⬜ |
 | M4 | Documento Final | ⬜ |
