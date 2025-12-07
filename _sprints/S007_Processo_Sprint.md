@@ -15,19 +15,19 @@ GitHub: owner=leonardokasat-cientistavenda, repo=conhecimento-zaz, branch=main
 
 **Entregável Final:** `docs/00_I/00_I_2_Processo_Sprint.md`
 
-**Método:** Seguir ciclo M0 → M1 → M2 → M3 → M4 como fazemos com qualquer conhecimento
+**Método:** Seguir ciclo M0 → M1 → M2 → M3 → M4, adicionando conteúdo via patch neste documento
 
 ---
 
 ## CICLO M0-M4
 
-| Etapa | Descrição | Arquivo Draft | Status |
-|-------|-----------|---------------|--------|
-| M0 | Problema + Glossário | `_drafts/S007/M0_Sprint.md` | ⬜ |
-| M1 | Marco Teórico | `_drafts/S007/M1_Sprint.md` | ⬜ |
-| M2 | Objeto (fronteiras) | `_drafts/S007/M2_Sprint.md` | ⬜ |
-| M3 | Classe (atributos, métodos) | `_drafts/S007/M3_Sprint.md` | ⬜ |
-| M4 | Documento Final | `docs/00_I/00_I_2_Processo_Sprint.md` | ⬜ |
+| Etapa | Descrição | Status |
+|-------|-----------|--------|
+| M0 | Problema + Glossário + Tese | ⬜ |
+| M1 | Marco Teórico | ⬜ |
+| M2 | Objeto (fronteiras) | ⬜ |
+| M3 | Classe (atributos, métodos) | ⬜ |
+| M4 | Documento Final | ⬜ |
 
 ---
 
@@ -36,12 +36,10 @@ GitHub: owner=leonardokasat-cientistavenda, repo=conhecimento-zaz, branch=main
 ### M0: Problema
 
 Responder:
-1. **Glossário:** Definir Sprint, Task, Backlog, Promover, Arquivar, Draft
+1. **Glossário:** Definir Sprint, Task, Backlog, Promover, Arquivar
 2. **Problema:** Qual problema Sprint resolve? Por que precisamos disso?
 3. **Sintomas:** O que acontece sem processo formal?
 4. **Tese:** Uma frase que capture a essência
-
-Referência: Como fizemos em Epistemologia e Catálogo
 
 ### M1: Marco Teórico
 
@@ -70,8 +68,13 @@ Responder:
 1. Consolidar M0-M3 em documento único
 2. Adicionar diagramas e fluxos visuais
 3. Publicar em `docs/00_I/00_I_2_Processo_Sprint.md`
-4. Criar template em `_templates/SPRINT_TEMPLATE.md`
-5. Indexar no Catálogo
+4. Indexar no Catálogo
+
+---
+
+## CONTEÚDO (será preenchido via patch)
+
+<!-- M0, M1, M2, M3 serão adicionados aqui durante execução -->
 
 ---
 
@@ -82,7 +85,6 @@ Responder:
 | `docs/00_E/00_E_Epistemologia.md` | Exemplo de M0-M4 completo |
 | `docs/00_E/00_E_2_1_Modulo_Catalogo.md` | Outro exemplo de M0-M4 |
 | `_sprints/S006-C_Catalogo_MVP.md` | Exemplo de sprint concluída |
-| `_backlog/BACKLOG.md` | Contexto do backlog |
 
 ---
 
@@ -91,4 +93,5 @@ Responder:
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-07 | Criação. Promovido do BACKLOG.md. |
-| 1.1 | 2025-12-07 | **Simplificado.** Foco em aplicar M0-M4 ao conceito Sprint. |
+| 1.1 | 2025-12-07 | Simplificado. Foco em M0-M4. |
+| 1.2 | 2025-12-07 | Corrigido. Conteúdo via patch, não arquivos separados. |
