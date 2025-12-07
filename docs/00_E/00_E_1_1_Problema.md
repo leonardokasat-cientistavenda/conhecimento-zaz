@@ -1,13 +1,13 @@
 ---
 nome: 00_E_1_1_Problema
-versao: "3.0"
+versao: "3.1"
 tipo: Classe
 classe_ref: Classe
 origem: interno
 status: Publicado
 ---
 
-# Problema v3.0
+# Problema v3.1
 
 ## 1. Problema (M0)
 
@@ -31,6 +31,8 @@ status: Publicado
 | **significante** | Forma/palavra/expressão utilizada |
 | **significado** | Conceito/ideia por trás da forma |
 | **ambiguidade** | Quando significante tem múltiplos significados |
+
+> **Referência:** Para regras completas de criação de glossários, ver [Glossário Central - Como Criar Entradas](../00_I/00_I_0_1_Glossario.md#7-como-criar-entradas)
 
 ### 1.3 Causa Raiz
 
@@ -309,6 +311,7 @@ gerar_marco_teorico() ──► Input para M1
 | 00_E_1_2_MarcoTeorico | Próximo (M1) - output |
 | 00_E_1_3_Objeto | Relação (M2 usa problema_ref) |
 | 00_E_1_6_Documento | Ciclo de vida (persistência) |
+| 00_I_0_1_Glossario | Glossário Central (regras de criação) |
 
 ### Externas
 
@@ -325,4 +328,5 @@ gerar_marco_teorico() ──► Input para M1
 | 1.0 | 2025-12-03 | - | Criação |
 | 2.0 | 2025-12-03 | 14:30 | Marco Teórico Saussure, análise semiótica |
 | 2.1 | 2025-12-03 | 22:45 | Instruções diagrama e persistência |
-| 3.0 | 2025-12-04 | 13:00 | **PADRONIZAÇÃO S004-E**: 6 seções M0-M4 conforme Documento v3.0. Visibilidade (+/-) em atributos. Referência Objeto adicionada. Diagrama escopo. Consolidação de conteúdo. |
+| 3.0 | 2025-12-04 | 13:00 | PADRONIZAÇÃO S004-E: 6 seções M0-M4 conforme Documento v3.0. |
+| 3.1 | 2025-12-07 | - | Adiciona referência ao Glossário Central na seção M0.1 e nas Referências Internas. |
