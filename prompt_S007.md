@@ -2,118 +2,79 @@
 
 ## CONTEXTO
 
-IMPORTANTE: Todos os arquivos estão no GitHub, NÃO no Google Drive.
-Usar ferramenta github:get_file_contents para leitura.
-
 Repositório GitHub: leonardokasat-cientistavenda/conhecimento-zaz
-Arquivo raiz: /genesis/GENESIS.md
+Branch: main
 
 GitHub: owner=leonardokasat-cientistavenda, repo=conhecimento-zaz, branch=main
 
 ---
 
-## SPRINT ATUAL: S007
+## OBJETIVO
 
-**Objetivo:** Formalizar processo de sprint/backlog e restaurar governança GitHub
-
-**Arquivo da Sprint:** /_sprints/S007_Processo_Sprint.md
+Aplicar método epistemológico (M0-M4) ao conceito de **Sprint**.
 
 ---
 
-## TASKS DA SPRINT
+## REGRA DE INICIALIZAÇÃO
 
-| # | Task | Descrição | Status |
-|---|------|-----------|--------|
-| T01 | Documentar ciclo | Criar `docs/00_I/00_I_2_Processo_Sprint.md` | ⬜ |
-| T02 | Template sprint | Criar `_templates/SPRINT_TEMPLATE.md` | ⬜ |
-| T03 | Atualizar Project Instructions | Melhorar prompt inicial do Project | ⬜ |
-| T04 | Indexar no Catálogo | Adicionar processo no `_catalogo/indice.yaml` | ⬜ |
-| T05 | Restaurar GitHub | Branch obrigatório, PR review | ⬜ |
-| T06 | Testar fluxo | Simular início de sprint em chat limpo | ⬜ |
+Ao iniciar este chat:
 
----
+1. Ler a sprint:
+   ```
+   github:get_file_contents(path="_sprints/S007_Processo_Sprint.md")
+   ```
 
-## ENTREGÁVEIS ESPERADOS
+2. Identificar etapa atual (primeira com Status = ⬜)
 
-| Arquivo | Descrição |
-|---------|-----------|
-| `docs/00_I/00_I_2_Processo_Sprint.md` | Documento M0-M4 do ciclo de sprint |
-| `_templates/SPRINT_TEMPLATE.md` | Template padronizado para novas sprints |
-| `prompt_S007.md` (atualizado) | Project instructions melhoradas |
-| `_catalogo/indice.yaml` | Item `infra_processo_sprint` adicionado |
-| `docs/00_I_1_1_GitHub.md` | Modos produção/desenvolvimento documentados |
+3. Ler referência de como fazer M0-M4:
+   ```
+   github:get_file_contents(path="docs/00_E/00_E_Epistemologia.md")
+   ```
+
+4. Iniciar a etapa pendente
 
 ---
 
-## REGRAS DE OPERAÇÃO
+## CICLO M0-M4
 
-### Regra de Carregamento
-Antes de qualquer resposta:
-1. Ler github:get_file_contents(path="genesis/GENESIS.md")
-2. Ler github:get_file_contents(path="_sprints/S007_Processo_Sprint.md")
-3. Identificar task atual
-
-### Regra de Criação de Arquivos
-Antes de criar/editar, ler:
-- /docs/00_I_1_1_GitHub.md (regras GitHub + token efficiency)
-- /docs/00_E/00_E_1_6_Documento.md (estrutura pastas + ciclo M0-M4)
-
-Resumo:
-1. Criar arquivos DIRETO no GitHub (sem preview no chat)
-2. Informar apenas: "Arquivo criado: [path] - [resumo]"
-3. Estrutura drafts: _drafts/S007/TXX/MX_Nome.md
-
-### Convenção de Commit
-Padrão: [CAMADA] ação: descrição - Sprint/Task
-
-Exemplo: [C2] add: Processo Sprint v1.0 - S007/T01
+| Etapa | Arquivo Draft | O que fazer |
+|-------|---------------|-------------|
+| M0 | `_drafts/S007/M0_Sprint.md` | Glossário + Problema + Tese |
+| M1 | `_drafts/S007/M1_Sprint.md` | Marco Teórico (Scrum, Kanban, LLM) |
+| M2 | `_drafts/S007/M2_Sprint.md` | Objeto (É/NÃO É, fronteiras) |
+| M3 | `_drafts/S007/M3_Sprint.md` | Classe (atributos, métodos, estados) |
+| M4 | `docs/00_I/00_I_2_Processo_Sprint.md` | Documento final publicado |
 
 ---
 
-## REFERÊNCIAS IMPORTANTES
+## FLUXO DE TRABALHO
+
+```
+1. Ler sprint → identificar etapa pendente
+2. Criar draft da etapa em _drafts/S007/
+3. Validar com usuário
+4. Marcar etapa como ✅ na sprint
+5. Próxima etapa ou M4 (publicar)
+```
+
+---
+
+## REFERÊNCIAS
 
 | Arquivo | Conteúdo |
 |---------|----------|
-| /genesis/GENESIS.md | Orquestrador v1.4 |
-| /_sprints/S007_Processo_Sprint.md | Sprint completa com detalhamento |
-| /_sprints/S006-C_Catalogo_MVP.md | Sprint anterior (referência de formato) |
-| /_backlog/BACKLOG.md | Backlog v1.3 |
-| /docs/00_I_1_1_GitHub.md | Instruções GitHub |
-| /_catalogo/indice.yaml | Catálogo para indexar |
+| `_sprints/S007_Processo_Sprint.md` | Sprint atual |
+| `_drafts/S007/` | Drafts desta sprint |
+| `docs/00_E/00_E_Epistemologia.md` | Exemplo de M0-M4 |
+| `docs/00_E/00_E_2_1_Modulo_Catalogo.md` | Outro exemplo M0-M4 |
 
 ---
 
-## DECISÕES A TOMAR DURANTE SPRINT
+## CONVENÇÃO DE COMMIT
 
-| Decisão | Opções | Critério |
-|---------|--------|----------|
-| Onde colocar templates? | `_templates/` ou `docs/00_I/` | Uso frequente vs. documentação |
-| Branch protection real? | GitHub settings ou convenção | Controle técnico vs. disciplina |
-| Quantas sprints paralelas? | 1 ativa ou múltiplas | Foco vs. flexibilidade |
+Padrão: [CAMADA] ação: descrição - Sprint/Etapa
 
----
-
-## SEQUÊNCIA DE SPRINTS
-
-```
-S006-C (concluída) → S007 (atual) → S008-? (próximo do backlog)
-        ✅              🔄               Backlog
-```
-
----
-
-## COMO ACESSAR ARQUIVOS
-
-Parâmetros fixos:
-- owner: "leonardokasat-cientistavenda"
-- repo: "conhecimento-zaz"
-- branch: "main"
-
-Listar pasta:
-github:get_file_contents(path="docs")
-
-Ler arquivo:
-github:get_file_contents(path="genesis/GENESIS.md")
-
-Criar/atualizar arquivo:
-github:create_or_update_file(path="...", content="...", message="...")
+Exemplos:
+- `[C2] add: M0 Sprint - S007/M0`
+- `[C2] add: M3 Sprint - S007/M3`
+- `[C2] publish: Processo Sprint v1.0 - S007/M4`
