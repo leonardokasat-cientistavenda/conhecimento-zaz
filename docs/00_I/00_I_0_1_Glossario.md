@@ -1,3 +1,5 @@
+# Glossário Central v1.0
+
 ---
 nome: 00_I_0_1_Glossario
 versao: "1.0"
@@ -9,13 +11,11 @@ camada: C2
 depende_de: []
 ---
 
-# Glossário Oficial GENESIS v1.0
-
 ## 1. Propósito
 
 Este documento estabelece a terminologia oficial do sistema GENESIS para garantir consistência conceitual e evitar deriva semântica entre documentos, sprints e conversas.
 
-**Regra:** Termos não listados aqui devem ser submetidos a M0 (definição de problema) antes de uso.
+**Regra:** Termos não listados aqui devem ser submetidos a M0 (definição de problema) antes de uso em documentos oficiais.
 
 ---
 
@@ -23,116 +23,111 @@ Este documento estabelece a terminologia oficial do sistema GENESIS para garanti
 
 | ❌ NÃO USAR | ✅ USAR | Justificativa |
 |-------------|---------|---------------|
-| Agente de IA | **Contexto Especializado** | LLM não tem autonomia; opera com contexto carregado |
+| Agente de IA | **Contexto Especializado** ou **Meta Sistema** | LLM não tem autonomia; opera com contexto carregado |
 | IA (genérico) | **LLM** | Especifica o componente (Claude, GPT, etc.) |
 | Trabalhador | **Meta Sistema** | Estrutura de conhecimento, não entidade |
-| IOA | Não usar | Termo indefinido |
-| Fallback | **Retorno ao GENESIS** | Não é erro; é ciclo normal |
-| Sprint (para workflow) | **Pipeline** ou **Workflow** | Sprint = período de trabalho humano |
+| IOA | Não usar | Termo indefinido no sistema |
+| Fallback | **Retorno ao GENESIS** | Não é erro; é ciclo normal de roteamento |
+| Sprint (para workflow de IA) | **Pipeline** ou **Workflow** | Sprint = período de trabalho humano |
 | Criar IA | **Criar Meta Sistema** | Precisão conceitual |
-| IA chama IA | **Composição de Meta Sistemas** | Dependência declarada, não chamada |
+| IA chama IA | **Composição de Meta Sistemas** | Dependência declarada, não chamada entre entidades |
+| Múltiplas IAs | **Múltiplos Contextos** | 1 LLM + N Contextos, não N entidades |
+| Orquestrar agentes | **Orquestrar contextos** | GENESIS orquestra contextos, não agentes |
 
 ---
 
 ## 3. Glossário por Camada
 
-### C0 - Axiomas
+### 3.1 C0 - Axiomas
 
-| Termo | Definição | Exemplo |
-|-------|-----------|---------|
-| **Axioma** | Verdade fundamental não derivada, aceita como ponto de partida | "Estrutura reduz entropia" |
+| Termo | Definição |
+|-------|-----------|
+| **Axioma** | Verdade fundamental não derivada, aceita como ponto de partida |
+| **Entropia** | Degradação de informação por falta de estrutura (Shannon) |
 
-### C1 - GENESIS (Propósito)
+### 3.2 C1 - GENESIS (Propósito)
 
-| Termo | Definição | Relação |
-|-------|-----------|---------|
-| **GENESIS** | Inteligência Orquestradora que entende, busca e roteia | Camada 1 |
-| **Inteligência Híbrida** | Amplificação cognitiva via Humano + LLM + Sistema | Tese central |
-| **Orquestração** | Ato de carregar o contexto correto para o LLM | Método principal |
+| Termo | Definição |
+|-------|-----------|
+| **GENESIS** | Inteligência Orquestradora que entende, busca e roteia contextos |
+| **Inteligência Híbrida** | Amplificação cognitiva via Humano + LLM + Sistema |
+| **Orquestração** | Ato de carregar o contexto correto para o LLM |
+| **CONHECER** | Natureza de problema: buscar/criar conhecimento estruturado |
+| **DECIDIR** | Natureza de problema: tomar decisão baseada em contexto |
+| **Retorno ao GENESIS** | Fim de contexto, reinício de roteamento (ciclo normal) |
 
-### C2 - Infraestrutura
+### 3.3 C2 - Infraestrutura
 
-| Termo | Definição | Relação |
-|-------|-----------|---------|
-| **Catálogo** | Memória estruturada com busca semântica | Módulo base |
-| **Persistência** | Armazenamento durável de conhecimento | Propriedade |
-| **Frontmatter** | Metadados YAML no início de documentos | Formato |
+| Termo | Definição |
+|-------|-----------|
+| **Catálogo** | Memória estruturada com busca semântica |
+| **Persistência** | Armazenamento durável de conhecimento |
+| **Frontmatter** | Metadados YAML no início de documentos |
+| **Tool** | Capacidade executável que o LLM pode chamar (API, código, integração) |
+| **Tool Interna** | Tool do próprio sistema (Catálogo, GitHub, Raciocínio) |
+| **Tool Externa** | Tool de sistemas terceiros (CRM, ERP, Sheets, Web) |
 
-### C3 - Framework (Epistemologia)
+### 3.4 C3 - Framework (Epistemologia)
 
-| Termo | Definição | Relação |
-|-------|-----------|---------|
-| **Epistemologia** | Meta Sistema Base que cria Meta Sistemas | Framework |
-| **Meta Sistema** | Sistema que gera outros sistemas (Clabject) | Tipo |
-| **M0-M4** | Ciclo: Problema → Marco → Objeto → Classe → Documento | Método |
-| **Módulo** | Conjunto de classes opcionais para composição | Extensão |
-| **Raciocínio** | Módulo para estruturar decisões (H→E→I→D) | Módulo |
+| Termo | Definição |
+|-------|-----------|
+| **Epistemologia** | Meta Sistema Base que cria Meta Sistemas via M0-M4 |
+| **Meta Sistema** | Sistema que gera outros sistemas (Clabject); contexto especializado |
+| **M0-M4** | Ciclo: Problema → Marco Teórico → Objeto → Classe → Documento |
+| **Módulo** | Conjunto de classes opcionais para composição |
+| **Raciocínio** | Módulo para estruturar decisões via ciclo H→E→I→D |
+| **Clabject** | Elemento dual: Classe + Objeto simultaneamente (MOF/OMG) |
+| **Par E/O** | Par Epistemologia/Ontologia em cada nível da hierarquia |
 
-### C4 - Domínios
+### 3.5 C4 - Domínios
 
-| Termo | Definição | Relação |
-|-------|-----------|---------|
-| **Meta Sistema Derivado** | Meta Sistema criado via Epistemologia para domínio específico | Instância |
-| **Contexto Especializado** | LLM operando com Meta Sistema carregado | Estado |
+| Termo | Definição |
+|-------|-----------|
+| **Meta Sistema Derivado** | Meta Sistema criado via Epistemologia para domínio específico |
+| **Contexto Especializado** | LLM operando com Meta Sistema carregado |
+| **Pipeline** | Sequência de Meta Sistemas para resolver problema composto |
+| **Composição** | Meta Sistema que usa outputs de outros (via depende_de) |
 
 ---
 
-## 4. Conceitos Operacionais
+## 4. Conceitos de Controle de Loop
 
-### 4.1 Naturezas de Problema
-
-| Termo | Definição | Tratamento |
-|-------|-----------|------------|
-| **CONHECER** | Problema que requer buscar/criar conhecimento estruturado | → Epistemologia |
-| **DECIDIR** | Problema que requer tomar decisão baseada em contexto | → Raciocínio |
-
-### 4.2 Fluxo GENESIS
-
-| Termo | Definição | Método |
-|-------|-----------|--------|
-| **Entender** | Classificar input como CONHECER ou DECIDIR | `entender()` |
-| **Buscar** | Consultar Catálogo por Meta Sistema ou Decisão | `buscar()` |
-| **Rotear** | Carregar existente ou criar novo | `rotear()` |
-| **Retorno ao GENESIS** | Fim de contexto, reinício de roteamento | Ciclo normal |
-
-### 4.3 Composição
-
-| Termo | Definição | Exemplo |
-|-------|-----------|---------|
-| **Pipeline** | Sequência de Meta Sistemas para problema composto | GTM = Produto + Mercado + Pricing |
-| **Dependência** | Declaração no frontmatter de pré-requisitos | `depende_de: [MS_Produto]` |
-| **Composição** | Meta Sistema que usa outputs de outros | MS_GTM compõe MS_Produto |
+| Termo | Definição |
+|-------|-----------|
+| **Loop Humano** | Humano controla cada transição de contexto (padrão GENESIS) |
+| **Loop Autônomo** | Sistema decide transições sem intervenção humana |
+| **Módulo Autonomia** | Módulo opcional que controla o nível de autonomia |
+| **Modo Guiado** | Validação humana a cada passo (padrão) |
+| **Modo Assistido** | Validação humana em checkpoints definidos |
+| **Modo Autônomo** | Validação humana só no final (requer confiança alta) |
 
 ---
 
 ## 5. Modelo Conceitual
+
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                         MODELO: 1 LLM + N CONTEXTOS                         │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  ❌ INCORRETO: "N IAs autônomas"                                            │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  IA₁ ←→ IA₂ ←→ IA₃  (entidades separadas comunicando)               │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│     IA₁ ←→ IA₂ ←→ IA₃  (entidades separadas comunicando)                    │
 │                                                                             │
 │  ✅ CORRETO: "1 LLM + N Contextos"                                          │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                        ┌─────────┐                                  │    │
-│  │                        │   LLM   │  (único motor)                   │    │
-│  │                        └────┬────┘                                  │    │
-│  │                             │                                       │    │
-│  │           ┌─────────────────┼─────────────────┐                     │    │
-│  │           ▼                 ▼                 ▼                     │    │
-│  │    ┌───────────┐     ┌───────────┐     ┌───────────┐                │    │
-│  │    │ Contexto  │     │ Contexto  │     │ Contexto  │                │    │
-│  │    │ Vendas    │     │ Pricing   │     │ GTM       │                │    │
-│  │    │(MS carrega│     │(MS carrega│     │(MS carrega│                │    │
-│  │    │ do)       │     │ do)       │     │ do)       │                │    │
-│  │    └───────────┘     └───────────┘     └───────────┘                │    │
-│  │                                                                     │    │
-│  │    GENESIS decide qual contexto carregar                            │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│                      ┌─────────┐                                            │
+│                      │   LLM   │  (único motor)                             │
+│                      └────┬────┘                                            │
+│                           │                                                 │
+│         ┌─────────────────┼─────────────────┐                               │
+│         ▼                 ▼                 ▼                               │
+│  ┌───────────┐     ┌───────────┐     ┌───────────┐                          │
+│  │ Contexto  │     │ Contexto  │     │ Contexto  │                          │
+│  │ Vendas    │     │ Pricing   │     │ GTM       │                          │
+│  └───────────┘     └───────────┘     └───────────┘                          │
+│                                                                             │
+│  GENESIS decide qual contexto carregar                                      │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -143,14 +138,52 @@ Este documento estabelece a terminologia oficial do sistema GENESIS para garanti
 
 | Regra | Especificação |
 |-------|---------------|
-| **R-GLOSSARIO-01** | Todo documento deve usar termos deste glossário |
-| **R-GLOSSARIO-02** | Termos novos requerem M0 antes de adoção |
-| **R-GLOSSARIO-03** | Tabela "NÃO USAR" tem precedência absoluta |
-| **R-GLOSSARIO-04** | Atualização do glossário requer incremento de versão |
+| **R-GLOSS-01** | Todo documento oficial deve usar termos deste glossário |
+| **R-GLOSS-02** | Termos novos requerem M0 antes de adoção |
+| **R-GLOSS-03** | Tabela "NÃO USAR" tem precedência absoluta |
+| **R-GLOSS-04** | Atualização do glossário requer incremento de versão |
+| **R-GLOSS-05** | Glossários locais (M0.1) não podem conflitar com este |
 
 ---
 
-## 7. Referências
+## 7. Como Criar Entradas
+
+### 7.1 Quando criar termo novo
+
+| Situação | Ação |
+|----------|------|
+| Termo já existe no Glossário Central | USAR existente, não duplicar |
+| Termo é específico de um domínio | Criar em M0.1 do Meta Sistema |
+| Termo é compartilhado entre domínios | Propor adição ao Glossário Central |
+| Termo conflita com existente | PROIBIDO - resolver conflito primeiro |
+
+### 7.2 Formato padrão
+
+```markdown
+| Significante | Significado no Contexto |
+|--------------|-------------------------|
+| **Termo** | Definição clara, sem ambiguidade, autocontida |
+```
+
+### 7.3 Critérios para bom termo
+
+| Critério | Validação |
+|----------|-----------|
+| Autocontido | Definição não depende de termos não definidos |
+| Unívoco | Um significante = um significado (sem polissemia) |
+| Acionável | Permite identificar instâncias do conceito |
+| Consistente | Não conflita com outros termos do sistema |
+
+### 7.4 Processo de adição
+
+1. Verificar se termo já existe (Central ou local)
+2. Se novo, definir em M0.1 do documento atual
+3. Se compartilhado, abrir proposta para Central
+4. Proposta requer: termo, definição, justificativa, camada
+
+---
+
+## 8. Referências
 
 ### Internas
 
@@ -158,8 +191,17 @@ Este documento estabelece a terminologia oficial do sistema GENESIS para garanti
 |-----------|---------|
 | genesis/GENESIS.md | Define termos C1 |
 | docs/00_E/00_E_Epistemologia.md | Define termos C3 |
+| docs/00_E/00_E_1_1_Problema.md | Usa este glossário para M0.1 |
 | docs/00_E/00_E_2_1_Modulo_Catalogo.md | Define termos de busca |
 | docs/00_E/00_E_2_2_Modulo_Raciocinio.md | Define termos de decisão |
+
+### Externas
+
+| Fonte | Conceito |
+|-------|----------|
+| Saussure (1916) | Signo, Significante, Significado |
+| Shannon (1948) | Entropia |
+| OMG/MOF (1997) | Clabject |
 
 ---
 
@@ -167,4 +209,4 @@ Este documento estabelece a terminologia oficial do sistema GENESIS para garanti
 
 | Versão | Data | Alteração |
 |--------|------|-----------|
-| 1.0 | 2025-12-06 | Criação inicial. Termos proibidos, glossário por camada, modelo conceitual. |
+| 1.0 | 2025-12-07 | Criação inicial. Termos proibidos, glossário por camada, modelo conceitual 1 LLM + N Contextos, seção "Como Criar Entradas". |
