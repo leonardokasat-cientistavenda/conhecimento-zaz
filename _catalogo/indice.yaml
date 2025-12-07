@@ -4,5 +4,86 @@
 versao: "1.0"
 atualizado: "2025-12-07"
 
-items: []
-# Items serão adicionados na T02
+items:
+  # === META SISTEMAS ===
+
+  - id: "ms_epistemologia"
+    tipo: MetaSistema
+    nome: "Epistemologia"
+    chave: "criar meta sistemas estruturados anti-entrópicos M0-M4 conhecimento documentar framework"
+    arquivo: "docs/00_E/00_E_Epistemologia.md"
+    triggers:
+      - "como estruturar conhecimento"
+      - "criar meta sistema"
+      - "aplicar M0-M4"
+      - "quero documentar um processo"
+      - "preciso criar classes"
+    metadata:
+      versao: "3.4"
+      camada: C3
+      status: Publicado
+
+  - id: "ms_raciocinio"
+    tipo: MetaSistema
+    nome: "Raciocínio"
+    chave: "tomar decisões estruturadas hipótese evidência inferência HEID pensar escolher"
+    arquivo: "docs/00_E/00_E_2_2_Modulo_Raciocinio.md"
+    triggers:
+      - "como decidir"
+      - "tomar decisão"
+      - "avaliar opções"
+      - "prós e contras"
+      - "me ajude a escolher"
+    metadata:
+      versao: "1.0"
+      camada: C3
+      status: Publicado
+
+  - id: "ms_catalogo"
+    tipo: MetaSistema
+    nome: "Catálogo"
+    chave: "buscar indexar armazenar recuperar itens memória persistir"
+    arquivo: "docs/00_E/00_E_2_1_Modulo_Catalogo.md"
+    triggers:
+      - "buscar conhecimento"
+      - "encontrar meta sistema"
+      - "indexar item"
+      - "onde está"
+    metadata:
+      versao: "1.0"
+      camada: C3
+      status: Publicado
+
+  # === INFRAESTRUTURA ===
+
+  - id: "infra_github"
+    tipo: Infraestrutura
+    nome: "GitHub"
+    chave: "persistir versionamento criar editar arquivo commit patch repositório"
+    arquivo: "docs/00_I_1_1_GitHub.md"
+    triggers:
+      - "como salvar arquivo"
+      - "como versionar"
+      - "criar no github"
+      - "editar arquivo"
+      - "patch"
+      - "commit"
+    metadata:
+      versao: "2.1"
+      camada: C2
+      status: Publicado
+
+  - id: "infra_protocolo_llm"
+    tipo: Infraestrutura
+    nome: "Protocolo LLM"
+    chave: "acessar genesis inicializar boot carregar instruções llm"
+    arquivo: "docs/00_I_1_2_Protocolo_LLM.md"
+    triggers:
+      - "como acessar genesis"
+      - "inicialização"
+      - "project instructions"
+      - "carregar sistema"
+    metadata:
+      versao: "1.0"
+      camada: C2
+      status: Draft
