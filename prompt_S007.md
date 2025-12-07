@@ -37,13 +37,13 @@ Ao iniciar este chat:
 
 ## CICLO M0-M4
 
-| Etapa | Arquivo Draft | O que fazer |
-|-------|---------------|-------------|
-| M0 | `_drafts/S007/M0_Sprint.md` | Glossário + Problema + Tese |
-| M1 | `_drafts/S007/M1_Sprint.md` | Marco Teórico (Scrum, Kanban, LLM) |
-| M2 | `_drafts/S007/M2_Sprint.md` | Objeto (É/NÃO É, fronteiras) |
-| M3 | `_drafts/S007/M3_Sprint.md` | Classe (atributos, métodos, estados) |
-| M4 | `docs/00_I/00_I_2_Processo_Sprint.md` | Documento final publicado |
+| Etapa | O que fazer |
+|-------|-------------|
+| M0 | Glossário + Problema + Tese |
+| M1 | Marco Teórico (Scrum, Kanban, LLM) |
+| M2 | Objeto (É/NÃO É, fronteiras) |
+| M3 | Classe (atributos, métodos, estados) |
+| M4 | Consolidar e publicar em `docs/00_I/` |
 
 ---
 
@@ -51,11 +51,15 @@ Ao iniciar este chat:
 
 ```
 1. Ler sprint → identificar etapa pendente
-2. Criar draft da etapa em _drafts/S007/
+2. Desenvolver conteúdo da etapa no chat
 3. Validar com usuário
-4. Marcar etapa como ✅ na sprint
-5. Próxima etapa ou M4 (publicar)
+4. Aplicar PATCH na sprint (_sprints/S007_Processo_Sprint.md)
+5. Marcar etapa como ✅
+6. Próxima etapa
+7. No M4: publicar documento final em docs/00_I/
 ```
+
+**IMPORTANTE:** Não criar arquivos separados para cada etapa. O conteúdo vai sendo adicionado via patch diretamente na sprint.
 
 ---
 
@@ -63,8 +67,7 @@ Ao iniciar este chat:
 
 | Arquivo | Conteúdo |
 |---------|----------|
-| `_sprints/S007_Processo_Sprint.md` | Sprint atual |
-| `_drafts/S007/` | Drafts desta sprint |
+| `_sprints/S007_Processo_Sprint.md` | Sprint atual (documento principal) |
 | `docs/00_E/00_E_Epistemologia.md` | Exemplo de M0-M4 |
 | `docs/00_E/00_E_2_1_Modulo_Catalogo.md` | Outro exemplo M0-M4 |
 
@@ -75,6 +78,6 @@ Ao iniciar este chat:
 Padrão: [CAMADA] ação: descrição - Sprint/Etapa
 
 Exemplos:
-- `[C2] add: M0 Sprint - S007/M0`
-- `[C2] add: M3 Sprint - S007/M3`
+- `[C2] update: M0 Sprint - S007/M0`
+- `[C2] update: M3 Sprint - S007/M3`
 - `[C2] publish: Processo Sprint v1.0 - S007/M4`
