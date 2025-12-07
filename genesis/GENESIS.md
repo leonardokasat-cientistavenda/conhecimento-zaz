@@ -1,6 +1,6 @@
 ---
 nome: GENESIS
-versao: "1.3"
+versao: "1.4"
 tipo: Framework
 classe_ref: Framework
 origem: interno
@@ -10,7 +10,7 @@ depende_de:
   - 00_E_2_1_Modulo_Catalogo
 ---
 
-# GENESIS v1.3
+# GENESIS v1.4
 
 ## 1. Problema (M0)
 
@@ -343,6 +343,51 @@ depende_de:
 | `buscar()` | tipo, contexto | {existe, item?, score?} | Consultar Catálogo |
 | `rotear()` | resultado_busca | execução | Reutilizar existente ou criar novo |
 
+### 4.5 Como Buscar no Catálogo (Implementação)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    IMPLEMENTAÇÃO: BUSCA NO CATÁLOGO                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Arquivo: _catalogo/indice.yaml                                             │
+│                                                                             │
+│  PASSO 1: Ler índice                                                        │
+│  ─────────────────────                                                      │
+│  github:get_file_contents(path="_catalogo/indice.yaml")                     │
+│                                                                             │
+│  PASSO 2: Para cada item, comparar input com:                               │
+│  ──────────────────────────────────────────────                             │
+│  - chave: palavras-chave semânticas                                         │
+│  - triggers: frases que ativam o item                                       │
+│                                                                             │
+│  PASSO 3: Selecionar item com maior relevância                              │
+│  ─────────────────────────────────────────────                              │
+│  - Match exato em trigger → alta relevância                                 │
+│  - Match parcial em chave → média relevância                                │
+│  - Sem match → criar novo                                                   │
+│                                                                             │
+│  PASSO 4: Carregar arquivo do item selecionado                              │
+│  ─────────────────────────────────────────────                              │
+│  github:get_file_contents(path=item.arquivo)                                │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+EXEMPLO DE BUSCA:
+─────────────────
+Input: "como estruturar conhecimento novo"
+
+1. Ler _catalogo/indice.yaml
+2. Comparar com cada item:
+   - ms_epistemologia:
+     - trigger "como estruturar conhecimento" → MATCH
+     - chave "criar meta sistemas estruturados" → MATCH parcial
+   - ms_raciocinio:
+     - sem match
+3. Seleciona: ms_epistemologia (maior relevância)
+4. Carrega: docs/00_E/00_E_Epistemologia.md
+```
+
 ---
 
 ## 5. Comparativo: LLM Sozinho vs LLM + GENESIS
@@ -376,11 +421,12 @@ depende_de:
 
 | Documento | Relação |
 |-----------|---------|
+| _catalogo/indice.yaml | Índice de busca (implementação) |
 | genesis/GENESIS_Arquitetura.md | Visão técnica detalhada (contextos, tools, posicionamento) |
 | docs/00_I_1_2_Protocolo_LLM.md | Como LLM acessa GENESIS |
 | docs/00_E/00_E_Epistemologia.md | Cria conhecimento (CONHECER) |
 | docs/00_E/00_E_2_2_Modulo_Raciocinio.md | Toma decisão (DECIDIR) |
-| docs/00_E/00_E_2_1_Modulo_Catalogo.md | Memória estruturada |
+| docs/00_E/00_E_2_1_Modulo_Catalogo.md | Memória estruturada (especificação) |
 | docs/00_I/00_I_0_1_Glossario.md | Glossário Central do sistema |
 
 ### Externas
@@ -402,4 +448,5 @@ depende_de:
 | 1.0 | 2025-12-05 | Refatoração completa M0-M4. Propósito explícito (Inteligência Híbrida). |
 | 1.1 | 2025-12-05 | Inteligência Orquestradora. M2+M3 refatorados: entender → buscar → rotear. |
 | 1.2 | 2025-12-06 | Referências atualizadas: Catálogo e Raciocínio publicados em docs/00_E/. |
-| 1.3 | 2025-12-07 | **Glossário M0.1 expandido:** termos Loop/Autonomia/Tools/Contexto. Referências: GENESIS_Arquitetura e Glossário Central. |
+| 1.3 | 2025-12-07 | Glossário M0.1 expandido: termos Loop/Autonomia/Tools/Contexto. Referências: GENESIS_Arquitetura e Glossário Central. |
+| 1.4 | 2025-12-07 | **Seção 4.5 Como Buscar no Catálogo:** instrução prática para usar _catalogo/indice.yaml. Referência ao índice adicionada. Sprint S006-C/T03. |
