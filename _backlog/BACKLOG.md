@@ -1,6 +1,6 @@
 ---
 nome: BACKLOG
-versao: "1.2"
+versao: "1.3"
 tipo: Sistema
 origem: interno
 status: Ativo
@@ -54,11 +54,18 @@ LLM deve:
 | # | Item | Prioridade | Dependências | Status |
 |---|------|------------|--------------|--------|
 | 2 | Módulo Autonomia | 🟡 Média | - | ⬜ Aguardando |
-| 3 | Processo de Sprint | 🟡 Média | - | ⬜ Aguardando |
 | 4 | Tools Externas | 🟢 Baixa | Autonomia | ⬜ Aguardando |
 | 5 | MCP Server | 🟢 Baixa | Tools Externas | ⬜ Aguardando |
 | 6 | Pipelines Compostos | 🟢 Baixa | - | ⬜ Aguardando |
 | 7 | Meta Sistemas de Domínio | 🟡 Média | - | ⬜ Aguardando |
+
+---
+
+## Sprints Ativas
+
+| Item | Sprint | Iniciado |
+|------|--------|----------|
+| Processo de Sprint | S007 | 2025-12-07 |
 
 ---
 
@@ -99,44 +106,6 @@ LLM deve:
 - **Descoberto em:** S005-G (discussão arquitetura GENESIS)
 - **Conversa:** "LLM + N Contextos" (dez/2025)
 - **Insight:** Autonomia é módulo opcional, não obrigatório
-
----
-
-## 3. Processo de Sprint
-
-**Prioridade:** 🟡 Média
-**Dependências:** Nenhuma
-**Arquivo detalhado:** -
-
-### M0.1 Glossário
-
-| Significante | Significado |
-|--------------|-------------|
-| **Sprint** | Ciclo de trabalho focado em objetivo específico |
-| **Backlog** | Fila de itens aguardando promoção |
-| **Promover** | Mover item do backlog para sprint ativa |
-| **Arquivar** | Mover sprint concluída para histórico |
-
-### M0.2 Problema
-
-| Sintoma | Causa | Necessidade |
-|---------|-------|-------------|
-| Processo de sprint não documentado | Evoluiu organicamente | Formalizar ciclo |
-| Contexto perdido entre sprints | Sem instruções de recuperação | Documentar como retomar |
-| Autonomia "emprestada" do GitHub | Regras flexibilizadas para desenvolvimento | Devolver restrições após estabilizar |
-
-### M0.3 Origem
-
-- **Descoberto em:** S005-G (múltiplas sessões)
-- **Conversa:** Discussão sobre ciclo backlog→sprint→publicado (dez/2025)
-- **Insight:** Precisamos devolver autonomia emprestada do GitHub (ex: push direto em main)
-
-### M0.4 Ações Pendentes
-
-| Ação | Descrição | Quando |
-|------|-----------|--------|
-| **Devolver autonomia GitHub** | Restaurar restrições: branch obrigatório, PR review | Após Catálogo MVP estável |
-| **Documentar ciclo Sprint** | Criar doc em 00_I com processo completo | Próxima sprint de processo |
 
 ---
 
@@ -272,4 +241,5 @@ LLM deve:
 |--------|------|-----------|
 | 1.0 | 2025-12-07 | Criação. 7 itens com M0 estruturado. Instruções de ciclo de vida. |
 | 1.1 | 2025-12-07 | Catálogo MVP promovido para S006-C. Índice atualizado. Seção "Itens Promovidos" adicionada. |
-| 1.2 | 2025-12-07 | **Catálogo MVP concluído.** Removido do índice. Seção renomeada para "Itens Concluídos". Dependências atualizadas (Catálogo não é mais dependência). Sprint S006-C/T06. |
+| 1.2 | 2025-12-07 | Catálogo MVP concluído. Removido do índice. Seção renomeada para "Itens Concluídos". |
+| 1.3 | 2025-12-07 | **Processo de Sprint promovido** para S007. Item #3 removido. Seção "Sprints Ativas" adicionada. |
