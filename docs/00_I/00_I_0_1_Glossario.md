@@ -1,8 +1,6 @@
-# Glossário Central v1.0
-
 ---
 nome: 00_I_0_1_Glossario
-versao: "1.0"
+versao: "1.1"
 tipo: Referencia
 classe_ref: Documento
 origem: interno
@@ -10,6 +8,8 @@ status: Publicado
 camada: C2
 depende_de: []
 ---
+
+# Glossário Central v1.1
 
 ## 1. Propósito
 
@@ -132,6 +132,8 @@ Este documento estabelece a terminologia oficial do sistema GENESIS para garanti
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
+> **Visão completa:** Para diagramas detalhados de arquitetura, ver [GENESIS_Arquitetura.md](/genesis/GENESIS_Arquitetura.md)
+
 ---
 
 ## 6. Regras de Uso
@@ -190,6 +192,7 @@ Este documento estabelece a terminologia oficial do sistema GENESIS para garanti
 | Documento | Relação |
 |-----------|---------|
 | genesis/GENESIS.md | Define termos C1 |
+| genesis/GENESIS_Arquitetura.md | Visão técnica detalhada |
 | docs/00_E/00_E_Epistemologia.md | Define termos C3 |
 | docs/00_E/00_E_1_1_Problema.md | Usa este glossário para M0.1 |
 | docs/00_E/00_E_2_1_Modulo_Catalogo.md | Define termos de busca |
@@ -210,3 +213,4 @@ Este documento estabelece a terminologia oficial do sistema GENESIS para garanti
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-07 | Criação inicial. Termos proibidos, glossário por camada, modelo conceitual 1 LLM + N Contextos, seção "Como Criar Entradas". |
+| 1.1 | 2025-12-07 | Adiciona referência ao GENESIS_Arquitetura.md no modelo conceitual e referências. |
