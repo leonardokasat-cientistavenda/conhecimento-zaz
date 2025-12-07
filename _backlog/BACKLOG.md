@@ -1,6 +1,6 @@
 ---
 nome: BACKLOG
-versao: "1.0"
+versao: "1.1"
 tipo: Sistema
 origem: interno
 status: Ativo
@@ -51,46 +51,23 @@ LLM deve:
 
 ## Índice de Itens
 
-| # | Item | Prioridade | Dependências | Arquivo Detalhado |
-|---|------|------------|--------------|-------------------|
-| 1 | Catálogo MVP | 🔴 Alta | - | Evolucao_Catalogo.md |
-| 2 | Módulo Autonomia | 🟡 Média | Catálogo | Modulo_Autonomia.md |
-| 3 | Processo de Sprint | 🟡 Média | - | - |
-| 4 | Tools Externas | 🟢 Baixa | Catálogo, Autonomia | - |
-| 5 | MCP Server | 🟢 Baixa | Tools Externas | - |
-| 6 | Pipelines Compostos | 🟢 Baixa | Catálogo | - |
-| 7 | Meta Sistemas de Domínio | 🟡 Média | Catálogo | - |
+| # | Item | Prioridade | Dependências | Status |
+|---|------|------------|--------------|--------|
+| ~~1~~ | ~~Catálogo MVP~~ | ~~🔴 Alta~~ | ~~-~~ | ✅ Promovido → S006-C |
+| 2 | Módulo Autonomia | 🟡 Média | Catálogo | ⬜ Aguardando |
+| 3 | Processo de Sprint | 🟡 Média | - | ⬜ Aguardando |
+| 4 | Tools Externas | 🟢 Baixa | Catálogo, Autonomia | ⬜ Aguardando |
+| 5 | MCP Server | 🟢 Baixa | Tools Externas | ⬜ Aguardando |
+| 6 | Pipelines Compostos | 🟢 Baixa | Catálogo | ⬜ Aguardando |
+| 7 | Meta Sistemas de Domínio | 🟡 Média | Catálogo | ⬜ Aguardando |
 
 ---
 
-## 1. Catálogo MVP
+## Itens Promovidos
 
-**Prioridade:** 🔴 Alta (BLOQUEADOR CRÍTICO)
-**Dependências:** Nenhuma
-**Arquivo detalhado:** `_backlog/Evolucao_Catalogo.md`
-
-### M0.1 Glossário
-
-| Significante | Significado |
-|--------------|-------------|
-| **Catálogo** | Repositório com busca para armazenar e recuperar itens |
-| **buscar()** | Método que retorna itens relevantes para uma query |
-| **indice.yaml** | Arquivo persistido com chaves semânticas dos itens |
-| **MVP** | Minimum Viable Product - implementação mínima funcional |
-
-### M0.2 Problema
-
-| Sintoma | Causa | Necessidade |
-|---------|-------|-------------|
-| GENESIS não consegue buscar Meta Sistemas | Catálogo especificado mas não implementado | Implementar buscar() funcional |
-| Raciocínio não persiste decisões | Sem repositório para indexar | Catálogo como infraestrutura |
-| Não há progresso acumulativo | Cada sessão começa do zero | Memória estruturada |
-
-### M0.3 Origem
-
-- **Descoberto em:** S005-G (Sprint GENESIS)
-- **Conversa:** Discussão Catálogo × GENESIS (dez/2025)
-- **Insight:** Catálogo = memória burra, GENESIS = inteligência que usa memória
+| Item | Sprint | Data |
+|------|--------|------|
+| Catálogo MVP | S006-C | 2025-12-07 |
 
 ---
 
@@ -295,3 +272,4 @@ LLM deve:
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-07 | Criação. 7 itens com M0 estruturado. Instruções de ciclo de vida. |
+| 1.1 | 2025-12-07 | **Catálogo MVP promovido** para S006-C. Índice atualizado. Seção "Itens Promovidos" adicionada. |
