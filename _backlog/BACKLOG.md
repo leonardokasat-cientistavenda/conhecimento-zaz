@@ -1,6 +1,6 @@
 ---
 nome: BACKLOG
-versao: "1.8"
+versao: "1.9"
 tipo: Sistema
 origem: interno
 status: Ativo
@@ -53,12 +53,12 @@ LLM deve:
 
 | # | Item | Prioridade | Dependências | Status |
 |---|------|------------|--------------|--------|
-| 9 | Backlog com Plano de Execução | 🟡 Média | - | ⬜ Aguardando |
-| 2 | Módulo Autonomia | 🟡 Média | - | ⬜ Aguardando |
+| 7 | Meta Sistemas de Domínio | 🟡 Média | - | ⬜ Aguardando |
+| 2 | Módulo Autonomia | 🟢 Baixa | - | ⬜ Aguardando |
 | 4 | Tools Externas | 🟢 Baixa | Autonomia | ⬜ Aguardando |
 | 5 | MCP Server | 🟢 Baixa | Tools Externas | ⬜ Aguardando |
 | 6 | Pipelines Compostos | 🟢 Baixa | - | ⬜ Aguardando |
-| 7 | Meta Sistemas de Domínio | 🟡 Média | - | ⬜ Aguardando |
+| 9 | Backlog com Plano de Execução | 🟢 Baixa | - | ⬜ Aguardando |
 
 ---
 
@@ -82,7 +82,7 @@ LLM deve:
 
 ## 2. Módulo Autonomia
 
-**Prioridade:** 🟡 Média
+**Prioridade:** 🟢 Baixa
 **Dependências:** -
 **Arquivo detalhado:** `_backlog/Modulo_Autonomia.md`
 
@@ -230,7 +230,7 @@ LLM deve:
 
 ## 9. Backlog com Plano de Execução
 
-**Prioridade:** 🟡 Média
+**Prioridade:** 🟢 Baixa
 **Dependências:** -
 **Arquivo detalhado:** `_backlog/backlog_plano_execucao.md`
 
@@ -280,3 +280,4 @@ LLM deve:
 | 1.6 | 2025-12-08 | **Capability Discovery capturado.** Item #8 adicionado via Backlog.capturar(). |
 | 1.7 | 2025-12-08 | **Plano de Execução capturado.** Item #9 adicionado via Backlog.capturar(). |
 | 1.8 | 2025-12-08 | **Capability Discovery promovido** para S009. Item #8 removido do índice. Sprint ativa. |
+| 1.9 | 2025-12-08 | **Prioridades ajustadas:** #9 e #2 → Baixa (Mongo reduz necessidade). Índice reordenado por prioridade. |
