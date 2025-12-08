@@ -363,9 +363,6 @@ depende_de:
 | `listar_capabilities()` | - | [Capability] | Explicar o que GENESIS sabe fazer |
 
 ### 4.5 Método: listar_capabilities()
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  Arquivo: _catalogo/indice.yaml                                             │
 │                                                                             │
 │  PASSO 1: Ler índice                                                        │
 │  ─────────────────────                                                      │
