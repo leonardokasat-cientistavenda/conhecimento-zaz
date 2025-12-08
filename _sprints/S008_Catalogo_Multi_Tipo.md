@@ -7,10 +7,10 @@ codigo: S008
 objetivo: "Expandir Catálogo para suportar múltiplos tipos (docs, backlog, sprint)"
 backlog_origem: _backlog/catalogo_multi_tipo.md
 tipo_projeto: Infra
-status: Ativa
+status: Concluida
 data_inicio: 2025-12-08
 data_prevista: null
-data_fim: null
+data_fim: 2025-12-08
 ```
 
 ---
@@ -37,38 +37,38 @@ expandir o Catálogo como módulo de indexação genérico.
 
 | # | Descrição | Status | Artefatos |
 |---|-----------|--------|-----------|
-| T01 | Ler Catálogo atual (spec + índice) | ⬜ | |
-| T02 | Atualizar spec: adicionar atributo `tipo` | ⬜ | |
-| T03 | Atualizar `_catalogo/indice.yaml` com estrutura multi-tipo | ⬜ | |
-| T04 | Indexar backlog existente | ⬜ | |
-| T05 | Indexar sprints existentes | ⬜ | |
-| T06 | Testar fluxo: GENESIS → Gestão → Catálogo | ⬜ | |
-| T07 | Atualizar Gestão de Projetos (remover fallback) | ⬜ | |
+| T01 | Ler Catálogo atual (spec + índice) | ✅ | |
+| T02 | Atualizar spec: adicionar atributo `tipo` | ✅ | `_patches/013_S008_Catalogo_Multi_Tipo.md` |
+| T03 | Atualizar `_catalogo/indice.yaml` com estrutura multi-tipo | ✅ | `_catalogo/indice.yaml` v2.0 |
+| T04 | Indexar backlog existente | ✅ | 6 itens indexados |
+| T05 | Indexar sprints existentes | ✅ | 6 itens indexados |
+| T06 | Testar fluxo: GENESIS → Gestão → Catálogo | ✅ | 6 testes passaram |
+| T07 | Atualizar Gestão de Projetos (remover fallback) | ✅ | `_patches/014_S007_Fallback_Resolvido.md` |
 
 ---
 
 ## Critérios de Aceite
 
-- [ ] `Catalogo.pesquisar(tipo: "backlog")` retorna itens de `_backlog/`
-- [ ] `Catalogo.pesquisar(tipo: "sprint")` retorna itens de `_sprints/`
-- [ ] `Gestao.listar_backlog()` usa Catálogo (não leitura direta)
-- [ ] `Gestao.listar_sprints()` usa Catálogo (não leitura direta)
-- [ ] GENESIS roteia "iniciar sprint" → Gestão de Projetos
-- [ ] Fluxo completo testado
+- [x] `Catalogo.pesquisar(tipo: "backlog")` retorna itens de `_backlog/`
+- [x] `Catalogo.pesquisar(tipo: "sprint")` retorna itens de `_sprints/`
+- [x] `Gestao.listar_backlog()` usa Catálogo (não leitura direta)
+- [x] `Gestao.listar_sprints()` usa Catálogo (não leitura direta)
+- [x] GENESIS roteia "iniciar sprint" → Gestão de Projetos
+- [x] Fluxo completo testado
 
 ---
 
-## Arquitetura Proposta
+## Arquitetura Implementada
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                            CATÁLOGO                                         │
+│                            CATÁLOGO v2.0                                    │
 │                    (Módulo de Indexação + Busca)                            │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │   ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐             │
 │   │ tipo: docs      │  │ tipo: backlog   │  │ tipo: sprint    │             │
-│   │ (conhecimento)  │  │ (trabalho)      │  │ (execução)      │             │
+│   │ 6 itens         │  │ 6 itens         │  │ 6 itens         │             │
 │   └─────────────────┘  └─────────────────┘  └─────────────────┘             │
 │                                                                             │
 │                         pesquisar(query, tipo?)                             │
@@ -78,14 +78,25 @@ expandir o Catálogo como módulo de indexação genérico.
 
 ---
 
+## Entregáveis
+
+| Arquivo | Versão | Mudança |
+|---------|--------|---------|
+| `_catalogo/indice.yaml` | v2.0 | Estrutura multi-tipo |
+| `_catalogo/README.md` | v2.0 | Documentação atualizada |
+| `docs/00_E/00_E_2_1_Modulo_Catalogo.md` | v1.2 | Tipos suportados (via patch) |
+| `_sprints/S007_Processo_Sprint.md` | v2.2 | Fallback marcado como resolvido (via patch) |
+
+---
+
 ## Referências
 
 | Documento | Relação |
 |-----------|---------|
 | `_backlog/catalogo_multi_tipo.md` | Origem (backlog item) |
-| `docs/00_E/00_E_2_1_Modulo_Catalogo.md` | Spec atual a atualizar |
-| `_catalogo/indice.yaml` | Índice a expandir |
-| `docs/00_I/00_I_2_Gestao_Projetos.md` | Dependente (remover fallback) |
+| `docs/00_E/00_E_2_1_Modulo_Catalogo.md` | Spec atualizada |
+| `_catalogo/indice.yaml` | Índice expandido |
+| `docs/00_I/00_I_2_Gestao_Projetos.md` | Já usava Catálogo |
 
 ---
 
@@ -94,3 +105,4 @@ expandir o Catálogo como módulo de indexação genérico.
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-08 | Criação. Promovido de `_backlog/catalogo_multi_tipo.md`. |
+| 2.0 | 2025-12-08 | **Concluída.** Todas as tasks completas. Catálogo v2.0 com multi-tipo. |
