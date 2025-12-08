@@ -1,4 +1,4 @@
-# Sprint v0.1
+# Sprint v0.2
 
 ## 1. Problema (M0)
 
@@ -14,6 +14,8 @@
 | **Backlog Origem** | Item de backlog que originou a sprint |
 | **Entregável** | Artefato final que a sprint produz |
 | **WIP Limit** | Restrição de 1 sprint ativa por vez |
+| **Tipo de Projeto** | Classificação do domínio (Documentação, Marketing, CX, etc.) |
+| **Data Prevista** | Deadline/meta para conclusão da sprint |
 
 ### 1.2 Diagrama do Problema
 
@@ -22,7 +24,7 @@
 │                           PROBLEMA                                          │
 │                                                                             │
 │  "Como executar trabalho de forma estruturada, com tracking entre           │
-│   sessões e entregáveis claros?"                                            │
+│   sessões, deadlines claros e entregáveis definidos?"                       │
 │                                                                             │
 └──────────────────────────────────┬──────────────────────────────────────────┘
                                    │
@@ -49,7 +51,10 @@
 │  2. SPRINT FILE COMO ÂNCORA                                                 │
 │     Carrega no início de cada sessão → Retomada fácil                       │
 │                                                                             │
-│  3. ARQUIVAR LIMPA WORKSPACE                                                │
+│  3. DATA PREVISTA                                                           │
+│     Deadline claro → Senso de urgência                                      │
+│                                                                             │
+│  4. ARQUIVAR LIMPA WORKSPACE                                                │
 │     Drafts → docs/ ou backlog, patches → _archive/ → Entropia zero          │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -57,10 +62,12 @@
 
 ### 1.3 Tese
 
-> **Sprint é o subsistema de Gestão de Desenvolvimento responsável por executar trabalho de forma estruturada.**
+> **Sprint é o subsistema de Gestão de Projetos responsável por executar trabalho de forma estruturada.**
 >
 > - **WIP Limit** - Uma sprint ativa por vez (foco)
 > - **Âncora de Sessão** - Sprint file carregado no início de cada chat
+> - **Tipo de Projeto** - Classificação do domínio (opcional)
+> - **Data Prevista** - Deadline/meta para manter foco
 > - **Limpeza ao Arquivar** - Workspace pronto para próxima sprint
 >
 > **Relação:** Sprint recebe itens do Backlog via `promover()` e entrega em `docs/`.
@@ -73,7 +80,7 @@
 
 | Conceito | Teoria | Aplicação na Sprint |
 |----------|--------|---------------------|
-| **Timeboxing** | Scrum | Sprint tem escopo fechado |
+| **Timeboxing** | Scrum | Sprint tem escopo fechado e deadline |
 | **WIP Limit** | Kanban | Uma coisa por vez |
 | **Incrementos** | Agile | Cada sprint entrega algo publicável |
 | **Definition of Done** | Scrum | Critérios claros de conclusão |
@@ -91,6 +98,7 @@
 │  │ Escopo fechado            │       │ Uma sprint por vez        │          │
 │  │ Objetivo claro            │       │ Foco total                │          │
 │  │ Critérios de conclusão    │       │ Fluxo contínuo            │          │
+│  │ Data prevista (deadline)  │       │                           │          │
 │  └───────────────────────────┘       └───────────────────────────┘          │
 │                                                                             │
 │  ADAPTAÇÃO LLM:                                                             │
@@ -110,6 +118,8 @@
 **Sprint** é o subsistema que:
 - **Executa** trabalho estruturado com objetivo claro
 - **Rastreia** progresso via tasks
+- **Classifica** por tipo de projeto (opcional)
+- **Define** deadline via data prevista
 - **Publica** entregáveis em docs/
 - **Limpa** workspace ao arquivar
 
@@ -121,18 +131,31 @@
 | Tasks com tracking | Lista de desejos |
 | Entregável definido | Trabalho sem fim |
 | Uma por vez (WIP limit) | Múltiplas paralelas |
+| Com deadline (data prevista) | Sem prazo |
 
-### 3.3 Estrutura de Armazenamento
+### 3.3 Tipos de Projeto (Lista Sugerida)
+
+| Tipo | Exemplos de Entregáveis |
+|------|-------------------------|
+| `Documentação` | Specs, guias, manuais |
+| `Marketing` | Campanha, landing page, material publicitário |
+| `CX` | Jornada cliente, template atendimento, FAQ |
+| `Produto` | Feature spec, protótipo, roadmap |
+| `Vendas` | Pitch, proposta comercial, playbook |
+| `Infra` | Fix, automação, tooling, scripts |
+| `Outro` | Catch-all para casos não listados |
+
+### 3.4 Estrutura de Armazenamento
 
 ```
 _sprints/
-├── S007_Gestao_Desenvolvimento.md   ← Sprint file (âncora)
+├── S007_Gestao_Projetos.md          ← Sprint file (âncora)
 ├── S006-C_Catalogo_MVP.md           ← Histórico (concluída)
 └── ...
 
 _drafts/
 └── S007/                            ← Workspace da sprint ativa
-    ├── 00_I_2_Gestao_Desenvolvimento.md
+    ├── 00_I_2_Gestao_Projetos.md
     ├── 00_I_2_1_Backlog.md
     └── 00_I_2_2_Sprint.md
 
@@ -143,11 +166,11 @@ _patches/
 │       └── 005_S006_xxx.md
 ```
 
-### 3.4 Relações
+### 3.5 Relações
 
 | Componente | Relação | Descrição |
 |------------|---------|-----------|
-| **Gestão de Desenvolvimento** | Pai | Sprint é subsistema filho |
+| **Gestão de Projetos** | Pai | Sprint é subsistema filho |
 | **Backlog** | Irmão | Fornece itens via promover() |
 | **Git** | Usa | Persistência de arquivos |
 | **docs/** | Destino | Onde entregáveis são publicados |
@@ -186,10 +209,12 @@ _patches/
 │  + codigo: String                    # S007, S008, etc.                     │
 │  + objetivo: String                  # o que entregar                       │
 │  + backlog_origem: Path              # de onde veio                         │
+│  + tipo_projeto: String?             # opcional, da lista sugerida          │
 │  + status: Enum                      # Ativa | Concluída                    │
 │  + tasks: [Task]                     # lista de trabalhos                   │
 │  + entregavel: Path                  # onde vai parar em docs/              │
 │  + data_inicio: Date                 # quando começou                       │
+│  + data_prevista: Date?              # deadline/meta                        │
 │  + data_fim: Date?                   # quando terminou                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Estados                                                                    │
@@ -203,7 +228,7 @@ _patches/
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Métodos                                                                    │
 │  ────────                                                                   │
-│  + iniciar(codigo, backlog_origem, objetivo): Sprint                        │
+│  + iniciar(codigo, backlog_origem, objetivo, tipo?, data_prevista?): Sprint │
 │  + executar(task): void                                                     │
 │  + publicar(draft, destino): void                                           │
 │  + arquivar(): void                                                         │
@@ -213,15 +238,17 @@ _patches/
 ### 4.3 Estrutura do Sprint File
 
 ```yaml
-# _sprints/S007_Gestao_Desenvolvimento.md
+# _sprints/S007_Gestao_Projetos.md
 ---
 codigo: S007
-objetivo: "Criar sistema de Gestão de Desenvolvimento com Backlog + Sprint"
+objetivo: "Criar sistema de Gestão de Projetos com Backlog + Sprint"
 backlog_origem: _backlog/processo_sprint.md
+tipo_projeto: Documentação            # opcional
 status: Ativa
 data_inicio: 2025-12-07
-data_fim: null
-entregavel: docs/00_I/00_I_2_Gestao_Desenvolvimento.md
+data_prevista: 2025-12-10             # deadline/meta
+data_fim: null                        # preenchido ao arquivar
+entregavel: docs/00_I/00_I_2_Gestao_Projetos.md
 ---
 
 ## Contexto
@@ -232,7 +259,7 @@ entregavel: docs/00_I/00_I_2_Gestao_Desenvolvimento.md
 
 | # | Descrição | Status | Artefatos |
 |---|-----------|--------|-----------|
-| T01 | M0-M3 Gestão de Desenvolvimento | ✅ | _drafts/S007/00_I_2_Gestao_Desenvolvimento.md |
+| T01 | M0-M3 Gestão de Projetos | ✅ | _drafts/S007/00_I_2_Gestao_Projetos.md |
 | T02 | M0-M3 Backlog | ✅ | _drafts/S007/00_I_2_1_Backlog.md |
 | T03 | M0-M3 Sprint | ✅ | _drafts/S007/00_I_2_2_Sprint.md |
 | T04 | Revisão e ajustes | ⬜ | |
@@ -246,7 +273,7 @@ entregavel: docs/00_I/00_I_2_Gestao_Desenvolvimento.md
 
 ### 4.4 Métodos
 
-#### iniciar(codigo, backlog_origem, objetivo)
+#### iniciar(codigo, backlog_origem, objetivo, tipo_projeto?, data_prevista?)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -256,6 +283,8 @@ entregavel: docs/00_I/00_I_2_Gestao_Desenvolvimento.md
 │  - codigo: String (ex: "S008")                                  │
 │  - backlog_origem: Path (item que originou)                     │
 │  - objetivo: String                                             │
+│  - tipo_projeto: String? (opcional, da lista sugerida)          │
+│  - data_prevista: Date? (opcional, deadline)                    │
 │                                                                 │
 │  Output: Sprint criada                                          │
 │                                                                 │
@@ -263,7 +292,10 @@ entregavel: docs/00_I/00_I_2_Gestao_Desenvolvimento.md
 │                                                                 │
 │  Passos:                                                        │
 │  1. Verificar WIP limit                                         │
-│  2. Criar _sprints/[codigo]_[nome].md                           │
+│  2. Criar _sprints/[codigo]_[nome].md com:                      │
+│     - data_inicio: hoje                                         │
+│     - data_prevista: informada ou null                          │
+│     - tipo_projeto: informado ou null                           │
 │  3. Criar pasta _drafts/[codigo]/                               │
 │  4. Definir tasks iniciais                                      │
 │  5. Commit: [C2] add: Sprint [codigo] - [objetivo]              │
@@ -341,7 +373,9 @@ entregavel: docs/00_I/00_I_2_Gestao_Desenvolvimento.md
 │     Histórico preservado, raiz limpa                            │
 │                                                                 │
 │  4. BACKLOG ORIGEM                                              │
-│     Atualizar item: resolvido_em: [sprint]                      │
+│     Atualizar item:                                             │
+│       - resolvido_em: [sprint]                                  │
+│       - data_resolucao: hoje                                    │
 │     Mover para _backlog/_archive/                               │
 │                                                                 │
 │  5. SPRINT FILE                                                 │
@@ -394,6 +428,13 @@ entregavel: docs/00_I/00_I_2_Gestao_Desenvolvimento.md
 │  │   Sessão 1: Carrega sprint file, trabalha em tasks                   │   │
 │  │   Sessão 2: Carrega sprint file, continua de onde parou              │   │
 │  │   Sessão N: Carrega sprint file, finaliza tasks                      │   │
+│  │                                                                      │   │
+│  │   ┌─────────────────────────────────────────────────────────────┐    │   │
+│  │   │ DATAS                                                       │    │   │
+│  │   │ data_inicio: quando começou                                 │    │   │
+│  │   │ data_prevista: deadline/meta (foco)                         │    │   │
+│  │   │ data_fim: quando arquivou                                   │    │   │
+│  │   └─────────────────────────────────────────────────────────────┘    │   │
 │  │                                                                      │   │
 │  └──────────────────────────────────────────────────────────────────────┘   │
 │     │                                                                       │
