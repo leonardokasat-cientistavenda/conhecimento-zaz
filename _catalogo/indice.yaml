@@ -1,14 +1,16 @@
-# Catálogo GENESIS
+# Catálogo GENESIS v2.0
 # Índice semântico para busca e roteamento
+# Organizado por tipo: docs, backlog, sprint
 
-versao: "1.0"
-atualizado: "2025-12-07"
+versao: "2.0"
+atualizado: "2025-12-08"
 
-items:
-  # === META SISTEMAS ===
-
+# =============================================================================
+# DOCS - Conhecimento publicado (Meta Sistemas, Infraestrutura, etc.)
+# =============================================================================
+docs:
+  # --- META SISTEMAS ---
   - id: "ms_epistemologia"
-    tipo: MetaSistema
     nome: "Epistemologia"
     chave: "criar meta sistemas estruturados anti-entrópicos M0-M4 conhecimento documentar framework"
     arquivo: "docs/00_E/00_E_Epistemologia.md"
@@ -24,7 +26,6 @@ items:
       status: Publicado
 
   - id: "ms_raciocinio"
-    tipo: MetaSistema
     nome: "Raciocínio"
     chave: "tomar decisões estruturadas hipótese evidência inferência HEID pensar escolher"
     arquivo: "docs/00_E/00_E_2_2_Modulo_Raciocinio.md"
@@ -40,7 +41,6 @@ items:
       status: Publicado
 
   - id: "ms_catalogo"
-    tipo: MetaSistema
     nome: "Catálogo"
     chave: "buscar indexar armazenar recuperar itens memória persistir"
     arquivo: "docs/00_E/00_E_2_1_Modulo_Catalogo.md"
@@ -50,14 +50,12 @@ items:
       - "indexar item"
       - "onde está"
     metadata:
-      versao: "1.0"
+      versao: "1.2"
       camada: C3
       status: Publicado
 
-  # === INFRAESTRUTURA ===
-
+  # --- INFRAESTRUTURA ---
   - id: "infra_github"
-    tipo: Infraestrutura
     nome: "GitHub"
     chave: "persistir versionamento criar editar arquivo commit patch repositório"
     arquivo: "docs/00_I_1_1_GitHub.md"
@@ -74,7 +72,6 @@ items:
       status: Publicado
 
   - id: "infra_protocolo_llm"
-    tipo: Infraestrutura
     nome: "Protocolo LLM"
     chave: "acessar genesis inicializar boot carregar instruções llm"
     arquivo: "docs/00_I_1_2_Protocolo_LLM.md"
@@ -87,3 +84,152 @@ items:
       versao: "1.0"
       camada: C2
       status: Draft
+
+  - id: "infra_gestao_projetos"
+    nome: "Gestão de Projetos"
+    chave: "backlog sprint trabalho organizar projetos gerenciar tarefas"
+    arquivo: "docs/00_I/00_I_2_Gestao_Projetos.md"
+    triggers:
+      - "gerenciar trabalho"
+      - "organizar projetos"
+      - "backlog e sprint"
+    metadata:
+      versao: "1.0"
+      camada: C2
+      status: Publicado
+
+# =============================================================================
+# BACKLOG - Itens de trabalho pendente
+# =============================================================================
+backlog:
+  - id: "bl_autonomia"
+    nome: "Módulo Autonomia"
+    chave: "autonomia LLM modos guiado assistido autônomo loop humano confiança"
+    arquivo: "_backlog/Modulo_Autonomia.md"
+    triggers:
+      - "módulo autonomia"
+      - "modos de autonomia"
+      - "loop humano"
+    metadata:
+      prioridade: media
+      status: Pendente
+
+  - id: "bl_tools_externas"
+    nome: "Tools Externas"
+    chave: "tools externas APIs Google Sheets CRM integração"
+    arquivo: "_backlog/BACKLOG.md#4-tools-externas"
+    triggers:
+      - "tools externas"
+      - "integrar APIs"
+      - "Google Sheets"
+    metadata:
+      prioridade: baixa
+      status: Pendente
+      depende_de: bl_autonomia
+
+  - id: "bl_mcp_server"
+    nome: "MCP Server"
+    chave: "MCP Model Context Protocol server tools dinâmicas"
+    arquivo: "_backlog/BACKLOG.md#5-mcp-server"
+    triggers:
+      - "MCP server"
+      - "Model Context Protocol"
+    metadata:
+      prioridade: baixa
+      status: Pendente
+      depende_de: bl_tools_externas
+
+  - id: "bl_pipelines"
+    nome: "Pipelines Compostos"
+    chave: "pipelines compostos encadear meta sistemas orquestração"
+    arquivo: "_backlog/BACKLOG.md#6-pipelines-compostos"
+    triggers:
+      - "pipelines"
+      - "encadear meta sistemas"
+    metadata:
+      prioridade: baixa
+      status: Pendente
+
+  - id: "bl_dominios"
+    nome: "Meta Sistemas de Domínio"
+    chave: "domínios vendas GTM negócio especialização"
+    arquivo: "_backlog/BACKLOG.md#7-meta-sistemas-de-domínio"
+    triggers:
+      - "meta sistema vendas"
+      - "domínio de negócio"
+      - "GTM"
+    metadata:
+      prioridade: media
+      status: Pendente
+
+  - id: "bl_catalogo_multi_tipo"
+    nome: "Catálogo Multi-Tipo"
+    chave: "catálogo multi-tipo docs backlog sprint indexar tipos"
+    arquivo: "_backlog/catalogo_multi_tipo.md"
+    triggers:
+      - "catálogo multi-tipo"
+      - "indexar backlog"
+      - "indexar sprint"
+    metadata:
+      prioridade: alta
+      status: Promovido
+      promovido_em: S008
+
+# =============================================================================
+# SPRINTS - Ciclos de execução
+# =============================================================================
+sprints:
+  - id: "sp_003"
+    codigo: "S003-E"
+    nome: "Epistemologia Inicial"
+    chave: "epistemologia inicial framework estrutura"
+    arquivo: "_sprints/S003-E.md"
+    metadata:
+      status: Concluida
+      data_inicio: "2025-12-04"
+
+  - id: "sp_004"
+    codigo: "S004-E"
+    nome: "Epistemologia Consolidação"
+    chave: "epistemologia consolidação otimização"
+    arquivo: "_sprints/S004-E.md"
+    metadata:
+      status: Concluida
+      data_inicio: "2025-12-05"
+
+  - id: "sp_005"
+    codigo: "S005-G"
+    nome: "GENESIS Refatoração"
+    chave: "genesis refatoração M0-M4 inteligência híbrida"
+    arquivo: "_sprints/S005-G_Sprint_Genesis.md"
+    metadata:
+      status: Concluida
+      data_inicio: "2025-12-05"
+
+  - id: "sp_006"
+    codigo: "S006-C"
+    nome: "Catálogo MVP"
+    chave: "catálogo MVP índice busca semântica"
+    arquivo: "_sprints/S006-C_Catalogo_MVP.md"
+    metadata:
+      status: Concluida
+      data_inicio: "2025-12-07"
+
+  - id: "sp_007"
+    codigo: "S007"
+    nome: "Gestão de Projetos"
+    chave: "gestão projetos backlog sprint processo"
+    arquivo: "_sprints/S007_Processo_Sprint.md"
+    metadata:
+      status: Concluida
+      data_inicio: "2025-12-07"
+      data_fim: "2025-12-08"
+
+  - id: "sp_008"
+    codigo: "S008"
+    nome: "Catálogo Multi-Tipo"
+    chave: "catálogo multi-tipo docs backlog sprint indexação"
+    arquivo: "_sprints/S008_Catalogo_Multi_Tipo.md"
+    metadata:
+      status: Ativa
+      data_inicio: "2025-12-08"
