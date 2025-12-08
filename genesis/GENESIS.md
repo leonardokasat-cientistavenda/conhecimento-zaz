@@ -1,6 +1,6 @@
 ---
 nome: GENESIS
-versao: "1.6"
+versao: "1.7"
 tipo: Framework
 classe_ref: Framework
 origem: interno
@@ -10,7 +10,7 @@ depende_de:
   - 00_E_2_1_Modulo_Catalogo
 ---
 
-# GENESIS v1.5
+# GENESIS v1.7
 
 ## 1. Problema (M0)
 
@@ -362,11 +362,7 @@ depende_de:
 | `rotear()` | resultado_busca | execução | Reutilizar existente ou criar novo |
 | `listar_capabilities()` | - | [Capability] | Explicar o que GENESIS sabe fazer |
 
-### 4.5 Método: listar_capabilities() (Implementação)
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    IMPLEMENTAÇÃO: BUSCA NO CATÁLOGO                         │
+### 4.5 Método: listar_capabilities()
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  Arquivo: _catalogo/indice.yaml                                             │
@@ -474,3 +470,4 @@ Input: "como estruturar conhecimento novo"
 | 1.4 | 2025-12-07 | Seção 4.5 Como Buscar no Catálogo: instrução prática para usar _catalogo/indice.yaml. Referência ao índice adicionada. Sprint S006-C/T03. |
 | 1.5 | 2025-12-08 | **GERENCIAR adicionado:** terceiro tipo de roteamento para Gestão de Projetos. Referências: Gestão de Projetos, Backlog, Sprint. Sprint S007. |
 | 1.6 | 2025-12-08 | **Capability Discovery:** método listar_capabilities() para GENESIS explicar o que sabe fazer. Glossário: Capability, Discovery. Sprint S009. |
+| 1.7 | 2025-12-08 | **Fix:** Seções 4.5 (listar_capabilities) e 4.6 (Como Buscar) separadas corretamente. Sprint S009. |
