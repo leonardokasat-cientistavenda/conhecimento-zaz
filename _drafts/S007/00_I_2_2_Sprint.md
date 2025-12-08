@@ -1,4 +1,4 @@
-# Sprint v0.3
+# Sprint v0.4
 
 ## 1. Problema (M0)
 
@@ -24,7 +24,7 @@
 │  "Como executar trabalho de forma estruturada, com tracking entre           │
 │   sessões, deadlines claros e entregáveis definidos?"                       │
 │                                                                             │
-└──────────────────────────────────┬──────────────────────────────────────────┘
+└──────────────────────────────────────────────────────────────────────────────┘
                                    │
                                    ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -34,8 +34,8 @@
 │  1. WIP LIMIT = 1                                                           │
 │     Uma sprint ativa por vez → Foco garantido                               │
 │                                                                             │
-│  2. SPRINT FILE COMO ÂNCORA                                                 │
-│     Carrega no início de cada sessão → Retomada fácil                       │
+│  2. CÓDIGO AUTOMÁTICO                                                       │
+│     Sistema gera próximo código (S007 → S008)                               │
 │                                                                             │
 │  3. INDEXAÇÃO NO CATÁLOGO                                                   │
 │     Busca semântica via Catálogo (tipo: sprint)                             │
@@ -48,7 +48,7 @@
 > **Sprint é o subsistema de Gestão de Projetos responsável por executar trabalho de forma estruturada.**
 >
 > - **WIP Limit** - Uma sprint ativa por vez (foco)
-> - **Âncora de Sessão** - Sprint file carregado no início de cada chat
+> - **Código automático** - Sistema gera sequencialmente
 > - **Indexado no Catálogo** - Busca semântica disponível
 >
 > **Relação:** Sprint recebe itens do Backlog via `promover()` e entrega em `docs/`.
@@ -92,17 +92,17 @@
 
 **Sprint** é o subsistema que:
 - **Executa** trabalho estruturado com objetivo claro
+- **Gera** código automaticamente (sequencial)
 - **Rastreia** progresso via tasks
 - **Indexa** no Catálogo para busca semântica
 - **Publica** entregáveis em docs/
-- **Limpa** workspace ao arquivar
 
 ### 3.2 Fronteiras
 
 | Sprint É | Sprint NÃO É |
 |----------|--------------|
 | Execução estruturada | Captura de ideias (isso é Backlog) |
-| Tasks com tracking | Lista de desejos |
+| Código gerado automaticamente | Código definido manualmente |
 | Indexada no Catálogo | Implementador de busca |
 | Uma por vez (WIP limit) | Múltiplas paralelas |
 
@@ -123,7 +123,7 @@
 ```
 _sprints/
 ├── S007_Gestao_Projetos.md          ← Sprint file (âncora)
-├── S006-C_Catalogo_MVP.md           ← Histórico (concluída)
+├── S006_Catalogo_MVP.md             ← Histórico (concluída)
 └── ...
 
 _drafts/
@@ -174,7 +174,7 @@ _drafts/
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Atributos                                                                  │
 │  ──────────                                                                 │
-│  + codigo: String                    # S007, S008, etc.                     │
+│  + codigo: String                    # S007, S008 (gerado automaticamente)  │
 │  + objetivo: String                  # o que entregar                       │
 │  + backlog_origem: Path              # de onde veio                         │
 │  + tipo_projeto: String?             # opcional                             │
@@ -185,27 +185,31 @@ _drafts/
 │  + data_fim: Date?                   # quando terminou                      │
 │  + catalogo: Catalogo                # dependência                          │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Métodos                                                                    │
-│  ────────                                                                   │
-│  + iniciar(codigo, backlog_origem, objetivo, tipo?): Sprint                 │
+│  Métodos Públicos                                                           │
+│  ────────────────                                                           │
+│  + iniciar(backlog_origem, objetivo, tipo?, data_prevista?): Sprint         │
 │  + executar(task): void                                                     │
 │  + publicar(draft, destino): void                                           │
 │  + arquivar(): void                                                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Métodos Internos                                                           │
+│  ────────────────                                                           │
+│  - gerar_codigo(): String                                                   │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### 4.3 Estrutura do Sprint File
 
 ```yaml
-# _sprints/S007_Gestao_Projetos.md
+# _sprints/S008_Nome_Sprint.md
 ---
-codigo: S007
-objetivo: "Criar sistema de Gestão de Projetos"
-backlog_origem: _backlog/processo_sprint.md
+codigo: S008
+objetivo: "Descrição do objetivo"
+backlog_origem: _backlog/item_origem.md
 tipo_projeto: Documentação
 status: Ativa
-data_inicio: 2025-12-07
-data_prevista: 2025-12-10
+data_inicio: 2025-12-10
+data_prevista: 2025-12-15
 data_fim: null
 ---
 
@@ -213,9 +217,8 @@ data_fim: null
 
 | # | Descrição | Status | Artefatos |
 |---|-----------|--------|-----------|
-| T01 | M0-M3 Gestão de Projetos | ✅ | _drafts/S007/00_I_2_Gestao_Projetos.md |
-| T02 | M0-M3 Backlog | ✅ | _drafts/S007/00_I_2_1_Backlog.md |
-| T03 | M0-M3 Sprint | ✅ | _drafts/S007/00_I_2_2_Sprint.md |
+| T01 | Primeira tarefa | ⬜ | |
+| T02 | Segunda tarefa | ⬜ | |
 
 ## Referências
 
@@ -224,14 +227,43 @@ data_fim: null
 
 ### 4.4 Métodos
 
-#### iniciar(codigo, backlog_origem, objetivo, tipo?, data_prevista?)
+#### gerar_codigo() - Interno
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      gerar_codigo()                             │
+│                        (interno)                                │
+├─────────────────────────────────────────────────────────────────┤
+│  Output: String (ex: "S008")                                    │
+│                                                                 │
+│  Passos:                                                        │
+│  1. Buscar última sprint no Catálogo:                           │
+│     Catalogo.pesquisar(                                         │
+│       tipo: "sprint",                                           │
+│       ordenar: "codigo DESC",                                   │
+│       limite: 1                                                 │
+│     )                                                           │
+│                                                                 │
+│  2. Extrair número:                                             │
+│     "S007" → 7                                                  │
+│                                                                 │
+│  3. Incrementar:                                                │
+│     7 + 1 = 8                                                   │
+│                                                                 │
+│  4. Formatar:                                                   │
+│     8 → "S008" (zero-padded 3 dígitos)                          │
+│                                                                 │
+│  Fallback: Se não encontrar nenhuma sprint → "S001"             │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### iniciar() - Público
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        iniciar()                                │
 ├─────────────────────────────────────────────────────────────────┤
 │  Input:                                                         │
-│  - codigo: String (ex: "S008")                                  │
 │  - backlog_origem: Path                                         │
 │  - objetivo: String                                             │
 │  - tipo_projeto: String? (opcional)                             │
@@ -240,10 +272,12 @@ data_fim: null
 │  Output: Sprint criada                                          │
 │                                                                 │
 │  Passos:                                                        │
-│  1. Criar _sprints/[codigo]_[nome].md                           │
-│  2. Criar pasta _drafts/[codigo]/                               │
-│  3. Indexar no Catálogo (tipo: sprint)                          │
-│  4. Commit: [C2] add: Sprint [codigo]                           │
+│  1. codigo = gerar_codigo()           # automático              │
+│  2. Criar _sprints/[codigo]_[slug].md                           │
+│  3. Criar pasta _drafts/[codigo]/                               │
+│  4. Indexar no Catálogo (tipo: sprint)                          │
+│  5. Commit: [C2] add: Sprint [codigo] - [objetivo]              │
+│  6. Confirmar: "Sprint [codigo] criada: [objetivo]"             │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -302,6 +336,7 @@ data_fim: null
 | Restrição | Regra |
 |-----------|-------|
 | **WIP-SPRINT** | Máx 1 sprint ativa |
+| **CODIGO-AUTOMATICO** | Gerado sequencialmente pelo sistema |
 | **BACKLOG-ORIGEM** | Toda sprint tem origem |
 | **ARQUIVAR-LIMPA** | Workspace limpo ao concluir |
 | **INDEXAR-CATALOGO** | Sprint é indexada ao iniciar |
@@ -310,4 +345,4 @@ data_fim: null
 
 | Módulo | Uso |
 |--------|-----|
-| **Catálogo** | Indexação e busca semântica (tipo: sprint) |
+| **Catálogo** | Busca última sprint + indexação |
