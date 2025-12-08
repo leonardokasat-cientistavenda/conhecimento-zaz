@@ -1,6 +1,6 @@
 ---
 titulo: "MongoDB - Persistência Transacional"
-versao: "1.1"
+versao: "1.2"
 data_publicacao: "2025-12-08"
 camada: 2
 tipo: "Infraestrutura"
@@ -13,7 +13,7 @@ tags:
 depende_de: []
 ---
 
-# MongoDB - Persistência Transacional v1.1
+# MongoDB - Persistência Transacional v1.2
 
 ## 1. Contexto
 
@@ -22,6 +22,16 @@ depende_de: []
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                    ARQUITETURA DE PERSISTÊNCIA                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  GENESIS.persistir(dado, tipo_dado)                                         │
+│  │                                                                          │
+│  ├─ SE tipo == definição (.md)                                              │
+│  │     └─ GitHub.persistir_md() → criar() | editar() | substituir()         │
+│  │                                                                          │
+│  └─ SE tipo == transação                                                    │
+│        └─ MongoDB.persistir() → inserir() | atualizar()                     │
+│                                                                             │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  GITHUB (Definições)                 MONGODB (Transações)                   │
@@ -66,9 +76,106 @@ mongodb+srv://genesis_app:<PASSWORD>@genesis.27zbngf.mongodb.net/genesis_db?retr
 
 ---
 
-## 3. Schemas
+## 3. Métodos
 
-### 3.1 catalogo
+### 3.1 Método Orquestrador: persistir()
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    persistir(collection, documento)                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  RESPONSABILIDADE: Decidir COMO persistir transação no MongoDB              │
+│  CHAMADO POR: GENESIS.persistir() quando tipo == transação                  │
+│                                                                             │
+│  Input:                                                                     │
+│  - collection: string (catalogo | backlog_items | sprints | decisoes)       │
+│  - documento: object (dados a persistir)                                    │
+│                                                                             │
+│  Output:                                                                    │
+│  - Resultado: {sucesso: bool, metodo: string, id: string}                   │
+│                                                                             │
+│  Fluxo de Decisão:                                                          │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                                                                     │    │
+│  │  SE documento._id não existe E documento.id não existe no banco:    │    │
+│  │     → inserir(collection, documento)                                │    │
+│  │                                                                     │    │
+│  │  SE documento._id existe OU documento.id existe no banco:           │    │
+│  │     → atualizar(collection, documento)                              │    │
+│  │                                                                     │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 3.2 Método: inserir()
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      inserir(collection, documento)                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  QUANDO USAR: Documento NÃO existe                                          │
+│                                                                             │
+│  Input:                                                                     │
+│  - collection: string                                                       │
+│  - documento: object                                                        │
+│                                                                             │
+│  Comportamento:                                                             │
+│  1. Adicionar created_at = now()                                            │
+│  2. Adicionar updated_at = now()                                            │
+│  3. mongodb:insert-many(collection, [documento])                            │
+│                                                                             │
+│  Output: {sucesso: true, metodo: "inserir", id: documento.id}               │
+│                                                                             │
+│  API: mongodb:insert-many                                                   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 3.3 Método: atualizar()
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     atualizar(collection, documento)                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  QUANDO USAR: Documento JÁ existe                                           │
+│                                                                             │
+│  Input:                                                                     │
+│  - collection: string                                                       │
+│  - documento: object (deve conter _id ou id para filtro)                    │
+│                                                                             │
+│  Comportamento:                                                             │
+│  1. Atualizar updated_at = now()                                            │
+│  2. mongodb:update-many(collection, filter, update)                         │
+│                                                                             │
+│  Output: {sucesso: true, metodo: "atualizar", id: documento.id}             │
+│                                                                             │
+│  API: mongodb:update-many                                                   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 3.4 Tabela de Decisão
+
+| Dado | Collection | Operação |
+|------|------------|----------|
+| Novo item catálogo | catalogo | inserir() |
+| Atualizar catálogo | catalogo | atualizar() |
+| Capturar backlog | backlog_items | inserir() |
+| Promover backlog | backlog_items | atualizar() |
+| Criar sprint | sprints | inserir() |
+| Atualizar task | sprints | atualizar() |
+| Registrar decisão | decisoes | inserir() |
+| Incrementar uso | decisoes | atualizar() |
+
+---
+
+## 4. Schemas
+
+### 4.1 catalogo
 
 Armazena índice semântico para busca rápida.
 
@@ -120,7 +227,7 @@ Armazena índice semântico para busca rápida.
 
 ---
 
-### 3.2 backlog_items
+### 4.2 backlog_items
 
 Armazena itens de trabalho com histórico completo.
 
@@ -178,7 +285,7 @@ Armazena itens de trabalho com histórico completo.
 
 ---
 
-### 3.3 sprints
+### 4.3 sprints
 
 Armazena ciclos de execução com tasks.
 
@@ -229,7 +336,7 @@ Armazena ciclos de execução com tasks.
 
 ---
 
-### 3.4 decisoes
+### 4.4 decisoes
 
 Armazena histórico de decisões do módulo Raciocínio.
 
@@ -279,9 +386,9 @@ Armazena histórico de decisões do módulo Raciocínio.
 
 ---
 
-## 4. Operações Comuns
+## 5. Operações Comuns
 
-### 4.1 Catálogo
+### 5.1 Catálogo
 
 ```javascript
 // Buscar por tipo
@@ -294,7 +401,7 @@ db.catalogo.find({ $text: { $search: "epistemologia conhecimento" } })
 db.catalogo.findOne({ tipo: "sprint", "metadata.status": "Ativa" })
 ```
 
-### 4.2 Backlog
+### 5.2 Backlog
 
 ```javascript
 // Listar pendentes por prioridade
@@ -345,7 +452,7 @@ db.backlog_items.updateOne(
 )
 ```
 
-### 4.3 Sprints
+### 5.3 Sprints
 
 ```javascript
 // Buscar sprint ativa
@@ -365,9 +472,9 @@ db.sprints.updateOne(
 
 ---
 
-## 5. Migração
+## 6. Migração
 
-### 5.1 De YAML para MongoDB
+### 6.1 De YAML para MongoDB
 
 | Origem | Destino | Método |
 |--------|---------|--------|
@@ -375,7 +482,7 @@ db.sprints.updateOne(
 | `_backlog/*.md` (frontmatter) | `backlog_items` | Script de migração |
 | `_sprints/*.md` (frontmatter) | `sprints` | Script de migração |
 
-### 5.2 Coexistência (Fase Transição)
+### 6.2 Coexistência (Fase Transição)
 
 Durante a migração, manter ambas as fontes sincronizadas:
 1. MongoDB como fonte primária para leitura
@@ -384,11 +491,12 @@ Durante a migração, manter ambas as fontes sincronizadas:
 
 ---
 
-## 6. Referências
+## 7. Referências
 
 | Documento | Relação |
 |-----------|---------|
-| `_backlog/Persistencia_Hibrida.md` | Contexto e motivação |
+| `genesis/GENESIS.md` | GENESIS.persistir() roteia para MongoDB |
+| `docs/00_I/00_I_1_1_GitHub.md` | GitHub.persistir_md() para definições |
 | `docs/00_E/00_E_2_1_Modulo_Catalogo.md` | Spec do Catálogo |
 | `docs/00_I/00_I_2_Gestao_Projetos.md` | Gestão de Projetos |
 | `docs/00_I/00_I_2_1_Backlog.md` | Métodos do Backlog |
@@ -401,3 +509,4 @@ Durante a migração, manter ambas as fontes sincronizadas:
 |--------|------|-----------|
 | 1.0 | 2025-12-08 | Criação com schemas das 4 collections. Sprint S010/T02. |
 | 1.1 | 2025-12-08 | Adicionados campos merged_into, merged_from e status "Merged" no schema backlog_items. Exemplo de operação merge. |
+| 1.2 | 2025-12-08 | **MÉTODOS ORQUESTRADORES**: Seção 3 adicionada com persistir(), inserir(), atualizar(). Alinhamento com GitHub.md v3.0. Sprint S011/T04. |
