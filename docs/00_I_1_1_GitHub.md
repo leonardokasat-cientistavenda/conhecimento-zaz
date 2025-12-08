@@ -326,6 +326,17 @@ status: Publicado
 │  │     - DELETAR: remove o escopo da âncora                            │    │
 │  │                                                                     │    │
 │  │  4. Aplicar operação → novo_content                                 │    │
+│  │     ════════════════════════════════════════════════════════════    │    │
+│  │     ║ REGRA CRÍTICA: PRESERVAR CONTEÚDO ORIGINAL                ║    │    │
+│  │     ║                                                           ║    │    │
+│  │     ║ • O conteúdo FORA da âncora DEVE permanecer INTACTO       ║    │    │
+│  │     ║ • Apenas a região delimitada pela âncora é modificada     ║    │    │
+│  │     ║ • NÃO atualizar frontmatter, títulos ou outras seções     ║    │    │
+│  │     ║ • Se precisar modificar múltiplas regiões → múltiplas     ║    │    │
+│  │     ║   chamadas de editar()                                    ║    │    │
+│  │     ║ • Se precisar modificar >30% do arquivo → usar            ║    │    │
+│  │     ║   substituir() em vez de editar()                         ║    │    │
+│  │     ════════════════════════════════════════════════════════════    │    │
 │  │                                                                     │    │
 │  │  5. commit_msg = _gerar_commit("patch", arquivo, ancora)            │    │
 │  │                                                                     │    │
@@ -339,7 +350,17 @@ status: Publicado
 │  │  7. RETURN {sucesso: true, mensagem: "Editado: {ancora}"}           │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
-│  API: GET + manipulação + PUT com SHA                                       │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                         ANTI-PATTERNS                               │    │
+│  ├─────────────────────────────────────────────────────────────────────┤    │
+│  │  ✗ Reescrever arquivo inteiro quando operação é INSERIR_APOS       │    │
+│  │  ✗ Atualizar versão no frontmatter durante edição por âncora       │    │
+│  │  ✗ Modificar seções não relacionadas à âncora                      │    │
+│  │  ✗ "Aproveitar" para fazer outras correções no arquivo             │    │
+│  │  ✗ Reformatar ou reorganizar conteúdo existente                    │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  API: GET + manipulação CIRÚRGICA + PUT com SHA                             │
 │  Commit: [CAMADA] patch: {operacao} em "{ancora}" - {contexto}              │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -684,3 +705,4 @@ Durante o desenvolvimento inicial do GENESIS (Sprints S001-S011), algumas restri
 | 2.1 | 2025-12-07 | CICLO SPRINT: Adiciona Seção 5 (Backlog→Sprint→Publicado), Seção 6 (Autonomia Temporária). |
 | 2.2 | 2025-12-08 | PERSISTÊNCIA HÍBRIDA: Remove sistema de patches v1. GitHub para definições. |
 | 3.0 | 2025-12-08 | **REFATORAÇÃO COMPLETA**: Novo método orquestrador `persistir_md()`. Métodos `criar()`, `editar()` (patch por âncora), `substituir()`. Seção 5 Sistema de Edição por Âncora. Sprint S011/T04. |
+| 3.1 | 2025-12-08 | **REGRA CRÍTICA**: Adiciona regra de preservação de conteúdo original e anti-patterns no método editar(). Sprint S011/T05. |
