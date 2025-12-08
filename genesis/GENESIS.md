@@ -1,6 +1,6 @@
 ---
 nome: GENESIS
-versao: "1.8"
+versao: "1.9"
 tipo: Framework
 classe_ref: Framework
 origem: interno
@@ -12,7 +12,7 @@ depende_de:
   - 00_I_1_3_MongoDB
 ---
 
-# GENESIS v1.8
+# GENESIS v1.9
 
 ## 1. Problema (M0)
 
@@ -142,7 +142,7 @@ depende_de:
 | Usa Catálogo como memória | O próprio Catálogo |
 | Roteia ou delega criação | Implementação de M0-M4 (isso é Epistemologia) |
 | Propósito (PORQUÊ) | Método (isso é Epistemologia) |
-| Decide onde persistir | Os sistemas de persistência em si |
+| Decide ONDE persistir (GitHub vs MongoDB) | COMO persistir (isso é responsabilidade de cada sistema) |
 
 ### 3.3 Hierarquia de Responsabilidades
 
@@ -155,7 +155,7 @@ depende_de:
 │  │  • Entende: CONHECER, DECIDIR ou GERENCIAR                               │
 │  │  • Busca: Catálogo                                                       │
 │  │  • Roteia: existente ou cria novo                                        │
-│  │  • Persiste: GitHub (definições) ou MongoDB (transações)                 │
+│  │  • Persiste: decide ONDE (GitHub ou MongoDB), delega COMO                │
 │  │                                                                          │
 │  ├──► CATÁLOGO (Camada 3) ─── MEMÓRIA                                       │
 │  │    • indexar(item, chave, metadata)                                      │
@@ -176,8 +176,13 @@ depende_de:
 │  │    • Orquestra promoção backlog → sprint                                 │
 │  │                                                                          │
 │  └──► PERSISTÊNCIA (Camada 2) ─── INFRAESTRUTURA                            │
-│       • GitHub: definições, versionamento (docs, prompts)                   │
-│       • MongoDB: transações, índices (catálogo, backlog, sprints)           │
+│       ├─ GitHub: decide COMO persistir definições                           │
+│       │   • persistir_md() → criar() | editar() | substituir()              │
+│       │   • Ref: docs/00_I/00_I_1_1_GitHub.md                               │
+│       │                                                                     │
+│       └─ MongoDB: decide COMO persistir transações                          │
+│           • persistir() → inserir() | atualizar()                           │
+│           • Ref: docs/00_I/00_I_1_3_MongoDB.md                              │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -255,7 +260,7 @@ depende_de:
 │                    ▼                         ▼                              │
 │              ┌──────────┐              ┌──────────┐                         │
 │              │  GitHub  │              │ MongoDB  │                         │
-│              │(definição)│              │(transação)│                         │
+│              │(definição)│              │(transação)│                        │
 │              └──────────┘              └──────────┘                         │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -392,6 +397,9 @@ depende_de:
 │                        persistir(dado, tipo_dado)                           │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
+│  RESPONSABILIDADE: Decidir ONDE persistir (GitHub ou MongoDB)               │
+│  DELEGA O "COMO" para cada sistema de infraestrutura                        │
+│                                                                             │
 │  Input:                                                                     │
 │  - dado: conteúdo a persistir                                               │
 │  - tipo_dado: classificação do dado                                         │
@@ -402,47 +410,39 @@ depende_de:
 │  │                    REGRA DE ROTEAMENTO                              │    │
 │  ├─────────────────────────────────────────────────────────────────────┤    │
 │  │                                                                     │    │
-│  │  GITHUB (definições, versionamento)                                 │    │
-│  │  ├── Framework: GENESIS, Epistemologia, Módulos                     │    │
-│  │  ├── Meta Sistemas: docs Markdown estruturados                      │    │
-│  │  ├── Prompts: instruções para LLM                                   │    │
-│  │  └── Infraestrutura docs: referência técnica                        │    │
-│  │                                                                     │    │
-│  │  MONGODB (transações, queries rápidas)                              │    │
-│  │  ├── Catálogo: índice semântico (collection: catalogo)              │    │
-│  │  ├── Backlog: itens de trabalho (collection: backlog_items)         │    │
-│  │  ├── Sprints: ciclos de execução (collection: sprints)              │    │
-│  │  └── Decisões: histórico H-E-I-D (collection: decisoes)             │    │
+│  │  Tipo de Dado              │ Destino  │ Sistema Responsável         │    │
+│  │  ─────────────────────────────────────────────────────────────────  │    │
+│  │  Definição (.md)           │ GitHub   │ GitHub.persistir_md()       │    │
+│  │  Transação (outros)        │ MongoDB  │ MongoDB.persistir()         │    │
 │  │                                                                     │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                    TABELA DE DECISÃO                                │    │
+│  │                         FLUXO                                       │    │
 │  ├─────────────────────────────────────────────────────────────────────┤    │
 │  │                                                                     │    │
-│  │  Tipo de Dado              │ Destino  │ Operação                    │    │
-│  │  ─────────────────────────────────────────────────────────────────  │    │
-│  │  Definição de Meta Sistema │ GitHub   │ create_or_update_file       │    │
-│  │  Índice no Catálogo        │ MongoDB  │ insert/update em catalogo   │    │
-│  │  Item de Backlog           │ MongoDB  │ insert em backlog_items     │    │
-│  │  Status de Sprint          │ MongoDB  │ update em sprints           │    │
-│  │  Nova Decisão              │ MongoDB  │ insert em decisoes          │    │
-│  │  Atualização de uso        │ MongoDB  │ update (uso_count++)        │    │
-│  │  Prompt/Instrução          │ GitHub   │ create_or_update_file       │    │
-│  │  Doc de Infraestrutura     │ GitHub   │ create_or_update_file       │    │
+│  │  SE tipo_dado == "definição" (.md):                                 │    │
+│  │     → GitHub.persistir_md(arquivo, conteudo, instrucao?)            │    │
+│  │     → GitHub decide internamente: criar() | editar() | substituir() │    │
+│  │     → Ref: docs/00_I/00_I_1_1_GitHub.md                             │    │
+│  │                                                                     │    │
+│  │  SE tipo_dado == "transação":                                       │    │
+│  │     → MongoDB.persistir(collection, documento)                      │    │
+│  │     → MongoDB decide internamente: inserir() | atualizar()          │    │
+│  │     → Ref: docs/00_I/00_I_1_3_MongoDB.md                            │    │
 │  │                                                                     │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
-│  EXECUÇÃO:                                                                  │
+│  EXEMPLOS DE ROTEAMENTO:                                                    │
 │                                                                             │
-│  SE destino == GITHUB:                                                      │
-│     → github:create_or_update_file(path, content, message)                  │
-│     → Ref: docs/00_I/00_I_1_1_GitHub.md                                     │
-│                                                                             │
-│  SE destino == MONGODB:                                                     │
-│     → mongodb:insert-many ou mongodb:update-many                            │
-│     → Database: genesis_db                                                  │
-│     → Ref: docs/00_I/00_I_1_3_MongoDB.md                                    │
+│  │ Dado                       │ Tipo       │ Destino → Método            │  │
+│  │ ─────────────────────────────────────────────────────────────────── │  │
+│  │ Meta Sistema novo          │ definição  │ GitHub → criar()           │  │
+│  │ Seção editada              │ definição  │ GitHub → editar()          │  │
+│  │ Documento reescrito        │ definição  │ GitHub → substituir()      │  │
+│  │ Item de backlog            │ transação  │ MongoDB → inserir()        │  │
+│  │ Status de sprint           │ transação  │ MongoDB → atualizar()      │  │
+│  │ Decisão nova               │ transação  │ MongoDB → inserir()        │  │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -492,7 +492,7 @@ depende_de:
 | `entender()` | input_usuario | {tipo, contexto} | Classificar CONHECER vs DECIDIR vs GERENCIAR |
 | `buscar()` | tipo, contexto | {existe, item?, score?} | Consultar Catálogo (MongoDB) |
 | `rotear()` | resultado_busca | execução | Reutilizar existente ou criar novo |
-| `persistir()` | dado, tipo_dado | {destino, resultado} | Rotear para GitHub ou MongoDB |
+| `persistir()` | dado, tipo_dado | {destino, resultado} | Decidir ONDE (GitHub/MongoDB), delegar COMO |
 | `listar_capabilities()` | - | [Capability] | Explicar o que GENESIS sabe fazer |
 
 ### 4.5 Como Buscar no Catálogo
@@ -573,8 +573,8 @@ depende_de:
 
 | Documento | Relação |
 |-----------|---------|
-| docs/00_I/00_I_1_1_GitHub.md | Persistência de definições |
-| docs/00_I/00_I_1_3_MongoDB.md | Persistência transacional |
+| docs/00_I/00_I_1_1_GitHub.md | Persistência de definições (COMO) |
+| docs/00_I/00_I_1_3_MongoDB.md | Persistência transacional (COMO) |
 | docs/00_I/00_I_1_2_Protocolo_LLM.md | Como LLM acessa GENESIS |
 | docs/00_E/00_E_Epistemologia.md | Cria conhecimento (CONHECER) |
 | docs/00_E/00_E_2_2_Modulo_Raciocinio.md | Toma decisão (DECIDIR) |
@@ -609,4 +609,5 @@ depende_de:
 | 1.5 | 2025-12-08 | GERENCIAR adicionado: terceiro tipo de roteamento. Sprint S007. |
 | 1.6 | 2025-12-08 | Capability Discovery: método listar_capabilities(). Sprint S009. |
 | 1.7 | 2025-12-08 | Fix: Seções 4.5 e 4.6 separadas corretamente. Sprint S009. |
-| 1.8 | 2025-12-08 | **persistir()**: método que roteia GitHub vs MongoDB. Persistência Híbrida. Dependências de infra explícitas. Sprint S010/T05. |
+| 1.8 | 2025-12-08 | persistir(): método que roteia GitHub vs MongoDB. Persistência Híbrida. Sprint S010/T05. |
+| 1.9 | 2025-12-08 | **persistir() SIMPLIFICADO**: GENESIS decide ONDE, delega COMO para GitHub/MongoDB. Sprint S011/T04. |
