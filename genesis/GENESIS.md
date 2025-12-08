@@ -1,6 +1,6 @@
 ---
 nome: GENESIS
-versao: "1.4"
+versao: "1.5"
 tipo: Framework
 classe_ref: Framework
 origem: interno
@@ -10,7 +10,7 @@ depende_de:
   - 00_E_2_1_Modulo_Catalogo
 ---
 
-# GENESIS v1.4
+# GENESIS v1.5
 
 ## 1. Problema (M0)
 
@@ -25,6 +25,7 @@ depende_de:
 | **STUB** | Versão mínima hardcoded que quebra ciclo circular |
 | **CONHECER** | Natureza de problema: buscar/criar conhecimento estruturado |
 | **DECIDIR** | Natureza de problema: tomar decisão baseada em contexto |
+| **GERENCIAR** | Natureza de problema: organizar trabalho (backlog/sprint) |
 | **Contexto Especializado** | LLM operando com Meta Sistema carregado |
 | **Tool** | Capacidade executável que o LLM pode chamar (API, código, integração) |
 | **Loop Humano** | Humano controla cada transição de contexto (padrão GENESIS) |
@@ -74,6 +75,7 @@ depende_de:
 > - Epistemologia implementa o MÉTODO (como estruturar conhecimento)
 > - Raciocínio implementa DECISÃO (como tomar decisões)
 > - Catálogo fornece MEMÓRIA (como buscar/persistir)
+> - Gestão de Projetos organiza TRABALHO (backlog/sprints)
 >
 > **Resultado:** Sistema que reduz dispêndio de energia humana na execução de atividades cognitivas, com conhecimento que persiste e acumula.
 
@@ -119,9 +121,9 @@ depende_de:
 ### 3.1 Definição
 
 **GENESIS** é a Inteligência Orquestradora que:
-- **Entende** input do usuário e classifica: CONHECER ou DECIDIR
-- **Busca** no Catálogo conhecimento ou decisão existente
-- **Roteia** para existente ou **Cria** novo via Epistemologia/Raciocínio
+- **Entende** input do usuário e classifica: CONHECER, DECIDIR ou GERENCIAR
+- **Busca** no Catálogo conhecimento, decisão ou projeto existente
+- **Roteia** para existente ou **Cria** novo via sistema apropriado
 - **Resolve** Bootstrap Circular via STUB
 - **Reduz** Entropia Contextual via arquivos atômicos + índice
 
@@ -130,7 +132,7 @@ depende_de:
 | GENESIS É | GENESIS NÃO É |
 |-----------|---------------|
 | Inteligência Orquestradora | Executor de domínios |
-| Classifica CONHECER vs DECIDIR | Conteúdo de negócio |
+| Classifica CONHECER vs DECIDIR vs GERENCIAR | Conteúdo de negócio |
 | Usa Catálogo como memória | O próprio Catálogo |
 | Roteia ou delega criação | Implementação de M0-M4 (isso é Epistemologia) |
 | Propósito (PORQUÊ) | Método (isso é Epistemologia) |
@@ -143,7 +145,7 @@ depende_de:
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  GENESIS (Camada 1) ─── INTELIGÊNCIA ORQUESTRADORA                          │
-│  │  • Entende: CONHECER ou DECIDIR                                          │
+│  │  • Entende: CONHECER, DECIDIR ou GERENCIAR                               │
 │  │  • Busca: Catálogo                                                       │
 │  │  • Roteia: existente ou cria novo                                        │
 │  │                                                                          │
@@ -156,9 +158,14 @@ depende_de:
 │  │    • Ciclo M0-M4 obrigatório                                             │
 │  │    • Cria Meta Sistemas estruturados                                     │
 │  │                                                                          │
-│  └──► RACIOCÍNIO (Módulo) ─── DECISÃO (DECIDIR)                             │
-│       • Ciclo H→E→I→D                                                       │
-│       • Indexa decisões no Catálogo                                         │
+│  ├──► RACIOCÍNIO (Módulo) ─── DECISÃO (DECIDIR)                             │
+│  │    • Ciclo H→E→I→D                                                       │
+│  │    • Indexa decisões no Catálogo                                         │
+│  │                                                                          │
+│  └──► GESTÃO DE PROJETOS (Camada 2) ─── TRABALHO (GERENCIAR)                │
+│       • Backlog: captura, enriquece itens de trabalho                       │
+│       • Sprint: ciclos de execução focada                                   │
+│       • Orquestra promoção backlog → sprint                                 │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -181,7 +188,7 @@ depende_de:
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Métodos                                                                    │
 │  ────────                                                                   │
-│  + entender(input) → {tipo: CONHECER|DECIDIR, contexto}                     │
+│  + entender(input) → {tipo: CONHECER|DECIDIR|GERENCIAR, contexto}           │
 │  + buscar(tipo, contexto) → {existe: bool, item?, score?}                   │
 │  + rotear(resultado_busca) → execução                                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
@@ -190,6 +197,7 @@ depende_de:
 │  - Catálogo: memória estruturada                                            │
 │  - Epistemologia: criar conhecimento (M0-M4)                                │
 │  - Raciocínio: tomar decisão (H→E→I→D)                                      │
+│  - Gestão de Projetos: organizar trabalho (backlog/sprint)                  │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -206,30 +214,18 @@ depende_de:
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │ 1. ENTENDER (M0/Saussure)                                           │    │
 │  │    • Qual a natureza do problema?                                   │    │
-│  │    • CONHECER algo  ou  DECIDIR algo?                               │    │
+│  │    • CONHECER algo  ou  DECIDIR algo  ou  GERENCIAR trabalho?       │    │
 │  └──────────────────────────────┬──────────────────────────────────────┘    │
 │                                 │                                           │
-│              ┌──────────────────┴──────────────────┐                        │
-│              ▼                                     ▼                        │
-│       ┌────────────┐                        ┌────────────┐                  │
-│       │  CONHECER  │                        │  DECIDIR   │                  │
-│       └──────┬─────┘                        └──────┬─────┘                  │
-│              │                                     │                        │
-│              ▼                                     ▼                        │
-│  ┌─────────────────────────┐          ┌─────────────────────────┐           │
-│  │ 2. BUSCAR no Catálogo   │          │ 2. BUSCAR no Catálogo   │           │
-│  │    Meta Sistema que     │          │    Decisão similar      │           │
-│  │    resolve              │          │    já tomada            │           │
-│  └───────────┬─────────────┘          └───────────┬─────────────┘           │
-│              │                                    │                         │
-│       ┌──────┴──────┐                      ┌──────┴──────┐                  │
-│       ▼             ▼                      ▼             ▼                  │
-│    EXISTE       NÃO EXISTE              EXISTE       NÃO EXISTE             │
-│       │             │                      │             │                  │
-│       ▼             ▼                      ▼             ▼                  │
-│    Roteia       Epistemologia           Aplica        Raciocínio            │
-│    para MS      cria novo MS            decisão       gera nova             │
-│    existente                            existente     decisão               │
+│        ┌────────────────────────┼────────────────────────┐                  │
+│        ▼                        ▼                        ▼                  │
+│  ┌────────────┐          ┌────────────┐          ┌────────────┐             │
+│  │  CONHECER  │          │  DECIDIR   │          │  GERENCIAR │             │
+│  └──────┬─────┘          └──────┬─────┘          └──────┬─────┘             │
+│         │                       │                       │                   │
+│         ▼                       ▼                       ▼                   │
+│    Epistemologia           Raciocínio            Gestão Projetos            │
+│    (M0-M4)                 (H→E→I→D)             (Backlog/Sprint)           │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -244,7 +240,7 @@ depende_de:
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  Input: string (mensagem do usuário)                                        │
-│  Output: {tipo: CONHECER|DECIDIR, contexto: string}                         │
+│  Output: {tipo: CONHECER|DECIDIR|GERENCIAR, contexto: string}               │
 │                                                                             │
 │  Aplica M0/Saussure para classificar natureza:                              │
 │                                                                             │
@@ -261,6 +257,13 @@ depende_de:
 │  ├── "Analise prós e contras de W"                                          │
 │  └── "Me ajude a decidir sobre V"                                           │
 │                                                                             │
+│  GERENCIAR (organizar trabalho):                                            │
+│  ├── "Iniciar nova sprint"                                                  │
+│  ├── "Capturar item no backlog"                                             │
+│  ├── "O que tem no backlog?"                                                │
+│  ├── "Promover item para sprint"                                            │
+│  └── "Concluir sprint atual"                                                │
+│                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -272,7 +275,7 @@ depende_de:
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  Input:                                                                     │
-│  - tipo: CONHECER | DECIDIR                                                 │
+│  - tipo: CONHECER | DECIDIR | GERENCIAR                                     │
 │  - contexto: string (extraído do entender)                                  │
 │                                                                             │
 │  Output: {existe: bool, item?: any, score?: float}                          │
@@ -292,6 +295,10 @@ depende_de:
 │        return {existe: true, item: resultados[0], score}                    │
 │     SENÃO:                                                                  │
 │        return {existe: false}                                               │
+│                                                                             │
+│  SE tipo == GERENCIAR:                                                      │
+│     → Roteia diretamente para Gestão de Projetos                            │
+│     → Não busca (ação, não conhecimento)                                    │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -332,6 +339,15 @@ depende_de:
 │  │  → Indexa nova decisão no Catálogo                                  │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  GERENCIAR                                                          │    │
+│  │  → Carrega docs/00_I/00_I_2_Gestao_Projetos.md                      │    │
+│  │  → Roteia para método apropriado:                                   │    │
+│  │    • "listar backlog" → listar_backlog()                            │    │
+│  │    • "iniciar sprint" → promover() + Sprint.iniciar()               │    │
+│  │    • "capturar item" → Backlog.capturar()                           │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -339,7 +355,7 @@ depende_de:
 
 | Método | Entrada | Saída | Responsabilidade |
 |--------|---------|-------|------------------|
-| `entender()` | input_usuario | {tipo, contexto} | Classificar CONHECER vs DECIDIR |
+| `entender()` | input_usuario | {tipo, contexto} | Classificar CONHECER vs DECIDIR vs GERENCIAR |
 | `buscar()` | tipo, contexto | {existe, item?, score?} | Consultar Catálogo |
 | `rotear()` | resultado_busca | execução | Reutilizar existente ou criar novo |
 
@@ -428,6 +444,9 @@ Input: "como estruturar conhecimento novo"
 | docs/00_E/00_E_2_2_Modulo_Raciocinio.md | Toma decisão (DECIDIR) |
 | docs/00_E/00_E_2_1_Modulo_Catalogo.md | Memória estruturada (especificação) |
 | docs/00_I/00_I_0_1_Glossario.md | Glossário Central do sistema |
+| docs/00_I/00_I_2_Gestao_Projetos.md | Organiza trabalho (GERENCIAR) |
+| docs/00_I/00_I_2_1_Backlog.md | Captura e enriquece itens de trabalho |
+| docs/00_I/00_I_2_2_Sprint.md | Ciclos de execução focada |
 
 ### Externas
 
@@ -449,4 +468,5 @@ Input: "como estruturar conhecimento novo"
 | 1.1 | 2025-12-05 | Inteligência Orquestradora. M2+M3 refatorados: entender → buscar → rotear. |
 | 1.2 | 2025-12-06 | Referências atualizadas: Catálogo e Raciocínio publicados em docs/00_E/. |
 | 1.3 | 2025-12-07 | Glossário M0.1 expandido: termos Loop/Autonomia/Tools/Contexto. Referências: GENESIS_Arquitetura e Glossário Central. |
-| 1.4 | 2025-12-07 | **Seção 4.5 Como Buscar no Catálogo:** instrução prática para usar _catalogo/indice.yaml. Referência ao índice adicionada. Sprint S006-C/T03. |
+| 1.4 | 2025-12-07 | Seção 4.5 Como Buscar no Catálogo: instrução prática para usar _catalogo/indice.yaml. Referência ao índice adicionada. Sprint S006-C/T03. |
+| 1.5 | 2025-12-08 | **GERENCIAR adicionado:** terceiro tipo de roteamento para Gestão de Projetos. Referências: Gestão de Projetos, Backlog, Sprint. Sprint S007. |
