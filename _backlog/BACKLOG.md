@@ -1,6 +1,6 @@
 ---
 nome: BACKLOG
-versao: "1.4"
+versao: "1.5"
 tipo: Sistema
 origem: interno
 status: Ativo
@@ -63,9 +63,7 @@ LLM deve:
 
 ## Sprints Ativas
 
-| Item | Sprint | Iniciado |
-|------|--------|----------|
-| Catálogo Multi-Tipo | S008 | 2025-12-08 |
+*Nenhuma sprint ativa no momento.*
 
 ---
 
@@ -75,6 +73,7 @@ LLM deve:
 |------|--------|-----------|
 | Catálogo MVP | S006-C | 2025-12-07 |
 | Processo de Sprint | S007 | 2025-12-08 |
+| Catálogo Multi-Tipo | S008 | 2025-12-08 |
 
 ---
 
@@ -233,7 +232,7 @@ LLM deve:
 | `_backlog/Evolucao_Catalogo.md` | ✅ Histórico | Fases de implementação do Catálogo (concluído) |
 | `_backlog/Modulo_Autonomia.md` | ✅ Existe | Especificação do módulo |
 | `_backlog/Modulo_Raciocinio.md` | ⚠️ Depreciar | Já publicado em docs/ |
-| `_backlog/catalogo_multi_tipo.md` | 🔄 Promovido | Sprint S008 |
+| `_backlog/catalogo_multi_tipo.md` | ✅ Concluído | Sprint S008 |
 
 ---
 
@@ -246,3 +245,4 @@ LLM deve:
 | 1.2 | 2025-12-07 | Catálogo MVP concluído. Removido do índice. Seção renomeada para "Itens Concluídos". |
 | 1.3 | 2025-12-07 | **Processo de Sprint promovido** para S007. Item #3 removido. Seção "Sprints Ativas" adicionada. |
 | 1.4 | 2025-12-08 | **Catálogo Multi-Tipo promovido** para S008. S007 concluída → Itens Concluídos. |
+| 1.5 | 2025-12-08 | **S008 concluída.** Catálogo Multi-Tipo → Itens Concluídos. Nenhuma sprint ativa. |
