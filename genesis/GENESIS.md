@@ -1,6 +1,6 @@
 ---
 nome: GENESIS
-versao: "1.5"
+versao: "1.6"
 tipo: Framework
 classe_ref: Framework
 origem: interno
@@ -30,6 +30,8 @@ depende_de:
 | **Tool** | Capacidade executável que o LLM pode chamar (API, código, integração) |
 | **Loop Humano** | Humano controla cada transição de contexto (padrão GENESIS) |
 | **Módulo Autonomia** | Módulo opcional que controla nível de autonomia do loop |
+| **Capability** | Algo que GENESIS sabe fazer (CONHECER, DECIDIR, GERENCIAR) |
+| **Discovery** | Usuário descobre capabilities perguntando "o que você sabe fazer?" |
 
 ### 1.2 Diagrama do Problema
 
@@ -358,8 +360,9 @@ depende_de:
 | `entender()` | input_usuario | {tipo, contexto} | Classificar CONHECER vs DECIDIR vs GERENCIAR |
 | `buscar()` | tipo, contexto | {existe, item?, score?} | Consultar Catálogo |
 | `rotear()` | resultado_busca | execução | Reutilizar existente ou criar novo |
+| `listar_capabilities()` | - | [Capability] | Explicar o que GENESIS sabe fazer |
 
-### 4.5 Como Buscar no Catálogo (Implementação)
+### 4.5 Método: listar_capabilities() (Implementação)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -470,3 +473,4 @@ Input: "como estruturar conhecimento novo"
 | 1.3 | 2025-12-07 | Glossário M0.1 expandido: termos Loop/Autonomia/Tools/Contexto. Referências: GENESIS_Arquitetura e Glossário Central. |
 | 1.4 | 2025-12-07 | Seção 4.5 Como Buscar no Catálogo: instrução prática para usar _catalogo/indice.yaml. Referência ao índice adicionada. Sprint S006-C/T03. |
 | 1.5 | 2025-12-08 | **GERENCIAR adicionado:** terceiro tipo de roteamento para Gestão de Projetos. Referências: Gestão de Projetos, Backlog, Sprint. Sprint S007. |
+| 1.6 | 2025-12-08 | **Capability Discovery:** método listar_capabilities() para GENESIS explicar o que sabe fazer. Glossário: Capability, Discovery. Sprint S009. |
