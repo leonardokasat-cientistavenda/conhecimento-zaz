@@ -1,10 +1,10 @@
 ---
 nome: BACKLOG
-versao: "1.3"
+versao: "1.4"
 tipo: Sistema
 origem: interno
 status: Ativo
-atualizado: 2025-12-07
+atualizado: 2025-12-08
 ---
 
 # Backlog GENESIS
@@ -65,7 +65,7 @@ LLM deve:
 
 | Item | Sprint | Iniciado |
 |------|--------|----------|
-| Processo de Sprint | S007 | 2025-12-07 |
+| Catálogo Multi-Tipo | S008 | 2025-12-08 |
 
 ---
 
@@ -74,6 +74,7 @@ LLM deve:
 | Item | Sprint | Concluído |
 |------|--------|-----------|
 | Catálogo MVP | S006-C | 2025-12-07 |
+| Processo de Sprint | S007 | 2025-12-08 |
 
 ---
 
@@ -232,6 +233,7 @@ LLM deve:
 | `_backlog/Evolucao_Catalogo.md` | ✅ Histórico | Fases de implementação do Catálogo (concluído) |
 | `_backlog/Modulo_Autonomia.md` | ✅ Existe | Especificação do módulo |
 | `_backlog/Modulo_Raciocinio.md` | ⚠️ Depreciar | Já publicado em docs/ |
+| `_backlog/catalogo_multi_tipo.md` | 🔄 Promovido | Sprint S008 |
 
 ---
 
@@ -243,3 +245,4 @@ LLM deve:
 | 1.1 | 2025-12-07 | Catálogo MVP promovido para S006-C. Índice atualizado. Seção "Itens Promovidos" adicionada. |
 | 1.2 | 2025-12-07 | Catálogo MVP concluído. Removido do índice. Seção renomeada para "Itens Concluídos". |
 | 1.3 | 2025-12-07 | **Processo de Sprint promovido** para S007. Item #3 removido. Seção "Sprints Ativas" adicionada. |
+| 1.4 | 2025-12-08 | **Catálogo Multi-Tipo promovido** para S008. S007 concluída → Itens Concluídos. |
