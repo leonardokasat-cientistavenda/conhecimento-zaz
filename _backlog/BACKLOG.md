@@ -1,6 +1,6 @@
 ---
 nome: BACKLOG
-versao: "1.6"
+versao: "1.7"
 tipo: Sistema
 origem: interno
 status: Ativo
@@ -54,6 +54,7 @@ LLM deve:
 | # | Item | Prioridade | Dependências | Status |
 |---|------|------------|--------------|--------|
 | 8 | Capability Discovery | 🔴 Alta | - | ⬜ Aguardando |
+| 9 | Backlog com Plano de Execução | 🟡 Média | - | ⬜ Aguardando |
 | 2 | Módulo Autonomia | 🟡 Média | - | ⬜ Aguardando |
 | 4 | Tools Externas | 🟢 Baixa | Autonomia | ⬜ Aguardando |
 | 5 | MCP Server | 🟢 Baixa | Tools Externas | ⬜ Aguardando |
@@ -255,6 +256,33 @@ LLM deve:
 
 ---
 
+## 9. Backlog com Plano de Execução
+
+**Prioridade:** 🟡 Média
+**Dependências:** -
+**Arquivo detalhado:** `_backlog/backlog_plano_execucao.md`
+
+### M0.1 Glossário
+
+| Significante | Significado |
+|--------------|-------------|
+| **Plano de Execução** | Lista de arquivos a criar/atualizar com método definido |
+| **Método** | Criar, Patch, ou Substituição |
+
+### M0.2 Problema
+
+| Sintoma | Causa | Necessidade |
+|---------|-------|-------------|
+| LLM pergunta "patch ou substituição?" | Decisão não está no backlog | Pré-definir método |
+| Estimativa de esforço difícil | Não sabe quantos arquivos afeta | Lista de impacto |
+
+### M0.3 Origem
+
+- **Descoberto em:** S008 (teste de Backlog.capturar())
+- **Insight:** Definir método antecipadamente reduz fricção
+
+---
+
 ## Arquivos Relacionados
 
 | Arquivo | Status | Descrição |
@@ -277,3 +305,4 @@ LLM deve:
 | 1.4 | 2025-12-08 | **Catálogo Multi-Tipo promovido** para S008. S007 concluída → Itens Concluídos. |
 | 1.5 | 2025-12-08 | **S008 concluída.** Catálogo Multi-Tipo → Itens Concluídos. Nenhuma sprint ativa. |
 | 1.6 | 2025-12-08 | **Capability Discovery capturado.** Item #8 adicionado via Backlog.capturar(). |
+| 1.7 | 2025-12-08 | **Plano de Execução capturado.** Item #9 adicionado via Backlog.capturar(). |
