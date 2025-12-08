@@ -1,9 +1,9 @@
 ---
 titulo: "Arquitetura de Persistência Híbrida"
 data_criacao: 2025-12-08
-status: Pendente
-promovido_em: null
-data_promocao: null
+status: Promovido
+promovido_em: S010
+data_promocao: 2025-12-08
 resolvido_em: null
 data_resolucao: null
 tipo: Feature
@@ -402,3 +402,4 @@ Schema = código                     Schema = documentação estruturada
 |------|--------|-----------|
 | 2025-12-08 | S009 | Criação com incidentes e proposta inicial |
 | 2025-12-08 | S009 | Visão completa: fases de evolução, tipos de persistência, collections MongoDB |
+| 2025-12-08 | S010 | **PROMOVIDO** para Sprint S010 |
