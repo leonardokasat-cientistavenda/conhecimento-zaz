@@ -1,6 +1,6 @@
 ---
 nome: 00_E_2_1_Modulo_Catalogo
-versao: "1.1"
+versao: "1.2"
 tipo: Modulo
 classe_ref: Modulo
 origem: interno
@@ -25,6 +25,7 @@ camada: C3
 | **Metadata** | Dados adicionais do item (uso_count, confirmacoes, etc.) |
 | **Score** | Pontuação de relevância retornada pela busca |
 | **Trigger** | Frase que ativa o item na busca (match exato = alta relevância) |
+| **Tipo** | Categoria do item indexado (docs, backlog, sprint) |
 
 ### 1.2 Diagrama do Problema
 
@@ -213,7 +214,11 @@ Vantagem: Não requer normalização de scores entre sistemas diferentes
 │                                                                             │
 │  Input:                                                                     │
 │  - query: string (texto de busca)                                           │
-│  - options?: { top_k?: number, threshold?: float, tipo?: string }           │
+│  - options?: {                                                              │
+│      top_k?: number,                                                        │
+│      threshold?: float,                                                     │
+│      tipo?: "docs" | "backlog" | "sprint"  # Filtra por categoria           │
+│    }                                                                        │
 │                                                                             │
 │  Output: [{ item, score, metadata }]                                        │
 │                                                                             │
@@ -297,6 +302,13 @@ Vantagem: Não requer normalização de scores entre sistemas diferentes
 │                                                                             │
 │  Arquivo: _catalogo/indice.yaml                                             │
 │                                                                             │
+│  TIPOS SUPORTADOS:                                                          │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  docs     → Conhecimento publicado (Meta Sistemas, Infra, etc.)     │    │
+│  │  backlog  → Itens de trabalho pendente (_backlog/*.md)              │    │
+│  │  sprint   → Ciclos de execução (_sprints/*.md)                      │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
 │  ESTRUTURA DO ITEM:                                                         │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  - id: "ms_epistemologia"           # Identificador único            │    │
@@ -365,3 +377,4 @@ Vantagem: Não requer normalização de scores entre sistemas diferentes
 | 0.1-0.3 | 2025-12-05 | Desenvolvimento M0-M3 em _drafts/ |
 | 1.0 | 2025-12-06 | **Publicação M4.** Interface consolidada: indexar, buscar, atualizar_metadata. Algoritmo Hybrid Search (BM25 + Embeddings + RRF). Sprint S005-G/T13. |
 | 1.1 | 2025-12-07 | **Implementação MVP.** Seção 4.7 com índice YAML (_catalogo/indice.yaml). Termo "trigger" no glossário. Referências ao índice e README. Sprint S006-C/T05. |
+| 1.2 | 2025-12-08 | **Multi-tipo.** Catálogo suporta tipos: docs, backlog, sprint. Filtro por tipo no buscar(). Sprint S008/T02. |
