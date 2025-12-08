@@ -1,13 +1,13 @@
 ---
 nome: 00_I_1_1_GitHub
-versao: "2.1"
+versao: "2.2"
 tipo: Classe
 classe_ref: Classe
 origem: interno
 status: Publicado
 ---
 
-# GitHub v2.1
+# GitHub v2.2
 
 ## 1. Problema (M0)
 
@@ -22,29 +22,26 @@ status: Publicado
 
 | Significante | Significado no Contexto |
 |--------------|-------------------------|
-| **GitHub** | Infraestrutura de versionamento e persistência |
+| **GitHub** | Infraestrutura de versionamento e persistência de **definições** |
 | **persistir** | Transformar conhecimento em arquivo versionado |
-| **patch** | Método de edição parcial de arquivo |
 | **criar** | Novo arquivo que não existia |
-| **editar** | Modificar arquivo existente (patch ou substituição) |
+| **editar** | Modificar arquivo existente via substituição |
 | **commit** | Unidade atômica de mudança no Git |
-| **backlog** | Fila de itens aguardando promoção para sprint |
-| **sprint** | Ciclo de trabalho focado em objetivo específico |
+| **definição** | Conteúdo estrutural: GENESIS, Epistemologia, Módulos, Prompts |
 
 ### 1.3 Causa Raiz
 
 | Causa | Consequência |
 |-------|--------------|
-| Patch_System criado como documento separado | Duplicação de informação |
-| Patch é MÉTODO de GitHub, não entidade | Violação de modelagem |
+| Sistema de patches era frágil | Falhas frequentes, retrabalho |
+| Transações misturadas com definições | Latência, complexidade |
 
 ### 1.4 Necessidade
 
 | Necessidade | Solução |
 |-------------|---------|
-| Consolidar em documento único | GitHub.md absorve Patch_System |
-| Definir COMO persistir | criar, editar, mover, commitar |
-| Separar concerns | GitHub (COMO) ≠ Documento (O QUE) |
+| Separar definições de transações | GitHub (definições) + MongoDB (transações) |
+| Simplificar edição | Substituição direta via API |
 
 ---
 
@@ -56,6 +53,7 @@ status: Publicado
 | **SSOT** | Information Architecture | 1 lugar para cada verdade |
 | **Token Efficiency** | LLM Context Limits | NÃO duplicar chat + GitHub |
 | **SemVer** | Semantic Versioning | MAJOR.MINOR.PATCH |
+| **Persistência Híbrida** | GENESIS v1.8 | GitHub para definições, MongoDB para transações |
 
 ---
 
@@ -67,7 +65,7 @@ status: Publicado
 |-------|-------|
 | **nome** | GitHub |
 | **tipo_pesquisa** | Prescritivo |
-| **objetivo** | Definir COMO persistir conhecimento: criar, editar, mover, commitar |
+| **objetivo** | Definir COMO persistir **definições**: criar, editar, mover, commitar |
 | **camada** | C2 (Infraestrutura) |
 
 ### 3.2 Escopo
@@ -79,21 +77,38 @@ status: Publicado
 | Conventions | commits, branches, versionamento |
 | Structure | dirs, naming |
 | Workflows | criar, editar, mover, commitar |
-| Edição: Patch | Método de edição parcial |
-| Edição: Substituição | Método de edição completa |
 | Token Efficiency | Regras de economia |
-| Implementação Patch | PATCH.md, GitHub Action, script Python |
-| **Ciclo Backlog→Sprint** | Processo de promoção e arquivamento |
 
-### 3.3 Fronteiras
+### 3.3 O Que Persiste no GitHub
+
+| Tipo | Exemplos | Característica |
+|------|----------|----------------|
+| **Framework** | GENESIS.md, Epistemologia.md | Muda pouco, precisa versionar |
+| **Meta Sistemas** | Módulos, docs estruturados | Definição, não transação |
+| **Prompts** | Instruções para LLM | Precisa histórico |
+| **Infraestrutura docs** | Este documento | Referência técnica |
+
+### 3.4 O Que NÃO Persiste no GitHub
+
+| Tipo | Destino | Razão |
+|------|---------|-------|
+| Catálogo (índice) | MongoDB | Queries rápidas |
+| Backlog items | MongoDB | Transações frequentes |
+| Sprints (status) | MongoDB | Atualizações frequentes |
+| Decisões | MongoDB | Histórico consultável |
+
+**Referência:** `docs/00_I/00_I_1_3_MongoDB.md`
+
+### 3.5 Fronteiras
 
 | Não Cobre | Referência |
 |-----------|------------|
 | O QUE documentar | 00_E_1_6_Documento.md |
 | COMO selecionar diagrama | 00_E_1_4_1_Diagrama.md |
+| Persistência transacional | 00_I_1_3_MongoDB.md |
 | Conteúdo dos domínios | Camada 4 |
 
-### 3.4 Diagrama de Escopo
+### 3.6 Diagrama de Escopo
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -108,8 +123,8 @@ status: Publicado
 │   └───────────────────┘               │  └─ branches                    │   │
 │                                       │                                 │   │
 │   ┌───────────────────┐               │  Permissions                    │   │
-│   │ Diagrama.md       │               │  ├─ allowed                     │   │
-│   │ (COMO visualizar) │               │  ├─ restricted                  │   │
+│   │ MongoDB.md        │               │  ├─ allowed                     │   │
+│   │ (Transações)      │               │  ├─ restricted                  │   │
 │   └───────────────────┘               │  └─ forbidden                   │   │
 │                                       │                                 │   │
 │                                       │  Conventions                    │   │
@@ -119,21 +134,16 @@ status: Publicado
 │                                       │                                 │   │
 │                                       │  Structure                      │   │
 │                                       │  ├─ docs/ (publicado)           │   │
+│                                       │  ├─ genesis/ (framework)        │   │
 │                                       │  ├─ _drafts/ (M0-M3)            │   │
-│                                       │  ├─ _patches/ (sistema)         │   │
-│                                       │  ├─ _backlog/ (fila)            │   │
-│                                       │  └─ _sprints/ (controle)        │   │
+│                                       │  ├─ _backlog/ (arquivos .md)    │   │
+│                                       │  └─ _sprints/ (arquivos .md)    │   │
 │                                       │                                 │   │
 │                                       │  Workflows                      │   │
 │                                       │  ├─ criar                       │   │
-│                                       │  ├─ editar (patch/substituição) │   │
+│                                       │  ├─ editar (substituição)       │   │
 │                                       │  ├─ mover                       │   │
 │                                       │  └─ commitar                    │   │
-│                                       │                                 │   │
-│                                       │  Ciclo Backlog→Sprint           │   │
-│                                       │  ├─ promover                    │   │
-│                                       │  ├─ executar                    │   │
-│                                       │  └─ arquivar                    │   │
 │                                       └─────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -163,16 +173,14 @@ status: Publicado
 │  - Versão no frontmatter, NUNCA no nome do arquivo                          │
 │  - Push direto em main permitido (TEMPORÁRIO - ver Seção 6)                 │
 │  - Deletar arquivos em docs/ requer confirmação explícita                   │
+│  - Usar para DEFINIÇÕES, não transações                                     │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Métodos                                                                    │
 │  ────────                                                                   │
 │  + criar(path, content): Arquivo                                            │
-│  + editar(path, content, metodo): Arquivo                                   │
+│  + editar(path, content): Arquivo                                           │
 │  + mover(origem, destino): Arquivo                                          │
 │  + commitar(message): Commit                                                │
-│  + aplicar_patch(patch_file): Arquivo                                       │
-│  + promover_backlog(item, sprint): Sprint                                   │
-│  + arquivar_sprint(sprint): Histórico                                       │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -203,9 +211,9 @@ status: Publicado
 │                              CONVENTIONS                                    │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  - commit_format: string = "[CAMADA] tipo: descrição"                       │
-│  - camadas: Map = {C0: Axiomas, C1: Stub, C2: Infra, C3: Framework,         │
+│  - camadas: Map = {C0: Axiomas, C1: GENESIS, C2: Infra, C3: Framework,      │
 │                    C4: Domínios}                                            │
-│  - tipos: string[] = [add, update, fix, cleanup, promote]                   │
+│  - tipos: string[] = [add, update, fix, cleanup, promote, delete]           │
 │  - branch_format: string = "tipo/descricao-curta"                           │
 │  - versioning: string = "SemVer"                                            │
 │  - idioma: string = "português"                                             │
@@ -216,11 +224,10 @@ status: Publicado
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  - dirs: Dir[] = [                                                          │
 │      {path: "docs/", purpose: "publicados", status: "Publicado"},           │
+│      {path: "genesis/", purpose: "framework core", status: "Publicado"},    │
 │      {path: "_drafts/", purpose: "M0-M3", status: "Draft"},                 │
-│      {path: "_patches/", purpose: "patches", status: "Sistema"},            │
-│      {path: "_sprints/", purpose: "controle sprints", status: "Sistema"},   │
-│      {path: "_backlog/", purpose: "fila de itens", status: "Sistema"},      │
-│      {path: "_inbox/", purpose: "triagem", status: "Triagem"}               │
+│      {path: "_sprints/", purpose: "arquivos sprint", status: "Sistema"},    │
+│      {path: "_backlog/", purpose: "arquivos backlog", status: "Sistema"}    │
 │    ]                                                                        │
 │  - naming_pattern: string = "NN_X_N_N_Nome.md"                               │
 │  - draft_pattern: string = "_drafts/SPRINT/TXX_Nome.md"                     │
@@ -235,7 +242,6 @@ status: Publicado
 │      "Preview completo antes de commit",                                    │
 │      "Exibir arquivo inteiro para pequenas edições"                         │
 │    ]                                                                        │
-│  - preferencia_edicao: string = "patch > substituição"                      │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -261,25 +267,21 @@ status: Publicado
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-#### editar(path, content, metodo): Arquivo
+#### editar(path, content): Arquivo
 
 | Campo | Valor |
 |-------|-------|
-| **Descrição** | Modifica arquivo existente |
-| **Input** | path: string, content: string, metodo: enum [patch, substituicao] |
+| **Descrição** | Modifica arquivo existente via substituição |
+| **Input** | path: string, content: string |
 | **Output** | Arquivo atualizado |
-| **Decisão** | patch se edição parcial; substituição se reescrita completa |
+| **API** | github:create_or_update_file (com SHA) |
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                         editar()                                │
 ├─────────────────────────────────────────────────────────────────┤
-│  SE metodo == patch:                                            │
-│     1. Criar arquivo em _patches/NNN_descricao.md               │
-│     2. GitHub Action aplica automaticamente                     │
-│  SE metodo == substituicao:                                     │
-│     1. Obter SHA do arquivo atual                               │
-│     2. github:create_or_update_file com SHA                     │
+│  1. Obter SHA do arquivo atual                                  │
+│  2. github:create_or_update_file com SHA                        │
 │  3. Atualizar versão no frontmatter                             │
 │  4. Atualizar histórico                                         │
 └─────────────────────────────────────────────────────────────────┘
@@ -320,7 +322,7 @@ status: Publicado
 │                                                                 │
 │  Camadas:                                                       │
 │  ├─ C0: Axiomas                                                 │
-│  ├─ C1: Stub/GENESIS                                            │
+│  ├─ C1: GENESIS                                                 │
 │  ├─ C2: Infraestrutura                                          │
 │  ├─ C3: Framework/Epistemologia                                 │
 │  └─ C4: Domínios                                                │
@@ -330,229 +332,50 @@ status: Publicado
 │  ├─ update: atualização                                         │
 │  ├─ fix: correção                                               │
 │  ├─ cleanup: limpeza                                            │
+│  ├─ delete: remoção                                             │
 │  └─ promote: backlog → sprint                                   │
 │                                                                 │
 │  Exemplo: [C3] add: M0 Problema para Objeto v2                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-#### aplicar_patch(patch_file): Arquivo
-
-| Campo | Valor |
-|-------|-------|
-| **Descrição** | Aplica edições parciais via sistema de patches |
-| **Input** | patch_file: string |
-| **Output** | Arquivo(s) atualizado(s) |
-| **Executor** | GitHub Action (automático) |
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                      aplicar_patch()                            │
-├─────────────────────────────────────────────────────────────────┤
-│  Estrutura do PATCH.md:                                         │
-│  ---                                                            │
-│  target: genesis/GENESIS.md                                     │
-│  version_from: "0.1"                                            │
-│  version_to: "0.2"                                              │
-│  commit_message: "[C2] update: descrição"                       │
-│  ---                                                            │
-│                                                                 │
-│  ## EDITS                                                       │
-│                                                                 │
-│  ### EDIT 1                                                     │
-│  FIND:                                                          │
-│  ```                                                            │
-│  texto original                                                 │
-│  ```                                                            │
-│  REPLACE:                                                       │
-│  ```                                                            │
-│  texto novo                                                     │
-│  ```                                                            │
-│                                                                 │
-│  ### EDIT 2                                                     │
-│  APPEND_AFTER:                                                  │
-│  ```                                                            │
-│  linha existente                                                │
-│  ```                                                            │
-│  ADD:                                                           │
-│  ```                                                            │
-│  nova linha                                                     │
-│  ```                                                            │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### 4.4 Implementação Patch: GitHub Action
-
-```yaml
-# .github/workflows/apply-patch.yml
-name: Apply Patch
-
-on:
-  push:
-    paths:
-      - '_patches/*.md'
-
-jobs:
-  apply-patch:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Get new patch files
-        id: patches
-        run: |
-          echo "files=$(git diff --name-only HEAD~1 HEAD | grep '_patches/.*\.md$' | tr '\n' ' ')" >> $GITHUB_OUTPUT
-      
-      - name: Apply patches
-        run: |
-          for patch_file in ${{ steps.patches.outputs.files }}; do
-            python3 .github/scripts/apply_patch.py "$patch_file"
-          done
-      
-      - name: Commit changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Auto-apply patches" || echo "No changes"
-          git push
-```
-
-### 4.5 Implementação Patch: Script Python
-
-```python
-#!/usr/bin/env python3
-# .github/scripts/apply_patch.py
-import sys
-import re
-import yaml
-
-def parse_patch(patch_content):
-    parts = patch_content.split('---')
-    frontmatter = yaml.safe_load(parts[1])
-    body = '---'.join(parts[2:])
-    
-    edits = []
-    
-    find_replace = re.findall(
-        r'FIND:\s*```\n(.*?)\n```\s*REPLACE:\s*```\n(.*?)\n```',
-        body, re.DOTALL
-    )
-    for find, replace in find_replace:
-        edits.append(('replace', find.strip(), replace.strip()))
-    
-    append_after = re.findall(
-        r'APPEND_AFTER:\s*```\n(.*?)\n```\s*ADD:\s*```\n(.*?)\n```',
-        body, re.DOTALL
-    )
-    for after, add in append_after:
-        edits.append(('append', after.strip(), add.strip()))
-    
-    return frontmatter, edits
-
-def apply_edits(content, edits):
-    for edit_type, pattern, replacement in edits:
-        if edit_type == 'replace':
-            content = content.replace(pattern, replacement)
-        elif edit_type == 'append':
-            content = content.replace(pattern, pattern + '\n' + replacement)
-    return content
-
-def main():
-    patch_file = sys.argv[1]
-    
-    with open(patch_file, 'r') as f:
-        patch_content = f.read()
-    
-    frontmatter, edits = parse_patch(patch_content)
-    target = frontmatter['target']
-    
-    with open(target, 'r') as f:
-        content = f.read()
-    
-    new_content = apply_edits(content, edits)
-    
-    with open(target, 'w') as f:
-        f.write(new_content)
-    
-    print(f"Applied {len(edits)} edits to {target}")
-
-if __name__ == '__main__':
-    main()
-```
-
 ---
 
-## 5. Ciclo Backlog → Sprint → Publicado
+## 5. Integração com MongoDB
 
-### 5.1 Diagrama do Ciclo
+### 5.1 Arquitetura de Persistência Híbrida
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                         CICLO DE VIDA DO CONHECIMENTO                       │
+│                    ARQUITETURA DE PERSISTÊNCIA                              │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  _backlog/BACKLOG.md        _sprints/S00X.md           docs/                │
-│  ┌─────────────────┐        ┌─────────────────┐        ┌─────────────────┐  │
-│  │                 │        │                 │        │                 │  │
-│  │  Item com M0    │──────► │  Sprint ativa   │──────► │   Publicado     │  │
-│  │  (aguardando)   │promover│  (executando)   │concluir│   (oficial)     │  │
-│  │                 │        │                 │        │                 │  │
-│  └─────────────────┘        └─────────────────┘        └─────────────────┘  │
-│         │                          │                          │             │
-│         │                          │                          │             │
-│         ▼                          ▼                          ▼             │
-│     Remover do               Manter em                   Versionado         │
-│     BACKLOG.md              _sprints/ como               em docs/           │
-│                              histórico                                      │
+│  GITHUB (Definições)                 MONGODB (Transações)                   │
+│  ────────────────────                ───────────────────                    │
+│  • GENESIS.md                        • catalogo                             │
+│  • Epistemologia.md                  • backlog_items                        │
+│  • Módulos (.md)                     • sprints                              │
+│  • Prompts                           • decisoes                             │
+│                                                                             │
+│  Muda pouco, versionado              Muda frequentemente, queries rápidas   │
+│                                                                             │
+│  API: github:create_or_update_file   API: mongodb:find, mongodb:insert      │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 5.2 Método: promover_backlog(item, sprint)
+### 5.2 Quando Usar Cada Um
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    promover_backlog()                           │
-├─────────────────────────────────────────────────────────────────┤
-│  Input: item (seção do BACKLOG.md), sprint (ex: S006-C)         │
-│  Output: Arquivo _sprints/S006-C_Nome.md criado                 │
-│                                                                 │
-│  Passos:                                                        │
-│  1. Ler _backlog/BACKLOG.md                                     │
-│  2. Extrair seção M0 do item                                    │
-│  3. Ler arquivo detalhado se existir (ex: Evolucao_Catalogo.md) │
-│  4. Criar _sprints/S00X_Nome.md com:                            │
-│     - Contexto (repo, branch)                                   │
-│     - M0 copiado do backlog                                     │
-│     - Tasks expandidas (T01, T02, etc.)                         │
-│     - Referências                                               │
-│  5. Remover item do BACKLOG.md                                  │
-│  6. Commit: [C0] promote: Item → S00X                           │
-└─────────────────────────────────────────────────────────────────┘
-```
+| Operação | Destino | Método |
+|----------|---------|--------|
+| Criar Meta Sistema | GitHub | criar() |
+| Editar definição | GitHub | editar() |
+| Buscar no catálogo | MongoDB | mongodb:find |
+| Atualizar status sprint | MongoDB | mongodb:update-many |
+| Capturar item backlog | MongoDB | mongodb:insert-many |
+| Registrar decisão | MongoDB | mongodb:insert-many |
 
-### 5.3 Método: arquivar_sprint(sprint)
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                     arquivar_sprint()                           │
-├─────────────────────────────────────────────────────────────────┤
-│  Input: sprint (ex: S005-G)                                     │
-│  Output: Sprint marcada como concluída                          │
-│                                                                 │
-│  Passos:                                                        │
-│  1. Atualizar status no frontmatter para "Concluída"            │
-│  2. Adicionar data de conclusão                                 │
-│  3. Manter arquivo em _sprints/ (histórico)                     │
-│  4. NÃO deletar - serve como documentação                       │
-│  5. Commit: [C0] archive: S00X concluída                        │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### 5.4 Referência
-
-Para detalhes completos do backlog, ver: `_backlog/BACKLOG.md`
+**Referência completa:** `docs/00_I/00_I_1_3_MongoDB.md`
 
 ---
 
@@ -560,7 +383,7 @@ Para detalhes completos do backlog, ver: `_backlog/BACKLOG.md`
 
 ### 6.1 Contexto
 
-Durante o desenvolvimento inicial do GENESIS (Sprints S001-S005), algumas restrições foram **temporariamente relaxadas** para acelerar iteração:
+Durante o desenvolvimento inicial do GENESIS (Sprints S001-S010), algumas restrições foram **temporariamente relaxadas** para acelerar iteração:
 
 | Restrição Original | Status Atual | Razão |
 |--------------------|--------------|-------|
@@ -570,7 +393,7 @@ Durante o desenvolvimento inicial do GENESIS (Sprints S001-S005), algumas restri
 
 ### 6.2 Compromisso de Devolução
 
-**Quando devolver:** Após Catálogo MVP estável (estimativa: S007)
+**Quando devolver:** Após sistema estável (estimativa: S012)
 
 **O que restaurar:**
 
@@ -595,33 +418,25 @@ Durante o desenvolvimento inicial do GENESIS (Sprints S001-S005), algumas restri
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### 6.3 Rastreamento
-
-| Sprint | Autonomia | Justificativa |
-|--------|-----------|---------------|
-| S001-S005 | Expandida | Desenvolvimento inicial, iteração rápida |
-| S006-C | Expandida | Catálogo MVP - última sprint com autonomia |
-| S007+ | **Restaurada** | Sistema estável, processo maduro |
-
 ---
 
 ## 7. Referências
 
 | Documento | Relação |
 |-----------|---------|
-| 00_E_1_6_Documento | Define O QUE persistir (cita este documento) |
-| 00_E_1_4_1_Diagrama | COMO selecionar diagramas |
-| GENESIS.md | Índice de arquivos |
-| _backlog/BACKLOG.md | Fila de itens com M0 estruturado |
+| docs/00_I/00_I_1_3_MongoDB.md | Persistência transacional (complemento) |
+| docs/00_E/00_E_1_6_Documento.md | Define O QUE persistir |
+| genesis/GENESIS.md | Método persistir() - orquestra GitHub vs MongoDB |
 
 ---
 
 ## Histórico
 
-| Versão | Data | Hora | Alteração |
-|--------|------|------|-----------|
-| 1.0 | 2025-12-02 | - | Criação como Github_Instructions |
-| 1.1 | 2025-12-02 | - | Adiciona token_efficiency |
-| 1.2 | 2025-12-03 | 19:55 | Refatora token_efficiency, convenções [CAMADA] |
-| 2.0 | 2025-12-04 | 12:20 | **CONSOLIDAÇÃO**: Absorve Patch_System. Reestrutura como Classe M0-M3. |
-| 2.1 | 2025-12-07 | 10:58 | **CICLO SPRINT**: Adiciona Seção 5 (Backlog→Sprint→Publicado), Seção 6 (Autonomia Temporária). Referência a _backlog/BACKLOG.md. |
+| Versão | Data | Alteração |
+|--------|------|-----------|
+| 1.0 | 2025-12-02 | Criação como Github_Instructions |
+| 1.1 | 2025-12-02 | Adiciona token_efficiency |
+| 1.2 | 2025-12-03 | Refatora token_efficiency, convenções [CAMADA] |
+| 2.0 | 2025-12-04 | CONSOLIDAÇÃO: Absorve Patch_System. Reestrutura como Classe M0-M3. |
+| 2.1 | 2025-12-07 | CICLO SPRINT: Adiciona Seção 5 (Backlog→Sprint→Publicado), Seção 6 (Autonomia Temporária). |
+| 2.2 | 2025-12-08 | **PERSISTÊNCIA HÍBRIDA**: Remove sistema de patches (eliminado em S010). GitHub agora apenas para definições. Transações migradas para MongoDB. Seção 5 atualizada para integração. |
