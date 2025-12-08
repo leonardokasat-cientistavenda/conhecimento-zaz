@@ -1,4 +1,4 @@
-# Gestão de Projetos v0.2
+# Gestão de Projetos v0.3
 
 ## 1. Problema (M0)
 
@@ -6,13 +6,14 @@
 
 | Significante | Significado no Contexto |
 |--------------|-------------------------|
-| **Gestão de Projetos** | Sistema que orquestra o ciclo de vida de entregas: captura → organização → execução → publicação |
+| **Gestão de Projetos** | Sistema orquestrador que disciplina o ciclo de vida de entregas via Backlog e Sprint |
 | **Projeto** | Trabalho com objetivo e entregável definidos (pode ser documentação, marketing, produto, etc.) |
 | **Backlog** | Subsistema de captura e organização de itens para execução futura |
 | **Sprint** | Subsistema de execução estruturada com objetivo, tasks e entregáveis |
 | **Ciclo de Vida** | Fluxo completo: Captura → Backlog → Sprint → Publicação |
 | **Promoção** | Transição de item do Backlog para Sprint (decisão consciente de executar) |
 | **Tipo de Projeto** | Classificação do domínio (Documentação, Marketing, CX, Produto, Vendas, Infra) |
+| **Orquestrador** | Componente que coordena outros sem executar o trabalho diretamente |
 
 ### 1.2 Diagrama do Problema
 
@@ -44,6 +45,10 @@
 │                                                                             │
 │                       GESTÃO DE PROJETOS                                    │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                      ORQUESTRADOR                                   │    │
+│  │  - Disciplina regras (WIP limit, ciclo de vida)                     │    │
+│  │  - Define relação entre subsistemas                                 │    │
+│  │  - Coordena via promover()                                          │    │
 │  │                                                                     │    │
 │  │   ┌──────────┐   promover()   ┌──────────┐   publicar()  ┌──────┐  │    │
 │  │   │ BACKLOG  │ ─────────────► │  SPRINT  │ ────────────► │ docs │  │    │
@@ -61,12 +66,15 @@
 
 ### 1.3 Tese
 
-> **Gestão de Projetos é o Meta Sistema que orquestra o ciclo de vida de entregas via dois subsistemas:**
+> **Gestão de Projetos é o orquestrador que disciplina o ciclo de vida de entregas via dois subsistemas:**
 >
 > - **Backlog** - Captura e organiza itens para execução futura
 > - **Sprint** - Executa trabalho de forma estruturada com entregáveis
 >
-> **A relação entre eles é a promoção:** decisão consciente de transformar ideia em compromisso de execução.
+> **Papel do orquestrador:**
+> - Define **regras** (WIP limit = 1, ciclo de vida)
+> - Define **relação** entre subsistemas (promoção)
+> - **Não executa** trabalho diretamente - delega para filhos
 >
 > **Agnóstico de domínio:** Funciona para documentação, marketing, produto, vendas, ou qualquer tipo de projeto.
 
@@ -84,6 +92,7 @@
 | **Incrementos** | Scrum (Agile) | Cada Sprint entrega algo publicável |
 | **Notas Atômicas** | Zettelkasten (Luhmann) | Item de backlog = unidade independente |
 | **WIP Limit** | Kanban | Uma Sprint ativa por vez |
+| **Orquestração** | SOA/Microservices | Coordenador que não executa |
 
 ### 2.2 Síntese
 
@@ -101,8 +110,17 @@
 │                    │                           ▲                            │
 │                    │        promover()         │                            │
 │                    └───────────────────────────┘                            │
-│                                                                             │
-│  ORQUESTRAÇÃO: Gestão de Projetos decide QUANDO promover                    │
+│                              ▲                                              │
+│                              │                                              │
+│                    ┌─────────┴─────────┐                                    │
+│                    │   GESTÃO DE       │                                    │
+│                    │   PROJETOS        │                                    │
+│                    │   (Orquestrador)  │                                    │
+│                    │                   │                                    │
+│                    │ - Disciplina      │                                    │
+│                    │ - Coordena        │                                    │
+│                    │ - Não executa     │                                    │
+│                    └───────────────────┘                                    │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -122,20 +140,20 @@
 
 ### 3.1 Definição
 
-**Gestão de Projetos** é o Meta Sistema que:
-- **Orquestra** o ciclo Backlog → Sprint → Publicação
-- **Define** a relação entre os subsistemas
-- **Garante** rastreabilidade de origem e destino dos itens
-- **Suporta** qualquer tipo de projeto via classificação opcional
+**Gestão de Projetos** é o orquestrador que:
+- **Disciplina** as regras do ciclo de vida (WIP limit, estados válidos)
+- **Define** a relação entre Backlog e Sprint
+- **Coordena** via método `promover()`
+- **Não persiste** estado próprio - deriva de `_sprints/` e `_backlog/`
 
 ### 3.2 Fronteiras
 
 | Gestão de Projetos É | Gestão de Projetos NÃO É |
-|-----------------------------|--------------------------------|
-| Orquestrador de Backlog + Sprint | O próprio Backlog ou Sprint |
-| Define ciclo de vida | Persistência de arquivos (isso é Git) |
-| Rastreabilidade entre subsistemas | Estruturação de conhecimento (isso é Epistemologia) |
-| Processo para LLM + Humano | Metodologia ágil completa |
+|----------------------|--------------------------|
+| Orquestrador de Backlog + Sprint | Executor de trabalho |
+| Disciplinador de regras | Armazenador de estado |
+| Coordenador de promoção | O próprio Backlog ou Sprint |
+| Definidor de ciclo de vida | Persistência de arquivos (isso é Git) |
 | Agnóstico de domínio | Específico para software |
 
 ### 3.3 Tipos de Projeto (Lista Sugerida)
@@ -150,12 +168,57 @@
 | `Infra` | Fix, automação, tooling, scripts |
 | `Outro` | Catch-all para casos não listados |
 
-### 3.4 Componentes
+### 3.4 Estado Derivado (não persistido)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      ESTADO DERIVADO vs PERSISTIDO                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  GESTÃO DE PROJETOS não persiste estado próprio.                            │
+│  Deriva informação das fontes de verdade:                                   │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │ sprint_ativa                                                        │    │
+│  │ ────────────                                                        │    │
+│  │ DERIVADO DE: _sprints/*.md onde status == "Ativa"                   │    │
+│  │ SSOT: pasta _sprints/                                               │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │ historico_sprints                                                   │    │
+│  │ ─────────────────                                                   │    │
+│  │ DERIVADO DE: _sprints/*.md onde status == "Concluída"               │    │
+│  │ SSOT: pasta _sprints/                                               │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │ backlog_pendente                                                    │    │
+│  │ ────────────────                                                    │    │
+│  │ DERIVADO DE: _backlog/*.md onde status == "Pendente"                │    │
+│  │ SSOT: pasta _backlog/                                               │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  SSOT = Single Source of Truth                                              │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 3.5 Componentes
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                       GESTÃO DE PROJETOS                                    │
+│                        (Orquestrador)                                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Responsabilidades:                                                         │
+│  - Disciplinar regras (WIP limit, ciclo de vida)                            │
+│  - Coordenar promoção de Backlog → Sprint                                   │
+│  - Definir relação entre subsistemas                                        │
+│                                                                             │
+│  Documento: docs/00_I/00_I_2_Gestao_Projetos.md                             │
+│  Método principal: promover()                                               │
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │                         BACKLOG                                     │    │
@@ -163,10 +226,11 @@
 │  │                                                                     │    │
 │  │  Responsabilidade: Captura e organização                            │    │
 │  │  Documento: docs/00_I/00_I_2_1_Backlog.md                           │    │
+│  │  SSOT: _backlog/                                                    │    │
 │  │  Métodos: capturar(), priorizar(), arquivar_item()                  │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                    │                                        │
-│                                    │ promover()                             │
+│                                    │ promover() [coordenado pelo pai]       │
 │                                    ▼                                        │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │                         SPRINT                                      │    │
@@ -174,13 +238,14 @@
 │  │                                                                     │    │
 │  │  Responsabilidade: Execução estruturada                             │    │
 │  │  Documento: docs/00_I/00_I_2_2_Sprint.md                            │    │
-│  │  Métodos: iniciar(), executar(), publicar(), arquivar_sprint()      │    │
+│  │  SSOT: _sprints/                                                    │    │
+│  │  Métodos: iniciar(), executar(), publicar(), arquivar()             │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 3.5 Relações
+### 3.6 Relações
 
 | Componente | Relação | Descrição |
 |------------|---------|-----------|
@@ -200,60 +265,125 @@
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                    CLASSE: GESTAO_PROJETOS                                  │
+│                        (Orquestrador)                                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Atributos                                                                  │
-│  ──────────                                                                 │
-│  + backlog: Backlog              # referência ao subsistema                 │
-│  + sprint_ativa: Sprint?         # no máximo 1 (WIP limit)                  │
-│  + historico_sprints: [Sprint]   # sprints concluídas                       │
-│  + tipos_projeto: [String]       # lista sugerida de tipos                  │
+│  Atributos (DERIVADOS - não persistidos)                                    │
+│  ───────────────────────────────────────                                    │
+│  + sprint_ativa: Sprint?         # derivado de _sprints/ (status=Ativa)     │
+│  + historico_sprints: [Sprint]   # derivado de _sprints/ (status=Concluída) │
+│  + backlog_pendente: [Item]      # derivado de _backlog/ (status=Pendente)  │
+│  + tipos_projeto: [String]       # lista sugerida (constante)               │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Métodos                                                                    │
 │  ────────                                                                   │
 │  + promover(item: BacklogItem, codigo: String, tipo: String?): Sprint       │
-│  + consultar_ciclo(): Diagrama                                              │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Restrições                                                                 │
-│  ──────────                                                                 │
+│  Regras Disciplinadas                                                       │
+│  ────────────────────                                                       │
 │  - WIP-SPRINT: Máximo 1 sprint ativa por vez                                │
 │  - PROMOVER-CONSCIENTE: Promoção requer decisão explícita do usuário        │
+│  - CICLO-VIDA: Captura → Backlog → Sprint → Publicação                      │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### 4.2 Método: promover()
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        promover()                               │
-├─────────────────────────────────────────────────────────────────┤
-│  Input:                                                         │
-│  - item: BacklogItem                                            │
-│  - codigo: String (ex: "S008")                                  │
-│  - tipo_projeto: String? (opcional, da lista sugerida)          │
-│                                                                 │
-│  Output: Sprint criada                                          │
-│                                                                 │
-│  Pré-condição: sprint_ativa == null (WIP limit)                 │
-│                                                                 │
-│  Passos:                                                        │
-│  1. Verificar WIP limit (nenhuma sprint ativa)                  │
-│  2. Backlog.atualizar_item(item, promovido_em: codigo,          │
-│                            data_promocao: hoje)                 │
-│  3. Sprint.iniciar(codigo, backlog_origem: item,                │
-│                    tipo_projeto: tipo)                          │
-│  4. self.sprint_ativa = nova_sprint                             │
-│  5. Commit: [C2] promote: [item] → [sprint]                     │
-│                                                                 │
-│  IMPORTANTE: Este método ORQUESTRA os dois subsistemas.         │
-│  A lógica específica está em Backlog e Sprint.                  │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                            promover()                                       │
+│                  (único método do orquestrador)                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Input:                                                                     │
+│  - item: BacklogItem                                                        │
+│  - codigo: String (ex: "S008")                                              │
+│  - tipo_projeto: String? (opcional, da lista sugerida)                      │
+│  - data_prevista: Date? (opcional, deadline)                                │
+│                                                                             │
+│  Output: Sprint criada                                                      │
+│                                                                             │
+│  Pré-condição: sprint_ativa == null (WIP limit)                             │
+│                                                                             │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │ ORQUESTRAÇÃO: Este método COORDENA os dois subsistemas                │  │
+│  │               Não executa o trabalho, delega para cada um             │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+│  Passos:                                                                    │
+│  ────────                                                                   │
+│  1. VERIFICAR WIP LIMIT                                                     │
+│     Derivar sprint_ativa de _sprints/                                       │
+│     Se existe → ERRO: "Conclua sprint ativa antes de promover"              │
+│                                                                             │
+│  2. DELEGAR PARA BACKLOG                                                    │
+│     Backlog.atualizar_item(item,                                            │
+│       promovido_em: codigo,                                                 │
+│       data_promocao: hoje                                                   │
+│     )                                                                       │
+│                                                                             │
+│  3. DELEGAR PARA SPRINT                                                     │
+│     Sprint.iniciar(                                                         │
+│       codigo: codigo,                                                       │
+│       backlog_origem: item.path,                                            │
+│       objetivo: item.titulo,                                                │
+│       tipo_projeto: tipo,                                                   │
+│       data_prevista: data_prevista                                          │
+│     )                                                                       │
+│                                                                             │
+│  4. COMMIT                                                                  │
+│     [C2] promote: [item.titulo] → [codigo]                                  │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.3 Ciclo de Vida Completo
+### 4.3 Regras Disciplinadas
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      REGRAS DISCIPLINADAS                                   │
+│            (Gestão de Projetos define, filhos obedecem)                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │ REGRA: WIP-SPRINT                                                     │  │
+│  ├───────────────────────────────────────────────────────────────────────┤  │
+│  │ Definição: Máximo 1 sprint ativa por vez                              │  │
+│  │ Quem verifica: Gestão de Projetos (em promover())                     │  │
+│  │ Consequência: Foco garantido, sem dispersão                           │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │ REGRA: PROMOVER-CONSCIENTE                                            │  │
+│  ├───────────────────────────────────────────────────────────────────────┤  │
+│  │ Definição: Promoção requer decisão explícita do usuário               │  │
+│  │ Quem verifica: Gestão de Projetos                                     │  │
+│  │ Consequência: Controle humano sobre o que vira sprint                 │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │ REGRA: CICLO-VIDA                                                     │  │
+│  ├───────────────────────────────────────────────────────────────────────┤  │
+│  │ Definição: Captura → Backlog → Sprint → Publicação                    │  │
+│  │ Quem implementa: Backlog (captura), Sprint (execução/publicação)      │  │
+│  │ Consequência: Rastreabilidade completa de origem a destino            │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │ REGRA: ARQUIVAR-LIMPA                                                 │  │
+│  ├───────────────────────────────────────────────────────────────────────┤  │
+│  │ Definição: Arquivar sprint deixa workspace limpo                      │  │
+│  │ Quem implementa: Sprint.arquivar()                                    │  │
+│  │ Consequência: Entropia zero, pronto para próximo ciclo                │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.4 Ciclo de Vida Completo
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                         CICLO DE VIDA                                       │
+│                  (disciplinado por Gestão de Projetos)                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  CAPTURA              ORGANIZAÇÃO           EXECUÇÃO           PUBLICAÇÃO   │
@@ -266,16 +396,14 @@
 │  └──────────┘        └──────────┘        └──────────┘        └──────────┘   │
 │       │                   │                   │                    │        │
 │       ▼                   ▼                   ▼                    ▼        │
-│   Backlog            Backlog              Sprint              Catálogo      │
-│   .capturar()        (aguarda)            .executar()         .indexar()    │
-│   data_criacao       prioridade           .publicar()                       │
-│                                           .arquivar()                       │
+│   Backlog            Backlog           Gestão Proj.            Sprint       │
+│   .capturar()        (aguarda)         .promover()             .publicar()  │
 │                                                                             │
 │  ─────────────────────────────────────────────────────────────────────────  │
 │  RASTREABILIDADE:                                                           │
 │  BacklogItem.origem → onde surgiu                                           │
 │  BacklogItem.data_criacao → quando capturou                                 │
-│  BacklogItem.promovido_em → qual sprint                                     │
+│  BacklogItem.promovido_em → qual sprint (via promover())                    │
 │  BacklogItem.data_promocao → quando promoveu                                │
 │  BacklogItem.resolvido_em → onde concluiu                                   │
 │  BacklogItem.data_resolucao → quando resolveu                               │
@@ -287,19 +415,41 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.4 Artefatos
+### 4.5 Artefatos (SSOT)
 
-| Fase | Artefato | Local | Responsável |
-|------|----------|-------|-------------|
-| Captura | `[slug].md` | `_backlog/` | Backlog |
-| Promoção | `[codigo]_[nome].md` | `_sprints/` | Gestão (orquestra) |
-| Execução | `TXX_[nome].md` | `_drafts/[sprint]/` | Sprint |
-| Publicação | `XX_X_X_[Nome].md` | `docs/` | Sprint |
-| Arquivamento | Movimentações | Vários | Backlog + Sprint |
+| Entidade | SSOT | Descrição |
+|----------|------|-----------|
+| Backlog Items | `_backlog/` | Pasta é a fonte de verdade |
+| Sprints | `_sprints/` | Pasta é a fonte de verdade |
+| Drafts | `_drafts/[sprint]/` | Workspace temporário da sprint ativa |
+| Publicados | `docs/` | Destino final dos entregáveis |
 
-### 4.5 Referências aos Filhos
+### 4.6 Referências aos Filhos
 
 | Subsistema | Documento | Responsabilidade |
 |------------|-----------|------------------|
 | **Backlog** | `docs/00_I/00_I_2_1_Backlog.md` | Captura, organização, arquivamento de itens |
 | **Sprint** | `docs/00_I/00_I_2_2_Sprint.md` | Execução, tasks, publicação, arquivamento de sprint |
+
+### 4.7 Extensibilidade Futura
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      EXTENSIBILIDADE (YAGNI)                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Porta aberta para futuro, não implementado agora:                          │
+│                                                                             │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │ ÉPICO (quando precisar)                                               │  │
+│  ├───────────────────────────────────────────────────────────────────────┤  │
+│  │ Quando: Múltiplos BacklogItems pertencerem a um mesmo "guarda-chuva"  │  │
+│  │ Como: BacklogItem.epico_ref: String? (opcional)                       │  │
+│  │ Estrutura futura:                                                     │  │
+│  │   Gestão Projetos → Épico → BacklogItem → Sprint                      │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+│  Por enquanto: BacklogItem = unidade atômica de trabalho                    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
