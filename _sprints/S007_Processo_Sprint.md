@@ -78,21 +78,24 @@ GitHub: owner=leonardokasat-cientistavenda, repo=conhecimento-zaz, branch=main
 
 ## FALLBACK TEMPORÁRIO
 
-Até que Catálogo suporte multi-tipo (S008):
-- `listar_backlog()` → lê `_backlog/` diretamente
-- `listar_sprints()` → lê `_sprints/` diretamente
+~~Até que Catálogo suporte multi-tipo (S008):~~
+~~- `listar_backlog()` → lê `_backlog/` diretamente~~
+~~- `listar_sprints()` → lê `_sprints/` diretamente~~
 
-Após S008:
+✅ **Resolvido em S008** (2025-12-08):
 - `listar_backlog()` → `Catalogo.pesquisar(tipo: "backlog")`
 - `listar_sprints()` → `Catalogo.pesquisar(tipo: "sprint")`
+- Índice atualizado: `_catalogo/indice.yaml` v2.0
 
 ---
 
 ## PRÓXIMOS PASSOS
 
-1. **S008:** Promover item `catalogo_multi_tipo.md`
-2. Implementar Catálogo com suporte a múltiplos tipos
-3. Migrar Gestão de Projetos para usar Catálogo
+~~1. **S008:** Promover item `catalogo_multi_tipo.md`~~ ✅
+~~2. Implementar Catálogo com suporte a múltiplos tipos~~ ✅
+~~3. Migrar Gestão de Projetos para usar Catálogo~~ ✅
+
+**Concluído em S008** (2025-12-08)
 
 ---
 
@@ -105,3 +108,4 @@ Após S008:
 | 1.2 | 2025-12-07 | Corrigido. Conteúdo via patch, não arquivos separados. |
 | 2.0 | 2025-12-08 | **Refatorado:** Renomeado para "Gestão de Projetos". Arquitetura pai-filho. Sistema de datas. |
 | 2.1 | 2025-12-08 | **Concluída:** 3 documentos publicados. GENESIS v1.5. Backlog para S008 criado. |
+| 2.2 | 2025-12-08 | **Fallback removido:** S008 implementou Catálogo multi-tipo. |
