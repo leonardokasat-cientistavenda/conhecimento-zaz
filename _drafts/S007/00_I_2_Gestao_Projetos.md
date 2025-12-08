@@ -1,4 +1,4 @@
-# Gestão de Projetos v0.4
+# Gestão de Projetos v0.5
 
 ## 1. Problema (M0)
 
@@ -36,12 +36,17 @@
 │  │                      ORQUESTRADOR                                   │    │
 │  │  - Disciplina regras (WIP limit, ciclo de vida)                     │    │
 │  │  - Define relação entre subsistemas                                 │    │
-│  │  - Coordena via promover()                                          │    │
+│  │  - Usa Catálogo para busca semântica                                │    │
 │  │                                                                     │    │
 │  │   ┌──────────┐   promover()   ┌──────────┐   publicar()  ┌──────┐  │    │
 │  │   │ BACKLOG  │ ─────────────► │  SPRINT  │ ────────────► │ docs │  │    │
 │  │   └──────────┘                └──────────┘               └──────┘  │    │
-│  │                                                                     │    │
+│  │         │                           │                               │    │
+│  │         └───────────┬───────────────┘                               │    │
+│  │                     ▼                                               │    │
+│  │              ┌────────────┐                                         │    │
+│  │              │  CATÁLOGO  │  (busca semântica)                      │    │
+│  │              └────────────┘                                         │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -54,7 +59,9 @@
 > - **Backlog** - Captura e organiza itens
 > - **Sprint** - Executa trabalho de forma estruturada
 >
-> **Papel:** Define regras, coordena promoção, não executa trabalho diretamente.
+> **Usa Catálogo** como módulo de busca semântica para listar e pesquisar itens.
+>
+> **Papel:** Define regras, coordena promoção, delega busca para Catálogo.
 
 ---
 
@@ -69,6 +76,7 @@
 | **Timeboxing** | Scrum | Sprint tem escopo fechado |
 | **WIP Limit** | Kanban | Uma Sprint ativa por vez |
 | **Orquestração** | SOA | Coordenador que não executa |
+| **Reuso** | DRY | Catálogo como módulo compartilhado |
 
 ### 2.2 Síntese
 
@@ -80,9 +88,6 @@
 │                    ┌───────────────────────┐                                │
 │                    │   GESTÃO DE PROJETOS  │                                │
 │                    │    (Orquestrador)     │                                │
-│                    │                       │                                │
-│                    │  - Disciplina regras  │                                │
-│                    │  - Coordena promoção  │                                │
 │                    └───────────┬───────────┘                                │
 │                                │                                            │
 │              ┌─────────────────┼─────────────────┐                          │
@@ -92,8 +97,19 @@
 │     │   BACKLOG   │  promover()│        │   SPRINT    │                     │
 │     │   captura   │ ───────────┼──────► │   executa   │                     │
 │     │   organiza  │            │        │   publica   │                     │
-│     └─────────────┘            │        └─────────────┘                     │
-│                                │                                            │
+│     └──────┬──────┘            │        └──────┬──────┘                     │
+│            │                   │               │                            │
+│            │    ┌──────────────┴───────────────┘                            │
+│            │    │                                                           │
+│            ▼    ▼                                                           │
+│     ┌─────────────────────────────────────────────┐                         │
+│     │                 CATÁLOGO                    │                         │
+│     │          (Módulo de Busca Semântica)        │                         │
+│     │                                             │                         │
+│     │  tipo: docs | backlog | sprint              │                         │
+│     │  pesquisar(query, tipo?)                    │                         │
+│     └─────────────────────────────────────────────┘                         │
+│                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -107,14 +123,16 @@
 - **Disciplina** as regras do ciclo de vida
 - **Define** a relação entre Backlog e Sprint
 - **Coordena** via método `promover()`
+- **Usa Catálogo** para busca semântica
 
 ### 3.2 Fronteiras
 
 | É | NÃO É |
 |---|-------|
 | Orquestrador | Executor de trabalho |
-| Disciplinador de regras | Armazenador de estado |
+| Disciplinador de regras | Implementador de busca |
 | Coordenador de promoção | O próprio Backlog ou Sprint |
+| Consumidor de Catálogo | Dono do Catálogo |
 
 ### 3.3 Tipos de Projeto (Lista Sugerida)
 
@@ -130,12 +148,12 @@
 
 ### 3.4 SSOT (Single Source of Truth)
 
-| Entidade | SSOT |
-|----------|------|
-| Sprints | `_sprints/` |
-| Backlog | `_backlog/` |
-| Drafts | `_drafts/[sprint]/` |
-| Publicados | `docs/` |
+| Entidade | SSOT | Indexado em |
+|----------|------|-------------|
+| Backlog | `_backlog/` | Catálogo (tipo: backlog) |
+| Sprints | `_sprints/` | Catálogo (tipo: sprint) |
+| Drafts | `_drafts/[sprint]/` | - |
+| Publicados | `docs/` | Catálogo (tipo: docs) |
 
 ### 3.5 Relações
 
@@ -143,6 +161,7 @@
 |------------|---------|
 | **Backlog** | Filho - captura e organização |
 | **Sprint** | Filho - execução |
+| **Catálogo** | Usa - busca semântica |
 | **Git** | Usa - persistência |
 | **Epistemologia** | Aplica - M0-M4 quando aplicável |
 
@@ -160,16 +179,19 @@
 │  Atributos                                      │
 │  ──────────                                     │
 │  + tipos_projeto: [String]  # lista sugerida   │
+│  + catalogo: Catalogo       # dependência      │
 ├─────────────────────────────────────────────────┤
 │  Métodos                                        │
 │  ────────                                       │
+│  + listar_backlog(filtro?): [BacklogItem]       │
+│  + listar_sprints(filtro?): [Sprint]            │
 │  + promover(item, codigo, tipo?): Sprint        │
 ├─────────────────────────────────────────────────┤
 │  Regras Disciplinadas                           │
 │  ────────────────────                           │
 │  - WIP-SPRINT: Máx 1 sprint ativa               │
 │  - PROMOVER-CONSCIENTE: Decisão explícita       │
-│  - CICLO-VIDA: Captura→Backlog→Sprint→Pub      │
+│  - CICLO-VIDA: Captura→Backlog→Sprint→Pub       │
 │  - ARQUIVAR-LIMPA: Workspace limpo              │
 ├─────────────────────────────────────────────────┤
 │  SSOT                                           │
@@ -179,7 +201,49 @@
 └─────────────────────────────────────────────────┘
 ```
 
-### 4.2 Método: promover()
+### 4.2 Métodos
+
+#### listar_backlog(filtro?)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     listar_backlog()                            │
+├─────────────────────────────────────────────────────────────────┤
+│  Input:                                                         │
+│  - filtro: String? (query semântica opcional)                   │
+│                                                                 │
+│  Output: [BacklogItem]                                          │
+│                                                                 │
+│  Implementação:                                                 │
+│  → Catalogo.pesquisar(query: filtro, tipo: "backlog")           │
+│                                                                 │
+│  Exemplo:                                                       │
+│  - listar_backlog() → todos os itens pendentes                  │
+│  - listar_backlog("infra") → itens relacionados a infra         │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### listar_sprints(filtro?)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     listar_sprints()                            │
+├─────────────────────────────────────────────────────────────────┤
+│  Input:                                                         │
+│  - filtro: String? (query semântica opcional)                   │
+│                                                                 │
+│  Output: [Sprint]                                               │
+│                                                                 │
+│  Implementação:                                                 │
+│  → Catalogo.pesquisar(query: filtro, tipo: "sprint")            │
+│                                                                 │
+│  Exemplo:                                                       │
+│  - listar_sprints() → todas as sprints                          │
+│  - listar_sprints("documentação") → sprints de docs             │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### promover(item, codigo, tipo?, data_prevista?)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -196,7 +260,8 @@
 │  Pré-condição: Nenhuma sprint ativa (WIP limit)                 │
 │                                                                 │
 │  Passos:                                                        │
-│  1. Verificar WIP limit em _sprints/                            │
+│  1. Catalogo.pesquisar(tipo: "sprint", status: "Ativa")         │
+│     Se encontrar → ERRO: "Conclua sprint ativa"                 │
 │  2. Backlog.atualizar_item(promovido_em, data_promocao)         │
 │  3. Sprint.iniciar(codigo, backlog_origem, objetivo, tipo)      │
 │  4. Commit: [C2] promote: [item] → [codigo]                     │
@@ -207,7 +272,7 @@
 
 | Regra | Descrição | Quem Implementa |
 |-------|-----------|-----------------|
-| **WIP-SPRINT** | Máx 1 sprint ativa | promover() verifica |
+| **WIP-SPRINT** | Máx 1 sprint ativa | promover() verifica via Catálogo |
 | **PROMOVER-CONSCIENTE** | Decisão explícita do usuário | promover() exige |
 | **CICLO-VIDA** | Captura→Backlog→Sprint→Pub | Backlog + Sprint |
 | **ARQUIVAR-LIMPA** | Workspace limpo ao concluir | Sprint.arquivar() |
@@ -219,16 +284,30 @@
 │  Ideia   │──────► │ Backlog  │──────► │  Sprint  │──────► │  docs/   │
 │          │capturar│          │promover│          │publicar│          │
 └──────────┘        └──────────┘        └──────────┘        └──────────┘
+                          │                   │                   │
+                          └───────────────────┴───────────────────┘
+                                              │
+                                              ▼
+                                       ┌────────────┐
+                                       │  CATÁLOGO  │
+                                       │  (índice)  │
+                                       └────────────┘
 ```
 
-### 4.5 Referências aos Filhos
+### 4.5 Dependências
+
+| Módulo | Uso |
+|--------|-----|
+| **Catálogo** | Busca semântica de backlog e sprints |
+
+### 4.6 Referências aos Filhos
 
 | Subsistema | Documento |
 |------------|-----------|
 | **Backlog** | `docs/00_I/00_I_2_1_Backlog.md` |
 | **Sprint** | `docs/00_I/00_I_2_2_Sprint.md` |
 
-### 4.6 Extensibilidade Futura (YAGNI)
+### 4.7 Extensibilidade Futura (YAGNI)
 
 Porta aberta para **Épico** quando necessário:
 - `BacklogItem.epico_ref: String?` (opcional, não implementado)
