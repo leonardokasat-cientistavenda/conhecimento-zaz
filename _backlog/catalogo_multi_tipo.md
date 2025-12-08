@@ -3,9 +3,9 @@ titulo: "Catálogo: Suporte a múltiplos tipos (docs, backlog, sprint)"
 origem:
   - S007
 data_criacao: 2025-12-08
-status: Pendente
-promovido_em: null
-data_promocao: null
+status: Promovido
+promovido_em: S008
+data_promocao: 2025-12-08
 resolvido_em: null
 data_resolucao: null
 tipo: Feature
