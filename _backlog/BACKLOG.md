@@ -1,6 +1,6 @@
 ---
 nome: BACKLOG
-versao: "1.7"
+versao: "1.8"
 tipo: Sistema
 origem: interno
 status: Ativo
@@ -53,7 +53,6 @@ LLM deve:
 
 | # | Item | Prioridade | Dependências | Status |
 |---|------|------------|--------------|--------|
-| 8 | Capability Discovery | 🔴 Alta | - | ⬜ Aguardando |
 | 9 | Backlog com Plano de Execução | 🟡 Média | - | ⬜ Aguardando |
 | 2 | Módulo Autonomia | 🟡 Média | - | ⬜ Aguardando |
 | 4 | Tools Externas | 🟢 Baixa | Autonomia | ⬜ Aguardando |
@@ -65,7 +64,9 @@ LLM deve:
 
 ## Sprints Ativas
 
-*Nenhuma sprint ativa no momento.*
+| Sprint | Objetivo | Início |
+|--------|----------|--------|
+| S009 | Capability Discovery | 2025-12-08 |
 
 ---
 
@@ -227,35 +228,6 @@ LLM deve:
 
 ---
 
-## 8. Capability Discovery
-
-**Prioridade:** 🔴 Alta
-**Dependências:** -
-**Arquivo detalhado:** `_backlog/capability_discovery.md`
-
-### M0.1 Glossário
-
-| Significante | Significado |
-|--------------|-------------|
-| **Capability** | Algo que GENESIS sabe fazer (conhecer, decidir, gerenciar) |
-| **Discovery** | Usuário descobre capabilities disponíveis perguntando |
-| **Hierarquia** | Capabilities organizadas em pai → filho (DECIDIR → Raciocínio) |
-
-### M0.2 Problema
-
-| Sintoma | Causa | Necessidade |
-|---------|-------|-------------|
-| Usuário novo não sabe o que pedir | Capabilities não são explicáveis | GENESIS explicar o que sabe fazer |
-| Sistema subutilizado | Usuário não descobre funcionalidades | Discovery navegável |
-
-### M0.3 Origem
-
-- **Descoberto em:** S008 (discussão sobre Catálogo)
-- **Contexto:** Preparar GENESIS para múltiplos usuários
-- **Insight:** Quem não criou o sistema não sabe o que pedir
-
----
-
 ## 9. Backlog com Plano de Execução
 
 **Prioridade:** 🟡 Média
@@ -291,6 +263,7 @@ LLM deve:
 | `_backlog/Modulo_Autonomia.md` | ✅ Existe | Especificação do módulo |
 | `_backlog/Modulo_Raciocinio.md` | ⚠️ Depreciar | Já publicado em docs/ |
 | `_backlog/catalogo_multi_tipo.md` | ✅ Concluído | Sprint S008 |
+| `_backlog/capability_discovery.md` | 🔄 Promovido | Sprint S009 |
 
 ---
 
@@ -306,3 +279,4 @@ LLM deve:
 | 1.5 | 2025-12-08 | **S008 concluída.** Catálogo Multi-Tipo → Itens Concluídos. Nenhuma sprint ativa. |
 | 1.6 | 2025-12-08 | **Capability Discovery capturado.** Item #8 adicionado via Backlog.capturar(). |
 | 1.7 | 2025-12-08 | **Plano de Execução capturado.** Item #9 adicionado via Backlog.capturar(). |
+| 1.8 | 2025-12-08 | **Capability Discovery promovido** para S009. Item #8 removido do índice. Sprint ativa. |
