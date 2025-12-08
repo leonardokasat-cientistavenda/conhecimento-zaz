@@ -1,6 +1,6 @@
 ---
 nome: GENESIS
-versao: "1.9"
+versao: "2.0"
 tipo: Framework
 classe_ref: Framework
 origem: interno
@@ -12,7 +12,7 @@ depende_de:
   - 00_I_1_3_MongoDB
 ---
 
-# GENESIS v1.9
+# GENESIS v2.0
 
 ## 1. Problema (M0)
 
@@ -611,3 +611,4 @@ depende_de:
 | 1.7 | 2025-12-08 | Fix: Seções 4.5 e 4.6 separadas corretamente. Sprint S009. |
 | 1.8 | 2025-12-08 | persistir(): método que roteia GitHub vs MongoDB. Persistência Híbrida. Sprint S010/T05. |
 | 1.9 | 2025-12-08 | **persistir() SIMPLIFICADO**: GENESIS decide ONDE, delega COMO para GitHub/MongoDB. Sprint S011/T04. |
+| 2.0 | 2025-12-08 | **Teste editar()**: método por âncora validado. Sprint S011/T05. |
