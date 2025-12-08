@@ -1,6 +1,6 @@
 ---
 titulo: "Backlog"
-versao: "1.0"
+versao: "1.1"
 data_publicacao: "2025-12-08"
 camada: 2
 tipo: "Infraestrutura"
@@ -15,7 +15,7 @@ depende_de:
   - docs/00_E/00_E_1_4_Catalogo.md
 ---
 
-# Backlog v1.0
+# Backlog v1.1
 
 ## 1. Problema (M0)
 
@@ -29,6 +29,7 @@ depende_de:
 | **Enriquecimento** | Adição de contexto a item existente |
 | **Fork** | Desvio/descoberta durante conversa que merece trabalho futuro |
 | **Origem** | Sprint(s) onde um item foi identificado ou enriquecido |
+| **Merge** | Unificação de dois itens relacionados em um único |
 
 ### 1.2 Diagrama do Problema
 
@@ -109,6 +110,7 @@ depende_de:
 - **Enriquece** itens existentes com novos contextos
 - **Indexa** no Catálogo para busca semântica
 - **Fornece** itens para promoção a Sprint
+- **Unifica** itens relacionados via merge
 
 ### 3.2 Fronteiras
 
@@ -151,7 +153,7 @@ _backlog/
 │  + titulo: String                    # descrição curta                      │
 │  + origens: [Origem]                 # lista de contribuições               │
 │  + data_criacao: Date                # quando foi criado                    │
-│  + status: Enum                      # Pendente | Resolvido                 │
+│  + status: Enum                      # Pendente | Promovido | Resolvido | Merged │
 │  + promovido_em: Sprint?             # para qual sprint foi                 │
 │  + data_promocao: Date?              # quando foi promovido                 │
 │  + resolvido_em: Sprint?             # onde foi resolvido                   │
@@ -159,6 +161,8 @@ _backlog/
 │  + tipo: Enum                        # Minor | Feature | Bug                │
 │  + prioridade: Enum                  # 🔴 Alta | 🟡 Média | 🟢 Baixa        │
 │  + sistema_afetado: String           # qual componente                      │
+│  + merged_into: String?              # ID do item que absorveu este         │
+│  + merged_from: [String]?            # IDs dos itens absorvidos             │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Origem (sub-estrutura)                                                     │
 │  ──────────────────────                                                     │
@@ -226,6 +230,7 @@ sistema_afetado: Componente
 │  + capturar(descricao, tipo, sistema, prioridade): BacklogItem              │
 │  + atualizar_item(item, campos): BacklogItem                                │
 │  + arquivar_item(item): void                                                │
+│  + merge(item_principal, item_absorvido): BacklogItem                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Métodos Internos                                                           │
 │  ────────────────                                                           │
@@ -335,6 +340,56 @@ sistema_afetado: Componente
 └─────────────────────────────────────────────────────────────────┘
 ```
 
+#### merge() - Unificar Itens
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                          merge()                                │
+│                  (unificar itens relacionados)                  │
+├─────────────────────────────────────────────────────────────────┤
+│  Input:                                                         │
+│  - item_principal: BacklogItem    # item que absorve            │
+│  - item_absorvido: BacklogItem    # item que será merged        │
+│                                                                 │
+│  Output: BacklogItem (principal atualizado)                     │
+│                                                                 │
+│  Pré-condições:                                                 │
+│  - Ambos itens existem                                          │
+│  - item_absorvido.status == "Pendente"                          │
+│  - Confirmação do usuário                                       │
+│                                                                 │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │ FLUXO                                                     │  │
+│  ├───────────────────────────────────────────────────────────┤  │
+│  │                                                           │  │
+│  │  1. ATUALIZAR ITEM PRINCIPAL                              │  │
+│  │     - Expandir descrição (incorporar escopo do absorvido) │  │
+│  │     - Adicionar ao array merged_from: [item_absorvido.id] │  │
+│  │     - Mover dependências do absorvido → principal         │  │
+│  │     - Adicionar origem: "Merge de {id} em {data}"         │  │
+│  │                                                           │  │
+│  │  2. MARCAR ITEM ABSORVIDO                                 │  │
+│  │     - status: "Merged"                                    │  │
+│  │     - merged_into: item_principal.id                      │  │
+│  │     - updated_at: agora                                   │  │
+│  │                                                           │  │
+│  │  3. ATUALIZAR CATÁLOGO                                    │  │
+│  │     - Re-indexar item principal                           │  │
+│  │     - Atualizar status do absorvido no catálogo           │  │
+│  │                                                           │  │
+│  │  4. CONFIRMAR                                             │  │
+│  │     "Merged: {absorvido.titulo} → {principal.titulo}"     │  │
+│  │                                                           │  │
+│  └───────────────────────────────────────────────────────────┘  │
+│                                                                 │
+│  Exemplo de uso:                                                │
+│  "Merge: MCP Server → Tools Externas"                           │
+│  → Tools Externas absorve escopo do MCP Server                  │
+│  → MCP Server fica com status "Merged"                          │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 #### arquivar_item()
 
 ```
@@ -363,9 +418,19 @@ sistema_afetado: Componente
 | **DECISAO-HUMANA** | Usuário decide criar ou enriquecer |
 | **CONTEXTO-RASTREAVEL** | Todo enriquecimento tem origem e data |
 | **INDEXAR-CATALOGO** | Todo item é indexado no Catálogo |
+| **MERGE-CONFIRMADO** | Merge só executa com confirmação do usuário |
 
 ### 4.6 Dependências
 
 | Módulo | Uso |
 |--------|-----|
 | **Catálogo** | Busca semântica (similaridade) + indexação |
+
+---
+
+## Histórico
+
+| Versão | Data | Alteração |
+|--------|------|-----------|
+| 1.0 | 2025-12-08 | Criação com métodos capturar, criar, enriquecer, arquivar. |
+| 1.1 | 2025-12-08 | Adicionado método merge() para unificar itens relacionados. Novos campos: merged_into, merged_from. Novo status: Merged. |
