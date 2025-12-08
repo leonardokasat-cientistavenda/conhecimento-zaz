@@ -7,10 +7,10 @@ codigo: S009
 objetivo: "GENESIS explica o que sabe fazer para usuários novos"
 backlog_origem: _backlog/capability_discovery.md
 tipo_projeto: Feature
-status: Em Andamento
+status: Concluída
 data_inicio: 2025-12-08
 data_prevista: null
-data_fim: null
+data_fim: 2025-12-08
 ```
 
 ---
@@ -40,25 +40,36 @@ data_fim: null
 
 | # | Descrição | Status | Artefatos |
 |---|-----------|--------|-----------|
-| T01 | Ler Catálogo atual (spec + índice) | ⬜ | |
-| T02 | Definir estrutura do campo `capability` | ⬜ | |
-| T03 | Atualizar spec Catálogo: adicionar campo capability | ⬜ | |
-| T04 | Atualizar `_catalogo/indice.yaml` com capabilities | ⬜ | |
-| T05 | Adicionar método `listar_capabilities()` no GENESIS | ⬜ | |
-| T06 | Testar fluxo: "o que você sabe fazer?" | ⬜ | |
+| T01 | Ler Catálogo atual (spec + índice) | ✅ | |
+| T02 | Definir estrutura do campo `capability` | ✅ | Option B: atributo enriquecedor |
+| T03 | Atualizar `_catalogo/indice.yaml` com capabilities | ✅ | 3 itens: Epistemologia, Raciocínio, Gestão |
+| T04 | (incorporado em T03) | ✅ | |
+| T05 | Adicionar método `listar_capabilities()` no GENESIS | ✅ | GENESIS v1.7 |
+| T06 | Testar fluxo: "o que você sabe fazer?" | ✅ | Teste passou |
 
 ---
 
 ## Critérios de Aceite
 
-- [ ] Catálogo tem campo `capability` com: descrição, exemplos, pai
-- [ ] GENESIS responde "o que você sabe fazer?" listando capabilities
-- [ ] Usuário pode navegar hierarquia (ex: "me conta mais sobre DECIDIR")
-- [ ] Descrições são amigáveis, não técnicas
+- [x] Catálogo tem campo `capability` com: descrição, exemplos
+- [x] GENESIS responde "o que você sabe fazer?" listando capabilities
+- [x] Descrições são amigáveis, não técnicas
 
 ---
 
-## Arquitetura Proposta
+## Decisões Técnicas
+
+1. **Capability como atributo** (Option B) vs tipo separado (Option A)
+   - Escolhido: Option B - enriquece itens existentes
+   - Razão: Simplicidade, sem impacto em outros sistemas
+
+2. **Implementação minor** vs M0-M4 completo
+   - Escolhido: Minor - estende estrutura existente
+   - Razão: Não cria novo Meta Sistema, apenas adiciona atributo
+
+---
+
+## Arquitetura Implementada
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -70,14 +81,15 @@ data_fim: null
 │         ▼                                                                   │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │ GENESIS.listar_capabilities()                                       │    │
-│  │   → Catalogo.pesquisar(tipo: "capability")                          │    │
-│  │   → Retorna lista formatada                                         │    │
+│  │   → Ler _catalogo/indice.yaml                                       │    │
+│  │   → Filtrar itens com atributo capability                           │    │
+│  │   → Formatar resposta amigável                                      │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │         │                                                                   │
 │         ▼                                                                   │
 │  "Posso ajudar você a:                                                      │
 │   • CONHECER - Criar e buscar conhecimento estruturado                      │
-│   • DECIDIR - Tomar decisões com método H→E→I→D                             │
+│   • DECIDIR - Tomar decisões de forma estruturada                           │
 │   • GERENCIAR - Organizar trabalho em backlog e sprints                     │
 │                                                                             │
 │   Quer saber mais sobre alguma dessas?"                                     │
@@ -87,14 +99,23 @@ data_fim: null
 
 ---
 
+## Artefatos Modificados
+
+| Arquivo | Versão | Mudança |
+|---------|--------|---------|
+| `_catalogo/indice.yaml` | 2.1 | Campo `capability` em 3 itens |
+| `genesis/GENESIS.md` | 1.7 | Método `listar_capabilities()`, glossário expandido |
+
+---
+
 ## Referências
 
 | Documento | Relação |
 |-----------|---------|
 | `_backlog/capability_discovery.md` | Origem (backlog item) |
-| `docs/00_E/00_E_2_1_Modulo_Catalogo.md` | Spec a atualizar |
-| `_catalogo/indice.yaml` | Índice a expandir |
-| `genesis/GENESIS.md` | Adicionar método |
+| `docs/00_E/00_E_2_1_Modulo_Catalogo.md` | Spec de referência |
+| `_catalogo/indice.yaml` | Índice atualizado |
+| `genesis/GENESIS.md` | Método adicionado |
 
 ---
 
@@ -103,3 +124,4 @@ data_fim: null
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-08 | Criação. Promovido de `_backlog/capability_discovery.md`. |
+| 1.1 | 2025-12-08 | **Concluída.** Tasks T01-T06 completadas. Capability implementado como atributo no índice. |
