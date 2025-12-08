@@ -1,6 +1,6 @@
 ---
 titulo: "MongoDB - Persistência Transacional"
-versao: "1.0"
+versao: "1.1"
 data_publicacao: "2025-12-08"
 camada: 2
 tipo: "Infraestrutura"
@@ -13,7 +13,7 @@ tags:
 depende_de: []
 ---
 
-# MongoDB - Persistência Transacional v1.0
+# MongoDB - Persistência Transacional v1.1
 
 ## 1. Contexto
 
@@ -139,11 +139,15 @@ Armazena itens de trabalho com histórico completo.
   sistema_afetado: String, // "Infraestrutura"
   
   // Ciclo de Vida
-  status: String,       // "Pendente" | "Promovido" | "Resolvido"
+  status: String,       // "Pendente" | "Promovido" | "Resolvido" | "Merged"
   promovido_em: String, // "S010" (código da sprint)
   data_promocao: Date,
   resolvido_em: String, // "S010"
   data_resolucao: Date,
+  
+  // Merge (quando status = "Merged")
+  merged_into: String,  // ID do item que absorveu este (ex: "bl_tools_externas")
+  merged_from: [String], // IDs dos itens absorvidos por este (ex: ["bl_mcp_server"])
   
   // Rastreabilidade
   origens: [{
@@ -157,6 +161,9 @@ Armazena itens de trabalho com histórico completo.
   
   // Referência ao arquivo detalhado (se existir)
   arquivo_detalhado: String, // "_backlog/Persistencia_Hibrida.md"
+  
+  // Dependências
+  depende_de: [String], // ["bl_outro_item"]
   
   // Controle
   created_at: Date,
@@ -305,6 +312,37 @@ db.backlog_items.updateOne(
     }
   }
 )
+
+// Merge de itens (item absorvido)
+db.backlog_items.updateOne(
+  { id: "bl_mcp_server" },
+  { 
+    $set: { 
+      status: "Merged",
+      merged_into: "bl_tools_externas",
+      updated_at: new Date()
+    }
+  }
+)
+
+// Merge de itens (item principal)
+db.backlog_items.updateOne(
+  { id: "bl_tools_externas" },
+  { 
+    $set: { 
+      descricao: "Integrar sistemas externos via MCP Server próprio...",
+      updated_at: new Date()
+    },
+    $push: { 
+      merged_from: "bl_mcp_server",
+      origens: {
+        sprint: "S010",
+        data: new Date(),
+        contexto: "Merge: MCP Server incorporado"
+      }
+    }
+  }
+)
 ```
 
 ### 4.3 Sprints
@@ -353,6 +391,7 @@ Durante a migração, manter ambas as fontes sincronizadas:
 | `_backlog/Persistencia_Hibrida.md` | Contexto e motivação |
 | `docs/00_E/00_E_2_1_Modulo_Catalogo.md` | Spec do Catálogo |
 | `docs/00_I/00_I_2_Gestao_Projetos.md` | Gestão de Projetos |
+| `docs/00_I/00_I_2_1_Backlog.md` | Métodos do Backlog |
 
 ---
 
@@ -361,3 +400,4 @@ Durante a migração, manter ambas as fontes sincronizadas:
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-08 | Criação com schemas das 4 collections. Sprint S010/T02. |
+| 1.1 | 2025-12-08 | Adicionados campos merged_into, merged_from e status "Merged" no schema backlog_items. Exemplo de operação merge. |
