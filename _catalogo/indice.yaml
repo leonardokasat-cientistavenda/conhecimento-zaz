@@ -1,8 +1,8 @@
-# Catálogo GENESIS v2.2
+# Catálogo GENESIS v2.3
 # Índice semântico para busca e roteamento
 # Organizado por tipo: docs, backlog, sprint
 
-versao: "2.2"
+versao: "2.3"
 atualizado: "2025-12-08"
 
 # =============================================================================
@@ -126,6 +126,21 @@ docs:
 # BACKLOG - Itens de trabalho pendente
 # =============================================================================
 backlog:
+  - id: "bl_persistencia_hibrida"
+    nome: "Arquitetura de Persistência Híbrida"
+    chave: "persistência híbrida MongoDB banco dados transacional GitHub lento patch problema"
+    arquivo: "_backlog/Persistencia_Hibrida.md"
+    triggers:
+      - "persistência híbrida"
+      - "MongoDB"
+      - "banco de dados"
+      - "GitHub lento"
+      - "problema de patch"
+    metadata:
+      prioridade: alta
+      status: Pendente
+      origem: S009
+
   - id: "bl_autonomia"
     nome: "Módulo Autonomia"
     chave: "autonomia LLM modos guiado assistido autônomo loop humano confiança"
