@@ -1,6 +1,6 @@
 ---
 nome: GENESIS
-versao: "1.7"
+versao: "1.8"
 tipo: Framework
 classe_ref: Framework
 origem: interno
@@ -8,9 +8,11 @@ status: Publicado
 camada: C1
 depende_de:
   - 00_E_2_1_Modulo_Catalogo
+  - 00_I_1_1_GitHub
+  - 00_I_1_3_MongoDB
 ---
 
-# GENESIS v1.7
+# GENESIS v1.8
 
 ## 1. Problema (M0)
 
@@ -18,7 +20,7 @@ depende_de:
 
 | Significante | Significado no Contexto |
 |--------------|-------------------------|
-| **GENESIS** | Inteligência Orquestradora que entende, busca e roteia |
+| **GENESIS** | Inteligência Orquestradora que entende, busca, roteia e persiste |
 | **Inteligência Híbrida** | Amplificação cognitiva via Humano + LLM + Sistema |
 | **Entropia Contextual** | Perda de precisão em conversas longas; informação degrada |
 | **Bootstrap Circular** | Dependência mútua entre componentes na inicialização |
@@ -32,6 +34,7 @@ depende_de:
 | **Módulo Autonomia** | Módulo opcional que controla nível de autonomia do loop |
 | **Capability** | Algo que GENESIS sabe fazer (CONHECER, DECIDIR, GERENCIAR) |
 | **Discovery** | Usuário descobre capabilities perguntando "o que você sabe fazer?" |
+| **Persistência Híbrida** | GitHub para definições, MongoDB para transações |
 
 ### 1.2 Diagrama do Problema
 
@@ -126,6 +129,7 @@ depende_de:
 - **Entende** input do usuário e classifica: CONHECER, DECIDIR ou GERENCIAR
 - **Busca** no Catálogo conhecimento, decisão ou projeto existente
 - **Roteia** para existente ou **Cria** novo via sistema apropriado
+- **Persiste** dados no destino correto: GitHub (definições) ou MongoDB (transações)
 - **Resolve** Bootstrap Circular via STUB
 - **Reduz** Entropia Contextual via arquivos atômicos + índice
 
@@ -138,6 +142,7 @@ depende_de:
 | Usa Catálogo como memória | O próprio Catálogo |
 | Roteia ou delega criação | Implementação de M0-M4 (isso é Epistemologia) |
 | Propósito (PORQUÊ) | Método (isso é Epistemologia) |
+| Decide onde persistir | Os sistemas de persistência em si |
 
 ### 3.3 Hierarquia de Responsabilidades
 
@@ -150,6 +155,7 @@ depende_de:
 │  │  • Entende: CONHECER, DECIDIR ou GERENCIAR                               │
 │  │  • Busca: Catálogo                                                       │
 │  │  • Roteia: existente ou cria novo                                        │
+│  │  • Persiste: GitHub (definições) ou MongoDB (transações)                 │
 │  │                                                                          │
 │  ├──► CATÁLOGO (Camada 3) ─── MEMÓRIA                                       │
 │  │    • indexar(item, chave, metadata)                                      │
@@ -164,10 +170,14 @@ depende_de:
 │  │    • Ciclo H→E→I→D                                                       │
 │  │    • Indexa decisões no Catálogo                                         │
 │  │                                                                          │
-│  └──► GESTÃO DE PROJETOS (Camada 2) ─── TRABALHO (GERENCIAR)                │
-│       • Backlog: captura, enriquece itens de trabalho                       │
-│       • Sprint: ciclos de execução focada                                   │
-│       • Orquestra promoção backlog → sprint                                 │
+│  ├──► GESTÃO DE PROJETOS (Camada 2) ─── TRABALHO (GERENCIAR)                │
+│  │    • Backlog: captura, enriquece itens de trabalho                       │
+│  │    • Sprint: ciclos de execução focada                                   │
+│  │    • Orquestra promoção backlog → sprint                                 │
+│  │                                                                          │
+│  └──► PERSISTÊNCIA (Camada 2) ─── INFRAESTRUTURA                            │
+│       • GitHub: definições, versionamento (docs, prompts)                   │
+│       • MongoDB: transações, índices (catálogo, backlog, sprints)           │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -193,9 +203,16 @@ depende_de:
 │  + entender(input) → {tipo: CONHECER|DECIDIR|GERENCIAR, contexto}           │
 │  + buscar(tipo, contexto) → {existe: bool, item?, score?}                   │
 │  + rotear(resultado_busca) → execução                                       │
+│  + persistir(dado, tipo_dado) → {destino: GITHUB|MONGODB, resultado}        │
+│  + listar_capabilities() → [Capability]                                     │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Dependências                                                               │
-│  ────────────                                                               │
+│  Dependências (Infraestrutura C2)                                           │
+│  ────────────────────────────────                                           │
+│  - GitHub: persistência de definições (docs/00_I/00_I_1_1_GitHub.md)        │
+│  - MongoDB: persistência transacional (docs/00_I/00_I_1_3_MongoDB.md)       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Dependências (Framework C3)                                                │
+│  ───────────────────────────                                                │
 │  - Catálogo: memória estruturada                                            │
 │  - Epistemologia: criar conhecimento (M0-M4)                                │
 │  - Raciocínio: tomar decisão (H→E→I→D)                                      │
@@ -228,6 +245,18 @@ depende_de:
 │         ▼                       ▼                       ▼                   │
 │    Epistemologia           Raciocínio            Gestão Projetos            │
 │    (M0-M4)                 (H→E→I→D)             (Backlog/Sprint)           │
+│         │                       │                       │                   │
+│         └───────────────────────┼───────────────────────┘                   │
+│                                 ▼                                           │
+│                          ┌────────────┐                                     │
+│                          │ PERSISTIR  │                                     │
+│                          └──────┬─────┘                                     │
+│                    ┌────────────┴────────────┐                              │
+│                    ▼                         ▼                              │
+│              ┌──────────┐              ┌──────────┐                         │
+│              │  GitHub  │              │ MongoDB  │                         │
+│              │(definição)│              │(transação)│                         │
+│              └──────────┘              └──────────┘                         │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -302,6 +331,8 @@ depende_de:
 │     → Roteia diretamente para Gestão de Projetos                            │
 │     → Não busca (ação, não conhecimento)                                    │
 │                                                                             │
+│  FONTE DE DADOS: MongoDB (collection: catalogo)                             │
+│                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -318,36 +349,137 @@ depende_de:
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  CONHECER + EXISTE                                                  │    │
 │  │  → Roteia para Meta Sistema existente                               │    │
-│  │  → Carrega arquivo_raiz do Meta Sistema                             │    │
+│  │  → Carrega arquivo_raiz do Meta Sistema (GitHub)                    │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  CONHECER + NÃO EXISTE                                              │    │
 │  │  → Confirma com usuário: "Criar novo Meta Sistema?"                 │    │
 │  │  → SE sim: Epistemologia.ciclo_m0_m4(contexto)                      │    │
-│  │  → Indexa novo Meta Sistema no Catálogo                             │    │
+│  │  → Indexa novo Meta Sistema no Catálogo (MongoDB)                   │    │
+│  │  → Persiste definição (GitHub)                                      │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  DECIDIR + EXISTE                                                   │    │
 │  │  → Apresenta decisão existente ao usuário                           │    │
 │  │  → Pergunta: "Aplicar esta decisão?"                                │    │
-│  │  → SE sim: atualiza metadata (uso_count++)                          │    │
+│  │  → SE sim: atualiza metadata (uso_count++) no MongoDB               │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  DECIDIR + NÃO EXISTE                                               │    │
 │  │  → Raciocinio.ciclo_heid(contexto)                                  │    │
-│  │  → Indexa nova decisão no Catálogo                                  │    │
+│  │  → Indexa nova decisão no Catálogo (MongoDB)                        │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  GERENCIAR                                                          │    │
 │  │  → Carrega docs/00_I/00_I_2_Gestao_Projetos.md                      │    │
 │  │  → Roteia para método apropriado:                                   │    │
-│  │    • "listar backlog" → listar_backlog()                            │    │
-│  │    • "iniciar sprint" → promover() + Sprint.iniciar()               │    │
-│  │    • "capturar item" → Backlog.capturar()                           │    │
+│  │    • "listar backlog" → listar_backlog() (MongoDB)                  │    │
+│  │    • "iniciar sprint" → promover() + Sprint.iniciar() (MongoDB)     │    │
+│  │    • "capturar item" → Backlog.capturar() (MongoDB)                 │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### persistir(dado, tipo_dado)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        persistir(dado, tipo_dado)                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Input:                                                                     │
+│  - dado: conteúdo a persistir                                               │
+│  - tipo_dado: classificação do dado                                         │
+│                                                                             │
+│  Output: {destino: GITHUB|MONGODB, resultado: sucesso/erro}                 │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                    REGRA DE ROTEAMENTO                              │    │
+│  ├─────────────────────────────────────────────────────────────────────┤    │
+│  │                                                                     │    │
+│  │  GITHUB (definições, versionamento)                                 │    │
+│  │  ├── Framework: GENESIS, Epistemologia, Módulos                     │    │
+│  │  ├── Meta Sistemas: docs Markdown estruturados                      │    │
+│  │  ├── Prompts: instruções para LLM                                   │    │
+│  │  └── Infraestrutura docs: referência técnica                        │    │
+│  │                                                                     │    │
+│  │  MONGODB (transações, queries rápidas)                              │    │
+│  │  ├── Catálogo: índice semântico (collection: catalogo)              │    │
+│  │  ├── Backlog: itens de trabalho (collection: backlog_items)         │    │
+│  │  ├── Sprints: ciclos de execução (collection: sprints)              │    │
+│  │  └── Decisões: histórico H-E-I-D (collection: decisoes)             │    │
+│  │                                                                     │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                    TABELA DE DECISÃO                                │    │
+│  ├─────────────────────────────────────────────────────────────────────┤    │
+│  │                                                                     │    │
+│  │  Tipo de Dado              │ Destino  │ Operação                    │    │
+│  │  ─────────────────────────────────────────────────────────────────  │    │
+│  │  Definição de Meta Sistema │ GitHub   │ create_or_update_file       │    │
+│  │  Índice no Catálogo        │ MongoDB  │ insert/update em catalogo   │    │
+│  │  Item de Backlog           │ MongoDB  │ insert em backlog_items     │    │
+│  │  Status de Sprint          │ MongoDB  │ update em sprints           │    │
+│  │  Nova Decisão              │ MongoDB  │ insert em decisoes          │    │
+│  │  Atualização de uso        │ MongoDB  │ update (uso_count++)        │    │
+│  │  Prompt/Instrução          │ GitHub   │ create_or_update_file       │    │
+│  │  Doc de Infraestrutura     │ GitHub   │ create_or_update_file       │    │
+│  │                                                                     │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  EXECUÇÃO:                                                                  │
+│                                                                             │
+│  SE destino == GITHUB:                                                      │
+│     → github:create_or_update_file(path, content, message)                  │
+│     → Ref: docs/00_I/00_I_1_1_GitHub.md                                     │
+│                                                                             │
+│  SE destino == MONGODB:                                                     │
+│     → mongodb:insert-many ou mongodb:update-many                            │
+│     → Database: genesis_db                                                  │
+│     → Ref: docs/00_I/00_I_1_3_MongoDB.md                                    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### listar_capabilities()
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        listar_capabilities()                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Input: nenhum                                                              │
+│  Output: [Capability]                                                       │
+│                                                                             │
+│  Comportamento:                                                             │
+│  1. Buscar no MongoDB: catalogo.find({capability: {$exists: true}})         │
+│  2. Para cada item com capability, extrair:                                 │
+│     - nome_amigavel                                                         │
+│     - descricao                                                             │
+│     - exemplos                                                              │
+│  3. Retornar lista formatada para usuário                                   │
+│                                                                             │
+│  Exemplo de resposta:                                                       │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  Posso ajudá-lo com:                                                │    │
+│  │                                                                     │    │
+│  │  📚 CONHECER - Criar e buscar conhecimento estruturado              │    │
+│  │     "Como estruturar um processo de vendas?"                        │    │
+│  │     "Documente nossa metodologia"                                   │    │
+│  │                                                                     │    │
+│  │  🎯 DECIDIR - Tomar decisões de forma estruturada                   │    │
+│  │     "Devo contratar mais ou investir em marketing?"                 │    │
+│  │     "Qual tecnologia escolher?"                                     │    │
+│  │                                                                     │    │
+│  │  📋 GERENCIAR - Organizar trabalho em backlog e sprints             │    │
+│  │     "O que temos no backlog?"                                       │    │
+│  │     "Iniciar nova sprint"                                           │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -358,46 +490,48 @@ depende_de:
 | Método | Entrada | Saída | Responsabilidade |
 |--------|---------|-------|------------------|
 | `entender()` | input_usuario | {tipo, contexto} | Classificar CONHECER vs DECIDIR vs GERENCIAR |
-| `buscar()` | tipo, contexto | {existe, item?, score?} | Consultar Catálogo |
+| `buscar()` | tipo, contexto | {existe, item?, score?} | Consultar Catálogo (MongoDB) |
 | `rotear()` | resultado_busca | execução | Reutilizar existente ou criar novo |
+| `persistir()` | dado, tipo_dado | {destino, resultado} | Rotear para GitHub ou MongoDB |
 | `listar_capabilities()` | - | [Capability] | Explicar o que GENESIS sabe fazer |
 
-### 4.5 Método: listar_capabilities()
+### 4.5 Como Buscar no Catálogo
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    COMO BUSCAR NO CATÁLOGO (MongoDB)                        │
+├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  PASSO 1: Ler índice                                                        │
-│  ─────────────────────                                                      │
-│  github:get_file_contents(path="_catalogo/indice.yaml")                     │
+│  PASSO 1: Query no MongoDB                                                  │
+│  ─────────────────────────────                                              │
+│  mongodb:find(                                                              │
+│    database="genesis_db",                                                   │
+│    collection="catalogo",                                                   │
+│    filter={...}                                                             │
+│  )                                                                          │
 │                                                                             │
-│  PASSO 2: Para cada item, comparar input com:                               │
-│  ──────────────────────────────────────────────                             │
-│  - chave: palavras-chave semânticas                                         │
-│  - triggers: frases que ativam o item                                       │
+│  PASSO 2: Filtros úteis                                                     │
+│  ─────────────────────────                                                  │
+│  - Por tipo: {tipo: "docs"} ou {tipo: "backlog"} ou {tipo: "sprint"}        │
+│  - Por status: {"metadata.status": "Publicado"}                             │
+│  - Sprint ativa: {tipo: "sprint", "metadata.status": "Ativa"}               │
+│  - Backlog pendente: {tipo: "backlog", "metadata.status": "Pendente"}       │
 │                                                                             │
-│  PASSO 3: Selecionar item com maior relevância                              │
-│  ─────────────────────────────────────────────                              │
-│  - Match exato em trigger → alta relevância                                 │
-│  - Match parcial em chave → média relevância                                │
-│  - Sem match → criar novo                                                   │
+│  PASSO 3: Carregar arquivo do item (se necessário)                          │
+│  ─────────────────────────────────────────────────                          │
+│  SE item.arquivo começa com "docs/" ou "genesis/":                          │
+│     → github:get_file_contents(path=item.arquivo)                           │
 │                                                                             │
-│  PASSO 4: Carregar arquivo do item selecionado                              │
-│  ─────────────────────────────────────────────                              │
-│  github:get_file_contents(path=item.arquivo)                                │
+│  EXEMPLO:                                                                   │
+│  ─────────                                                                  │
+│  Input: "como estruturar conhecimento novo"                                 │
+│                                                                             │
+│  1. mongodb:find(collection="catalogo", filter={tipo: "docs"})              │
+│  2. Comparar input com campo "chave" e "triggers" de cada item              │
+│  3. Seleciona: ms_epistemologia (match em triggers)                         │
+│  4. github:get_file_contents(path="docs/00_E/00_E_Epistemologia.md")        │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
-
-EXEMPLO DE BUSCA:
-─────────────────
-Input: "como estruturar conhecimento novo"
-
-1. Ler _catalogo/indice.yaml
-2. Comparar com cada item:
-   - ms_epistemologia:
-     - trigger "como estruturar conhecimento" → MATCH
-     - chave "criar meta sistemas estruturados" → MATCH parcial
-   - ms_raciocinio:
-     - sem match
-3. Seleciona: ms_epistemologia (maior relevância)
-4. Carrega: docs/00_E/00_E_Epistemologia.md
 ```
 
 ---
@@ -422,6 +556,12 @@ Input: "como estruturar conhecimento novo"
 │                                                                             │
 │  GENESIS = inteligência orquestradora + memória estruturada (Catálogo)      │
 │                                                                             │
+│  PERSISTÊNCIA HÍBRIDA:                                                      │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  GitHub: definições lentas, versionadas, legíveis                   │    │
+│  │  MongoDB: transações rápidas, queries, índices                      │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -433,9 +573,9 @@ Input: "como estruturar conhecimento novo"
 
 | Documento | Relação |
 |-----------|---------|
-| _catalogo/indice.yaml | Índice de busca (implementação) |
-| genesis/GENESIS_Arquitetura.md | Visão técnica detalhada (contextos, tools, posicionamento) |
-| docs/00_I_1_2_Protocolo_LLM.md | Como LLM acessa GENESIS |
+| docs/00_I/00_I_1_1_GitHub.md | Persistência de definições |
+| docs/00_I/00_I_1_3_MongoDB.md | Persistência transacional |
+| docs/00_I/00_I_1_2_Protocolo_LLM.md | Como LLM acessa GENESIS |
 | docs/00_E/00_E_Epistemologia.md | Cria conhecimento (CONHECER) |
 | docs/00_E/00_E_2_2_Modulo_Raciocinio.md | Toma decisão (DECIDIR) |
 | docs/00_E/00_E_2_1_Modulo_Catalogo.md | Memória estruturada (especificação) |
@@ -443,6 +583,7 @@ Input: "como estruturar conhecimento novo"
 | docs/00_I/00_I_2_Gestao_Projetos.md | Organiza trabalho (GERENCIAR) |
 | docs/00_I/00_I_2_1_Backlog.md | Captura e enriquece itens de trabalho |
 | docs/00_I/00_I_2_2_Sprint.md | Ciclos de execução focada |
+| genesis/GENESIS_Arquitetura.md | Visão técnica detalhada |
 
 ### Externas
 
@@ -463,8 +604,9 @@ Input: "como estruturar conhecimento novo"
 | 1.0 | 2025-12-05 | Refatoração completa M0-M4. Propósito explícito (Inteligência Híbrida). |
 | 1.1 | 2025-12-05 | Inteligência Orquestradora. M2+M3 refatorados: entender → buscar → rotear. |
 | 1.2 | 2025-12-06 | Referências atualizadas: Catálogo e Raciocínio publicados em docs/00_E/. |
-| 1.3 | 2025-12-07 | Glossário M0.1 expandido: termos Loop/Autonomia/Tools/Contexto. Referências: GENESIS_Arquitetura e Glossário Central. |
-| 1.4 | 2025-12-07 | Seção 4.5 Como Buscar no Catálogo: instrução prática para usar _catalogo/indice.yaml. Referência ao índice adicionada. Sprint S006-C/T03. |
-| 1.5 | 2025-12-08 | **GERENCIAR adicionado:** terceiro tipo de roteamento para Gestão de Projetos. Referências: Gestão de Projetos, Backlog, Sprint. Sprint S007. |
-| 1.6 | 2025-12-08 | **Capability Discovery:** método listar_capabilities() para GENESIS explicar o que sabe fazer. Glossário: Capability, Discovery. Sprint S009. |
-| 1.7 | 2025-12-08 | **Fix:** Seções 4.5 (listar_capabilities) e 4.6 (Como Buscar) separadas corretamente. Sprint S009. |
+| 1.3 | 2025-12-07 | Glossário M0.1 expandido: termos Loop/Autonomia/Tools/Contexto. |
+| 1.4 | 2025-12-07 | Seção 4.5 Como Buscar no Catálogo. Sprint S006-C/T03. |
+| 1.5 | 2025-12-08 | GERENCIAR adicionado: terceiro tipo de roteamento. Sprint S007. |
+| 1.6 | 2025-12-08 | Capability Discovery: método listar_capabilities(). Sprint S009. |
+| 1.7 | 2025-12-08 | Fix: Seções 4.5 e 4.6 separadas corretamente. Sprint S009. |
+| 1.8 | 2025-12-08 | **persistir()**: método que roteia GitHub vs MongoDB. Persistência Híbrida. Dependências de infra explícitas. Sprint S010/T05. |
