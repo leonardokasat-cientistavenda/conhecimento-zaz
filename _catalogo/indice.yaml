@@ -1,8 +1,8 @@
-# Catálogo GENESIS v2.1
+# Catálogo GENESIS v2.2
 # Índice semântico para busca e roteamento
 # Organizado por tipo: docs, backlog, sprint
 
-versao: "2.1"
+versao: "2.2"
 atualizado: "2025-12-08"
 
 # =============================================================================
@@ -186,19 +186,6 @@ backlog:
       prioridade: media
       status: Pendente
 
-  - id: "bl_catalogo_multi_tipo"
-    nome: "Catálogo Multi-Tipo"
-    chave: "catálogo multi-tipo docs backlog sprint indexar tipos"
-    arquivo: "_backlog/catalogo_multi_tipo.md"
-    triggers:
-      - "catálogo multi-tipo"
-      - "indexar backlog"
-      - "indexar sprint"
-    metadata:
-      prioridade: alta
-      status: Promovido
-      promovido_em: S008
-
 # =============================================================================
 # SPRINTS - Ciclos de execução
 # =============================================================================
@@ -265,5 +252,6 @@ sprints:
     chave: "capability discovery explicar o que sabe fazer"
     arquivo: "_sprints/S009_Capability_Discovery.md"
     metadata:
-      status: Ativa
+      status: Concluida
       data_inicio: "2025-12-08"
+      data_fim: "2025-12-08"
