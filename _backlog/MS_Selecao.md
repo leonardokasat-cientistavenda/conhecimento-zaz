@@ -2,7 +2,7 @@
 
 ---
 nome: MS_Selecao
-versao: "0.1"
+versao: "0.2"
 tipo: Backlog
 classe_ref: MetaSistema
 origem: conversa
@@ -182,7 +182,7 @@ GENESIS (C1) ─── PROPÓSITO
 │  ├── Foco: Framework conceitual + taxonomias                                │
 │  ├── Output: Modelos de classificação definidos                             │
 │  ├── Módulo: Catálogo (taxonomias de dimensões)                             │
-│  └── Sem integração técnica ainda                                           │
+│  └── Persistência: MongoDB para dados estruturados                          │
 │                                                                             │
 │  FASE 2: MS_Seleção_Captura (M0-M4)                                         │
 │  ├── Foco: Perguntas + extração de dados                                    │
@@ -193,8 +193,7 @@ GENESIS (C1) ─── PROPÓSITO
 │  FASE 3: MS_Seleção_Output (M0-M4)                                          │
 │  ├── Foco: Dossier + Relatórios                                             │
 │  ├── Depende: Fase 2                                                        │
-│  ├── Output: Templates + visualizações                                      │
-│  └── Persistência: MongoDB para dados estruturados                          │
+│  └── Output: Templates + visualizações                                      │
 │                                                                             │
 │  FASE 4: MS_Seleção_Decisão (M0-M4)                                         │
 │  ├── Foco: Módulo Raciocínio aplicado                                       │
@@ -341,7 +340,7 @@ GENESIS (C1) ─── PROPÓSITO
 | Quantidade para massa crítica | Quantos candidatos para análise preditiva? | A definir |
 | Modelos de Psicografia | DISC é suficiente ou precisa de outros? | A explorar em M1 |
 | Peso das dimensões | Como ponderar psicografia vs skills vs demografia? | A definir em Fase 4 |
-| Persistência | MongoDB confirmado? Estrutura de collections? | A definir |
+| Estrutura MongoDB | Collections e schemas para candidatos | A definir em Sprint |
 | Sentimental Analytics | Como operacionalizar "empatia do supervisor"? | A explorar |
 
 ---
@@ -362,7 +361,7 @@ GENESIS (C1) ─── PROPÓSITO
 
 | Recurso | Necessidade | Fase |
 |---------|-------------|------|
-| MongoDB | Persistência de dados de candidatos | Fase 3 |
+| MongoDB | Persistência de dados de candidatos | Fase 1 |
 | Metabase | Visualização de relatórios | Fase 3+ |
 | OCR | Processamento de documentos | Fase 2 |
 
@@ -379,10 +378,13 @@ GENESIS (C1) ─── PROPÓSITO
 | T03 | M2 MS_Seleção | Objeto (fronteiras, entradas/saídas) | _drafts/S008-MS/T03/M2_Objeto.md |
 | T04 | M3 MS_Seleção | Classes (Candidato, Dimensão, Modelo, etc.) | _drafts/S008-MS/T04/M3_Classe.md |
 | T05 | M4 MS_Seleção | Documento publicado | /docs/04_Selecao/MS_Selecao.md |
-| T06 | Catálogo Dimensões | Taxonomia de dimensões no Catálogo | Atualização catálogo |
-| T07 | Catálogo Modelos | Taxonomia de modelos (DISC, etc.) | Atualização catálogo |
+| T06 | MongoDB Setup | Estrutura de collections + schemas | Collections no MongoDB |
+| T07 | Catálogo Dimensões | Taxonomia de dimensões | MongoDB + Catálogo |
+| T08 | Catálogo Modelos | Taxonomia de modelos (DISC, etc.) | MongoDB + Catálogo |
 
-**Objetivo:** Framework conceitual completo + taxonomias básicas operacionais
+**Objetivo:** Framework conceitual completo + taxonomias básicas operacionais + persistência MongoDB
+
+**Nota:** Entregáveis são drafts M0-M4 + documento publicado + MongoDB. Sem criação de .md fora do escopo GENESIS.
 
 ---
 
@@ -407,6 +409,10 @@ GENESIS (C1) ─── PROPÓSITO
 ### 12.5 Sobre Persistência e Benefícios Futuros
 
 > "Com esses dados 'persistidos' no banco, conseguimos montar um dossiê completo do candidato. Caso esse candidato ainda seja aprovado, teremos mais meta sistemas para frente que se beneficiarão desse output para continuarmos com a gestão dele."
+
+### 12.6 Sobre MongoDB na Fase 1
+
+> "Podemos usar o Mongo já na primeira fase. Sem necessidade de criar documentos .md fora do escopo definido em GENESIS."
 
 ---
 
@@ -437,3 +443,4 @@ GENESIS (C1) ─── PROPÓSITO
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 0.1 | 2025-12-08 | Documento inicial - captura de conversa |
+| 0.2 | 2025-12-08 | Correção: MongoDB na Fase 1, ajuste tasks T06-T08 |
