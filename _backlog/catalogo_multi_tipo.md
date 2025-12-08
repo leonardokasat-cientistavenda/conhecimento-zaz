@@ -48,6 +48,58 @@ PROPOSTO:
    - `Gestao.listar_backlog()` → `Catalogo.pesquisar(tipo: backlog)`
    - `Gestao.listar_sprints()` → `Catalogo.pesquisar(tipo: sprint)`
 
+## Integração com GENESIS
+
+**Objetivo:** GENESIS deve rotear corretamente para Gestão de Projetos e
+permitir início de sprints no novo paradigma.
+
+### Fluxo Novo Paradigma
+
+```
+USUÁRIO: "Quero iniciar nova sprint"
+    │
+    ▼
+GENESIS: Detecta intenção → Roteia para Gestão de Projetos
+    │
+    ▼
+GESTÃO DE PROJETOS: 
+    │ 1. listar_backlog() → Catalogo.pesquisar(tipo: backlog)
+    │ 2. Mostra itens pendentes
+    │ 3. Usuário seleciona
+    │ 4. promover(item) → Sprint.iniciar() + Backlog.atualizar()
+    │
+    ▼
+SPRINT INICIADA (código automático: S008, S009...)
+```
+
+### Ações Necessárias nesta Sprint (S008)
+
+| # | Ação | Arquivo |
+|---|------|---------|
+| 1 | Adicionar atributo `tipo` ao índice | `_catalogo/index.yaml` |
+| 2 | Atualizar método `indexar()` | `docs/00_E/00_E_1_4_Catalogo.md` |
+| 3 | Atualizar método `pesquisar()` | `docs/00_E/00_E_1_4_Catalogo.md` |
+| 4 | Indexar backlog existente | `_backlog/*.md` → Catálogo |
+| 5 | Indexar sprints existentes | `_sprints/*.md` → Catálogo |
+| 6 | Testar fluxo completo | GENESIS → Gestão → Catálogo |
+
+### Fallback (Enquanto Não Implementado)
+
+Até que Catálogo suporte multi-tipo, Gestão de Projetos funciona com leitura
+direta de pastas:
+
+```
+listar_backlog() → github:get_file_contents(path="_backlog/")
+listar_sprints() → github:get_file_contents(path="_sprints/")
+```
+
+Após S008, migra para:
+
+```
+listar_backlog() → Catalogo.pesquisar(tipo: "backlog")
+listar_sprints() → Catalogo.pesquisar(tipo: "sprint")
+```
+
 ## Arquitetura Proposta
 
 ```
@@ -66,13 +118,25 @@ PROPOSTO:
 └─────────────────────────────────────────────────────────────────────────────┘
                                     ▲
                                     │
-                    ┌───────────────┴───────────────┐
-                    │      GESTÃO DE PROJETOS       │
-                    │  listar_backlog()             │
-                    │  listar_sprints()             │
-                    │  promover()                   │
-                    └───────────────────────────────┘
+          ┌─────────────────────────┼─────────────────────────┐
+          │                         │                         │
+          ▼                         ▼                         ▼
+┌─────────────────┐     ┌─────────────────────┐     ┌─────────────────┐
+│     GENESIS     │     │  GESTÃO DE PROJETOS │     │  META SISTEMAS  │
+│  (roteamento)   │────▶│  listar_backlog()   │     │  (domínios)     │
+│                 │     │  listar_sprints()   │     │                 │
+└─────────────────┘     │  promover()         │     └─────────────────┘
+                        └─────────────────────┘
 ```
+
+## Critérios de Aceite
+
+- [ ] `Catalogo.pesquisar(tipo: "backlog")` retorna itens de `_backlog/`
+- [ ] `Catalogo.pesquisar(tipo: "sprint")` retorna itens de `_sprints/`
+- [ ] `Gestao.listar_backlog()` usa Catálogo (não leitura direta)
+- [ ] `Gestao.listar_sprints()` usa Catálogo (não leitura direta)
+- [ ] GENESIS roteia "iniciar sprint" → Gestão de Projetos
+- [ ] Fluxo completo testado: GENESIS → Gestão → Sprint iniciada
 
 ## Referências
 
