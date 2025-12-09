@@ -1,6 +1,6 @@
 ---
 nome: GENESIS
-versao: "2.0"
+versao: "2.1"
 tipo: Framework
 classe_ref: Framework
 origem: interno
@@ -12,7 +12,7 @@ depende_de:
   - 00_I_1_3_MongoDB
 ---
 
-# GENESIS v2.0
+# GENESIS v2.1
 
 ## 1. Problema (M0)
 
@@ -81,6 +81,7 @@ depende_de:
 > - Raciocínio implementa DECISÃO (como tomar decisões)
 > - Catálogo fornece MEMÓRIA (como buscar/persistir)
 > - Gestão de Projetos organiza TRABALHO (backlog/sprints)
+> - **MS_Produto** gerencia CICLO DE VIDA (produtos criados)
 >
 > **Resultado:** Sistema que reduz dispêndio de energia humana na execução de atividades cognitivas, com conhecimento que persiste e acumula.
 
@@ -175,6 +176,12 @@ depende_de:
 │  │    • Sprint: ciclos de execução focada                                   │
 │  │    • Orquestra promoção backlog → sprint                                 │
 │  │                                                                          │
+│  ├──► MS_PRODUTO (Camada 4) ─── CICLO DE VIDA (PRODUTO)                     │
+│  │    • Gerencia: Épico → Backlog → Sprint → Release → Implantação → CS     │
+│  │    • Estende: Backlog (+RICE, +épico) e Sprint (+release)                │
+│  │    • Health Score: monitora sucesso do cliente                           │
+│  │    • Feedback Loop: CS → Backlog → Sprint → Release                      │
+│  │                                                                          │
 │  └──► PERSISTÊNCIA (Camada 2) ─── INFRAESTRUTURA                            │
 │       ├─ GitHub: decide COMO persistir definições                           │
 │       │   • persistir_md() → criar() | editar() | substituir()              │
@@ -222,6 +229,10 @@ depende_de:
 │  - Epistemologia: criar conhecimento (M0-M4)                                │
 │  - Raciocínio: tomar decisão (H→E→I→D)                                      │
 │  - Gestão de Projetos: organizar trabalho (backlog/sprint)                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Dependências (Domínio C4)                                                  │
+│  ─────────────────────────                                                  │
+│  - MS_Produto: gerenciar ciclo de vida de produtos                          │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -298,7 +309,11 @@ depende_de:
 │  ├── "Capturar item no backlog"                                             │
 │  ├── "O que tem no backlog?"                                                │
 │  ├── "Promover item para sprint"                                            │
-│  └── "Concluir sprint atual"                                                │
+│  ├── "Concluir sprint atual"                                                │
+│  ├── "Criar novo produto" → MS_Produto                                      │
+│  ├── "Ver roadmap" → MS_Produto                                             │
+│  ├── "Health score dos clientes" → MS_Produto                               │
+│  └── "Registrar feedback" → MS_Produto                                      │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -333,7 +348,7 @@ depende_de:
 │        return {existe: false}                                               │
 │                                                                             │
 │  SE tipo == GERENCIAR:                                                      │
-│     → Roteia diretamente para Gestão de Projetos                            │
+│     → Roteia diretamente para Gestão de Projetos ou MS_Produto              │
 │     → Não busca (ação, não conhecimento)                                    │
 │                                                                             │
 │  FONTE DE DADOS: MongoDB (collection: catalogo)                             │
@@ -379,12 +394,24 @@ depende_de:
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  GERENCIAR                                                          │    │
+│  │  GERENCIAR (Gestão de Projetos)                                     │    │
 │  │  → Carrega docs/00_I/00_I_2_Gestao_Projetos.md                      │    │
 │  │  → Roteia para método apropriado:                                   │    │
 │  │    • "listar backlog" → listar_backlog() (MongoDB)                  │    │
 │  │    • "iniciar sprint" → promover() + Sprint.iniciar() (MongoDB)     │    │
 │  │    • "capturar item" → Backlog.capturar() (MongoDB)                 │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  GERENCIAR (MS_Produto) - triggers específicos                      │    │
+│  │  → Carrega docs/04_P/MS_Produto.md                                  │    │
+│  │  → Roteia para método apropriado:                                   │    │
+│  │    • "criar produto" → Produto.criar()                              │    │
+│  │    • "criar épico" → Epico.criar()                                  │    │
+│  │    • "roadmap" → Portfolio.roadmap_consolidado()                    │    │
+│  │    • "health score" → HealthScore.calcular()                        │    │
+│  │    • "registrar feedback" → Feedback.registrar()                    │    │
+│  │    • "implantar" → Implantacao.criar()                              │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -443,6 +470,9 @@ depende_de:
 │  │ Item de backlog            │ transação  │ MongoDB → inserir()        │  │
 │  │ Status de sprint           │ transação  │ MongoDB → atualizar()      │  │
 │  │ Decisão nova               │ transação  │ MongoDB → inserir()        │  │
+│  │ Produto                    │ transação  │ MongoDB → inserir()        │  │
+│  │ Health Score               │ transação  │ MongoDB → inserir()        │  │
+│  │ Feedback                   │ transação  │ MongoDB → inserir()        │  │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -480,6 +510,11 @@ depende_de:
 │  │  📋 GERENCIAR - Organizar trabalho em backlog e sprints             │    │
 │  │     "O que temos no backlog?"                                       │    │
 │  │     "Iniciar nova sprint"                                           │    │
+│  │                                                                     │    │
+│  │  📦 PRODUTO - Gerenciar ciclo de vida de produtos                   │    │
+│  │     "Criar novo produto"                                            │    │
+│  │     "Ver roadmap do MS_Seleção"                                     │    │
+│  │     "Health score dos clientes"                                     │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -516,6 +551,8 @@ depende_de:
 │  - Por status: {"metadata.status": "Publicado"}                             │
 │  - Sprint ativa: {tipo: "sprint", "metadata.status": "Ativa"}               │
 │  - Backlog pendente: {tipo: "backlog", "metadata.status": "Pendente"}       │
+│  - Produtos: {tipo: "produto"}                                              │
+│  - Health Score: {tipo: "health_score", produto_ref: "..."}                 │
 │                                                                             │
 │  PASSO 3: Carregar arquivo do item (se necessário)                          │
 │  ─────────────────────────────────────────────────                          │
@@ -583,6 +620,7 @@ depende_de:
 | docs/00_I/00_I_2_Gestao_Projetos.md | Organiza trabalho (GERENCIAR) |
 | docs/00_I/00_I_2_1_Backlog.md | Captura e enriquece itens de trabalho |
 | docs/00_I/00_I_2_2_Sprint.md | Ciclos de execução focada |
+| **docs/04_P/MS_Produto.md** | **Gerencia ciclo de vida de Produtos (PRODUTO)** |
 | genesis/GENESIS_Arquitetura.md | Visão técnica detalhada |
 
 ### Externas
@@ -612,3 +650,4 @@ depende_de:
 | 1.8 | 2025-12-08 | persistir(): método que roteia GitHub vs MongoDB. Persistência Híbrida. Sprint S010/T05. |
 | 1.9 | 2025-12-08 | **persistir() SIMPLIFICADO**: GENESIS decide ONDE, delega COMO para GitHub/MongoDB. Sprint S011/T04. |
 | 2.0 | 2025-12-08 | **Teste editar()**: método por âncora validado. Sprint S011/T05. |
+| 2.1 | 2025-12-09 | **MS_Produto integrado**: roteamento para ciclo de vida de produtos, Camada 4 no índice. Sprint S014. |
