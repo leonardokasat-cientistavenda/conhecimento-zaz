@@ -1,7 +1,7 @@
 ---
 titulo: "Backlog"
-versao: "1.1"
-data_publicacao: "2025-12-08"
+versao: "1.2"
+data_publicacao: "2025-12-09"
 camada: 2
 tipo: "Infraestrutura"
 dominio: "Gestão"
@@ -13,9 +13,11 @@ tags:
 pai: docs/00_I/00_I_2_Gestao_Projetos.md
 depende_de:
   - docs/00_E/00_E_1_4_Catalogo.md
+estendido_por:
+  - docs/04_P/MS_Produto.md
 ---
 
-# Backlog v1.1
+# Backlog v1.2
 
 ## 1. Problema (M0)
 
@@ -40,7 +42,7 @@ depende_de:
 │  "Como capturar ideias emergentes sem duplicar itens existentes             │
 │   e sem perder contexto adicional que surge em outras sessões?"             │
 │                                                                             │
-└──────────────────────────────────┬──────────────────────────────────────────┘
+└──────────────────────────────────────────────────────────────────────────────┘
                                    │
                                    ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -137,6 +139,7 @@ _backlog/
 | **Gestão de Projetos** | Pai - orquestra |
 | **Sprint** | Irmão - recebe itens via promover() |
 | **Catálogo** | Usa - busca semântica e indexação |
+| **MS_Produto** | Estendido por - campos opcionais |
 
 ---
 
@@ -148,8 +151,8 @@ _backlog/
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                         CLASSE: BACKLOG_ITEM                                │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Atributos                                                                  │
-│  ──────────                                                                 │
+│  Atributos Core                                                             │
+│  ──────────────                                                             │
 │  + titulo: String                    # descrição curta                      │
 │  + origens: [Origem]                 # lista de contribuições               │
 │  + data_criacao: Date                # quando foi criado                    │
@@ -163,6 +166,16 @@ _backlog/
 │  + sistema_afetado: String           # qual componente                      │
 │  + merged_into: String?              # ID do item que absorveu este         │
 │  + merged_from: [String]?            # IDs dos itens absorvidos             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Atributos Extensão MS_Produto (opcionais)                                  │
+│  ─────────────────────────────────────────                                  │
+│  + epico_ref: String?                # Épico ao qual pertence               │
+│  + rice_score: Number?               # Score RICE calculado                 │
+│  + rice_reach: Number?               # R - Alcance (usuários impactados)    │
+│  + rice_impact: Number?              # I - Impacto (0.25, 0.5, 1, 2, 3)     │
+│  + rice_confidence: Number?          # C - Confiança (0-100%)               │
+│  + rice_effort: Number?              # E - Esforço (pessoa-semanas)         │
+│  + feedback_origem: String?          # ID do feedback CS que originou       │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Origem (sub-estrutura)                                                     │
 │  ──────────────────────                                                     │
@@ -187,6 +200,14 @@ data_resolucao: null
 tipo: Feature
 prioridade: 🟡
 sistema_afetado: Componente
+# Extensão MS_Produto (opcional)
+epico_ref: null
+rice_score: null
+rice_reach: null
+rice_impact: null
+rice_confidence: null
+rice_effort: null
+feedback_origem: null
 ---
 
 ## Contexto
@@ -225,12 +246,19 @@ sistema_afetado: Componente
 │  + pasta: Path = "_backlog/"                                                │
 │  + catalogo: Catalogo                # dependência                          │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Métodos Públicos                                                           │
-│  ────────────────                                                           │
+│  Métodos Públicos Core                                                      │
+│  ─────────────────────                                                      │
 │  + capturar(descricao, tipo, sistema, prioridade): BacklogItem              │
 │  + atualizar_item(item, campos): BacklogItem                                │
 │  + arquivar_item(item): void                                                │
 │  + merge(item_principal, item_absorvido): BacklogItem                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Métodos Extensão MS_Produto (opcionais)                                    │
+│  ───────────────────────────────────────                                    │
+│  + calcular_rice(item): Number       # (R × I × C) / E                      │
+│  + vincular_epico(item, epico_id): BacklogItem                              │
+│  + listar_por_epico(epico_id): [BacklogItem]                                │
+│  + ordenar_por_rice(): [BacklogItem]                                        │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Métodos Internos                                                           │
 │  ────────────────                                                           │
@@ -390,6 +418,67 @@ sistema_afetado: Componente
 └─────────────────────────────────────────────────────────────────┘
 ```
 
+#### calcular_rice() - Extensão MS_Produto
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      calcular_rice()                            │
+│                 (Extensão MS_Produto)                           │
+├─────────────────────────────────────────────────────────────────┤
+│  Input: item (BacklogItem com campos RICE preenchidos)          │
+│  Output: Number (score calculado)                               │
+│                                                                 │
+│  Pré-condição: rice_reach, rice_impact, rice_confidence,        │
+│                rice_effort todos preenchidos                    │
+│                                                                 │
+│  Fórmula:                                                       │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │                                                           │  │
+│  │  rice_score = (Reach × Impact × Confidence) / Effort      │  │
+│  │                                                           │  │
+│  │  Onde:                                                    │  │
+│  │  - Reach: número de usuários impactados                   │  │
+│  │  - Impact: 0.25 (mínimo), 0.5, 1, 2, 3 (massivo)          │  │
+│  │  - Confidence: 0-100% (certeza da estimativa)             │  │
+│  │  - Effort: pessoa-semanas necessárias                     │  │
+│  │                                                           │  │
+│  └───────────────────────────────────────────────────────────┘  │
+│                                                                 │
+│  Passos:                                                        │
+│  1. Validar campos preenchidos                                  │
+│  2. Calcular: (R × I × C) / E                                   │
+│  3. Atualizar item.rice_score                                   │
+│  4. Retornar score                                              │
+│                                                                 │
+│  Uso: Priorização objetiva do backlog                           │
+│  Exemplo: Item com score 150 > Item com score 50                │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### vincular_epico() - Extensão MS_Produto
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     vincular_epico()                            │
+│                 (Extensão MS_Produto)                           │
+├─────────────────────────────────────────────────────────────────┤
+│  Input:                                                         │
+│  - item: BacklogItem                                            │
+│  - epico_id: String                                             │
+│                                                                 │
+│  Output: BacklogItem (atualizado)                               │
+│                                                                 │
+│  Passos:                                                        │
+│  1. Validar épico existe no Catálogo                            │
+│  2. Atualizar item.epico_ref = epico_id                         │
+│  3. Atualizar Épico.backlog_items[] (adicionar item.id)         │
+│  4. Re-indexar no Catálogo                                      │
+│  5. Retornar item atualizado                                    │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 #### arquivar_item()
 
 ```
@@ -419,12 +508,14 @@ sistema_afetado: Componente
 | **CONTEXTO-RASTREAVEL** | Todo enriquecimento tem origem e data |
 | **INDEXAR-CATALOGO** | Todo item é indexado no Catálogo |
 | **MERGE-CONFIRMADO** | Merge só executa com confirmação do usuário |
+| **RICE-OPCIONAL** | Campos RICE só obrigatórios se MS_Produto ativo |
 
 ### 4.6 Dependências
 
 | Módulo | Uso |
 |--------|-----|
 | **Catálogo** | Busca semântica (similaridade) + indexação |
+| **MS_Produto** | Extensão opcional (épicos, RICE, feedback) |
 
 ---
 
@@ -434,3 +525,4 @@ sistema_afetado: Componente
 |--------|------|-----------|
 | 1.0 | 2025-12-08 | Criação com métodos capturar, criar, enriquecer, arquivar. |
 | 1.1 | 2025-12-08 | Adicionado método merge() para unificar itens relacionados. Novos campos: merged_into, merged_from. Novo status: Merged. |
+| 1.2 | 2025-12-09 | Extensão MS_Produto: campos opcionais (epico_ref, rice_*, feedback_origem). Métodos: calcular_rice(), vincular_epico(). |
