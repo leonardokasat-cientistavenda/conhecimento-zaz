@@ -1,136 +1,210 @@
-# MS_Produto v0.1
+# MS_Produto v0.2
 
 ---
 nome: MS_Produto
-versao: "0.1"
+versao: "0.2"
 tipo: Framework
 status: Draft
-etapa: M0
+etapa: M1
 sprint_ref: S014
 task_ref: T01
 ---
 
 ## 1. Problema (M0)
 
-### 1.1 Glossário
+*(Aprovado - ver versão 0.1)*
 
-| Significante | Significado no Contexto |
-|--------------|-------------------------|
-| **Produto** | Meta Sistema Implantado (V0) que resolve dor clara do usuário |
-| **Meta Sistema (MS)** | Sistema estruturado via Epistemologia que gera valor específico |
-| **Usuário Final** | Equipe interna ZAZ + Clientes externos |
-| **Deploy** | Implantação completa (técnico + usuário consegue usar) |
-| **CS (Customer Success)** | Área que garante que a dor seja aliviada/resolvida |
-| **Backlog** | Fila priorizada de demandas/melhorias |
-| **Épico** | Agrupamento de funcionalidades para entrega de valor |
-| **Sprint** | Ciclo de desenvolvimento com escopo fechado |
-| **Roadmap** | Visão temporal do portfólio de produtos |
-| **Portfólio** | Conjunto de MS/Produtos em diferentes estágios |
+---
 
-### 1.2 Diagrama do Problema
+## 2. Marco Teórico (M1)
+
+### 2.1 Ontologia Interna (Já Existe)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           PROBLEMA CENTRAL                                  │
-│                                                                             │
-│   "Como gerenciar o ciclo completo de vida de Produtos (MS), desde a        │
-│    captura da demanda até o sucesso contínuo do usuário, de forma           │
-│    estruturada e anti-entrópica?"                                           │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                              SINTOMAS                                       │
+│                    ONTOLOGIA INTERNA - JÁ IMPLEMENTADO                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  S1: Não há processo definido para ir de "MS pronto" → "usuário usando"     │
-│                                                                             │
-│  S3: Falta visibilidade do portfólio (o que está em qual estágio)           │
-│                                                                             │
-│  S4: Não há método para coletar/priorizar feedback pós-implantação          │
-│                                                                             │
-│  S5: Métodos de backlog/sprint insuficientes para capturar demandas         │
-│      e priorizar desenvolvimento adequadamente                              │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           CICLO DESEJADO                                    │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  [A]────────[B]────────[C]────────[D]────────[E]────────[F]────────[G]      │
-│  Backlog    Épico     Sprint     Deploy    Implant.   Treinam.    CS        │
-│     └──────────DESENVOLVIMENTO──────────┘  └────────PÓS-VENDA────────┘      │
-│                                                                             │
-│                              ┌────────────────────────────────┐             │
-│                              │         FEEDBACK LOOP          │             │
-│                              │  CS identifica gaps → Backlog  │             │
-│                              └────────────────────────────────┘             │
-│                                           │                                 │
-│  ┌────────────────────────────────────────┘                                 │
+│  GESTÃO DE PROJETOS (Pai)                                                   │
+│  ├── Backlog v1.1                                                           │
+│  │   ├── capturar() - busca similar antes de criar                          │
+│  │   ├── enriquecer() - contexto acumulativo                                │
+│  │   ├── merge() - unificar itens relacionados                              │
+│  │   └── Atributos: tipo, prioridade, sistema_afetado, origens              │
 │  │                                                                          │
-│  ▼                                                                          │
-│  [A] Backlog ◄───────────────────────────────────────────────── [G] CS      │
+│  └── Sprint v1.0                                                            │
+│      ├── iniciar() - código automático (S007→S008)                          │
+│      ├── executar() - tasks estruturadas                                    │
+│      ├── publicar() - draft → docs                                          │
+│      ├── arquivar() - cleanup workspace                                     │
+│      └── WIP Limit = 1                                                      │
 │                                                                             │
-│  O CICLO NUNCA PARA                                                         │
+│  CATÁLOGO                                                                   │
+│  └── pesquisar() - busca semântica por tipo                                 │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 1.3 Causa Raiz
+**Análise de Gaps:**
 
-| Causa | Consequência |
-|-------|--------------|
-| Foco histórico em construir MS, não em entregar valor | MS "pronto" mas não implantado |
-| Ausência de visão de portfólio | Não sabe o que priorizar |
-| Backlog/Sprint como artefatos, não como processo | Captura demandas de forma ad-hoc |
-| CS não estruturado | Feedback não retorna ao ciclo |
+| Componente Existente | O que Falta |
+|----------------------|-------------|
+| Backlog | Épicos, User Stories, priorização estruturada |
+| Sprint | Roadmap, releases, visão de portfólio |
+| - | Deploy, Implantação, Treinamento |
+| - | Customer Success, Feedback Loop |
 
-### 1.4 Necessidade
+### 2.2 Ontologia Externa (Melhores Práticas)
 
-| Necessidade | Ação |
-|-------------|------|
-| Processo fim-a-fim | Definir estágios A→G com critérios de transição |
-| Visibilidade do portfólio | Dashboard/catálogo de produtos por estágio |
-| Método de priorização | Framework para decidir o que desenvolver |
-| Loop de feedback | CS alimenta backlog sistematicamente |
-| Quebra em módulos | Implementar incrementalmente (A-D primeiro, depois E-G) |
-
-### 1.5 Tese
-
-> **MS_Produto é o Meta Sistema que gerencia o ciclo completo de vida de Produtos, desde a captura estruturada de demandas até o sucesso contínuo do usuário.**
->
-> **Resolve:**
-> - Transformar MS em Produtos implantados (não apenas "prontos")
-> - Visibilidade do portfólio em tempo real
-> - Priorização sistemática de desenvolvimento
-> - Loop fechado: CS → Feedback → Backlog → Desenvolvimento
->
-> **Escopo:** Completo (A-G), implementação modular
->
-> **Pré-requisito:** GENESIS (propósito) + Epistemologia (método de criação)
-
-### 1.6 Escopo de Implementação
+#### 2.2.1 Hierarquia Ágil (Atlassian, ProductPlan)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                        MÓDULOS DO MS_PRODUTO                                │
+│                     HIERARQUIA ÁGIL - PADRÃO MERCADO                        │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  FASE 1: DESENVOLVIMENTO (A→D)          FASE 2: PÓS-VENDA (E→G)             │
-│  ┌───────────────────────────┐          ┌───────────────────────────┐       │
-│  │ • Backlog estruturado     │          │ • Implantação             │       │
-│  │ • Épicos e priorização    │          │ • Treinamento             │       │
-│  │ • Sprint management       │          │ • Customer Success        │       │
-│  │ • Deploy/Release          │          │ • Feedback loop           │       │
-│  └───────────────────────────┘          └───────────────────────────┘       │
+│  THEME (Tema Estratégico)                                                   │
+│  └── INITIATIVE (Iniciativa)                                                │
+│      └── EPIC (Épico)                                                       │
+│          └── FEATURE (Funcionalidade)                                       │
+│              └── USER STORY (História do Usuário)                           │
+│                  └── TASK (Tarefa)                                          │
 │                                                                             │
-│  TRANSVERSAL                                                                │
-│  ┌───────────────────────────────────────────────────────────────────┐      │
-│  │ • Roadmap de produto                                              │      │
-│  │ • Portfólio (visibilidade de todos os produtos/estágios)          │      │
-│  │ • Métricas de sucesso por produto                                 │      │
-│  └───────────────────────────────────────────────────────────────────┘      │
+│  Exemplo:                                                                   │
+│  Theme: "Aumentar retenção de clientes"                                     │
+│  └── Initiative: "Melhorar experiência de onboarding"                       │
+│      └── Epic: "Onboarding personalizado"                                   │
+│          └── Feature: "Wizard de configuração inicial"                      │
+│              └── Story: "Como usuário, quero ver tutorial interativo"       │
+│                  └── Task: "Implementar tooltip no passo 1"                 │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Aplicação no MS_Produto:**
+
+| Nível Mercado | Mapeamento GENESIS |
+|---------------|-------------------|
+| Theme | Produto (MS) |
+| Initiative | Épico |
+| Epic/Feature | Backlog Item (tipo: Feature) |
+| User Story | Backlog Item (tipo: Story) |
+| Task | Sprint Task |
+
+#### 2.2.2 Frameworks de Priorização
+
+| Framework | Fórmula/Método | Quando Usar |
+|-----------|----------------|-------------|
+| **RICE** | (Reach × Impact × Confidence) / Effort | Priorização baseada em dados |
+| **MoSCoW** | Must/Should/Could/Won't | Escopo de release |
+| **Kano** | Basic/Performance/Delighter | Satisfação do cliente |
+| **WSJF** | Cost of Delay / Job Size | SAFe, sequenciamento |
+| **OKRs** | Objective + Key Results | Alinhamento estratégico |
+
+**Aplicação no MS_Produto:**
+
+| Contexto | Framework Sugerido |
+|----------|-------------------|
+| Priorizar backlog | RICE ou WSJF |
+| Definir MVP de release | MoSCoW |
+| Alinhar com estratégia | OKRs |
+
+#### 2.2.3 Lifecycle de Produto SaaS
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     LIFECYCLE SAAS - PADRÃO MERCADO                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐                  │
+│  │AWARENESS │──▶│ACQUISITION│──▶│ONBOARDING│──▶│ACTIVATION│                 │
+│  │(Conhecer)│   │(Adquirir) │   │(Embarcar) │   │(Ativar)  │                 │
+│  └──────────┘   └──────────┘   └──────────┘   └──────────┘                  │
+│                                                      │                      │
+│                                                      ▼                      │
+│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐                  │
+│  │ ADVOCACY │◀──│EXPANSION │◀──│RETENTION │◀──│  VALUE   │                  │
+│  │(Advogar) │   │(Expandir)│   │(Reter)   │   │(Valor)   │                  │
+│  └──────────┘   └──────────┘   └──────────┘   └──────────┘                  │
+│       │                                              │                      │
+│       └──────────────── FEEDBACK LOOP ──────────────┘                       │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Aplicação no MS_Produto:**
+
+| Fase Lifecycle | Módulo MS_Produto |
+|----------------|-------------------|
+| Awareness/Acquisition | (Pré-produto, fora do escopo) |
+| Onboarding | Implantação + Treinamento |
+| Activation | CS - Time to Value |
+| Value/Retention | CS - Health Score |
+| Expansion | CS - Upsell/Cross-sell |
+| Advocacy | CS - NPS, Referrals |
+
+#### 2.2.4 Customer Success Framework
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    CUSTOMER SUCCESS - COMPONENTES                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1. SEGMENTAÇÃO                                                             │
+│     Dividir clientes por: valor, maturidade, necessidade                    │
+│                                                                             │
+│  2. HEALTH SCORE                                                            │
+│     Indicadores: uso do produto, satisfação, engajamento                    │
+│                                                                             │
+│  3. PLAYBOOKS                                                               │
+│     Ações padronizadas por situação (onboarding, risco, expansão)           │
+│                                                                             │
+│  4. FEEDBACK LOOP                                                           │
+│     Coleta → Análise → Ação → Fechamento                                    │
+│     (NPS, CSAT, entrevistas, tickets)                                       │
+│                                                                             │
+│  5. MÉTRICAS                                                                │
+│     Churn rate, NRR, Time to Value, CSAT, NPS                               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 2.3 Síntese: Conceitos Consolidados
+
+| Conceito | Teoria/Fonte | Aplicação no MS_Produto |
+|----------|--------------|------------------------|
+| **Hierarquia Ágil** | Scrum, SAFe | Produto → Épico → Backlog → Sprint → Task |
+| **Priorização RICE** | ProductPlan | Score para ordenar backlog |
+| **MoSCoW** | DSDM | Definir escopo de releases |
+| **OKRs** | Intel/Google | Alinhar épicos com objetivos estratégicos |
+| **Lifecycle SaaS** | HubSpot, Userpilot | Fases pós-deploy: Implantação→Ativação→Retenção |
+| **Health Score** | Gainsight | Monitorar sucesso do cliente |
+| **Feedback Loop** | Lean Startup | CS → Backlog → Desenvolvimento |
+| **Roadmap** | Atlassian | Visualização temporal de épicos/releases |
+| **Time to Value** | CS Theory | Métrica de sucesso do onboarding |
+| **Composição** | SOLID | Módulos opcionais por fase |
+
+### 2.4 Princípios de Design
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    PRINCÍPIOS MS_PRODUTO                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  P1: REUTILIZAR ONTOLOGIA INTERNA                                           │
+│      Backlog e Sprint já existem → estender, não recriar                    │
+│                                                                             │
+│  P2: COMPOSIÇÃO MODULAR                                                     │
+│      Cada fase (Dev, Implantação, CS) é módulo opcional                     │
+│                                                                             │
+│  P3: FEEDBACK LOOP ESTRUTURADO                                              │
+│      CS → Backlog é o ciclo que nunca para                                  │
+│                                                                             │
+│  P4: VISIBILIDADE DE PORTFÓLIO                                              │
+│      Dashboard mostra todos os produtos e seus estágios                     │
+│                                                                             │
+│  P5: PRIORIZAÇÃO BASEADA EM DADOS                                           │
+│      Usar RICE/WSJF para ordenar, não opinião                               │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -141,10 +215,10 @@ task_ref: T01
 
 | Etapa | Ação | Status |
 |-------|------|--------|
-| M0 | Problema definido | 🔄 Aguardando aprovação |
-| M1 | Marco Teórico (Agile, Roadmap, CS) | ⬜ |
-| M2 | Objeto (fronteiras, o que é/não é) | ⬜ |
-| M3 | Classe (atributos, métodos, módulos) | ⬜ |
+| M0 | Problema definido | ✅ Aprovado |
+| M1 | Marco Teórico | 🔄 Aguardando aprovação |
+| M2 | Objeto (fronteiras) | ⬜ |
+| M3 | Classe (atributos, métodos) | ⬜ |
 | M4 | Documento final | ⬜ |
 
 ---
@@ -154,3 +228,4 @@ task_ref: T01
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 0.1 | 2025-12-09 | M0 criado - Problema, Glossário, Tese, Escopo |
+| 0.2 | 2025-12-09 | M1 criado - Ontologia interna, externa, síntese, princípios |
