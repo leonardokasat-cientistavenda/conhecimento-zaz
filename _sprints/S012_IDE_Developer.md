@@ -22,7 +22,7 @@ Validar Cursor como IDE de desenvolvimento para GENESIS, eliminando o gargalo de
 
 | # | Task | Descrição | Status |
 |---|------|-----------|--------|
-| T01 | Instalar Cursor | Download e instalação | ⬜ |
+| T01 | Instalar Cursor | Download e instalação | ✅ |
 | T02 | Clonar repositório | conhecimento-zaz local | ⬜ |
 | T03 | Configurar Claude | Modelo default nas settings | ⬜ |
 | T04 | Testar edição inline | Cmd+K em arquivo .md | ⬜ |
