@@ -6,8 +6,9 @@
 |-------|-------|
 | **Sprint** | S012 |
 | **Tipo** | Spike Técnico |
-| **Status** | Ativa |
+| **Status** | ✅ Concluída |
 | **Início** | 2025-12-08 |
+| **Fim** | 2025-12-08 |
 | **Origem** | bl_ide_developer |
 
 ---
@@ -16,6 +17,8 @@
 
 Validar Cursor como IDE de desenvolvimento para GENESIS, eliminando o gargalo de edição via API GitHub.
 
+**Resultado: VALIDADO ✅**
+
 ---
 
 ## Tasks
@@ -23,12 +26,12 @@ Validar Cursor como IDE de desenvolvimento para GENESIS, eliminando o gargalo de
 | # | Task | Descrição | Status |
 |---|------|-----------|--------|
 | T01 | Instalar Cursor | Download e instalação | ✅ |
-| T02 | Clonar repositório | conhecimento-zaz local | ⬜ |
-| T03 | Configurar Claude | Modelo default nas settings | ⬜ |
-| T04 | Testar edição inline | Cmd+K em arquivo .md | ⬜ |
-| T05 | Testar Git integrado | Commit + push pela IDE | ⬜ |
-| T06 | Testar @codebase | Indexação da estrutura GENESIS | ⬜ |
-| T07 | Documentar resultado | Criar guia de uso | ⬜ |
+| T02 | Clonar repositório | conhecimento-zaz local | ✅ |
+| T03 | Configurar Claude | Modelo default (Opus 4.5) | ✅ |
+| T04 | Testar edição inline | Cmd+K em arquivo .md | ✅ |
+| T05 | Testar Git integrado | Commit + push pela IDE | ✅ |
+| T06 | Testar @codebase | Indexação da estrutura GENESIS | ✅ |
+| T07 | Documentar resultado | Este documento | ✅ |
 
 ---
 
@@ -36,63 +39,85 @@ Validar Cursor como IDE de desenvolvimento para GENESIS, eliminando o gargalo de
 
 | Critério | Métrica | Resultado |
 |----------|---------|-----------|
-| Edição funciona | Editar linha específica sem reescrever | ⬜ |
-| Git funciona | Commit + push sem sair da IDE | ⬜ |
-| Contexto funciona | @codebase encontra arquivos | ⬜ |
-| Tempo setup | < 30 min | ⬜ |
-| Tempo edição | < 2 min por modificação | ⬜ |
+| Edição funciona | Editar linha específica sem reescrever | ✅ |
+| Git funciona | Commit + push sem sair da IDE | ✅ |
+| Contexto funciona | @codebase encontra arquivos | ✅ |
+| Tempo setup | < 30 min | ✅ (~15 min) |
+| Tempo edição | < 2 min por modificação | ✅ (~30 seg) |
 
 ---
 
 ## Guia Rápido de Setup
 
-### T01-T03: Instalação
+### Instalação
 
 ```
 1. Acessar: cursor.com
 2. Download (macOS/Windows/Linux)
 3. Instalar (processo padrão)
 4. Abrir Cursor
-5. Settings (Cmd+,) → Models → Claude como default
-6. Fazer login (conta Cursor ou GitHub)
+5. Settings → Models → Claude (Opus 4.5 recomendado)
+6. Fazer login + Cursor Pro ($20/mês)
 ```
 
-### T04: Edição Inline
+### Clonar Repositório
+
+```bash
+git clone https://github.com/leonardokasat-cientistavenda/conhecimento-zaz.git
+```
+
+Depois: File → Open Folder → selecionar pasta
+
+### Configurar Git (primeira vez)
+
+```bash
+git config --global user.name "Seu Nome"
+git config --global user.email "seu@email.com"
+```
+
+### Edição Inline (Cmd+K)
 
 ```
 1. Abrir arquivo .md
 2. Selecionar texto a editar
 3. Cmd+K (ou Ctrl+K)
 4. Descrever mudança em linguagem natural
-5. Revisar diff proposto
-6. Aceitar (Enter) ou rejeitar (Esc)
+5. Revisar diff (vermelho=remove, verde=adiciona)
+6. Aceitar (Keep/Cmd+Y) ou rejeitar (Undo/Cmd+N)
+7. Cmd+S para salvar
 ```
 
-### T05: Git Integrado
+### Git: Commit + Push
 
 ```
-1. Source Control (Cmd+Shift+G)
-2. Stage changes (+)
-3. Commit message
-4. Commit (✓)
-5. Push (...)  → Push
+1. Cmd+Shift+G (Source Control)
+2. Digitar mensagem de commit
+3. Clicar Commit
+4. Clicar Sync Changes (push)
 ```
 
-### T06: @codebase
+### @codebase (Contexto do Projeto)
 
 ```
-1. Abrir chat (Cmd+L)
-2. Digitar: @codebase como funciona o GENESIS?
-3. Cursor indexa repositório e responde com contexto
+1. Cmd+L (abrir chat)
+2. Digitar: @codebase [sua pergunta sobre o projeto]
+3. Cursor responde com contexto indexado
 ```
 
 ---
 
-## Notas
+## Conclusão
 
-- Cursor Pro: $20/mês (necessário para Claude)
-- É fork do VS Code - extensões compatíveis
-- Composer mode: edita múltiplos arquivos coordenadamente
+**Cursor validado como IDE para desenvolvimento GENESIS.**
+
+Benefícios confirmados:
+- Edição cirúrgica (só linhas específicas, não arquivo inteiro)
+- Git integrado (sem sair da IDE)
+- Contexto do projeto via @codebase
+- Tempo de edição ~30 seg vs ~2 min no fluxo anterior
+- Zero erros de SHA/merge
+
+**Recomendação:** Usar Cursor para todas as edições de arquivos do sistema.
 
 ---
 
@@ -101,3 +126,4 @@ Validar Cursor como IDE de desenvolvimento para GENESIS, eliminando o gargalo de
 | Data | Evento |
 |------|--------|
 | 2025-12-08 | Sprint criada, promovida do backlog |
+| 2025-12-08 | Sprint concluída - Cursor validado |
