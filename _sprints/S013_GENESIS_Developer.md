@@ -22,7 +22,7 @@ Configurar Cursor como interface completa do GENESIS: edição local + Catálogo
 
 | # | Task | Descrição | Status |
 |---|------|-----------|--------|
-| T01 | Criar .cursorrules | Prompt GENESIS (M0-M4, regras, convenções) | ⬜ |
+| T01 | Criar .cursorrules | Prompt GENESIS (M0-M4, regras, convenções) | ✅ |
 | T02 | Setup MCP Server | Estrutura básica do servidor MongoDB | ⬜ |
 | T03 | Tool: mongodb.find | Buscar no Catálogo | ⬜ |
 | T04 | Tool: mongodb.insert | Indexar no Catálogo | ⬜ |
@@ -35,7 +35,7 @@ Configurar Cursor como interface completa do GENESIS: edição local + Catálogo
 ## Critérios de Sucesso
 
 | Critério | Métrica | Resultado |
-|----------|---------|-----------|
+|----------|---------|-----------:|
 | .cursorrules funciona | Cursor responde com contexto GENESIS | ⬜ |
 | MongoDB conectado | Busca no Catálogo via Cursor | ⬜ |
 | Fluxo completo | Editar + commitar + indexar sem sair do Cursor | ⬜ |
@@ -53,8 +53,17 @@ Configurar Cursor como interface completa do GENESIS: edição local + Catálogo
 
 ---
 
+## Artefatos Produzidos
+
+| Task | Artefato |
+|------|----------|
+| T01 | `.cursorrules` |
+
+---
+
 ## Histórico
 
 | Data | Evento |
 |------|--------|
 | 2025-12-09 | Sprint criada, promovida do backlog |
+| 2025-12-09 | T01 concluída: .cursorrules criado |
