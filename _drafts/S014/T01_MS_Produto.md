@@ -559,6 +559,67 @@ exemplos_uso:
   - "ver portfólio de produtos"
 ```
 
+### 4.13 Persistência (GitHub vs MongoDB)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              PERSISTÊNCIA                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  GITHUB (.md) - Definições            MONGODB - Instâncias/Transações       │
+│  ─────────────────────────            ───────────────────────────────       │
+│  Muda: evolução do framework          Muda: operações do dia-a-dia          │
+│                                                                             │
+│  docs/04_P/MS_Produto.md              Collection: produtos                  │
+│  (como funciona o framework)          (cada produto real criado)            │
+│                                                                             │
+│  docs/04_P/templates/*.md             Collection: implantacoes              │
+│  (checklists modelo)                  (checklist preenchido por cliente)    │
+│                                                                             │
+│  docs/04_P/playbooks/*.md             Collection: health_scores             │
+│  (quando fazer o quê)                 (scores calculados, ações tomadas)    │
+│                                                                             │
+│  docs/04_P/treinamento/*.md           Collection: treinamentos              │
+│  (materiais de capacitação)           (sessões agendadas/realizadas)        │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### GitHub - Definições (muda com evolução)
+
+| Arquivo | Conteúdo | Quando muda |
+|---------|----------|-------------|
+| `docs/04_P/MS_Produto.md` | Framework completo | Evolução do MS |
+| `docs/04_P/templates/checklist_implantacao.md` | Modelo de checklist | Novo tipo de setup |
+| `docs/04_P/playbooks/*.md` | Ações por situação CS | Novo cenário |
+| `docs/04_P/treinamento/*.md` | Materiais base | Novo conteúdo |
+
+#### MongoDB - Instâncias (muda com operação)
+
+| Collection | Documento | Quando muda |
+|------------|-----------|-------------|
+| `produtos` | `{ id, nome, dor_cliente, estagio, owner, epicos[], releases[] }` | Cria produto, avança estágio |
+| `epicos` | `{ id, produto_ref, titulo, status, backlog_items[], release_alvo }` | Cria épico, vincula items |
+| `releases` | `{ versao, produto_ref, tipo, changelog, status, data_publicacao }` | Nova release, publica |
+| `implantacoes` | `{ id, produto_ref, release_ref, cliente, checklist[], status }` | Nova implantação, marca items |
+| `treinamentos` | `{ id, implantacao_ref, tipo, materiais[], sessoes[], status }` | Agenda sessão, conclui |
+| `health_scores` | `{ id, produto_ref, cliente, score, indicadores[], tendencia }` | Cálculo periódico |
+| `feedbacks` | `{ id, produto_ref, tipo, conteudo, sentimento, status, backlog_item_ref }` | Novo feedback, processa |
+
+#### Extensões em Collections Existentes
+
+| Collection | Campos adicionados |
+|------------|-------------------|
+| `backlog_items` | `+epico_ref`, `+rice_score`, `+rice_*`, `+feedback_origem` |
+| `sprints` | `+release_ref`, `+produto_ref` |
+
+#### Regra de Ouro
+
+```
+SE é DEFINIÇÃO (como fazer, template, playbook) → GitHub
+SE é INSTÂNCIA (dado real, transação, estado) → MongoDB
+```
+
 ---
 
 ## Próximos Passos
@@ -581,3 +642,4 @@ exemplos_uso:
 | 0.2 | 2025-12-09 | M1 criado - Ontologia interna, externa, síntese |
 | 0.3 | 2025-12-09 | M2 criado - Fronteiras, componentes, relações |
 | 0.4 | 2025-12-09 | M3 criado - Classes completas, métodos, extensões, invariantes |
+| 0.4.1 | 2025-12-09 | M3 adicionado - Seção 4.13 Persistência (GitHub vs MongoDB) |
