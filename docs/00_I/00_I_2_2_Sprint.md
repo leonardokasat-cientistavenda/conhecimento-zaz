@@ -1,7 +1,7 @@
 ---
 titulo: "Sprint"
-versao: "1.0"
-data_publicacao: "2025-12-08"
+versao: "1.1"
+data_publicacao: "2025-12-09"
 camada: 2
 tipo: "Infraestrutura"
 dominio: "Gestão"
@@ -13,9 +13,11 @@ tags:
 pai: docs/00_I/00_I_2_Gestao_Projetos.md
 depende_de:
   - docs/00_E/00_E_1_4_Catalogo.md
+estendido_por:
+  - docs/04_P/MS_Produto.md
 ---
 
-# Sprint v1.0
+# Sprint v1.1
 
 ## 1. Problema (M0)
 
@@ -159,6 +161,7 @@ _drafts/
 | **Catálogo** | Usa - indexação e busca |
 | **Git** | Usa - persistência |
 | **docs/** | Destino - entregáveis |
+| **MS_Produto** | Estendido por - campos opcionais |
 
 ---
 
@@ -189,8 +192,8 @@ _drafts/
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                            CLASSE: SPRINT                                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Atributos                                                                  │
-│  ──────────                                                                 │
+│  Atributos Core                                                             │
+│  ──────────────                                                             │
 │  + codigo: String                    # S007, S008 (gerado automaticamente)  │
 │  + objetivo: String                  # o que entregar                       │
 │  + backlog_origem: Path              # de onde veio                         │
@@ -202,12 +205,21 @@ _drafts/
 │  + data_fim: Date?                   # quando terminou                      │
 │  + catalogo: Catalogo                # dependência                          │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Métodos Públicos                                                           │
-│  ────────────────                                                           │
+│  Atributos Extensão MS_Produto (opcionais)                                  │
+│  ─────────────────────────────────────────                                  │
+│  + release_ref: String?              # Release alvo desta sprint            │
+│  + produto_ref: String?              # Produto relacionado                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Métodos Públicos Core                                                      │
+│  ─────────────────────                                                      │
 │  + iniciar(backlog_origem, objetivo, tipo?, data_prevista?): Sprint         │
 │  + executar(task): void                                                     │
 │  + publicar(draft, destino): void                                           │
 │  + arquivar(): void                                                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Métodos Extensão MS_Produto (opcionais)                                    │
+│  ───────────────────────────────────────                                    │
+│  + vincular_release(release_id): Sprint                                     │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Métodos Internos                                                           │
 │  ────────────────                                                           │
@@ -228,6 +240,9 @@ status: Ativa
 data_inicio: 2025-12-10
 data_prevista: 2025-12-15
 data_fim: null
+# Extensão MS_Produto (opcional)
+release_ref: null
+produto_ref: null
 ---
 
 ## Tasks
@@ -317,6 +332,31 @@ data_fim: null
 └─────────────────────────────────────────────────────────────────┘
 ```
 
+#### vincular_release() - Extensão MS_Produto
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    vincular_release()                           │
+│                  (Extensão MS_Produto)                          │
+├─────────────────────────────────────────────────────────────────┤
+│  Input:                                                         │
+│  - release_id: String                                           │
+│                                                                 │
+│  Output: Sprint (atualizada)                                    │
+│                                                                 │
+│  Passos:                                                        │
+│  1. Validar release existe no Catálogo                          │
+│  2. Atualizar sprint.release_ref = release_id                   │
+│  3. Extrair produto_ref da release                              │
+│  4. Atualizar sprint.produto_ref                                │
+│  5. Atualizar Release.sprints[] (adicionar sprint.codigo)       │
+│  6. Re-indexar no Catálogo                                      │
+│  7. Retornar sprint atualizada                                  │
+│                                                                 │
+│  Uso: Rastrear quais sprints compõem uma release                │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 #### arquivar()
 
 ```
@@ -357,9 +397,20 @@ data_fim: null
 | **BACKLOG-ORIGEM** | Toda sprint tem origem |
 | **ARQUIVAR-LIMPA** | Workspace limpo ao concluir |
 | **INDEXAR-CATALOGO** | Sprint é indexada ao iniciar |
+| **RELEASE-OPCIONAL** | Campo release_ref só obrigatório se MS_Produto ativo |
 
 ### 4.6 Dependências
 
 | Módulo | Uso |
 |--------|-----|
 | **Catálogo** | Busca última sprint + indexação |
+| **MS_Produto** | Extensão opcional (release, produto) |
+
+---
+
+## Histórico
+
+| Versão | Data | Alteração |
+|--------|------|-----------|
+| 1.0 | 2025-12-08 | Criação com métodos iniciar, executar, publicar, arquivar. |
+| 1.1 | 2025-12-09 | Extensão MS_Produto: campos opcionais (release_ref, produto_ref). Método: vincular_release(). |
