@@ -1,6 +1,6 @@
 ---
 nome: GENESIS_Arquitetura
-versao: "1.1"
+versao: "1.2"
 tipo: Documento
 classe_ref: Documento
 origem: interno
@@ -11,7 +11,7 @@ depende_de:
   - GENESIS
 ---
 
-# GENESIS Arquitetura v1.1
+# GENESIS Arquitetura v1.2
 
 Este documento detalha a arquitetura técnica do GENESIS, complementando a visão conceitual em GENESIS.md.
 
@@ -341,13 +341,129 @@ Ver: [Backlog Módulo Autonomia](/_backlog/Modulo_Autonomia.md)
 
 ---
 
-## 7. Referências
+## 7. Relação Produto ↔ Epistemologia
+
+### 7.1 Visão Geral
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                              PRODUTO ↔ EPISTEMOLOGIA                                                │
+├─────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                     │
+│  MS_PRODUTO                              EPISTEMOLOGIA                                              │
+│  ──────────                              ─────────────                                              │
+│                                                                                                     │
+│  Aplica-se a: DOR DO USUÁRIO             Aplica-se a: CONSTRUÇÃO                                    │
+│  Escopo: Contexto, ciclo de vida         Escopo: Desenvolvimento da solução                         │
+│  Pergunta: O QUE resolver?               Pergunta: COMO construir?                                  │
+│  Ciclo: Backlog → Plan → Dev → Prod      Ciclo: M0 → M1 → M2 → M3 → M4                              │
+│                                                                                                     │
+└─────────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 7.2 Fluxo Integrado
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                                     │
+│  USUÁRIO TRAZ DOR                                                                                   │
+│         │                                                                                           │
+│         ▼                                                                                           │
+│  ┌─────────────────────────────────────────────────────────────────────────────────────────────┐    │
+│  │                                                                                             │    │
+│  │  GENESIS APLICA MS_PRODUTO                                                                  │    │
+│  │  ─────────────────────────                                                                  │    │
+│  │  • Cria Produto (dor, owner, estágio)                                                       │    │
+│  │  • Define Épicos (partes da solução)                                                        │    │
+│  │  • Planeja Releases                                                                         │    │
+│  │                                                                                             │    │
+│  └─────────────────────────────────┬───────────────────────────────────────────────────────────┘    │
+│                                    │                                                                │
+│                                    ▼                                                                │
+│  ┌─────────────────────────────────────────────────────────────────────────────────────────────┐    │
+│  │                                                                                             │    │
+│  │  PARA CADA ÉPICO/BACKLOG ITEM, GENESIS APLICA EPISTEMOLOGIA                                 │    │
+│  │  ──────────────────────────────────────────────────────────                                 │    │
+│  │  • M0: Definir problema (glossário, gap)                                                    │    │
+│  │  • M1: Marco teórico (referências, decisões)                                                │    │
+│  │  • M2: Objeto (escopo, fronteiras)                                                          │    │
+│  │  • M3: Classes (estrutura, métodos)                                                         │    │
+│  │  • M4: Consolidar (artefato pronto)                                                         │    │
+│  │                                                                                             │    │
+│  │  ↺ RECURSIVO até menor granularidade                                                        │    │
+│  │                                                                                             │    │
+│  └─────────────────────────────────────────────────────────────────────────────────────────────┘    │
+│                                                                                                     │
+└─────────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 7.3 Recursividade
+
+```
+PRODUTO (dor do usuário)
+    │
+    └── ÉPICO (parte da solução)
+            │
+            └── M0-M4 ← Epistemologia aplicada ao épico
+                    │
+                    └── BACKLOG ITEM (entregável)
+                            │
+                            └── M0-M4 ← Epistemologia aplicada ao item
+                                    │
+                                    └── TASK (menor granularidade)
+                                            │
+                                            └── M0-M4 (se necessário)
+```
+
+### 7.4 Regras de Aplicação
+
+| Situação | Framework | Resultado |
+|----------|-----------|-----------|
+| Nova DOR do usuário | MS_Produto primeiro | Cria Produto, Épicos, Releases |
+| Desenvolvimento de épico/item | Epistemologia | Ciclo M0-M4 |
+| Dor complexa | MS_Produto + Pipelines | Composição de múltiplos produtos |
+| Consulta/dúvida simples | Nenhum (resposta direta) | — |
+
+### 7.5 Catálogo como Router
+
+O Catálogo (busca semântica) roteia automaticamente para o framework correto baseado nos triggers:
+
+| Capacidade | Triggers | Tipo |
+|------------|----------|------|
+| MS_Produto | dor, produto, ciclo, release, implantação | metodologia |
+| Epistemologia | construir, criar, desenvolver, M0, M4 | metodologia |
+| MS_CRM | vendas, outbound, pipeline, CRM | ms (executável) |
+
+### 7.6 Composição via Pipelines
+
+Dores complexas podem ser resolvidas por composição de produtos:
+
+```
+DOR: "Preciso contratar vendedores e acompanhar performance"
+
+COMPOSIÇÃO:
+
+MS_Seleção ──────► MS_Onboarding ──────► MS_CRM ──────► MS_Performance
+    │                   │                  │                  │
+    ▼                   ▼                  ▼                  ▼
+Vendedor           Vendedor            Vendedor           Relatório
+Selecionado        Treinado            Operando           de Desempenho
+```
+
+O Catálogo encontra as peças. Pipelines Compostos (`bl_pipelines`) monta a cadeia conectando outputs → inputs.
+
+---
+
+## 8. Referências
 
 | Documento | Relação |
 |-----------|---------|
 | genesis/GENESIS.md | Documento pai - visão conceitual |
+| genesis/PRODUTO.md | Visão de produto do Genesis |
 | docs/00_I/00_I_0_1_Glossario.md | Termos e modelo simplificado |
+| docs/00_E/00_E_Epistemologia.md | Framework epistemológico M0-M4 |
 | docs/00_E/00_E_2_2_Modulo_Raciocinio.md | Módulo Raciocínio |
+| docs/04_P/MS_Produto.md | Framework de ciclo de vida de produtos |
 | _backlog/Modulo_Autonomia.md | Especificação futura do módulo Autonomia |
 
 ---
@@ -358,3 +474,4 @@ Ver: [Backlog Módulo Autonomia](/_backlog/Modulo_Autonomia.md)
 |--------|------|-----------|
 | 1.0 | 2025-12-07 | Criação. Visão consolidada, modelo 1 LLM + N Contextos, Contexto como prompt estruturado, posicionamento vs CrewAI, componentes. |
 | 1.1 | 2025-12-07 | Corrige diagrama de componentes: módulos (Raciocínio, Análise, Autonomia) no mesmo nível. Adiciona tabela de módulos. |
+| 1.2 | 2025-12-13 | Adiciona seção 7: Relação Produto ↔ Epistemologia. Documenta fluxo integrado, recursividade, regras de aplicação, catálogo como router, composição via pipelines. |
