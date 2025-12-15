@@ -1,18 +1,19 @@
 ---
 nome: GENESIS
-versao: "2.1"
+versao: "3.0"
 tipo: Framework
 classe_ref: Framework
 origem: interno
 status: Publicado
-camada: C1
+nivel: C1
+camadas: [L0, L1, L2, L3, L4]
 depende_de:
   - 00_E_2_1_Modulo_Catalogo
   - 00_I_1_1_GitHub
   - 00_I_1_3_MongoDB
 ---
 
-# GENESIS v2.1
+# GENESIS v3.0
 
 ## 1. Problema (M0)
 
@@ -35,6 +36,9 @@ depende_de:
 | **Capability** | Algo que GENESIS sabe fazer (CONHECER, DECIDIR, GERENCIAR) |
 | **Discovery** | Usuário descobre capabilities perguntando "o que você sabe fazer?" |
 | **Persistência Híbrida** | GitHub para definições, MongoDB para transações |
+| **Autopoiese** | Propriedade de sistemas que se autoproduzem e evoluem |
+| **PROMETHEUS** | Fábrica que GENESIS usa para executar especificações |
+| **Camadas L0-L4** | Capacidades fundamentais para autopoiese |
 
 ### 1.2 Diagrama do Problema
 
@@ -82,8 +86,9 @@ depende_de:
 > - Catálogo fornece MEMÓRIA (como buscar/persistir)
 > - Gestão de Projetos organiza TRABALHO (backlog/sprints)
 > - **MS_Produto** gerencia CICLO DE VIDA (produtos criados)
+> - **PROMETHEUS** executa especificações (fábrica)
 >
-> **Resultado:** Sistema que reduz dispêndio de energia humana na execução de atividades cognitivas, com conhecimento que persiste e acumula.
+> **Resultado:** Sistema autopoiético que reduz dispêndio de energia humana na execução de atividades cognitivas, com conhecimento que persiste e acumula.
 
 ---
 
@@ -120,6 +125,77 @@ depende_de:
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
+### 2.3 Autopoiese e Camadas L0-L4
+
+#### O que é Autopoiese
+
+Autopoiese (Maturana & Varela, 1980) é a propriedade de sistemas que se **autoproduzem e evoluem**. Um sistema autopoiético:
+- Produz os componentes que o constituem
+- Mantém sua organização enquanto muda estruturalmente
+- Evolui através de interação com o ambiente
+
+**No contexto GENESIS:** Autopoiese é a propriedade emergente da interação entre GENESIS (inteligência) e PROMETHEUS (fábrica). Nenhum dos dois é autopoiético sozinho:
+- GENESIS sem PROMETHEUS: especifica mas não executa
+- PROMETHEUS sem GENESIS: executa mas não sabe o quê
+
+**Juntos** = sistema autopoiético.
+
+#### As 5 Camadas (L0-L4)
+
+Para ser autopoiético, um sistema precisa de 5 capacidades fundamentais:
+
+| Camada | Nome | Capacidade | Pergunta que responde |
+|--------|------|------------|----------------------|
+| **L0** | Existência | Ter identidade, versão, repositório | "Eu existo?" |
+| **L1** | Percepção | Observar-se (logs, métricas, estado) | "O que está acontecendo?" |
+| **L2** | Ação | Executar mudanças no mundo | "Como faço algo?" |
+| **L3** | Validação | Testar, verificar, reverter | "Está certo? É seguro?" |
+| **L4** | Decisão | Decidir direção e prioridades | "O que fazer agora?" |
+
+#### Como GENESIS e PROMETHEUS manifestam L0-L4
+
+| Camada | GENESIS manifesta como | PROMETHEUS manifesta como |
+|--------|------------------------|---------------------------|
+| **L0 Existência** | Kernel, Catálogo, GENESIS.md | Docker configs, Git, manifesto |
+| **L1 Percepção** | Monitora conversas, coleta feedback | Logs, métricas, traces, estado |
+| **L2 Ação** | Orquestra fluxos, especifica artefatos | Provisiona containers, deploya |
+| **L3 Validação** | Valida entregas (aceite), testa specs | CI/CD, testes automatizados, gates |
+| **L4 Decisão** | Decide próximo passo, prioriza | Decide pipeline, scaling, rollback |
+
+#### Ciclo Autopoiético
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         CICLO AUTOPOIÉTICO                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│     GENESIS (inteligência)              PROMETHEUS (fábrica)                │
+│     ══════════════════════              ════════════════════                │
+│                                                                             │
+│     1. Detecta gap (L1 Percepção)                                           │
+│            │                                                                │
+│            ▼                                                                │
+│     2. Decide solução (L4 Decisão)                                          │
+│            │                                                                │
+│            ▼                                                                │
+│     3. Especifica via Epistemologia ────────►  4. Recebe spec               │
+│                                                      │                      │
+│                                                      ▼                      │
+│                                               5. Executa (L2 Ação)          │
+│                                                      │                      │
+│                                                      ▼                      │
+│                                               6. Valida (L3 Validação)      │
+│                                                      │                      │
+│     8. Integra artefato  ◄──────────────────  7. Entrega artefato           │
+│            │                                                                │
+│            ▼                                                                │
+│     9. GENESIS v.N+1 (evoluído)                                             │
+│            │                                                                │
+│            └──────► volta para 1 (novo gap?)                                │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
 ---
 
 ## 3. Objeto (M2)
@@ -131,6 +207,7 @@ depende_de:
 - **Busca** no Catálogo conhecimento, decisão ou projeto existente
 - **Roteia** para existente ou **Cria** novo via sistema apropriado
 - **Persiste** dados no destino correto: GitHub (definições) ou MongoDB (transações)
+- **Especifica** artefatos que PROMETHEUS executa
 - **Resolve** Bootstrap Circular via STUB
 - **Reduz** Entropia Contextual via arquivos atômicos + índice
 
@@ -138,12 +215,14 @@ depende_de:
 
 | GENESIS É | GENESIS NÃO É |
 |-----------|---------------|
-| Inteligência Orquestradora | Executor de domínios |
+| Inteligência Orquestradora | Executor físico (isso é PROMETHEUS) |
 | Classifica CONHECER vs DECIDIR vs GERENCIAR | Conteúdo de negócio |
-| Usa Catálogo como memória | O próprio Catálogo |
+| Fornece Catálogo como memória | O método de especificação (isso é Epistemologia) |
 | Roteia ou delega criação | Implementação de M0-M4 (isso é Epistemologia) |
 | Propósito (PORQUÊ) | Método (isso é Epistemologia) |
 | Decide ONDE persistir (GitHub vs MongoDB) | COMO persistir (isso é responsabilidade de cada sistema) |
+| Especifica o que construir | Executa construção (isso é PROMETHEUS) |
+| Organismo autopoiético | Fábrica instrumental (isso é PROMETHEUS) |
 
 ### 3.3 Hierarquia de Responsabilidades
 
@@ -152,18 +231,19 @@ depende_de:
 │                    HIERARQUIA DE RESPONSABILIDADES                          │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  GENESIS (Camada 1) ─── INTELIGÊNCIA ORQUESTRADORA                          │
+│  GENESIS (Nível C1) ─── INTELIGÊNCIA ORQUESTRADORA                          │
 │  │  • Entende: CONHECER, DECIDIR ou GERENCIAR                               │
 │  │  • Busca: Catálogo                                                       │
 │  │  • Roteia: existente ou cria novo                                        │
 │  │  • Persiste: decide ONDE (GitHub ou MongoDB), delega COMO                │
+│  │  • Especifica: envia specs para PROMETHEUS                               │
 │  │                                                                          │
-│  ├──► CATÁLOGO (Camada 3) ─── MEMÓRIA                                       │
+│  ├──► CATÁLOGO (Nível C3) ─── MEMÓRIA                                       │
 │  │    • indexar(item, chave, metadata)                                      │
 │  │    • buscar(query) → [{item, score}]                                     │
 │  │    • Agnóstico: não sabe o que armazena                                  │
 │  │                                                                          │
-│  ├──► EPISTEMOLOGIA (Camada 3) ─── MÉTODO (CONHECER)                        │
+│  ├──► EPISTEMOLOGIA (Nível C3) ─── MÉTODO (CONHECER)                        │
 │  │    • Ciclo M0-M4 obrigatório                                             │
 │  │    • Cria Meta Sistemas estruturados                                     │
 │  │                                                                          │
@@ -171,28 +251,99 @@ depende_de:
 │  │    • Ciclo H→E→I→D                                                       │
 │  │    • Indexa decisões no Catálogo                                         │
 │  │                                                                          │
-│  ├──► GESTÃO DE PROJETOS (Camada 2) ─── TRABALHO (GERENCIAR)                │
+│  ├──► GESTÃO DE PROJETOS (Nível C2) ─── TRABALHO (GERENCIAR)                │
 │  │    • Backlog: captura, enriquece itens de trabalho                       │
 │  │    • Sprint: ciclos de execução focada                                   │
 │  │    • Orquestra promoção backlog → sprint                                 │
 │  │                                                                          │
-│  ├──► MS_PRODUTO (Camada 4) ─── CICLO DE VIDA (PRODUTO)                     │
+│  ├──► MS_PRODUTO (Nível C4) ─── CICLO DE VIDA (PRODUTO)                     │
 │  │    • Gerencia: Épico → Backlog → Sprint → Release → Implantação → CS     │
 │  │    • Estende: Backlog (+RICE, +épico) e Sprint (+release)                │
 │  │    • Health Score: monitora sucesso do cliente                           │
 │  │    • Feedback Loop: CS → Backlog → Sprint → Release                      │
 │  │                                                                          │
-│  └──► PERSISTÊNCIA (Camada 2) ─── INFRAESTRUTURA                            │
-│       ├─ GitHub: decide COMO persistir definições                           │
-│       │   • persistir_md() → criar() | editar() | substituir()              │
-│       │   • Ref: docs/00_I/00_I_1_1_GitHub.md                               │
-│       │                                                                     │
-│       └─ MongoDB: decide COMO persistir transações                          │
-│           • persistir() → inserir() | atualizar()                           │
-│           • Ref: docs/00_I/00_I_1_3_MongoDB.md                              │
+│  ├──► PERSISTÊNCIA (Nível C2) ─── INFRAESTRUTURA                            │
+│  │    ├─ GitHub: decide COMO persistir definições                           │
+│  │    │   • persistir_md() → criar() | editar() | substituir()              │
+│  │    │   • Ref: docs/00_I/00_I_1_1_GitHub.md                               │
+│  │    │                                                                     │
+│  │    └─ MongoDB: decide COMO persistir transações                          │
+│  │        • persistir() → inserir() | atualizar()                           │
+│  │        • Ref: docs/00_I/00_I_1_3_MongoDB.md                              │
+│  │                                                                          │
+│  └──► PROMETHEUS ─── FÁBRICA (EXECUÇÃO)                                     │
+│       • INFRA: onde roda (Docker, redes, sistemas)                          │
+│       • PRODUÇÃO: workforce (pipelines, deploy)                             │
+│       • Ref: genesis/PROMETHEUS.md                                          │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+### 3.4 Relação com Epistemologia e PROMETHEUS
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    GENESIS × EPISTEMOLOGIA × PROMETHEUS                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│                              GENESIS                                        │
+│                          (Inteligência)                                     │
+│                               │                                             │
+│              ┌────────────────┼────────────────┐                            │
+│              │                │                │                            │
+│              ▼                ▼                ▼                            │
+│         CATÁLOGO       INTERPRETAÇÃO         USA                            │
+│         (memória)       (roteamento)          │                             │
+│                                               ▼                             │
+│                                         EPISTEMOLOGIA                       │
+│                                           (método)                          │
+│                                               │                             │
+│                                               ▼                             │
+│                                    ┌───────────────────────┐                │
+│                                    │   Meta Sistemas (MS)  │                │
+│                                    │   ─────────────────   │                │
+│                                    │   • MS_Produto        │                │
+│                                    │   • MS_Seleção        │                │
+│                                    │   • MS_X              │                │
+│                                    └───────────────────────┘                │
+│                                                                             │
+│              │                                                              │
+│              │ especifica                                                   │
+│              ▼                                                              │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                          PROMETHEUS                                 │    │
+│  │                           (Fábrica)                                 │    │
+│  │                                                                     │    │
+│  │         ┌─────────────────┐      ┌─────────────────┐                │    │
+│  │         │      INFRA      │      │    PRODUÇÃO     │                │    │
+│  │         │   (onde roda)   │      │   (workforce)   │                │    │
+│  │         └─────────────────┘      └─────────────────┘                │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│              │                                                              │
+│              │ executa                                                      │
+│              ▼                                                              │
+│         ARTEFATO IMPLANTADO                                                 │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### Papéis
+
+| Componente | Papel | Fornece |
+|------------|-------|---------|
+| **GENESIS** | Organismo (inteligência) | Catálogo + Interpretação + Decisão |
+| **Epistemologia** | Método que GENESIS usa | COMO criar conhecimento (M0-M4) |
+| **Meta Sistemas** | Filhos de Epistemologia | COMO conhecer domínio X |
+| **PROMETHEUS** | Fábrica que GENESIS usa | INFRA + PRODUÇÃO (execução) |
+
+#### Fluxo
+
+1. **GENESIS** detecta gap ou recebe demanda
+2. **GENESIS** usa **Epistemologia** para especificar (M0-M4)
+3. **GENESIS** envia spec para **PROMETHEUS**
+4. **PROMETHEUS** executa (INFRA hospeda, PRODUÇÃO constrói)
+5. **PROMETHEUS** entrega artefato
+6. **GENESIS** integra e evolui
 
 ---
 
@@ -209,6 +360,7 @@ depende_de:
 │  + nome: String = "GENESIS"                                                 │
 │  + versao: SemVer                                                           │
 │  + visao: String = "Inteligência Híbrida"                                   │
+│  + camadas: [L0, L1, L2, L3, L4]                                            │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Métodos                                                                    │
 │  ────────                                                                   │
@@ -217,6 +369,7 @@ depende_de:
 │  + rotear(resultado_busca) → execução                                       │
 │  + persistir(dado, tipo_dado) → {destino: GITHUB|MONGODB, resultado}        │
 │  + listar_capabilities() → [Capability]                                     │
+│  + especificar(gap) → spec (via Epistemologia)                              │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Dependências (Infraestrutura C2)                                           │
 │  ────────────────────────────────                                           │
@@ -233,6 +386,10 @@ depende_de:
 │  Dependências (Domínio C4)                                                  │
 │  ─────────────────────────                                                  │
 │  - MS_Produto: gerenciar ciclo de vida de produtos                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Dependências (Execução)                                                    │
+│  ───────────────────────                                                    │
+│  - PROMETHEUS: fábrica que executa specs (genesis/PROMETHEUS.md)            │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -529,6 +686,7 @@ depende_de:
 | `rotear()` | resultado_busca | execução | Reutilizar existente ou criar novo |
 | `persistir()` | dado, tipo_dado | {destino, resultado} | Decidir ONDE (GitHub/MongoDB), delegar COMO |
 | `listar_capabilities()` | - | [Capability] | Explicar o que GENESIS sabe fazer |
+| `especificar()` | gap | spec | Usar Epistemologia para criar spec |
 
 ### 4.5 Como Buscar no Catálogo
 
@@ -610,17 +768,18 @@ depende_de:
 
 | Documento | Relação |
 |-----------|---------|
+| **genesis/PROMETHEUS.md** | **Fábrica que GENESIS usa para executar** |
 | docs/00_I/00_I_1_1_GitHub.md | Persistência de definições (COMO) |
 | docs/00_I/00_I_1_3_MongoDB.md | Persistência transacional (COMO) |
 | docs/00_I/00_I_1_2_Protocolo_LLM.md | Como LLM acessa GENESIS |
-| docs/00_E/00_E_Epistemologia.md | Cria conhecimento (CONHECER) |
+| docs/00_E/00_E_Epistemologia.md | Método que GENESIS usa (CONHECER) |
 | docs/00_E/00_E_2_2_Modulo_Raciocinio.md | Toma decisão (DECIDIR) |
 | docs/00_E/00_E_2_1_Modulo_Catalogo.md | Memória estruturada (especificação) |
 | docs/00_I/00_I_0_1_Glossario.md | Glossário Central do sistema |
 | docs/00_I/00_I_2_Gestao_Projetos.md | Organiza trabalho (GERENCIAR) |
 | docs/00_I/00_I_2_1_Backlog.md | Captura e enriquece itens de trabalho |
 | docs/00_I/00_I_2_2_Sprint.md | Ciclos de execução focada |
-| **docs/04_P/MS_Produto.md** | **Gerencia ciclo de vida de Produtos (PRODUTO)** |
+| docs/04_P/MS_Produto.md | MS Epistemológico: COMO gerenciar produto |
 | genesis/GENESIS_Arquitetura.md | Visão técnica detalhada |
 
 ### Externas
@@ -651,3 +810,4 @@ depende_de:
 | 1.9 | 2025-12-08 | **persistir() SIMPLIFICADO**: GENESIS decide ONDE, delega COMO para GitHub/MongoDB. Sprint S011/T04. |
 | 2.0 | 2025-12-08 | **Teste editar()**: método por âncora validado. Sprint S011/T05. |
 | 2.1 | 2025-12-09 | **MS_Produto integrado**: roteamento para ciclo de vida de produtos, Camada 4 no índice. Sprint S014. |
+| 3.0 | 2025-12-15 | **Autopoiese**: seção 2.3 com L0-L4, tabela de-para GENESIS×PROMETHEUS. Seção 3.4 Relação com Epistemologia e PROMETHEUS. Fronteiras clarificadas. GENESIS como organismo autopoiético. |
