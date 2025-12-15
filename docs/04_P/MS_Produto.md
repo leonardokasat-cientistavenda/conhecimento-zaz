@@ -1,19 +1,32 @@
-# MS_Produto v1.0
+# MS_Produto v1.1
 
 ---
+
+```yaml
 nome: MS_Produto
-versao: "1.0"
+versao: "1.1"
 tipo: Meta Sistema
+classe_ref: MS_Epistemologico
 status: Publicado
-camada: 4
+nivel: C4
+camadas: [L0, L1]
 dominio: Produto
-data_publicacao: 2025-12-09
+data_publicacao: 2025-12-15
 sprint_origem: S014
+```
+
 ---
 
 ## 1. Visão Geral
 
-**MS_Produto** é o Meta Sistema que gerencia o ciclo completo de vida de Produtos, desde a captura estruturada de demandas até o sucesso contínuo do usuário.
+**MS_Produto** é um Meta Sistema Epistemológico que define o **COMO conhecer e gerenciar produto**. Gerencia o ciclo completo de vida de Produtos, desde a captura estruturada de demandas até o sucesso contínuo do usuário.
+
+### O que é um MS Epistemológico?
+
+MS_Produto é filho de Epistemologia. Foi criado via ciclo M0-M4 e define **COMO** estruturar conhecimento sobre um domínio específico (Produto). Outros exemplos de MS Epistemológicos:
+- MS_Seleção (COMO conhecer seleção de pessoas)
+- MS_CI/CD (COMO conhecer deploy)
+- MS_X (COMO conhecer X)
 
 ### Tese
 
@@ -35,14 +48,16 @@ sprint_origem: S014
 │  MS_PRODUTO É                          MS_PRODUTO NÃO É                     │
 │  ─────────────                         ────────────────                     │
 │                                                                             │
-│  ✅ Orquestrador do ciclo de vida     ❌ Executor técnico (deploy k8s)      │
-│  ✅ Gestão de Épicos e Roadmap        ❌ Ferramenta de CI/CD                 │
-│  ✅ Extensão de Backlog/Sprint        ❌ Substituto de Backlog/Sprint        │
-│  ✅ Framework de priorização          ❌ Código de produto                   │
-│  ✅ Processo de Implantação           ❌ Infraestrutura técnica              │
-│  ✅ Framework de CS                   ❌ CRM de vendas                       │
-│  ✅ Feedback Loop estruturado         ❌ Sistema de tickets (Zendesk)        │
-│  ✅ Visibilidade de Portfólio         ❌ Dashboard de métricas técnicas      │
+│  ✅ MS Epistemológico (COMO produto)  ❌ Executor técnico (deploy k8s)      │
+│  ✅ Orquestrador do ciclo de vida     ❌ Ferramenta de CI/CD                 │
+│  ✅ Gestão de Épicos e Roadmap        ❌ Substituto de Backlog/Sprint        │
+│  ✅ Extensão de Backlog/Sprint        ❌ Código de produto                   │
+│  ✅ Framework de priorização          ❌ Infraestrutura técnica              │
+│  ✅ Processo de Implantação           ❌ CRM de vendas                       │
+│  ✅ Framework de CS                   ❌ Sistema de tickets (Zendesk)        │
+│  ✅ Feedback Loop estruturado         ❌ Dashboard de métricas técnicas      │
+│  ✅ Visibilidade de Portfólio         ❌ Fábrica de execução (isso é         │
+│                                          PROMETHEUS)                        │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -50,7 +65,31 @@ sprint_origem: S014
 
 ## 3. Arquitetura
 
-### 3.1 Diagrama de Escopo
+### 3.1 Posição no Ecossistema
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    MS_PRODUTO NO ECOSSISTEMA                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  GENESIS (inteligência)                                                     │
+│      │                                                                      │
+│      │ usa                                                                  │
+│      ▼                                                                      │
+│  EPISTEMOLOGIA (método M0-M4)                                               │
+│      │                                                                      │
+│      │ gera                                                                 │
+│      ▼                                                                      │
+│  MS_PRODUTO (COMO conhecer produto) ◄─── você está aqui                     │
+│      │                                                                      │
+│      │ especifica                                                           │
+│      ▼                                                                      │
+│  PROMETHEUS (fábrica) ───► Artefatos de produto implantados                 │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 3.2 Diagrama de Escopo
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -100,7 +139,7 @@ sprint_origem: S014
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 3.2 Diagrama de Classes
+### 3.3 Diagrama de Classes
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -162,6 +201,20 @@ sprint_origem: S014
 │                            └─────────────┘      └─────────────┘             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+### 3.4 Camadas Autopoiéticas (L0-L4)
+
+MS_Produto manifesta parcialmente as camadas L0-L4:
+
+| Camada | Manifesta? | Como |
+|--------|------------|------|
+| **L0 Existência** | ✅ | Documento .md, versão, frontmatter |
+| **L1 Percepção** | ✅ | Health Score, feedback, histórico |
+| **L2 Ação** | ⚪ Parcial | Via PROMETHEUS |
+| **L3 Validação** | ⚪ Parcial | Via PROMETHEUS |
+| **L4 Decisão** | ⚪ Parcial | Via GENESIS |
+
+**Definição completa de L0-L4:** genesis/GENESIS.md seção 2.3
 
 ---
 
@@ -337,22 +390,21 @@ sprint_origem: S014
 │                              DEPENDÊNCIAS                                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  MS_Produto USA (C2 - Infraestrutura):                                      │
+│  MS_Produto É GERADO POR (pai direto):                                      │
 │  ─────────────────────────────────────                                      │
+│  • Epistemologia (via M0-M4)                                                │
+│                                                                             │
+│  MS_Produto USA (infraestrutura):                                           │
+│  ────────────────────────────────                                           │
 │  • Backlog (00_I_2_1) - estende com campos opcionais                        │
 │  • Sprint (00_I_2_2) - estende com campos opcionais                         │
 │  • Catálogo - busca semântica                                               │
 │  • MongoDB - persistência de instâncias                                     │
 │  • GitHub - persistência de definições                                      │
 │                                                                             │
-│  MS_Produto É GERADO POR (C3 - Framework):                                  │
-│  ─────────────────────────────────────────                                  │
-│  • Epistemologia (via M0-M4)                                                │
-│                                                                             │
-│  MS_Produto NÃO É USADO POR:                                                │
+│  MS_Produto ESPECIFICA PARA:                                                │
 │  ───────────────────────────                                                │
-│  • Epistemologia (relação inversa)                                          │
-│  • Gestão de Projetos (MS_Produto usa os filhos)                            │
+│  • PROMETHEUS - executa artefatos de produto                                │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -444,6 +496,21 @@ exemplos_uso:
 
 ---
 
+## 11. Referências
+
+### 11.1 Internas
+
+| Documento | Relação |
+|-----------|---------|
+| genesis/GENESIS.md | Avô (C1) - Inteligência que roteia |
+| genesis/GENESIS.md seção 2.3 | Definição de Autopoiese e L0-L4 |
+| docs/00_E/00_E_Epistemologia.md | Pai (C3) - Método que gerou MS_Produto |
+| **genesis/PROMETHEUS.md** | **Fábrica que executa artefatos de produto** |
+| docs/00_I/00_I_2_1_Backlog.md | Infraestrutura estendida |
+| docs/00_I/00_I_2_2_Sprint.md | Infraestrutura estendida |
+
+---
+
 ## Histórico
 
 | Versão | Data | Alteração |
@@ -453,3 +520,4 @@ exemplos_uso:
 | 0.3 | 2025-12-09 | M2 - Objeto |
 | 0.4 | 2025-12-09 | M3 - Classes |
 | 1.0 | 2025-12-09 | M4 - Documento Final Publicado |
+| 1.1 | 2025-12-15 | **Reconciliação**: clarifica MS Epistemológico, seção 3.1 Posição no Ecossistema, seção 3.4 Camadas L0-L4, frontmatter atualizado (nivel: C4, camadas: [L0, L1]), referência a PROMETHEUS.md. |
