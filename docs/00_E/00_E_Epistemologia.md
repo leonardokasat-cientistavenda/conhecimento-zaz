@@ -1,13 +1,13 @@
 ---
 nome: 00_E_Epistemologia
-versao: "3.4"
+versao: "3.5"
 tipo: Framework
 classe_ref: Framework
 origem: interno
 status: Published
 etapa: M4
-sprint_ref: S005-G
-task_ref: T10
+nivel: C3
+camadas: [L0, L1, L2]
 
 # ATRIBUTOS DE ROTEAMENTO (Interface com GENESIS)
 problema_que_resolve: "Como estruturar qualquer domínio de conhecimento de forma anti-entrópica"
@@ -31,7 +31,7 @@ cobertura: Completo
 pai: null
 ---
 
-# Epistemologia v3.4
+# Epistemologia v3.5
 
 ## 1. Problema (M0)
 
@@ -45,6 +45,7 @@ pai: null
 | **Módulo** | Conjunto de classes opcionais para extensão de capacidades |
 | **Par E/O Local** | Cada nível tem sua própria Epistemologia (classes) e Ontologia (instâncias) |
 | **Entropia Epistêmica** | Degradação do conhecimento por falta de estrutura explícita |
+| **MS Epistemológico** | Meta Sistema criado via Epistemologia (ex: MS_Produto, MS_Seleção) |
 
 ### 1.2 Diagrama do Problema
 
@@ -84,7 +85,9 @@ pai: null
 > - **Hierarquia Fractal** - Par E/O replicado em cada nível
 > - **Composição Modular** - Extensões opcionais por escolha
 >
-> **Pré-requisito:** GENESIS define propósito (Inteligência Híbrida) e roteia para Meta Sistemas.
+> **Pré-requisitos:**
+> - GENESIS define propósito (Inteligência Híbrida) e roteia para Meta Sistemas
+> - PROMETHEUS executa artefatos especificados via Epistemologia
 
 ---
 
@@ -125,6 +128,31 @@ pai: null
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
+### 2.3 Relação com GENESIS e PROMETHEUS
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    EPISTEMOLOGIA NO ECOSSISTEMA                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  GENESIS (inteligência)                                                     │
+│      │                                                                      │
+│      │ usa                                                                  │
+│      ▼                                                                      │
+│  EPISTEMOLOGIA (método) ───► MS Epistemológicos (filhos)                    │
+│      │                       • MS_Produto (COMO produto)                    │
+│      │                       • MS_Seleção (COMO seleção)                    │
+│      │                       • MS_X (COMO X)                                │
+│      │                                                                      │
+│      │ gera specs                                                           │
+│      ▼                                                                      │
+│  PROMETHEUS (fábrica) ───► Artefatos implantados                            │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+Epistemologia é o **método** que GENESIS usa para criar conhecimento estruturado. Os artefatos especificados são executados por PROMETHEUS.
+
 ---
 
 ## 3. Objeto (M2)
@@ -140,9 +168,10 @@ pai: null
 
 | Epistemologia É | Epistemologia NÃO É |
 |-----------------|---------------------|
-| Fábrica de Meta Sistemas | O conhecimento em si (Ontologia) |
-| Método M0-M4 obrigatório | Conteúdo de domínio específico |
-| Módulos opcionais para extensão | Propósito maior (isso é GENESIS) |
+| Método de especificação (COMO conhecer) | O conhecimento em si (Ontologia) |
+| Fábrica de Meta Sistemas | Conteúdo de domínio específico |
+| M0-M4 obrigatório | Propósito maior (isso é GENESIS) |
+| Módulos opcionais para extensão | Execução de artefatos (isso é PROMETHEUS) |
 | Estrutura fractal replicável | Instâncias de um domínio |
 
 ### 3.3 Componentes
@@ -158,6 +187,20 @@ pai: null
 | **Módulo Catálogo** | Módulo | ⚪ | Item, Categoria, Tag |
 | **Módulo Análise** | Módulo | ⚪ | Métrica, Dimensão, Agregação |
 
+### 3.4 Camadas Autopoiéticas (L0-L4)
+
+Epistemologia manifesta parcialmente as camadas L0-L4:
+
+| Camada | Epistemologia manifesta? | Como |
+|--------|--------------------------|------|
+| **L0 Existência** | ✅ | Documentos .md, versão, frontmatter |
+| **L1 Percepção** | ✅ | Histórico de versões, status |
+| **L2 Ação** | ✅ | Gera specs via M0-M4 |
+| **L3 Validação** | ⚪ Parcial | Via PROMETHEUS |
+| **L4 Decisão** | ⚪ Parcial | Via GENESIS |
+
+**Definição completa de L0-L4:** genesis/GENESIS.md seção 2.3
+
 ---
 
 ## 4. Classe (M3)
@@ -169,7 +212,8 @@ pai: null
 | **Identificação** | nome | String | ✅ |
 | | versao | SemVer | ✅ |
 | | tipo | Enum (Framework) | ✅ |
-| | camada | Integer (3) | ✅ |
+| | nivel | Enum (C1-C4) | ✅ |
+| | camadas | Array[L0-L4] | ✅ |
 | | status | Enum | ✅ |
 | **Roteamento** | problema_que_resolve | String | ✅ |
 | | triggers | Array[String] | ✅ |
@@ -216,6 +260,7 @@ pai: null
 | **R-ROTEAMENTO** | Todo Meta Sistema DEVE ter: problema_que_resolve, triggers (mín 3), exemplos_uso (mín 2), arquivo_raiz | Sem eles = invisível para GENESIS |
 | **R-CICLO** | Todas as etapas M0-M4 devem completar | Ciclo incompleto = não publicável |
 | **R-VERSAO** | Deve seguir SemVer | Versão inválida = erro |
+| **R-CAMADAS** | Deve declarar camadas L0-L4 que manifesta | Sem declaração = capacidades indefinidas |
 
 ### 4.4 Invariantes
 
@@ -235,8 +280,11 @@ pai: null
 | Documento | Relação |
 |-----------|---------|
 | genesis/GENESIS.md | Pai (C1) - Propósito e roteamento |
+| genesis/GENESIS.md seção 2.3 | Definição de Autopoiese e L0-L4 |
+| **genesis/PROMETHEUS.md** | **Fábrica que executa specs geradas via Epistemologia** |
 | docs/00_E/00_E_1_1_Problema.md | Classe M0 detalhada |
 | docs/00_E/00_E_1_6_Documento.md | Classe M4 detalhada |
+| docs/04_P/MS_Produto.md | MS Epistemológico: COMO gerenciar produto |
 
 ### Externas
 
@@ -256,3 +304,4 @@ pai: null
 | 3.2 | 2025-12-04 | Publicação com M0-M4 completo |
 | 3.3 | 2025-12-05 | Interface GENESIS: atributos de roteamento, R-ROTEAMENTO |
 | 3.4 | 2025-12-05 | **FAXINA** - Redução 60%: diagramas duplicados removidos, seções consolidadas, redundâncias com GENESIS eliminadas. Sprint S005-G/T10. |
+| 3.5 | 2025-12-15 | **Reconciliação**: seção 2.3 Relação com GENESIS e PROMETHEUS. Frontmatter: nivel: C3, camadas: [L0, L1, L2]. Referência a PROMETHEUS.md. Glossário: +MS Epistemológico. |
