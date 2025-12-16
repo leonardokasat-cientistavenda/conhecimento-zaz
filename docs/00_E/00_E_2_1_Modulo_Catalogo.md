@@ -1,17 +1,17 @@
 ---
 nome: 00_E_2_1_Modulo_Catalogo
-versao: "1.2"
+versao: "1.3"
 tipo: Modulo
 classe_ref: Modulo
 origem: interno
 status: Publicado
 etapa: M4
-sprint_ref: S006-C
-task_ref: T05
+sprint_ref: S019
+task_ref: T01
 camada: C3
 ---
 
-# Módulo Catálogo v1.1
+# Módulo Catálogo v1.3
 
 ## 1. Problema (M0)
 
@@ -25,7 +25,8 @@ camada: C3
 | **Metadata** | Dados adicionais do item (uso_count, confirmacoes, etc.) |
 | **Score** | Pontuação de relevância retornada pela busca |
 | **Trigger** | Frase que ativa o item na busca (match exato = alta relevância) |
-| **Tipo** | Categoria do item indexado (docs, backlog, sprint) |
+| **Tipo** | Categoria do item indexado (docs, backlog, sprint, templates) |
+| **Template** | Modelo de especificação para vertentes M3.* (novo v1.3) |
 
 ### 1.2 Diagrama do Problema
 
@@ -138,7 +139,7 @@ Vantagem: Não requer normalização de scores entre sistemas diferentes
 |------------|--------------|-------------|-----------------|
 | **GENESIS** | Meta Sistemas | Query do usuário | cobertura, pai |
 | **Raciocínio** | Decisões | Problema similar | uso_count, confirmacoes |
-| **Epistemologia** | Documentos | Conteúdo | versao, status |
+| **Epistemologia** | Documentos, Templates | Conteúdo, Vertente M3.* | versao, status, vertente |
 
 ---
 
@@ -217,7 +218,7 @@ Vantagem: Não requer normalização de scores entre sistemas diferentes
 │  - options?: {                                                              │
 │      top_k?: number,                                                        │
 │      threshold?: float,                                                     │
-│      tipo?: "docs" | "backlog" | "sprint"  # Filtra por categoria           │
+│      tipo?: "docs" | "backlog" | "sprint" | "templates"  # v1.3             │
 │    }                                                                        │
 │                                                                             │
 │  Output: [{ item, score, metadata }]                                        │
@@ -302,11 +303,12 @@ Vantagem: Não requer normalização de scores entre sistemas diferentes
 │                                                                             │
 │  Arquivo: _catalogo/indice.yaml                                             │
 │                                                                             │
-│  TIPOS SUPORTADOS:                                                          │
+│  TIPOS SUPORTADOS (v1.3):                                                   │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  docs     → Conhecimento publicado (Meta Sistemas, Infra, etc.)     │    │
-│  │  backlog  → Itens de trabalho pendente (_backlog/*.md)              │    │
-│  │  sprint   → Ciclos de execução (_sprints/*.md)                      │    │
+│  │  docs      → Conhecimento publicado (Meta Sistemas, Infra, etc.)    │    │
+│  │  backlog   → Itens de trabalho pendente (_backlog/*.md)             │    │
+│  │  sprint    → Ciclos de execução (_sprints/*.md)                     │    │
+│  │  templates → Templates de especificação M3.* (NOVO v1.3)            │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 │  ESTRUTURA DO ITEM:                                                         │
@@ -325,6 +327,21 @@ Vantagem: Não requer normalização de scores entre sistemas diferentes
 │  │      status: Publicado                                              │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
+│  ESTRUTURA DO TEMPLATE (NOVO v1.3):                                         │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  - id: "template_spec_poo"                                          │    │
+│  │    nome: "Template M3.E - POO"                                      │    │
+│  │    chave: "especificar classe python..."                            │    │
+│  │    arquivo: "_catalogo/templates/M3_E_POO.md"                       │    │
+│  │    triggers:                                                        │    │
+│  │      - "especificar classe"                                         │    │
+│  │      - "M3.E"                                                       │    │
+│  │    metadata:                                                        │    │
+│  │      vertente: "M3.E"                                               │    │
+│  │      artefatos_produzidos: [".py", "test_.py", ".feature"]          │    │
+│  │      schema_tdd: true                                               │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
 │  ALGORITMO DE BUSCA (MVP):                                                  │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  1. Ler _catalogo/indice.yaml                                       │    │
@@ -341,7 +358,7 @@ Vantagem: Não requer normalização de scores entre sistemas diferentes
 │  - Índice estático (edição manual)                                          │
 │  - Sem score numérico (apenas ranking)                                      │
 │                                                                             │
-│  EVOLUÇÃO FUTURA: Ver _backlog/Evolucao_Catalogo.md                         │
+│  EVOLUÇÃO FUTURA: Ver _backlog/BKL-C01_Catalogo_v2.md                       │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -355,10 +372,12 @@ Vantagem: Não requer normalização de scores entre sistemas diferentes
 | Documento | Relação |
 |-----------|---------|
 | _catalogo/indice.yaml | Implementação MVP do índice |
+| _catalogo/templates/ | Templates de especificação M3.* (novo v1.3) |
 | _catalogo/README.md | Instruções de uso |
 | docs/00_E/00_E_Epistemologia.md | Pai - contém este módulo |
 | genesis/GENESIS.md | Principal consumidor |
 | docs/00_E/00_E_2_2_Modulo_Raciocinio.md | Consumidor - indexa decisões |
+| _backlog/BKL-C01_Catalogo_v2.md | Backlog: reintegração com GENESIS v5.0 |
 
 ### Externas
 
@@ -378,3 +397,4 @@ Vantagem: Não requer normalização de scores entre sistemas diferentes
 | 1.0 | 2025-12-06 | **Publicação M4.** Interface consolidada: indexar, buscar, atualizar_metadata. Algoritmo Hybrid Search (BM25 + Embeddings + RRF). Sprint S005-G/T13. |
 | 1.1 | 2025-12-07 | **Implementação MVP.** Seção 4.7 com índice YAML (_catalogo/indice.yaml). Termo "trigger" no glossário. Referências ao índice e README. Sprint S006-C/T05. |
 | 1.2 | 2025-12-08 | **Multi-tipo.** Catálogo suporta tipos: docs, backlog, sprint. Filtro por tipo no buscar(). Sprint S008/T02. |
+| 1.3 | 2025-12-16 | **Tipo templates.** Suporte a templates de especificação M3.* para Epistemologia v4.0. Metadata: vertente, artefatos_produzidos, schema_tdd. Referência BKL-C01 para evolução futura. Sprint S019/T01. |
