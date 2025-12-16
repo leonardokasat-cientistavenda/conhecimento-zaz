@@ -1,9 +1,10 @@
-# Catálogo GENESIS v2.4
+# Catálogo GENESIS v2.5
 # Índice semântico para busca e roteamento
-# Organizado por tipo: docs, backlog, sprint
+# Organizado por tipo: docs, backlog, sprint, templates
+# v2.5: Adicionado tipo templates para especificações M3.*
 
-versao: "2.4"
-atualizado: "2025-12-08"
+versao: "2.5"
+atualizado: "2025-12-16"
 
 # =============================================================================
 # DOCS - Conhecimento publicado (Meta Sistemas, Infraestrutura, etc.)
@@ -66,7 +67,7 @@ docs:
       - "indexar item"
       - "onde está"
     metadata:
-      versao: "1.2"
+      versao: "1.3"
       camada: C3
       status: Publicado
 
@@ -121,6 +122,99 @@ docs:
         - "O que temos no backlog?"
         - "Iniciar nova sprint"
         - "Capturar ideia para o backlog"
+
+# =============================================================================
+# TEMPLATES - Templates de especificação para vertentes M3.*
+# Novo em v2.5 - Usado por Epistemologia para aplicar método por vertente
+# =============================================================================
+templates:
+  - id: "template_spec_poo"
+    nome: "Template M3.E - POO"
+    chave: "especificar classe python typescript java orientação objetos estrutural código"
+    arquivo: "_catalogo/templates/M3_E_POO.md"
+    triggers:
+      - "especificar classe"
+      - "gerar código POO"
+      - "M3.E"
+      - "vertente estrutural"
+    metadata:
+      vertente: "M3.E"
+      artefatos_produzidos:
+        - ".py"
+        - "test_.py"
+        - ".feature"
+      schema_tdd: true
+      status: Pendente  # Será criado em T03
+
+  - id: "template_spec_bpmn"
+    nome: "Template M3.P - BPMN"
+    chave: "especificar processo workflow bpmn camunda lanes gateways processual"
+    arquivo: "_catalogo/templates/M3_P_BPMN.md"
+    triggers:
+      - "especificar processo"
+      - "gerar BPMN"
+      - "M3.P"
+      - "vertente processual"
+    metadata:
+      vertente: "M3.P"
+      artefatos_produzidos:
+        - ".bpmn"
+        - "karate.feature"
+      schema_tdd: true
+      status: Pendente  # Será criado em T03
+
+  - id: "template_spec_dmn"
+    nome: "Template M3.D - DMN"
+    chave: "especificar decisão regras dmn tabela decisão decisional"
+    arquivo: "_catalogo/templates/M3_D_DMN.md"
+    triggers:
+      - "especificar decisão"
+      - "gerar DMN"
+      - "M3.D"
+      - "vertente decisional"
+    metadata:
+      vertente: "M3.D"
+      artefatos_produzidos:
+        - ".dmn"
+        - "karate.feature"
+      schema_tdd: true
+      status: Backlog  # Futuro
+
+  - id: "template_spec_infra"
+    nome: "Template M3.I - Infra"
+    chave: "especificar infraestrutura docker kubernetes yaml IaC infraestrutural"
+    arquivo: "_catalogo/templates/M3_I_Infra.md"
+    triggers:
+      - "especificar infraestrutura"
+      - "gerar Dockerfile"
+      - "M3.I"
+      - "vertente infraestrutural"
+    metadata:
+      vertente: "M3.I"
+      artefatos_produzidos:
+        - "Dockerfile"
+        - "docker-compose.yaml"
+        - ".yaml"
+      schema_tdd: false
+      status: Backlog  # Futuro
+
+  - id: "template_spec_config"
+    nome: "Template M3.C - Config"
+    chave: "especificar configuração schema env variáveis ambiente configuracional"
+    arquivo: "_catalogo/templates/M3_C_Config.md"
+    triggers:
+      - "especificar configuração"
+      - "gerar schema"
+      - "M3.C"
+      - "vertente configuracional"
+    metadata:
+      vertente: "M3.C"
+      artefatos_produzidos:
+        - ".env"
+        - "schema.json"
+        - "config.yaml"
+      schema_tdd: false
+      status: Backlog  # Futuro
 
 # =============================================================================
 # BACKLOG - Itens de trabalho pendente
@@ -185,6 +279,19 @@ backlog:
     metadata:
       prioridade: media
       status: Pendente
+
+  - id: "bl_catalogo_v2"
+    nome: "Catálogo v2.0 - Alinhamento Event-Driven"
+    chave: "catálogo event-driven MS_Backlog reintegração GENESIS v5.0"
+    arquivo: "_backlog/BKL-C01_Catalogo_v2.md"
+    triggers:
+      - "catálogo event-driven"
+      - "catálogo MS_Backlog"
+      - "BKL-C01"
+    metadata:
+      prioridade: alta
+      status: Pendente
+      sequencia: "após PROMETHEUS v3.0"
 
 # =============================================================================
 # SPRINTS - Ciclos de execução
@@ -262,5 +369,14 @@ sprints:
     chave: "persistência híbrida MongoDB banco dados transacional GitHub migração"
     arquivo: "_sprints/S010_Persistencia_Hibrida.md"
     metadata:
-      status: Ativa
+      status: Concluida
       data_inicio: "2025-12-08"
+
+  - id: "sp_019"
+    codigo: "S019"
+    nome: "Epistemologia v4.0 - Event-Driven"
+    chave: "epistemologia event-driven M3.* vertentes templates TDD"
+    arquivo: "_sprints/S019_Epistemologia_v4.md"
+    metadata:
+      status: Ativa
+      data_inicio: "2025-12-16"
