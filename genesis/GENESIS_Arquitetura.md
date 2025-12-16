@@ -1,13 +1,14 @@
-# GENESIS Arquitetura v2.0
+# GENESIS Arquitetura v2.1
 
 ---
 
 ```yaml
 nome: GENESIS_Arquitetura
-versao: "2.0"
+versao: "2.1"
 tipo: Documento
 status: Publicado
 camada: C1
+data_publicacao: "2025-12-16"
 pai: GENESIS
 depende_de:
   - GENESIS
@@ -141,7 +142,7 @@ LLM puro    LLM +       LLM +         1 LLM +          Multi-LLM
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Consulta (não possui)                                                      │
 │  ─────────────────────                                                      │
-│  - MS_Produto.catalogo → Features, Avaliações                               │
+│  - MS_Produto.catalogo → Prontuários, Features, Avaliações                  │
 │  - Epistemologia.catalogo → Specs, M0s                                      │
 │  - PROMETHEUS.catalogo → Artefatos, Releases                                │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -172,10 +173,10 @@ Classifica a natureza do problema:
 │  └── "Promover item para sprint"                                            │
 │                                                                             │
 │  PRODUTO (ciclo de vida):                                                   │
-│  ├── "Tenho uma dor..." → MS_Produto.capturar_dor()                         │
-│  ├── "Criar novo produto" → MS_Produto.criar()                              │
-│  ├── "Health score" → MS_Produto.health_score()                             │
-│  └── "Implantar release" → MS_Produto.implantar()                           │
+│  ├── "Tenho uma dor..." → rotear para MS_Produto.entrevistar_dor()          │
+│  ├── "Criar novo produto" → rotear para MS_Produto.criar()                  │
+│  ├── "Health score" → rotear para MS_Produto.health_score()                 │
+│  └── "Implantar release" → rotear para MS_Produto.implantar()               │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -189,7 +190,8 @@ Classifica a natureza do problema:
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  1. Consulta MS_Produto.catalogo                                            │
-│     → Busca Features similares à dor                                        │
+│     → Busca Prontuários similares à dor                                     │
+│     → Busca Features similares                                              │
 │     → Retorna hipóteses que funcionaram                                     │
 │                                                                             │
 │  2. Consulta Epistemologia.catalogo                                         │
@@ -240,6 +242,12 @@ Classifica a natureza do problema:
 │          proximos_passos = ["Novo ciclo Epistemologia", feature]            │
 │          aprendizados = extrair_padroes_falha(feature)                      │
 │                                                                             │
+│  PASSO 4: Detectar bugs (se problema técnico)                               │
+│  ─────────────────────────────────────────────                              │
+│  SE erro_tecnico detectado:                                                 │
+│      conclusao = "BUG"                                                      │
+│      proximos_passos = ["Correção em PROMETHEUS"]                           │
+│                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -265,6 +273,10 @@ Classifica a natureza do problema:
 │      → Indexar aprendizado sobre calibração                                 │
 │      → Ajustar thresholds default para features similares                   │
 │                                                                             │
+│  SE avaliacao.conclusao == "BUG":                                           │
+│      → Não indexar como padrão (problema técnico, não de design)            │
+│      → Apenas rastrear para métricas de qualidade                           │
+│                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -276,21 +288,24 @@ Classifica a natureza do problema:
 │  Output: [Feature, Spec, Artefato] (sugestões de reuso)                     │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  1. Buscar features similares (MS_Produto.catalogo)                         │
+│  1. Buscar prontuários similares (MS_Produto.catalogo)                      │
+│     query = {sintoma: similar(dor)}                                         │
+│                                                                             │
+│  2. Buscar features similares (MS_Produto.catalogo)                         │
 │     query = {dor_tipo: similar(dor), conclusao: "SUCESSO"}                  │
 │                                                                             │
-│  2. Buscar specs similares (Epistemologia.catalogo)                         │
+│  3. Buscar specs similares (Epistemologia.catalogo)                         │
 │     query = {problema_ref: similar(dor), status: "Publicado"}               │
 │                                                                             │
-│  3. Buscar artefatos similares (PROMETHEUS.catalogo)                        │
+│  4. Buscar artefatos similares (PROMETHEUS.catalogo)                        │
 │     query = {feature_ref: features_encontradas}                             │
 │                                                                             │
-│  4. Ranquear por:                                                           │
+│  5. Ranquear por:                                                           │
 │     - Score de similaridade                                                 │
 │     - Histórico de sucesso                                                  │
 │     - Quantidade de reuso anterior                                          │
 │                                                                             │
-│  5. Retornar top N sugestões com justificativa                              │
+│  6. Retornar top N sugestões com justificativa                              │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -360,37 +375,53 @@ Classifica a natureza do problema:
 ### 4.1 GENESIS ↔ MS_Produto
 
 ```yaml
-# GENESIS chama MS_Produto para:
-capturar_dor:
-  input: {descricao: string, usuario: string}
-  output: {produto_id?, feature_id, criterios_sugeridos}
+# GENESIS roteia para MS_Produto (não processa dor diretamente)
+rotear_dor:
+  trigger: "usuario menciona dor, problema, fricção"
+  input: {contexto: string}
+  output: {sistema: "MS_Produto", metodo: "entrevistar_dor"}
+  nota: "GENESIS só roteia, MS_Produto é quem entrevista"
 
-estruturar_feature:
-  input: {dor: string, hipotese: string}
-  output: {feature_id, criterios_sucesso: []}
+# MS_Produto é responsável por:
+entrevistar_dor:
+  input: {usuario: string}
+  output: {prontuario_id: string}
+  responsavel: MS_Produto  # NÃO GENESIS
 
+converter_produto:
+  input: {prontuario_id: string}
+  output: {produto_id: string, dor_cliente: string, threshold_adocao: number}
+  responsavel: MS_Produto
+
+criar_feature:
+  input: {produto_id: string, hipotese: string, criterios: []}
+  output: {feature_id: string, criterios_sucesso: []}
+  responsavel: MS_Produto
+
+# GENESIS chama MS_Produto para avaliação:
 calcular_adocao:
-  input: {produto_id, periodo}
+  input: {produto_id: string, periodo: string}
   output: {adocao: number, por_feature: []}
 
 avaliar_criterios:
-  input: {feature_id}
+  input: {feature_id: string}
   output: {criterios: [{nome, baseline, meta, atual, status}]}
 
 # MS_Produto cataloga para GENESIS:
 catalogo_schema:
-  - features: {id, hipotese, criterios, status, aprendizados}
-  - avaliacoes: {feature_id, conclusao, metricas, data}
+  - prontuarios: {id, sintoma, afetados, impacto, status}
+  - produtos: {id, nome, dor_cliente, threshold_adocao, status}
+  - features: {id, produto_ref, hipotese, criterios, status, aprendizados}
+  - avaliacoes: {feature_id, conclusao, metricas, aprendizados, data}
 ```
 
 ### 4.2 GENESIS ↔ Epistemologia
 
 ```yaml
-# GENESIS chama Epistemologia para:
-especificar:
-  input: {feature_id, contexto}
-  output: {spec_id, M3_vertentes: [E, P?, D?, I?, C?]}
+# Epistemologia é acionada via Backlog, não diretamente por GENESIS
+# MS_Produto cria BacklogItem → Sprint promove → Epistemologia executa
 
+# GENESIS consulta catálogo de Epistemologia:
 buscar_spec_similar:
   input: {problema: string}
   output: [{spec_id, score, resumo}]
@@ -405,13 +436,16 @@ catalogo_schema:
 ### 4.3 GENESIS ↔ PROMETHEUS
 
 ```yaml
-# GENESIS chama PROMETHEUS para:
-executar_spec:
-  input: {spec_id, vertentes: [M3.E, M3.P?, ...]}
-  output: {job_id, status}
+# PROMETHEUS é acionado via Backlog, não diretamente por GENESIS
+# MS_Produto cria BacklogItem(tipo: desenvolvimento) → Sprint promove → PROMETHEUS executa
+
+# GENESIS consulta catálogo de PROMETHEUS:
+buscar_artefato_similar:
+  input: {feature_ref: string}
+  output: [{artefato_id, score, tipo, path}]
 
 obter_release:
-  input: {job_id}
+  input: {job_id: string}
   output: {release_id, artefatos: [], testes: {passed, failed}}
 
 # PROMETHEUS cataloga para GENESIS:
@@ -429,7 +463,7 @@ Todos os sistemas devem indexar seus itens com:
 item_catalogo:
   id: ObjectId
   sistema_origem: MS_Produto | Epistemologia | PROMETHEUS
-  tipo: feature | spec | artefato | avaliacao | ...
+  tipo: prontuario | produto | feature | avaliacao | spec | artefato | ...
   
   # Para busca semântica
   embedding: [float]  # vetor 1536 dims
@@ -444,7 +478,7 @@ item_catalogo:
   # Para rastreabilidade
   criado_em: datetime
   atualizado_em: datetime
-  refs: {feature_id?, spec_id?, release_id?}
+  refs: {prontuario_id?, produto_id?, feature_id?, spec_id?, release_id?}
 ```
 
 ---
@@ -463,70 +497,71 @@ item_catalogo:
 │     → contexto: "dor do usuário"                                            │
 │         │                                                                   │
 │         ▼                                                                   │
-│  2. GENESIS.consultar_catalogos(contexto)                                   │
-│     → MS_Produto.catalogo.buscar(dor)                                       │
-│     → Epistemologia.catalogo.buscar(problema)                               │
-│     → PROMETHEUS.catalogo.buscar(artefato)                                  │
-│         │                                                                   │
-│         ├── SE existe similar com score >= 0.75                             │
-│         │   → GENESIS.sugerir_reuso(dor)                                    │
-│         │   → Humano decide: reusar ou novo                                 │
-│         │                                                                   │
-│         └── SE não existe ou humano quer novo                               │
-│                 │                                                           │
-│                 ▼                                                           │
-│  3. MS_Produto.estruturar_feature(dor, hipotese)                            │
-│     → feature_id, criterios_sucesso                                         │
+│  2. GENESIS.rotear() → MS_Produto                                           │
+│     → GENESIS NÃO processa a dor                                            │
+│     → Apenas roteia para sistema especializado                              │
 │         │                                                                   │
 │         ▼                                                                   │
-│  4. GENESIS.verificar_capabilities(feature)                                 │
-│     → Lista capabilities necessárias                                        │
-│         │                                                                   │
-│         ├── SE falta capability                                             │
-│         │   → Gerar backlog: desenvolver capability                         │
-│         │   → Executar ciclo para capability primeiro                       │
-│         │                                                                   │
-│         └── SE tem todas capabilities                                       │
-│                 │                                                           │
-│                 ▼                                                           │
-│  5. Epistemologia.especificar(feature)                                      │
-│     → M0: Problema                                                          │
-│     → M1: Marco Teórico                                                     │
-│     → M2: Objeto                                                            │
-│     → M3.*: Specs (E, P, D, I, C)                                           │
-│     → M4: Documento                                                         │
+│  3. MS_Produto.entrevistar_dor()                                            │
+│     → MS_Produto conversa com usuário                                       │
+│     → Extrai: sintoma, afetados, impacto, critério esperado                 │
+│     → Cria Prontuário estruturado                                           │
 │         │                                                                   │
 │         ▼                                                                   │
-│  6. PROMETHEUS.executar_spec(spec)                                          │
-│     → Workers por vertente                                                  │
-│     → TDD: testes primeiro                                                  │
-│     → Código gerado                                                         │
-│     → Validação técnica (testes passam)                                     │
+│  4. MS_Produto.converter_produto()                                          │
+│     → Prontuário → Produto                                                  │
+│     → Define dor_cliente, threshold_adocao                                  │
+│         │                                                                   │
+│         ▼                                                                   │
+│  5. MS_Produto.criar_feature()                                              │
+│     → Hipótese de como resolver a dor                                       │
+│     → Critérios de sucesso (baseline, meta)                                 │
+│         │                                                                   │
+│         ▼                                                                   │
+│  6. MS_Produto.solicitar_especificacao() → Backlog                          │
+│     → BacklogItem(tipo: ciclo_epistemologico, feature_ref)                  │
+│     → Sprint promove → Epistemologia executa M0-M4                          │
+│     → Spec TDD gerada                                                       │
+│         │                                                                   │
+│         ├── SE M3.* detecta não-folha:                                      │
+│         │   → Novo BacklogItem(ciclo_epistemo, pai_ref)                     │
+│         │   → Recursivo até todas classes folha                             │
+│         │                                                                   │
+│         ▼                                                                   │
+│  7. MS_Produto.solicitar_desenvolvimento() → Backlog                        │
+│     → BacklogItem(tipo: desenvolvimento, spec_ref)                          │
+│     → Sprint promove → PROMETHEUS executa                                   │
+│     → TDD, Workers, Validação                                               │
 │     → Release publicada                                                     │
 │         │                                                                   │
 │         ▼                                                                   │
-│  7. MS_Produto.implantar(release, usuarios)                                 │
+│  8. MS_Produto.implantar(release, usuarios)                                 │
 │     → Setup ambiente                                                        │
 │     → Treinamento                                                           │
 │     → Início de uso                                                         │
 │         │                                                                   │
 │         ▼                                                                   │
-│  8. [Aguarda período de avaliação]                                          │
+│  9. [Aguarda período de avaliação]                                          │
 │         │                                                                   │
 │         ▼                                                                   │
-│  9. GENESIS.avaliar_efetividade(release, produto)                           │
-│     → Coleta métricas de adoção                                             │
-│     → Compara com thresholds                                                │
-│     → Analisa critérios das features                                        │
-│         │                                                                   │
-│         ├── SUCESSO → GENESIS.aprender(sucesso)                             │
-│         │             → Indexa padrão positivo                              │
-│         │                                                                   │
-│         ├── ITERAR → GENESIS.aprender(falha)                                │
-│         │            → Volta para passo 5 (Epistemologia)                   │
-│         │                                                                   │
-│         └── THRESHOLD_INADEQUADO → Ajustar thresholds                       │
-│                                    → Reavaliar                              │
+│  10. GENESIS.avaliar_efetividade(release, produto)                          │
+│      → Coleta métricas de adoção                                            │
+│      → Compara com thresholds                                               │
+│      → Analisa critérios das features                                       │
+│          │                                                                  │
+│          ├── SUCESSO → GENESIS.aprender(sucesso)                            │
+│          │             → Indexa padrão positivo                             │
+│          │             → DOR RESOLVIDA                                      │
+│          │                                                                  │
+│          ├── BUG → BacklogItem(tipo: bug)                                   │
+│          │         → PROMETHEUS corrige                                     │
+│          │                                                                  │
+│          ├── ITERAR → BacklogItem(tipo: ciclo_epistemo)                     │
+│          │            → Volta para passo 6 (Epistemologia)                  │
+│          │            → Inclui aprendizados da avaliação                    │
+│          │                                                                  │
+│          └── THRESHOLD_INADEQUADO → Ajustar thresholds                      │
+│                                     → Reavaliar                             │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -536,19 +571,25 @@ item_catalogo:
 ```
 Feature: "Reporte por Voz"
     │
-    └── Epistemologia.especificar()
+    └── MS_Produto.solicitar_especificacao()
             │
-            └── M3.E detecta: atributo "transcricao" precisa de ciclo próprio
+            └── BacklogItem(tipo: ciclo_epistemologico)
                     │
-                    └── GENESIS gera backlog: MS_Transcricao
+                    └── Epistemologia.especificar()
                             │
-                            └── Epistemologia.especificar(MS_Transcricao)
+                            └── M3.E detecta: atributo "transcricao" não é folha
                                     │
-                                    └── M3.E detecta: atributo "modelo_ml" é folha
+                                    └── Gera BacklogItem(ciclo_epistemo, pai_ref)
                                             │
-                                            └── Especificação completa
+                                            └── Epistemologia.especificar(Transcricao)
                                                     │
-                                                    └── PROMETHEUS executa
+                                                    └── M3.E detecta: "modelo_ml" é folha
+                                                            │
+                                                            └── Especificação completa
+                                                                    │
+                                                                    └── BacklogItem(tipo: dev)
+                                                                            │
+                                                                            └── PROMETHEUS executa
 ```
 
 ---
@@ -567,7 +608,9 @@ SE é INSTÂNCIA (dado real, transação, estado) → MongoDB
 | Tipo | Exemplo | Path |
 |------|---------|------|
 | Framework | GENESIS.md | genesis/ |
+| Arquitetura | GENESIS_Arquitetura.md | genesis/ |
 | Meta Sistema | MS_Produto.md | docs/04_P/ |
+| Arquitetura MS | MS_Produto_Arquitetura.md | docs/04_P/ |
 | Spec | M3.E.yaml | docs/04_X/MS_Nome/M3/ |
 | Template | checklist.md | docs/04_P/templates/ |
 
@@ -575,10 +618,11 @@ SE é INSTÂNCIA (dado real, transação, estado) → MongoDB
 
 | Collection | Conteúdo |
 |------------|----------|
+| prontuarios | Dores estruturadas via entrevista |
 | produtos | Instâncias de Produto |
-| features | Instâncias de Feature |
+| features | Hipóteses testáveis |
 | criterios_sucesso | Critérios com baseline/meta/atual |
-| avaliacoes | Resultados de avaliação |
+| avaliacoes_efetividade | Resultados de avaliação |
 | specs | Specs indexadas para busca |
 | artefatos | Artefatos indexados |
 | aprendizados | Padrões de sucesso/falha |
@@ -592,9 +636,11 @@ SE é INSTÂNCIA (dado real, transação, estado) → MongoDB
 | genesis/GENESIS.md | Documento pai - propósito |
 | genesis/PROMETHEUS.md | Fábrica de execução |
 | docs/00_E/00_E_Epistemologia.md | Método de especificação |
-| docs/04_P/MS_Produto.md | Framework de objetivo |
+| docs/04_P/MS_Produto.md | Framework de produto |
+| docs/04_P/MS_Produto_Arquitetura.md | Arquitetura técnica de produto |
 | docs/00_I/00_I_1_1_GitHub.md | Persistência de definições |
 | docs/00_I/00_I_1_3_MongoDB.md | Persistência transacional |
+| docs/00_I/00_I_2_1_Backlog.md | Tipos de BacklogItem |
 
 ---
 
@@ -603,4 +649,5 @@ SE é INSTÂNCIA (dado real, transação, estado) → MongoDB
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0-1.2 | 2025-12-07 a 2025-12-13 | Versões anteriores |
-| 2.0 | 2025-12-16 | **Refatoração completa**: Classe GENESIS com métodos de avaliação e aprendizado. Contratos entre sistemas. Schema de catalogação universal. Fluxo técnico Dor→Avaliação. Separação clara de GENESIS.md (propósito). |
+| 2.0 | 2025-12-16 | Refatoração completa: Classe GENESIS com métodos de avaliação e aprendizado. Contratos entre sistemas. Schema de catalogação universal. Fluxo técnico Dor→Avaliação. |
+| 2.1 | 2025-12-16 | **Propagação MS_Produto v2.0**: Contrato 4.1 atualizado (GENESIS roteia, MS_Produto entrevista). Fluxo 5.1 atualizado com Prontuário. Schema 4.4 inclui prontuario. Conclusão BUG adicionada em 2.4 e 2.5. Referências atualizadas (MS_Produto_Arquitetura). |
