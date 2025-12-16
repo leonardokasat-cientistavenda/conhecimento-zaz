@@ -1,13 +1,8 @@
-# MongoDB - Persistência Transacional v2.0
-
 ---
-
-```yaml
 titulo: "MongoDB - Persistência Transacional"
 versao: "2.0"
 data_publicacao: "2025-12-16"
-nivel: C2
-camadas: [L0, L1, L2]
+camada: 2
 tipo: "Infraestrutura"
 dominio: "Persistência"
 tags:
@@ -19,79 +14,17 @@ tags:
   - tracking
   - metricas
 depende_de: []
-```
-
 ---
 
-## 1. Problema (M0)
+# MongoDB - Persistência Transacional v2.0
 
-### 1.1 Glossário
+## 1. Contexto
 
-| Significante | Significado no Contexto |
-|--------------|-------------------------|
-| **Collection** | Tabela no MongoDB (conjunto de documentos) |
-| **Spec** | Especificação M3.x parseada e armazenada |
-| **Classe de Equivalência** | Conjunto de valores de teste para um atributo |
-| **Critério de Aceite** | Comportamento esperado de um método |
-| **Ciclo Tracking** | Registro temporal de execução M0-M4 |
-| **Lead Time** | Tempo total: criação → conclusão |
-| **Cycle Time** | Tempo em execução: promoção → conclusão |
-| **Wait Time** | Tempo parado: criação → promoção |
-
-### 1.2 Diagrama do Problema
+### 1.1 Papel na Arquitetura
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           PROBLEMA CENTRAL                                  │
-│                                                                             │
-│  "Como persistir specs M3.x, rastrear ciclos epistemológicos,               │
-│   e calcular métricas de backlog/sprint de forma queryável?"                │
-│                                                                             │
-└──────────────────────────────────┬──────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         SUBPROBLEMAS                                        │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  ┌─────────────────────┐  ┌─────────────────────┐  ┌─────────────────────┐  │
-│  │  SPECS M3.x         │  │  TRACKING           │  │  MÉTRICAS           │  │
-│  ├─────────────────────┤  ├─────────────────────┤  ├─────────────────────┤  │
-│  │ Onde armazenar      │  │ Como rastrear       │  │ Como calcular       │  │
-│  │ specs estruturadas  │  │ timestamps de       │  │ lead/cycle time     │  │
-│  │ para PROMETHEUS?    │  │ cada etapa M0-M4?   │  │ de qualquer item?   │  │
-│  ├─────────────────────┤  ├─────────────────────┤  ├─────────────────────┤  │
-│  │ Solução:            │  │ Solução:            │  │ Solução:            │  │
-│  │ Collection specs    │  │ ciclo_tracking      │  │ timestamps em       │  │
-│  │ + classes_equiv     │  │ com etapas          │  │ backlog_items       │  │
-│  │ + criterios_aceite  │  │                     │  │ + sprints           │  │
-│  └─────────────────────┘  └─────────────────────┘  └─────────────────────┘  │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 1.3 Tese
-
-> **MongoDB v2.0 estende a persistência transacional para suportar o ciclo completo de Epistemologia v4.0: specs M3.x queryáveis, tracking de ciclos com timestamps, e métricas de produtividade deriváveis automaticamente.**
-
----
-
-## 2. Marco Teórico (M1)
-
-### 2.1 Fundamentos
-
-| Conceito | Aplicação |
-|----------|-----------|
-| **Document Store** | Specs M3.x como documentos flexíveis |
-| **Referências** | Collections relacionadas via _ref |
-| **Índices Compostos** | Queries eficientes por tipo + status |
-| **Agregações** | Cálculo de métricas em tempo real |
-
-### 2.2 Papel na Arquitetura
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    ARQUITETURA DE PERSISTÊNCIA v2                           │
+│                    ARQUITETURA DE PERSISTÊNCIA                              │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  GENESIS.persistir(dado, tipo_dado)                                         │
@@ -104,23 +37,23 @@ depende_de: []
 │                                                                             │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  GITHUB (Definições)                 MONGODB (Transações + Specs)           │
-│  ────────────────────                ─────────────────────────────          │
-│  • MS_X.md (narrativa)               • specs (M3.x parseados)               │
-│  • M3/*.yaml (specs)  ───sync───────►• classes_equivalencia                 │
-│  • Epistemologia.md                  • criterios_aceite                     │
-│  • Prompts                           • ciclo_tracking                       │
-│                                      • catalogo                             │
-│                                      • backlog_items                        │
-│                                      • sprints                              │
-│                                      • decisoes                             │
+│  GITHUB (Definições)                 MONGODB (Transações)                   │
+│  ────────────────────                ───────────────────                    │
+│  • GENESIS.md                        • catalogo                             │
+│  • Epistemologia.md                  • backlog_items                        │
+│  • Módulos (.md)                     • sprints                              │
+│  • Prompts                           • decisoes                             │
+│  • M3/*.yaml (specs)  ───sync───────►• specs (v2)                           │
+│                                      • classes_equivalencia (v2)            │
+│                                      • criterios_aceite (v2)                │
+│                                      • ciclo_tracking (v2)                  │
 │                                                                             │
-│  Versionado, legível                 Queryável, processável                 │
+│  Muda pouco, versionado              Muda frequentemente, queries rápidas   │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 2.3 Conexão
+### 1.2 Conexão
 
 | Campo | Valor |
 |-------|-------|
@@ -137,22 +70,22 @@ mongodb+srv://genesis_app:<PASSWORD>@genesis.27zbngf.mongodb.net/genesis_db?retr
 
 ---
 
-## 3. Objeto (M2)
+## 2. Database: genesis_db
 
-### 3.1 Collections
+### 2.1 Collections
 
-| Collection | Propósito | Versão |
-|------------|-----------|--------|
-| `catalogo` | Índice semântico para busca | v1 |
-| `backlog_items` | Itens de trabalho com tracking | **v2** |
-| `sprints` | Ciclos de execução com métricas | **v2** |
-| `decisoes` | Histórico de decisões H-E-I-D | v1 |
-| `specs` | Specs M3.x parseadas | **NOVO** |
-| `classes_equivalencia` | Valores de teste por atributo | **NOVO** |
-| `criterios_aceite` | Comportamentos esperados | **NOVO** |
-| `ciclo_tracking` | Timestamps de etapas M0-M4 | **NOVO** |
+| Collection | Propósito | Versão | Migra de |
+|------------|-----------|--------|----------|
+| `catalogo` | Índice semântico para busca | v1 | `_catalogo/indice.yaml` |
+| `backlog_items` | Itens de trabalho com tracking | **v2** | `_backlog/*.md` |
+| `sprints` | Ciclos de execução com métricas | **v2** | `_sprints/*.md` |
+| `decisoes` | Histórico de decisões H-E-I-D | v1 | (novo) |
+| `specs` | Specs M3.x parseadas | **v2 NOVO** | M3/*.yaml |
+| `classes_equivalencia` | Valores de teste por atributo | **v2 NOVO** | M3.E.yaml |
+| `criterios_aceite` | Comportamentos esperados | **v2 NOVO** | M3.*.yaml |
+| `ciclo_tracking` | Timestamps de etapas M0-M4 | **v2 NOVO** | (novo) |
 
-### 3.2 Diagrama de Relações
+### 2.2 Diagrama de Relações
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -186,20 +119,477 @@ mongodb+srv://genesis_app:<PASSWORD>@genesis.27zbngf.mongodb.net/genesis_db?retr
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 3.3 Fronteiras
+---
 
-| MongoDB É | MongoDB NÃO É |
-|-----------|---------------|
-| Persistência de transações | Versionamento (isso é GitHub) |
-| Queries rápidas | Fonte de verdade para narrativa |
-| Métricas em tempo real | Backup primário |
-| Specs processáveis | Editor de specs (humano edita .yaml) |
+## 3. Métodos
+
+### 3.1 Método Orquestrador: persistir()
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    persistir(collection, documento)                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  RESPONSABILIDADE: Decidir COMO persistir transação no MongoDB              │
+│  CHAMADO POR: GENESIS.persistir() quando tipo == transação                  │
+│                                                                             │
+│  Input:                                                                     │
+│  - collection: string (catalogo | backlog_items | sprints | decisoes |      │
+│                        specs | classes_equivalencia | criterios_aceite |    │
+│                        ciclo_tracking)                                      │
+│  - documento: object (dados a persistir)                                    │
+│                                                                             │
+│  Output:                                                                    │
+│  - Resultado: {sucesso: bool, metodo: string, id: string}                   │
+│                                                                             │
+│  Fluxo de Decisão:                                                          │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                                                                     │    │
+│  │  SE documento._id não existe E documento.id não existe no banco:    │    │
+│  │     → inserir(collection, documento)                                │    │
+│  │                                                                     │    │
+│  │  SE documento._id existe OU documento.id existe no banco:           │    │
+│  │     → atualizar(collection, documento)                              │    │
+│  │                                                                     │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 3.2 Método: inserir()
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      inserir(collection, documento)                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  QUANDO USAR: Documento NÃO existe                                          │
+│                                                                             │
+│  Input:                                                                     │
+│  - collection: string                                                       │
+│  - documento: object                                                        │
+│                                                                             │
+│  Comportamento:                                                             │
+│  1. Adicionar created_at = now()                                            │
+│  2. Adicionar updated_at = now()                                            │
+│  3. mongodb:insert-many(collection, [documento])                            │
+│                                                                             │
+│  Output: {sucesso: true, metodo: "inserir", id: documento.id}               │
+│                                                                             │
+│  API: mongodb:insert-many                                                   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 3.3 Método: atualizar()
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     atualizar(collection, documento)                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  QUANDO USAR: Documento JÁ existe                                           │
+│                                                                             │
+│  Input:                                                                     │
+│  - collection: string                                                       │
+│  - documento: object (deve conter _id ou id para filtro)                    │
+│                                                                             │
+│  Comportamento:                                                             │
+│  1. Atualizar updated_at = now()                                            │
+│  2. mongodb:update-many(collection, filter, update)                         │
+│                                                                             │
+│  Output: {sucesso: true, metodo: "atualizar", id: documento.id}             │
+│                                                                             │
+│  API: mongodb:update-many                                                   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 3.4 Tabela de Decisão
+
+| Dado | Collection | Operação |
+|------|------------|----------|
+| Novo item catálogo | catalogo | inserir() |
+| Atualizar catálogo | catalogo | atualizar() |
+| Capturar backlog | backlog_items | inserir() |
+| Promover backlog | backlog_items | atualizar() |
+| Criar sprint | sprints | inserir() |
+| Atualizar task | sprints | atualizar() |
+| Registrar decisão | decisoes | inserir() |
+| Incrementar uso | decisoes | atualizar() |
+| Sincronizar spec M3.x | specs | inserir() ou atualizar() |
+| Classe de equivalência | classes_equivalencia | inserir() |
+| Critério de aceite | criterios_aceite | inserir() |
+| Iniciar ciclo | ciclo_tracking | inserir() |
+| Registrar etapa | ciclo_tracking | atualizar() |
+
+### 3.5 Métodos de Métricas (v2)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    calcular_metricas_item(backlog_item_id)                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Input: backlog_item_id                                                     │
+│  Output: { lead_time_min, cycle_time_min, wait_time_min }                   │
+│                                                                             │
+│  Cálculo:                                                                   │
+│  lead_time  = timestamps.concluido_em - timestamps.criado_em                │
+│  cycle_time = timestamps.concluido_em - timestamps.promovido_em             │
+│  wait_time  = timestamps.promovido_em - timestamps.criado_em                │
+│                                                                             │
+│  Pré-condição: status == "concluido"                                        │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    agregar_metricas_sprint(sprint_id)                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Input: sprint_id                                                           │
+│  Output: SprintMetricas (objeto completo)                                   │
+│                                                                             │
+│  Cálculo:                                                                   │
+│  1. Buscar todos backlog_items com sprint_ref == sprint_id                  │
+│  2. Agrupar por tipo                                                        │
+│  3. Calcular médias de tempo                                                │
+│  4. Calcular throughput = concluidos / dias_sprint                          │
+│  5. Calcular taxa_aprovacao = aprovados_primeira / total_ciclos             │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    sync_spec_from_yaml(arquivo_yaml)                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Input: caminho do arquivo .yaml (GitHub)                                   │
+│  Output: { spec_id, classes_count, criterios_count }                        │
+│                                                                             │
+│  Fluxo:                                                                     │
+│  1. Ler arquivo do GitHub                                                   │
+│  2. Calcular hash do conteúdo                                               │
+│  3. SE hash != sync_hash existente:                                         │
+│     3.1. Parsear YAML                                                       │
+│     3.2. Upsert em specs                                                    │
+│     3.3. Upsert classes_equivalencia (delete antigas, insert novas)         │
+│     3.4. Upsert criterios_aceite (delete antigos, insert novos)             │
+│  4. Retornar contadores                                                     │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## 4. Classe (M3.E) - Schemas
+## 4. Schemas
 
-### 4.1 specs
+### 4.1 catalogo
+
+Armazena índice semântico para busca rápida.
+
+```javascript
+{
+  _id: ObjectId,
+  
+  // Identificação
+  id: String,           // "ms_epistemologia", "bl_autonomia", "sp_010"
+  tipo: String,         // "docs" | "backlog" | "sprint"
+  nome: String,         // "Epistemologia"
+  
+  // Busca Semântica
+  chave: String,        // palavras-chave para matching
+  triggers: [String],   // frases que ativam o item
+  
+  // Localização
+  arquivo: String,      // "docs/00_E/00_E_Epistemologia.md"
+  
+  // Metadata específica por tipo
+  metadata: {
+    versao: String,     // "3.4" (docs)
+    camada: String,     // "C3" (docs)
+    status: String,     // "Publicado" | "Pendente" | "Ativa" | "Concluida"
+    prioridade: String, // "alta" | "media" | "baixa" (backlog)
+    origem: String,     // "S009" (backlog)
+    data_inicio: Date,  // (sprint)
+    data_fim: Date      // (sprint)
+  },
+  
+  // Capability (opcional, para discovery)
+  capability: {
+    id: String,
+    nome_amigavel: String,
+    descricao: String,
+    exemplos: [String]
+  },
+  
+  // Controle
+  created_at: Date,
+  updated_at: Date
+}
+```
+
+**Índices:**
+- `{ id: 1 }` - único
+- `{ tipo: 1, "metadata.status": 1 }` - busca por tipo e status
+- `{ chave: "text", nome: "text", triggers: "text" }` - busca textual
+
+---
+
+### 4.2 backlog_items (v2)
+
+Armazena itens de trabalho com histórico completo e tracking genérico.
+
+```javascript
+{
+  _id: ObjectId,
+  
+  // === CAMPOS v1 (mantidos) ===
+  
+  // Identificação
+  id: String,           // "bl_persistencia_hibrida"
+  titulo: String,       // "Arquitetura de Persistência Híbrida"
+  slug: String,         // "persistencia-hibrida"
+  
+  // Classificação
+  tipo: String,         // "Feature" | "Bug" | "Minor" | 
+                        // "ciclo_epistemologico" | "desenvolvimento" | "melhoria" | "documentacao"
+  prioridade: String,   // "alta" | "media" | "baixa"
+  sistema_afetado: String, // "Infraestrutura"
+  
+  // Ciclo de Vida
+  status: String,       // "Pendente" | "Promovido" | "Resolvido" | "Merged" |
+                        // "em_sprint" | "em_progresso" | "validando" | "concluido" | "rejeitado"
+  promovido_em: String, // "S010" (código da sprint)
+  data_promocao: Date,
+  resolvido_em: String, // "S010"
+  data_resolucao: Date,
+  
+  // Merge (quando status = "Merged")
+  merged_into: String,  // ID do item que absorveu este (ex: "bl_tools_externas")
+  merged_from: [String], // IDs dos itens absorvidos por este (ex: ["bl_mcp_server"])
+  
+  // Rastreabilidade
+  origens: [{
+    sprint: String,     // "S009"
+    data: Date,
+    contexto: String    // descrição breve de onde surgiu
+  }],
+  
+  // Conteúdo (resumo)
+  descricao: String,    // descrição breve
+  
+  // Referência ao arquivo detalhado (se existir)
+  arquivo_detalhado: String, // "_backlog/Persistencia_Hibrida.md"
+  
+  // Dependências
+  depende_de: [String], // ["bl_outro_item"]
+  
+  // === CAMPOS v2 (novos) ===
+  
+  // Timestamps completos (tracking genérico)
+  timestamps: {
+    criado_em: Date,
+    promovido_em: Date,
+    iniciado_em: Date,
+    validado_em: Date,
+    concluido_em: Date
+  },
+  
+  // Origem (para ciclos epistemológicos)
+  origem_ciclo: {
+    ms_pai: String,         // "MS_Release"
+    etapa: String,          // "M3.E"
+    atributo: String,       // "criterios"
+    cardinalidade: String   // "1:N"
+  },
+  
+  // Referência para tracking detalhado (se tipo == ciclo_epistemologico)
+  ciclo_tracking_ref: ObjectId,
+  
+  // Métricas calculadas (após conclusão)
+  metricas: {
+    lead_time_min: Number,
+    cycle_time_min: Number,
+    wait_time_min: Number
+  },
+  
+  // Controle
+  created_at: Date,
+  updated_at: Date
+}
+```
+
+**Índices:**
+- `{ id: 1 }` - único
+- `{ status: 1, prioridade: 1 }` - busca por status e prioridade
+- `{ slug: 1 }` - busca por slug
+- `{ tipo: 1, status: 1 }` - busca por tipo e status (v2)
+- `{ "timestamps.criado_em": 1 }` - ordenar por criação (v2)
+- `{ "origem_ciclo.ms_pai": 1 }` - ciclos filhos de um MS (v2)
+- `{ "metricas.lead_time_min": 1 }` - ordenar por tempo (v2)
+
+---
+
+### 4.3 sprints (v2)
+
+Armazena ciclos de execução com tasks e métricas agregadas.
+
+```javascript
+{
+  _id: ObjectId,
+  
+  // === CAMPOS v1 (mantidos) ===
+  
+  // Identificação
+  id: String,           // "sp_010"
+  codigo: String,       // "S010"
+  nome: String,         // "Persistência Híbrida"
+  
+  // Ciclo de Vida
+  status: String,       // "Ativa" | "Concluida"
+  data_inicio: Date,
+  data_prevista: Date,
+  data_fim: Date,
+  
+  // Origem
+  backlog_origem: [String], // ["bl_persistencia_hibrida"]
+  tipo_projeto: String, // "Infra" | "Documentação" | "Feature"
+  
+  // Objetivo
+  objetivo: String,     // descrição do objetivo
+  entregavel: String,   // o que será entregue
+  
+  // Tasks
+  tasks: [{
+    id: String,         // "T01"
+    descricao: String,  // "Setup MongoDB Atlas"
+    status: String,     // "Pendente" | "Em Progresso" | "Concluida"
+    artefatos: [String] // ["docs/00_I/00_I_1_3_MongoDB.md"]
+  }],
+  
+  // Referência ao arquivo detalhado
+  arquivo: String,      // "_sprints/S010_Persistencia_Hibrida.md"
+  
+  // === CAMPOS v2 (novos) ===
+  
+  // Itens da sprint (referências)
+  itens: [ObjectId],    // refs para backlog_items
+  
+  // Métricas agregadas
+  metricas: {
+    // Contadores
+    total_itens: Number,
+    concluidos: Number,
+    rejeitados: Number,
+    em_progresso: Number,
+    
+    // Tempos médios
+    lead_time_medio_min: Number,
+    cycle_time_medio_min: Number,
+    wait_time_medio_min: Number,
+    
+    // Throughput
+    throughput_dia: Number,       // itens/dia
+    
+    // Por tipo
+    por_tipo: {
+      ciclo_epistemologico: { 
+        total: Number, 
+        concluidos: Number,
+        lead_time_medio_min: Number
+      },
+      desenvolvimento: { 
+        total: Number, 
+        concluidos: Number,
+        lead_time_medio_min: Number
+      },
+      bug: { 
+        total: Number, 
+        concluidos: Number,
+        lead_time_medio_min: Number
+      },
+      melhoria: { 
+        total: Number, 
+        concluidos: Number,
+        lead_time_medio_min: Number
+      },
+      documentacao: { 
+        total: Number, 
+        concluidos: Number,
+        lead_time_medio_min: Number
+      }
+    },
+    
+    // Qualidade (para ciclos epistemológicos)
+    taxa_aprovacao_primeira: Number,  // % aprovados sem retrabalho
+    retrabalhos: Number
+  },
+  
+  // Controle
+  created_at: Date,
+  updated_at: Date
+}
+```
+
+**Índices:**
+- `{ id: 1 }` - único
+- `{ codigo: 1 }` - único
+- `{ status: 1 }` - busca por status
+- `{ "metricas.throughput_dia": -1 }` - ranking de produtividade (v2)
+- `{ "metricas.taxa_aprovacao_primeira": -1 }` - ranking de qualidade (v2)
+
+---
+
+### 4.4 decisoes
+
+Armazena histórico de decisões do módulo Raciocínio.
+
+```javascript
+{
+  _id: ObjectId,
+  
+  // Identificação
+  id: String,           // "dec_001"
+  
+  // Contexto
+  contexto: String,     // "Qual banco usar para persistência?"
+  sprint_origem: String, // "S009"
+  
+  // Ciclo H-E-I-D
+  hipoteses: [{
+    id: String,         // "H1"
+    descricao: String,  // "PostgreSQL"
+    evidencias: [{
+      tipo: String,     // "a_favor" | "contra"
+      texto: String
+    }]
+  }],
+  
+  // Inferência e Decisão
+  inferencia: String,   // análise comparativa
+  decisao: {
+    escolha: String,    // "H2"
+    justificativa: String,
+    data: Date
+  },
+  
+  // Uso (para tracking de "força" da decisão)
+  uso_count: Number,    // quantas vezes foi reutilizada
+  ultimo_uso: Date,
+  
+  // Controle
+  created_at: Date,
+  updated_at: Date
+}
+```
+
+**Índices:**
+- `{ id: 1 }` - único
+- `{ contexto: "text" }` - busca textual
+- `{ sprint_origem: 1 }` - busca por sprint
+
+---
+
+### 4.5 specs (v2 - NOVO)
 
 Armazena specs M3.x parseadas para consumo por PROMETHEUS.
 
@@ -241,7 +631,7 @@ Armazena specs M3.x parseadas para consumo por PROMETHEUS.
 
 ---
 
-### 4.2 classes_equivalencia
+### 4.6 classes_equivalencia (v2 - NOVO)
 
 Armazena classes de equivalência para geração de testes.
 
@@ -276,7 +666,7 @@ Armazena classes de equivalência para geração de testes.
 
 ---
 
-### 4.3 criterios_aceite
+### 4.7 criterios_aceite (v2 - NOVO)
 
 Armazena critérios de aceite para validação.
 
@@ -314,7 +704,7 @@ Armazena critérios de aceite para validação.
 
 ---
 
-### 4.4 ciclo_tracking
+### 4.8 ciclo_tracking (v2 - NOVO)
 
 Rastreia execução de ciclos M0-M4.
 
@@ -385,304 +775,125 @@ Rastreia execução de ciclos M0-M4.
 
 ---
 
-### 4.5 backlog_items (v2)
+## 5. Operações Comuns
 
-Estende v1 com tracking genérico.
+### 5.1 Catálogo
 
 ```javascript
-{
-  _id: ObjectId,
-  
-  // === CAMPOS EXISTENTES (v1) ===
-  id: String,
-  titulo: String,
-  slug: String,
-  prioridade: String,
-  sistema_afetado: String,
-  status: String,
-  promovido_em: String,
-  data_promocao: Date,
-  resolvido_em: String,
-  data_resolucao: Date,
-  merged_into: String,
-  merged_from: [String],
-  origens: [{ sprint: String, data: Date, contexto: String }],
-  descricao: String,
-  arquivo_detalhado: String,
-  depende_de: [String],
-  
-  // === NOVOS CAMPOS (v2) ===
-  
-  // Tipo de item
-  tipo: String,             // "ciclo_epistemologico" | "desenvolvimento" | 
-                            // "bug" | "melhoria" | "documentacao"
-  
-  // Timestamps completos (tracking genérico)
-  timestamps: {
-    criado_em: Date,
-    promovido_em: Date,
-    iniciado_em: Date,
-    validado_em: Date,
-    concluido_em: Date
-  },
-  
-  // Origem (para ciclos epistemológicos)
-  origem_ciclo: {
-    ms_pai: String,         // "MS_Release"
-    etapa: String,          // "M3.E"
-    atributo: String,       // "criterios"
-    cardinalidade: String   // "1:N"
-  },
-  
-  // Referência para tracking detalhado
-  ciclo_tracking_ref: ObjectId,  // ref para ciclo_tracking (se tipo == ciclo_epistemologico)
-  
-  // Métricas calculadas (após conclusão)
-  metricas: {
-    lead_time_min: Number,
-    cycle_time_min: Number,
-    wait_time_min: Number
-  },
-  
-  // Controle
-  created_at: Date,
-  updated_at: Date
-}
+// Buscar por tipo
+db.catalogo.find({ tipo: "docs", "metadata.status": "Publicado" })
+
+// Busca textual
+db.catalogo.find({ $text: { $search: "epistemologia conhecimento" } })
+
+// Buscar sprint ativa
+db.catalogo.findOne({ tipo: "sprint", "metadata.status": "Ativa" })
 ```
 
-**Novos Índices:**
-- `{ tipo: 1, status: 1 }` - busca por tipo e status
-- `{ "timestamps.criado_em": 1 }` - ordenar por criação
-- `{ "origem_ciclo.ms_pai": 1 }` - ciclos filhos de um MS
-- `{ "metricas.lead_time_min": 1 }` - ordenar por tempo
-
----
-
-### 4.6 sprints (v2)
-
-Estende v1 com métricas agregadas.
+### 5.2 Backlog
 
 ```javascript
-{
-  _id: ObjectId,
-  
-  // === CAMPOS EXISTENTES (v1) ===
-  id: String,
-  codigo: String,
-  nome: String,
-  status: String,
-  data_inicio: Date,
-  data_prevista: Date,
-  data_fim: Date,
-  backlog_origem: [String],
-  tipo_projeto: String,
-  objetivo: String,
-  entregavel: String,
-  tasks: [{ id, descricao, status, artefatos }],
-  arquivo: String,
-  
-  // === NOVOS CAMPOS (v2) ===
-  
-  // Métricas agregadas
-  metricas: {
-    // Contadores
-    total_itens: Number,
-    concluidos: Number,
-    rejeitados: Number,
-    em_progresso: Number,
-    
-    // Tempos médios
-    lead_time_medio_min: Number,
-    cycle_time_medio_min: Number,
-    wait_time_medio_min: Number,
-    
-    // Throughput
-    throughput_dia: Number,       // itens/dia
-    
-    // Por tipo
-    por_tipo: {
-      ciclo_epistemologico: { 
-        total: Number, 
-        concluidos: Number,
-        lead_time_medio_min: Number
-      },
-      desenvolvimento: { 
-        total: Number, 
-        concluidos: Number,
-        lead_time_medio_min: Number
-      },
-      bug: { 
-        total: Number, 
-        concluidos: Number,
-        lead_time_medio_min: Number
-      },
-      melhoria: { 
-        total: Number, 
-        concluidos: Number,
-        lead_time_medio_min: Number
-      },
-      documentacao: { 
-        total: Number, 
-        concluidos: Number,
-        lead_time_medio_min: Number
-      }
+// Listar pendentes por prioridade
+db.backlog_items.find({ status: "Pendente" }).sort({ prioridade: 1 })
+
+// Promover item
+db.backlog_items.updateOne(
+  { id: "bl_persistencia_hibrida" },
+  { 
+    $set: { 
+      status: "Promovido", 
+      promovido_em: "S010",
+      data_promocao: new Date(),
+      "timestamps.promovido_em": new Date(),
+      updated_at: new Date()
+    }
+  }
+)
+
+// Merge de itens (item absorvido)
+db.backlog_items.updateOne(
+  { id: "bl_mcp_server" },
+  { 
+    $set: { 
+      status: "Merged",
+      merged_into: "bl_tools_externas",
+      updated_at: new Date()
+    }
+  }
+)
+
+// Merge de itens (item principal)
+db.backlog_items.updateOne(
+  { id: "bl_tools_externas" },
+  { 
+    $set: { 
+      descricao: "Integrar sistemas externos via MCP Server próprio...",
+      updated_at: new Date()
     },
-    
-    // Qualidade (para ciclos epistemológicos)
-    taxa_aprovacao_primeira: Number,  // % aprovados sem retrabalho
-    retrabalhos: Number
+    $push: { 
+      merged_from: "bl_mcp_server",
+      origens: {
+        sprint: "S010",
+        data: new Date(),
+        contexto: "Merge: MCP Server incorporado"
+      }
+    }
+  }
+)
+
+// Listar por tipo (v2)
+db.backlog_items.find({ tipo: "ciclo_epistemologico", status: "pendente" })
+
+// Criar item de ciclo epistemológico (v2)
+db.backlog_items.insertOne({
+  id: "bl_ms_criterio",
+  titulo: "Ciclo MS_Criterio",
+  tipo: "ciclo_epistemologico",
+  status: "pendente",
+  timestamps: { criado_em: new Date() },
+  origem_ciclo: {
+    ms_pai: "MS_Release",
+    etapa: "M3.E",
+    atributo: "criterios",
+    cardinalidade: "1:N"
   },
-  
-  // Itens da sprint (referências)
-  itens: [ObjectId],           // refs para backlog_items
-  
-  // Controle
-  created_at: Date,
-  updated_at: Date
-}
+  created_at: new Date(),
+  updated_at: new Date()
+})
 ```
 
-**Novos Índices:**
-- `{ "metricas.throughput_dia": -1 }` - ranking de produtividade
-- `{ "metricas.taxa_aprovacao_primeira": -1 }` - ranking de qualidade
-
----
-
-### 4.7 catalogo (v1 - mantido)
+### 5.3 Sprints
 
 ```javascript
-{
-  _id: ObjectId,
-  id: String,
-  tipo: String,
-  nome: String,
-  chave: String,
-  triggers: [String],
-  arquivo: String,
-  metadata: { versao, camada, status, prioridade, origem, data_inicio, data_fim },
-  capability: { id, nome_amigavel, descricao, exemplos },
-  created_at: Date,
-  updated_at: Date
-}
+// Buscar sprint ativa
+db.sprints.findOne({ status: "Ativa" })
+
+// Atualizar status de task
+db.sprints.updateOne(
+  { codigo: "S010", "tasks.id": "T01" },
+  { 
+    $set: { 
+      "tasks.$.status": "Concluida",
+      updated_at: new Date()
+    }
+  }
+)
+
+// Agregar métricas da sprint (v2)
+db.backlog_items.aggregate([
+  { $match: { promovido_em: "S015" } },
+  { $group: {
+    _id: "$tipo",
+    total: { $sum: 1 },
+    concluidos: { 
+      $sum: { $cond: [{ $eq: ["$status", "concluido"] }, 1, 0] }
+    },
+    lead_time_medio: { $avg: "$metricas.lead_time_min" }
+  }}
+])
 ```
 
----
-
-### 4.8 decisoes (v1 - mantido)
-
-```javascript
-{
-  _id: ObjectId,
-  id: String,
-  contexto: String,
-  sprint_origem: String,
-  hipoteses: [{ id, descricao, evidencias: [{ tipo, texto }] }],
-  inferencia: String,
-  decisao: { escolha, justificativa, data },
-  uso_count: Number,
-  ultimo_uso: Date,
-  created_at: Date,
-  updated_at: Date
-}
-```
-
----
-
-## 5. Métodos
-
-### 5.1 Método Orquestrador: persistir()
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    persistir(collection, documento)                         │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  RESPONSABILIDADE: Decidir COMO persistir transação no MongoDB              │
-│  CHAMADO POR: GENESIS.persistir() quando tipo == transação                  │
-│                                                                             │
-│  Input:                                                                     │
-│  - collection: string                                                       │
-│  - documento: object                                                        │
-│                                                                             │
-│  Output:                                                                    │
-│  - Resultado: {sucesso: bool, metodo: string, id: string}                   │
-│                                                                             │
-│  Fluxo:                                                                     │
-│  SE documento._id não existe E documento.id não existe no banco:            │
-│     → inserir(collection, documento)                                        │
-│  SENÃO:                                                                     │
-│     → atualizar(collection, documento)                                      │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 5.2 Métodos de Escrita
-
-| Método | Quando usar | API |
-|--------|-------------|-----|
-| `inserir()` | Documento novo | `mongodb:insert-many` |
-| `atualizar()` | Documento existe | `mongodb:update-many` |
-
-### 5.3 Métodos de Métricas (NOVOS)
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    calcular_metricas_item(backlog_item_id)                  │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  Input: backlog_item_id                                                     │
-│  Output: { lead_time_min, cycle_time_min, wait_time_min }                   │
-│                                                                             │
-│  Cálculo:                                                                   │
-│  lead_time  = timestamps.concluido_em - timestamps.criado_em                │
-│  cycle_time = timestamps.concluido_em - timestamps.promovido_em             │
-│  wait_time  = timestamps.promovido_em - timestamps.criado_em                │
-│                                                                             │
-│  Pré-condição: status == "concluido"                                        │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    agregar_metricas_sprint(sprint_id)                       │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  Input: sprint_id                                                           │
-│  Output: SprintMetricas (objeto completo)                                   │
-│                                                                             │
-│  Cálculo:                                                                   │
-│  1. Buscar todos backlog_items com sprint_ref == sprint_id                  │
-│  2. Agrupar por tipo                                                        │
-│  3. Calcular médias de tempo                                                │
-│  4. Calcular throughput = concluidos / dias_sprint                          │
-│  5. Calcular taxa_aprovacao = aprovados_primeira / total_ciclos             │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    sync_spec_from_yaml(arquivo_yaml)                        │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  Input: caminho do arquivo .yaml (GitHub)                                   │
-│  Output: { spec_id, classes_count, criterios_count }                        │
-│                                                                             │
-│  Fluxo:                                                                     │
-│  1. Ler arquivo do GitHub                                                   │
-│  2. Calcular hash do conteúdo                                               │
-│  3. SE hash != sync_hash existente:                                         │
-│     3.1. Parsear YAML                                                       │
-│     3.2. Upsert em specs                                                    │
-│     3.3. Upsert classes_equivalencia (delete antigas, insert novas)         │
-│     3.4. Upsert criterios_aceite (delete antigos, insert novos)             │
-│  4. Retornar contadores                                                     │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 6. Operações Comuns
-
-### 6.1 Specs
+### 5.4 Specs (v2)
 
 ```javascript
 // Buscar todas specs de um MS
@@ -705,7 +916,7 @@ db.criterios_aceite.find({
 })
 ```
 
-### 6.2 Tracking
+### 5.5 Tracking (v2)
 
 ```javascript
 // Criar tracking para ciclo epistemológico
@@ -749,115 +960,81 @@ db.ciclo_tracking.updateOne(
 )
 ```
 
-### 6.3 Backlog (v2)
-
-```javascript
-// Criar item de ciclo epistemológico
-db.backlog_items.insertOne({
-  id: "bl_ms_criterio",
-  titulo: "Ciclo MS_Criterio",
-  tipo: "ciclo_epistemologico",
-  status: "pendente",
-  timestamps: { criado_em: new Date() },
-  origem_ciclo: {
-    ms_pai: "MS_Release",
-    etapa: "M3.E",
-    atributo: "criterios",
-    cardinalidade: "1:N"
-  },
-  created_at: new Date(),
-  updated_at: new Date()
-})
-
-// Promover para sprint
-db.backlog_items.updateOne(
-  { id: "bl_ms_criterio" },
-  { 
-    $set: { 
-      status: "em_sprint",
-      promovido_em: "S015",
-      "timestamps.promovido_em": new Date(),
-      updated_at: new Date()
-    }
-  }
-)
-
-// Listar por tipo
-db.backlog_items.find({ tipo: "ciclo_epistemologico", status: "pendente" })
-
-// Métricas de um item
-db.backlog_items.aggregate([
-  { $match: { id: "bl_ms_criterio" } },
-  { $project: {
-    titulo: 1,
-    lead_time: { 
-      $divide: [
-        { $subtract: ["$timestamps.concluido_em", "$timestamps.criado_em"] },
-        60000  // ms → min
-      ]
-    }
-  }}
-])
-```
-
-### 6.4 Sprints (v2)
-
-```javascript
-// Agregar métricas da sprint
-db.backlog_items.aggregate([
-  { $match: { promovido_em: "S015" } },
-  { $group: {
-    _id: "$tipo",
-    total: { $sum: 1 },
-    concluidos: { 
-      $sum: { $cond: [{ $eq: ["$status", "concluido"] }, 1, 0] }
-    },
-    lead_time_medio: { $avg: "$metricas.lead_time_min" }
-  }}
-])
-
-// Atualizar métricas agregadas na sprint
-db.sprints.updateOne(
-  { codigo: "S015" },
-  { 
-    $set: { 
-      "metricas.total_itens": 12,
-      "metricas.concluidos": 10,
-      "metricas.lead_time_medio_min": 58,
-      "metricas.throughput_dia": 2.5,
-      "metricas.por_tipo.ciclo_epistemologico": {
-        total: 4, concluidos: 4, lead_time_medio_min: 65
-      },
-      updated_at: new Date()
-    }
-  }
-)
-```
-
 ---
 
-## 7. Validações
+## 6. Validações
 
-### 7.1 Regras de Integridade
+### 6.1 Regras de Integridade
 
 | Collection | Regra | Validação |
 |------------|-------|-----------|
+| catalogo | id único | Índice único |
+| backlog_items | id único | Índice único |
+| sprints | codigo único | Índice único |
+| decisoes | id único | Índice único |
 | specs | ms_ref + vertente único | Índice único |
 | classes_equivalencia | spec_ref deve existir | Aplicação |
 | criterios_aceite | spec_ref deve existir | Aplicação |
 | ciclo_tracking | backlog_item_ref único | Índice único |
-| backlog_items | id único | Índice único |
-| sprints | codigo único | Índice único |
 
-### 7.2 Transições de Status
+### 6.2 Transições de Status
 
 ```
 backlog_items.status:
+  Pendente → Promovido → Resolvido
+                      → Merged
+  
   pendente → em_sprint → em_progresso → validando → concluido
                                       → rejeitado → pendente (loop)
-                                      
+
 sprints.status:
-  ativa → concluida
+  Ativa → Concluida
+```
+
+---
+
+## 7. Migração
+
+### 7.1 De YAML para MongoDB
+
+| Origem | Destino | Método |
+|--------|---------|--------|
+| `_catalogo/indice.yaml` | `catalogo` | Script de migração |
+| `_backlog/*.md` (frontmatter) | `backlog_items` | Script de migração |
+| `_sprints/*.md` (frontmatter) | `sprints` | Script de migração |
+| `M3/*.yaml` | `specs` | sync_spec_from_yaml() |
+
+### 7.2 Coexistência (Fase Transição)
+
+Durante a migração, manter ambas as fontes sincronizadas:
+1. MongoDB como fonte primária para leitura
+2. GitHub atualizado para backup e versionamento
+3. Após validação, eliminar YAML/frontmatter
+
+### 7.3 Migração de Campos v1 → v2
+
+Para backlog_items e sprints existentes:
+
+```javascript
+// Adicionar timestamps baseado em campos existentes
+db.backlog_items.updateMany(
+  { timestamps: { $exists: false } },
+  [{
+    $set: {
+      timestamps: {
+        criado_em: "$created_at",
+        promovido_em: "$data_promocao",
+        concluido_em: "$data_resolucao"
+      }
+    }
+  }]
+)
+
+// Inicializar métricas vazias nas sprints
+db.sprints.updateMany(
+  { metricas: { $exists: false } },
+  { $set: { metricas: {} } }
+)
 ```
 
 ---
@@ -866,12 +1043,13 @@ sprints.status:
 
 | Documento | Relação |
 |-----------|---------|
-| genesis/GENESIS.md | GENESIS.persistir() roteia para MongoDB |
-| genesis/PROMETHEUS.md | Consome specs para geração de código/testes |
-| docs/00_E/00_E_Epistemologia.md | Define estrutura M3.x |
-| docs/00_I/00_I_1_1_GitHub.md | GitHub.persistir_md() para definições |
-| docs/00_I/00_I_2_1_Backlog.md | Métodos do Backlog |
-| docs/00_I/00_I_2_2_Sprint.md | Métodos da Sprint |
+| `genesis/GENESIS.md` | GENESIS.persistir() roteia para MongoDB |
+| `genesis/PROMETHEUS.md` | Consome specs para geração de código/testes |
+| `docs/00_I/00_I_1_1_GitHub.md` | GitHub.persistir_md() para definições |
+| `docs/00_E/00_E_2_1_Modulo_Catalogo.md` | Spec do Catálogo |
+| `docs/00_I/00_I_2_Gestao_Projetos.md` | Gestão de Projetos |
+| `docs/00_I/00_I_2_1_Backlog.md` | Métodos do Backlog |
+| `docs/00_I/00_I_2_2_Sprint.md` | Métodos da Sprint |
 
 ---
 
@@ -880,6 +1058,6 @@ sprints.status:
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-08 | Criação com schemas das 4 collections. Sprint S010/T02. |
-| 1.1 | 2025-12-08 | Campos merged_into, merged_from e status "Merged". |
-| 1.2 | 2025-12-08 | Métodos orquestradores: persistir(), inserir(), atualizar(). |
-| 2.0 | 2025-12-16 | **Specs M3.x**: novas collections (specs, classes_equivalencia, criterios_aceite, ciclo_tracking). **Tracking genérico**: backlog_items v2 com timestamps e métricas. **Sprints v2**: métricas agregadas por tipo. Métodos de métricas. |
+| 1.1 | 2025-12-08 | Adicionados campos merged_into, merged_from e status "Merged" no schema backlog_items. Exemplo de operação merge. |
+| 1.2 | 2025-12-08 | **MÉTODOS ORQUESTRADORES**: Seção 3 adicionada com persistir(), inserir(), atualizar(). Alinhamento com GitHub.md v3.0. Sprint S011/T04. |
+| 2.0 | 2025-12-16 | **EXTENSÃO v2**: (1) Novas collections: specs, classes_equivalencia, criterios_aceite, ciclo_tracking. (2) backlog_items v2: +timestamps, +origem_ciclo, +metricas. (3) sprints v2: +metricas agregadas, +itens[]. (4) Métodos de métricas. (5) Seção Migração v1→v2. Mantida estrutura original de Infraestrutura. |
