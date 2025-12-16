@@ -1,9 +1,9 @@
-# Catálogo GENESIS v2.5
+# Catálogo GENESIS v2.6
 # Índice semântico para busca e roteamento
 # Organizado por tipo: docs, backlog, sprint, templates
-# v2.5: Adicionado tipo templates para especificações M3.*
+# v2.6: Templates M3.E e M3.P publicados, Schema TDD adicionado
 
-versao: "2.5"
+versao: "2.6"
 atualizado: "2025-12-16"
 
 # =============================================================================
@@ -71,6 +71,20 @@ docs:
       camada: C3
       status: Publicado
 
+  - id: "doc_schema_tdd"
+    nome: "Schema TDD"
+    chave: "testar especificar testes TDD classes equivalência critérios aceite cobertura"
+    arquivo: "docs/00_E/00_E_1_7_Schema_TDD.md"
+    triggers:
+      - "como especificar testes"
+      - "schema tdd"
+      - "classes de equivalência"
+      - "critérios de aceite"
+    metadata:
+      versao: "1.0"
+      camada: C3
+      status: Publicado
+
   # --- INFRAESTRUTURA ---
   - id: "infra_github"
     nome: "GitHub"
@@ -125,7 +139,7 @@ docs:
 
 # =============================================================================
 # TEMPLATES - Templates de especificação para vertentes M3.*
-# Novo em v2.5 - Usado por Epistemologia para aplicar método por vertente
+# Usado por Epistemologia para aplicar método por vertente
 # =============================================================================
 templates:
   - id: "template_spec_poo"
@@ -139,29 +153,36 @@ templates:
       - "vertente estrutural"
     metadata:
       vertente: "M3.E"
+      versao: "1.0"
       artefatos_produzidos:
         - ".py"
         - "test_.py"
         - ".feature"
       schema_tdd: true
-      status: Pendente  # Será criado em T03
+      status: Publicado
 
   - id: "template_spec_bpmn"
     nome: "Template M3.P - BPMN"
-    chave: "especificar processo workflow bpmn camunda lanes gateways processual"
+    chave: "especificar processo workflow bpmn camunda lanes gateways processual migração error"
     arquivo: "_catalogo/templates/M3_P_BPMN.md"
     triggers:
       - "especificar processo"
       - "gerar BPMN"
       - "M3.P"
       - "vertente processual"
+      - "migration plan"
+      - "error handling camunda"
     metadata:
       vertente: "M3.P"
+      versao: "1.0"
       artefatos_produzidos:
         - ".bpmn"
         - "karate.feature"
+        - "migration.json"
       schema_tdd: true
-      status: Pendente  # Será criado em T03
+      inclui_migration_plan: true
+      inclui_error_handling: true
+      status: Publicado
 
   - id: "template_spec_dmn"
     nome: "Template M3.D - DMN"
@@ -178,7 +199,7 @@ templates:
         - ".dmn"
         - "karate.feature"
       schema_tdd: true
-      status: Backlog  # Futuro
+      status: Backlog
 
   - id: "template_spec_infra"
     nome: "Template M3.I - Infra"
@@ -196,7 +217,7 @@ templates:
         - "docker-compose.yaml"
         - ".yaml"
       schema_tdd: false
-      status: Backlog  # Futuro
+      status: Backlog
 
   - id: "template_spec_config"
     nome: "Template M3.C - Config"
@@ -214,7 +235,7 @@ templates:
         - "schema.json"
         - "config.yaml"
       schema_tdd: false
-      status: Backlog  # Futuro
+      status: Backlog
 
 # =============================================================================
 # BACKLOG - Itens de trabalho pendente
@@ -292,6 +313,21 @@ backlog:
       prioridade: alta
       status: Pendente
       sequencia: "após PROMETHEUS v3.0"
+
+  - id: "bl_spec_recursos"
+    nome: "Spec Recursos - Runtime, Teste, Esforço"
+    chave: "spec recursos runtime teste esforço estimativa CPU RAM API tokens"
+    arquivo: "_backlog/BKL-R01_Spec_Recursos.md"
+    triggers:
+      - "spec recursos"
+      - "estimativa recursos"
+      - "BKL-R01"
+    metadata:
+      prioridade: media
+      status: Pendente
+      sistemas_afetados:
+        - PROMETHEUS
+        - MS_Produto
 
 # =============================================================================
 # SPRINTS - Ciclos de execução
