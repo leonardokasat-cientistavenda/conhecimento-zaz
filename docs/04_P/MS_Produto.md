@@ -1,10 +1,10 @@
-# MS_Produto v2.0
+# MS_Produto v2.1
 
 ---
 
 ```yaml
 nome: MS_Produto
-versao: "2.0"
+versao: "2.1"
 tipo: Meta Sistema
 status: Publicado
 camada: 4
@@ -13,12 +13,17 @@ data_publicacao: "2025-12-16"
 pai: genesis/GENESIS.md
 depende_de:
   - genesis/GENESIS.md
-  - genesis/GENESIS_Arquitetura.md
-  - docs/00_E/00_E_Epistemologia.md
-  - docs/00_I/00_I_2_1_Backlog.md
-estende:
-  - docs/00_I/00_I_2_1_Backlog.md
+  - docs/04_B/MS_Backlog.md
 arquitetura: docs/04_P/MS_Produto_Arquitetura.md
+
+# Integração via MS_Backlog
+tipos_consumidos:
+  - estruturar_produto
+  - criar_feature
+  - implantar
+tipos_produzidos:
+  - ciclo_epistemologico
+  - avaliar_efetividade
 ```
 
 ---
@@ -63,13 +68,10 @@ arquitetura: docs/04_P/MS_Produto_Arquitetura.md
 
 > **MS_Produto é o Meta Sistema que gerencia o ciclo de vida de Produtos, desde o entendimento profundo da dor até a validação de efetividade.**
 >
-> **Responsabilidades:**
-> - **Entrevistar** para estruturar a dor (Prontuário)
-> - **Estruturar** Produto com threshold de sucesso
-> - **Criar Features** como hipóteses testáveis
-> - **Solicitar** ciclos epistemológicos via Backlog
-> - **Receber** releases de PROMETHEUS
-> - **Validar** efetividade e iterar
+> **Integração v2.1:**
+> - **Consome** BacklogItems: estruturar_produto, criar_feature, implantar
+> - **Produz** BacklogItems: ciclo_epistemologico, avaliar_efetividade
+> - **Não conhece** outros MS diretamente (só MS_Backlog)
 >
 > **Princípio:** A dor é resolvida no PRODUTO. Features são hipóteses de como contribuir.
 
@@ -77,17 +79,130 @@ arquitetura: docs/04_P/MS_Produto_Arquitetura.md
 
 | MS_Produto FAZ | MS_Produto NÃO FAZ |
 |----------------|-------------------|
-| Entrevista para estruturar dor | Especifica tecnicamente (Epistemologia faz) |
-| Define Produto e Features | Desenvolve código (PROMETHEUS faz) |
-| Solicita trabalho via Backlog | Executa sprints (Sprint faz) |
-| Valida efetividade | Implementa busca semântica (Catálogo faz) |
-| Itera baseado em resultado | Roteia problemas (GENESIS faz) |
+| Consome itens via MS_Backlog | Conhece outros MS diretamente |
+| Estrutura Prontuário → Produto → Feature | Especifica tecnicamente (Epistemologia) |
+| Define critérios de sucesso | Desenvolve código (PROMETHEUS) |
+| Produz BacklogItems para próximos passos | Roteia para sistemas (MS_Backlog faz) |
+| Implanta e treina usuários | Avalia efetividade (GENESIS faz) |
 
 ---
 
-## 2. Marco Teórico (M1)
+## 2. Integração via MS_Backlog
 
-### 2.1 Fundamentos
+### 2.1 Modelo de Comunicação
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    MS_PRODUTO: COMUNICAÇÃO VIA BACKLOG                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  MS_Produto NÃO conhece outros sistemas diretamente                         │
+│  Toda comunicação passa por MS_Backlog                                      │
+│                                                                             │
+│  ┌─────────────┐                         ┌─────────────┐                    │
+│  │  MS_Produto │                         │ MS_Backlog  │                    │
+│  └──────┬──────┘                         └──────┬──────┘                    │
+│         │                                       │                           │
+│         │ consumir([estruturar_produto,         │                           │
+│         │           criar_feature,              │                           │
+│         │           implantar])                 │                           │
+│         │──────────────────────────────────────►│                           │
+│         │                                       │                           │
+│         │◄──────────────────────────────────────│                           │
+│         │         item: BacklogItem             │                           │
+│         │                                       │                           │
+│         │ [processa]                            │                           │
+│         │                                       │                           │
+│         │ concluir(resultado, items_gerados: [  │                           │
+│         │   {tipo: ciclo_epistemologico},       │                           │
+│         │   {tipo: avaliar_efetividade}         │                           │
+│         │ ])                                    │                           │
+│         │──────────────────────────────────────►│                           │
+│         │                                       │                           │
+│         │                                       │ [roteia para              │
+│         │                                       │  Epistemologia,           │
+│         │                                       │  GENESIS]                 │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 2.2 Tipos Consumidos
+
+```yaml
+estruturar_produto:
+  trigger: "GENESIS conclui entrevistar_dor"
+  input: {prontuario_ref: string}
+  processamento: |
+    1. Buscar Prontuário por ref
+    2. Criar Produto com dor_cliente, threshold_adocao
+    3. Criar Feature inicial (hipótese)
+    4. Definir Critérios de Sucesso
+  output:
+    resultado: {produto_id, feature_id}
+    items_gerados:
+      - tipo: ciclo_epistemologico
+        feature_ref: feature_id
+        contexto: {problema: dor, criterios: [...]}
+
+criar_feature:
+  trigger: "Produto precisa de nova Feature"
+  input: {produto_ref: string, hipotese: string, criterios: [...]}
+  processamento: |
+    1. Validar Produto existe
+    2. Criar Feature com hipótese
+    3. Criar Critérios de Sucesso
+  output:
+    resultado: {feature_id}
+    items_gerados:
+      - tipo: ciclo_epistemologico
+        feature_ref: feature_id
+
+implantar:
+  trigger: "PO aprova release"
+  input: {release_ref: string, produto_ref: string}
+  processamento: |
+    1. Setup ambiente do cliente
+    2. Executar checklist de implantação
+    3. Iniciar treinamento
+    4. Marcar release como implantada
+  output:
+    resultado: {implantacao_id}
+    items_gerados:
+      - tipo: avaliar_efetividade
+        release_ref: release_ref
+        produto_ref: produto_ref
+        periodo: "30 dias após implantação"
+```
+
+### 2.3 Tipos Produzidos
+
+```yaml
+ciclo_epistemologico:
+  quando: "Feature precisa de especificação"
+  consumidor: Epistemologia
+  payload:
+    feature_ref: string
+    produto_ref: string
+    contexto:
+      problema: string  # Dor do produto
+      criterios: [...]  # Critérios de sucesso
+      restricoes: [...]
+
+avaliar_efetividade:
+  quando: "Release implantada, período de avaliação concluído"
+  consumidor: GENESIS
+  payload:
+    release_ref: string
+    produto_ref: string
+    feature_refs: [string]
+    periodo: string
+```
+
+---
+
+## 3. Marco Teórico (M1)
+
+### 3.1 Fundamentos
 
 | Conceito | Teoria | Aplicação |
 |----------|--------|-----------|
@@ -95,20 +210,20 @@ arquitetura: docs/04_P/MS_Produto_Arquitetura.md
 | **Lean Startup** | Ries | Feature = hipótese testável |
 | **OKR** | Grove/Doerr | Critérios de sucesso mensuráveis |
 | **Customer Success** | Mehta | Health Score, feedback loop |
-| **TDD** | Beck | Especificar teste antes de implementar |
+| **Event Sourcing** | Fowler | Comunicação via BacklogItems |
 
-### 2.2 Síntese
+### 3.2 Síntese
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                         MS_PRODUTO: SÍNTESE TEÓRICA                         │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  JOBS TO BE DONE          LEAN STARTUP           OKR                        │
+│  JOBS TO BE DONE          LEAN STARTUP           EVENT SOURCING             │
 │  ┌───────────────┐        ┌───────────────┐      ┌───────────────┐          │
-│  │ Entender o    │        │ Feature =     │      │ Critério =    │          │
-│  │ job real do   │ ────►  │ hipótese      │ ───► │ KR mensurável │          │
-│  │ usuário       │        │ testável      │      │ com meta      │          │
+│  │ Entender o    │        │ Feature =     │      │ BacklogItem = │          │
+│  │ job real do   │ ────►  │ hipótese      │ ───► │ evento que    │          │
+│  │ usuário       │        │ testável      │      │ dispara ação  │          │
 │  └───────────────┘        └───────────────┘      └───────────────┘          │
 │         │                        │                      │                   │
 │         │                        │                      │                   │
@@ -116,7 +231,7 @@ arquitetura: docs/04_P/MS_Produto_Arquitetura.md
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │                           MS_PRODUTO                                │    │
 │  │                                                                     │    │
-│  │  Prontuário ──► Produto ──► Feature ──► Validação ──► Iteração     │    │
+│  │  Consome ──► Processa ──► Produz ──► (MS_Backlog roteia)           │    │
 │  │                                                                     │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
@@ -125,31 +240,31 @@ arquitetura: docs/04_P/MS_Produto_Arquitetura.md
 
 ---
 
-## 3. Objeto (M2)
+## 4. Objeto (M2)
 
-### 3.1 Fronteiras
+### 4.1 Fronteiras
 
 | MS_Produto É | MS_Produto NÃO É |
 |--------------|------------------|
-| Dono da dor e do produto | Executor de especificação técnica |
-| Entrevistador estruturado | Desenvolvedor de código |
-| Definidor de critérios de sucesso | Implementador de busca |
-| Solicitante de trabalho (via Backlog) | Executor de sprints |
-| Validador de efetividade | Roteador de problemas |
+| Consumidor de BacklogItems | Conhecedor de outros MS |
+| Produtor de BacklogItems | Executor de especificação |
+| Dono da dor e do produto | Desenvolvedor de código |
+| Estruturador de Features | Roteador (MS_Backlog faz) |
+| Implantador de releases | Avaliador de efetividade (GENESIS) |
 
-### 3.2 Hierarquia
+### 4.2 Hierarquia
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                    HIERARQUIA: DOR → PRODUTO → FEATURE                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  PRONTUÁRIO (dor estruturada)                                               │
+│  PRONTUÁRIO (dor estruturada) ◄── GENESIS entrevista                        │
 │       │                                                                     │
 │       │ "Vendedores perdem 3-4 min por reporte"                             │
 │       │                                                                     │
 │       ▼                                                                     │
-│  PRODUTO (resolve a dor macro)                                              │
+│  PRODUTO (resolve a dor macro) ◄── MS_Produto consome estruturar_produto    │
 │       │                                                                     │
 │       ├── dor_cliente ◄── DOR MORA AQUI                                     │
 │       ├── prontuario_ref                                                    │
@@ -158,7 +273,9 @@ arquitetura: docs/04_P/MS_Produto_Arquitetura.md
 │       └── FEATURE (hipótese de COMO resolver)                               │
 │            │                                                                │
 │            ├── "SE reporte por voz ENTÃO tempo < 30s"                       │
-│            ├── criterios_sucesso[] (subordinados ao produto)                │
+│            ├── criterios_sucesso[]                                          │
+│            │                                                                │
+│            │   MS_Produto produz: ciclo_epistemologico ────►                │
 │            │                                                                │
 │            └── ÉPICO (container de desenvolvimento)                         │
 │                 │                                                           │
@@ -167,72 +284,79 @@ arquitetura: docs/04_P/MS_Produto_Arquitetura.md
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 3.3 Relações com Outros Sistemas
+### 4.3 Fluxo de Saga
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                         MS_PRODUTO: RELAÇÕES                                │
+│                    MS_PRODUTO NO FLUXO DE SAGA                              │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  GENESIS                                                                    │
-│  ───────                                                                    │
-│  • Roteia "dor" para MS_Produto                                             │
-│  • Avalia efetividade (produto/feature atingiu threshold?)                  │
-│  • Aprende padrões de sucesso/falha                                         │
-│                                                                             │
-│  EPISTEMOLOGIA                                                              │
-│  ─────────────                                                              │
-│  • MS_Produto solicita ciclos epistemológicos via Backlog                   │
-│  • Epistemologia entrega Spec com TDD (classes_equivalencia, criterios)     │
-│  • Ciclos recursivos até classes folha                                      │
-│                                                                             │
-│  PROMETHEUS                                                                 │
-│  ──────────                                                                 │
-│  • MS_Produto entrega Spec TDD via Backlog                                  │
-│  • PROMETHEUS executa, valida tecnicamente, publica Release                 │
-│  • MS_Produto recebe Release para implantar                                 │
-│                                                                             │
-│  BACKLOG/SPRINT                                                             │
-│  ─────────────                                                              │
-│  • TODO trabalho passa por Backlog                                          │
-│  • Sprint consolida e executa                                               │
-│  • Tipos: ciclo_epistemologico | desenvolvimento | bug | feature | epico    │
+│  GENESIS.entrevistar_dor()                                                  │
+│       │                                                                     │
+│       └──► BacklogItem(tipo: estruturar_produto)                            │
+│                   │                                                         │
+│                   ▼                                                         │
+│            MS_PRODUTO.consumir() ◄── AQUI                                   │
+│                   │                                                         │
+│                   └──► Cria Produto + Feature                               │
+│                        └──► BacklogItem(tipo: ciclo_epistemologico)         │
+│                                   │                                         │
+│                                   ▼                                         │
+│                            EPISTEMOLOGIA consome                            │
+│                                   │                                         │
+│                                   └──► Spec pronta                          │
+│                                        └──► BacklogItem(tipo: dev)          │
+│                                                   │                         │
+│                                                   ▼                         │
+│                                            PROMETHEUS consome               │
+│                                                   │                         │
+│                                                   └──► Release pronta       │
+│                                                        └──► BacklogItem(    │
+│                                                             tipo: aprovar)  │
+│                                                                   │         │
+│                                                                   ▼         │
+│                                                            PO aprova        │
+│                                                                   │         │
+│                                                                   └──►      │
+│                                              BacklogItem(tipo: implantar)   │
+│                                                           │                 │
+│                                                           ▼                 │
+│                                                    MS_PRODUTO.consumir() ◄──│
+│                                                           │                 │
+│                                                           └──► Implanta     │
+│                                                    BacklogItem(tipo: avaliar│
+│                                                    _efetividade)            │
+│                                                           │                 │
+│                                                           ▼                 │
+│                                                    GENESIS consome          │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 4. Classe (M3)
+## 5. Classe (M3)
 
-### 4.1 Diagrama de Classes
+### 5.1 Diagrama de Classes
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                    DIAGRAMA DE CLASSES MS_PRODUTO v2.0                      │
+│                    DIAGRAMA DE CLASSES MS_PRODUTO v2.1                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │                            ┌─────────────┐                                  │
-│                            │ PRONTUÁRIO  │                                  │
+│                            │ PRONTUÁRIO  │ ◄── GENESIS cria                 │
 │                            │─────────────│                                  │
 │                            │ sintoma     │                                  │
 │                            │ afetados[]  │                                  │
 │                            │ impacto     │                                  │
 │                            │ criterio_   │                                  │
 │                            │ esperado    │                                  │
-│                            │─────────────│                                  │
-│                            │ converter   │                                  │
-│                            │ _produto()  │                                  │
 │                            └──────┬──────┘                                  │
 │                                   │ 1:1                                     │
 │                                   ▼                                         │
 │                            ┌─────────────┐                                  │
-│                            │  PORTFÓLIO  │                                  │
-│                            └──────┬──────┘                                  │
-│                                   │ 1:N                                     │
-│                                   ▼                                         │
-│                            ┌─────────────┐                                  │
-│                            │   PRODUTO   │                                  │
+│                            │   PRODUTO   │ ◄── MS_Produto cria              │
 │                            │─────────────│                                  │
 │                            │ dor_cliente │ ◄── dor mora aqui                │
 │                            │ prontuario_ │                                  │
@@ -240,64 +364,34 @@ arquitetura: docs/04_P/MS_Produto_Arquitetura.md
 │                            │ threshold_  │                                  │
 │                            │   adocao    │                                  │
 │                            │ features[]  │                                  │
-│                            │─────────────│                                  │
-│                            │ criar_      │                                  │
-│                            │ feature()   │                                  │
 │                            └──────┬──────┘                                  │
 │                                   │ 1:N                                     │
-│         ┌─────────────────────────┼─────────────────────────┐               │
-│         ▼                         ▼                         ▼               │
-│  ┌─────────────┐           ┌─────────────┐           ┌─────────────┐        │
-│  │   FEATURE   │           │   RELEASE   │           │ IMPLANTAÇÃO │        │
-│  │─────────────│           │─────────────│           │─────────────│        │
-│  │ produto_ref │           │ versao      │           │ release_ref │        │
-│  │ hipotese    │           │ changelog   │           │ cliente     │        │
-│  │ criterios[] │           │ status      │           │ checklist[] │        │
-│  │ epicos[]    │           └─────────────┘           │─────────────│        │
-│  │─────────────│                                     │ iniciar_    │        │
-│  │ avaliar()   │                                     │ treinamento │        │
-│  └──────┬──────┘                                     └──────┬──────┘        │
-│         │ 1:N                                               │ 1:1           │
-│         │                                                   ▼               │
-│         │            ┌─────────────┐                 ┌─────────────┐        │
-│         │            │ CRITERIO    │                 │ TREINAMENTO │        │
-│         ├───────────►│ SUCESSO     │                 └─────────────┘        │
-│         │            │─────────────│                                        │
-│         │            │ nome        │                                        │
-│         │            │ baseline    │                                        │
-│         │            │ meta        │                                        │
-│         │            │ atual       │                                        │
-│         │            │ status      │                                        │
-│         │            └─────────────┘                                        │
-│         │                                                                   │
-│         │ 1:N                                                               │
-│         ▼                                                                   │
-│  ┌─────────────┐           ┌─────────────┐                                  │
-│  │    ÉPICO    │           │ AVALIAÇÃO   │                                  │
-│  │─────────────│           │ EFETIVIDADE │                                  │
-│  │ feature_ref │◄──────────│─────────────│                                  │
-│  │ titulo      │           │ feature_ref │                                  │
-│  │ backlog_    │           │ conclusao   │                                  │
-│  │   items[]   │           │ aprendizados│                                  │
-│  └──────┬──────┘           └─────────────┘                                  │
-│         │ 1:N                                                               │
-│         ▼                                                                   │
-│  ┌─────────────┐                                                            │
-│  │ BACKLOG     │                                                            │
-│  │ ITEM        │                                                            │
-│  │ (existente) │                                                            │
-│  │─────────────│                                                            │
-│  │ +tipo       │ ◄── ciclo_epistemologico | desenvolvimento | bug           │
-│  │ +feature_ref│                                                            │
-│  │ +epico_ref  │                                                            │
-│  │ +spec_ref   │                                                            │
-│  │ +pai_ref    │ ◄── para ciclos recursivos                                 │
-│  └─────────────┘                                                            │
+│                                   ▼                                         │
+│                            ┌─────────────┐                                  │
+│                            │   FEATURE   │                                  │
+│                            │─────────────│                                  │
+│                            │ hipotese    │                                  │
+│                            │ criterios[] │                                  │
+│                            │ status      │                                  │
+│                            │─────────────│                                  │
+│                            │ produzir_   │ ──► BacklogItem(ciclo_epistemo)  │
+│                            │ backlog()   │                                  │
+│                            └──────┬──────┘                                  │
+│                                   │ 1:N                                     │
+│                                   ▼                                         │
+│                            ┌─────────────┐                                  │
+│                            │ CRITERIO    │                                  │
+│                            │ SUCESSO     │                                  │
+│                            │─────────────│                                  │
+│                            │ baseline    │                                  │
+│                            │ meta        │                                  │
+│                            │ atual       │                                  │
+│                            └─────────────┘                                  │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.2 Classe: Prontuario
+### 5.2 Classe: Prontuario
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -311,21 +405,17 @@ arquitetura: docs/04_P/MS_Produto_Arquitetura.md
 │  + impacto_quantificado: String      # "~15 min/dia por vendedor"           │
 │  + solucao_atual: String             # Workaround usado hoje                │
 │  + criterio_sucesso_esperado: String # "Reporte em < 1 min"                 │
-│  + historico: String?                # Contexto adicional                   │
 │  + usuario_ref: String               # Quem relatou a dor                   │
 │  + data_entrevista: Date             # Quando foi entrevistado              │
 │  + status: Enum                      # Novo | Analisado | Convertido        │
 │  + produto_ref: String?              # Se virou Produto                     │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Métodos                                                                    │
-│  ────────                                                                   │
-│  + criar(entrevista): Prontuario                                            │
-│  + converter_produto(): Produto                                             │
-│  + similar_existe(): Boolean                                                │
+│  Nota: Prontuário é criado por GENESIS.entrevistar_dor()                    │
+│        MS_Produto recebe via BacklogItem(estruturar_produto)                │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.3 Classe: Produto
+### 5.3 Classe: Produto
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -342,23 +432,16 @@ arquitetura: docs/04_P/MS_Produto_Arquitetura.md
 │  + estagio: Enum                     # Backlog|Plan|Dev|Release|Impl|Prod   │
 │  + features: [Feature]               # Hipóteses de solução                 │
 │  + releases: [Release]               # Histórico de releases                │
-│  + implantacoes: [Implantacao]       # Clientes implantados                 │
-│  + health_scores: [HealthScore]      # Scores por cliente                   │
 │  + owner: String                     # Responsável                          │
-│  + data_criacao: Date                # Quando foi criado                    │
-│  + data_lancamento: Date?            # Quando entrou em produção            │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Métodos                                                                    │
 │  ────────                                                                   │
-│  + criar(prontuario): Produto                                               │
 │  + criar_feature(hipotese, criterios): Feature                              │
-│  + avancar_estagio(): Produto                                               │
 │  + calcular_adocao(): Number                                                │
-│  + obter_health_geral(): Number                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.4 Classe: Feature
+### 5.4 Classe: Feature
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -372,21 +455,16 @@ arquitetura: docs/04_P/MS_Produto_Arquitetura.md
 │  + criterios_sucesso: [CriterioSucesso]                                     │
 │  + status: Enum                      # Backlog|EmEspec|EmDev|Implantada|    │
 │  +                                   # Validada|Invalidada                  │
-│  + epicos: [String]                  # Épicos que implementam               │
 │  + spec_ref: String?                 # Spec gerada por Epistemologia        │
-│  + data_criacao: Date                # Quando foi criada                    │
-│  + data_validacao: Date?             # Quando foi validada                  │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Métodos                                                                    │
 │  ────────                                                                   │
-│  + criar(produto_ref, hipotese, criterios): Feature                         │
-│  + adicionar_epico(epico_id): Feature                                       │
-│  + solicitar_especificacao(): BacklogItem                                   │
+│  + produzir_backlog(): BacklogItem   # Produz ciclo_epistemologico          │
 │  + avaliar(): AvaliacaoEfetividade                                          │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.5 Classe: CriterioSucesso
+### 5.5 Classe: CriterioSucesso
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -396,14 +474,12 @@ arquitetura: docs/04_P/MS_Produto_Arquitetura.md
 │  ──────────                                                                 │
 │  + id: String                        # Identificador único                  │
 │  + nome: String                      # Ex: "tempo_reporte"                  │
-│  + descricao: String                 # O que mede                           │
 │  + baseline: Number                  # Valor antes (ex: 240s)               │
 │  + meta: Number                      # Valor alvo (ex: 30s)                 │
 │  + atual: Number?                    # Valor medido                         │
 │  + unidade: String                   # segundos | % | count | etc           │
 │  + direcao: Enum                     # Aumentar | Diminuir                  │
 │  + status: Enum                      # Pendente | Atingido | NaoAtingido    │
-│  + fonte_medicao: String?            # De onde vem o dado                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Métodos                                                                    │
 │  ────────                                                                   │
@@ -412,144 +488,47 @@ arquitetura: docs/04_P/MS_Produto_Arquitetura.md
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.6 Classe: AvaliacaoEfetividade
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                      CLASSE: AVALIACAO_EFETIVIDADE                          │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  Atributos                                                                  │
-│  ──────────                                                                 │
-│  + id: String                        # Identificador único                  │
-│  + feature_ref: String               # Feature avaliada                     │
-│  + produto_ref: String               # Produto da feature                   │
-│  + data_avaliacao: Date              # Quando avaliou                       │
-│  + conclusao: Enum                   # SUCESSO | ITERAR | BUG |             │
-│  +                                   # THRESHOLD_INADEQUADO                 │
-│  + criterios_resultado: [Object]     # Status de cada critério              │
-│  + metricas_coletadas: Object        # Dados brutos                         │
-│  + aprendizados: String              # O que aprendemos                     │
-│  + proximos_passos: [String]         # Ações decorrentes                    │
-│  + backlog_gerado: String?           # BacklogItem criado (se iteração)     │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  Métodos                                                                    │
-│  ────────                                                                   │
-│  + criar(feature_ref, metricas): AvaliacaoEfetividade                       │
-│  + registrar_aprendizado(texto): AvaliacaoEfetividade                       │
-│  + gerar_backlog_iteracao(): BacklogItem                                    │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 4.7 Classe: Épico
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                              CLASSE: ÉPICO                                  │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  Atributos                                                                  │
-│  ──────────                                                                 │
-│  + id: String                        # Identificador único                  │
-│  + titulo: String                    # Nome do épico                        │
-│  + descricao: String                 # O que será entregue                  │
-│  + feature_ref: String               # Feature que implementa               │
-│  + produto_ref: String               # Produto (via feature)                │
-│  + status: Enum                      # Backlog | EmProgresso | Concluido    │
-│  + prioridade: Number                # Ordem de execução                    │
-│  + backlog_items: [String]           # IDs dos backlog items                │
-│  + release_alvo: String?             # Release planejada                    │
-│  + data_inicio: Date?                # Quando começou                       │
-│  + data_fim: Date?                   # Quando concluiu                      │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  Métodos                                                                    │
-│  ────────                                                                   │
-│  + criar(titulo, feature_ref): Epico                                        │
-│  + adicionar_item(backlog_item_id): Epico                                   │
-│  + calcular_progresso(): Number                                             │
-│  + iniciar(): Epico                                                         │
-│  + concluir(): Epico                                                        │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 4.8 Classes Existentes (mantidas da v1.1)
-
-As seguintes classes permanecem conforme v1.1:
-- **Release**: Gerencia versões publicadas
-- **Implantação**: Setup em clientes
-- **Treinamento**: Capacitação pós-implantação
-- **HealthScore**: Monitoramento de saúde
-- **Feedback**: Loop de retorno do cliente
-- **Portfólio**: Visão consolidada
-
 ---
 
-## 5. Métodos Principais
-
-### 5.1 entrevistar_dor()
+## 6. Loop de Consumo
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                         MÉTODO: entrevistar_dor()                           │
+│                    MS_PRODUTO: LOOP DE CONSUMO                              │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Input: usuario (quem está relatando)                                       │
-│  Output: Prontuario                                                         │
 │                                                                             │
-│  ROTEIRO DE ENTREVISTA:                                                     │
-│  ──────────────────────                                                     │
-│  1. "Qual problema você está enfrentando?"                                  │
-│      → sintoma_principal                                                    │
+│  MS_Produto.run():                                                          │
+│      WHILE true:                                                            │
+│          item = MS_Backlog.consumir([                                       │
+│              "estruturar_produto",                                          │
+│              "criar_feature",                                               │
+│              "implantar"                                                    │
+│          ])                                                                 │
 │                                                                             │
-│  2. "Quem sofre com esse problema?" (persona)                               │
-│      → afetados[]                                                           │
+│          IF item == null:                                                   │
+│              aguardar()                                                     │
+│              CONTINUE                                                       │
 │                                                                             │
-│  3. "Qual o impacto? (tempo, dinheiro, frustração)"                         │
-│      → impacto_quantificado                                                 │
+│          IF NOT humano.aprova(item):                                        │
+│              MS_Backlog.cancelar(item.id, "Rejeitado")                      │
+│              CONTINUE                                                       │
 │                                                                             │
-│  4. "Como você resolve hoje?" (workaround)                                  │
-│      → solucao_atual                                                        │
+│          SWITCH item.tipo:                                                  │
+│              CASE "estruturar_produto":                                     │
+│                  processar_estruturar_produto(item)                         │
 │                                                                             │
-│  5. "Como você saberia que o problema foi resolvido?"                       │
-│      → criterio_sucesso_esperado                                            │
+│              CASE "criar_feature":                                          │
+│                  processar_criar_feature(item)                              │
 │                                                                             │
-│  6. "Isso já aconteceu antes? Contexto?"                                    │
-│      → historico                                                            │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 5.2 iterar_feature()
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         MÉTODO: iterar_feature()                            │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  Input: avaliacao (AvaliacaoEfetividade)                                    │
-│  Output: BacklogItem                                                        │
-│                                                                             │
-│  SE avaliacao.conclusao == "BUG":                                           │
-│      → BacklogItem(tipo: "bug", destino: "PROMETHEUS")                      │
-│      → Descrição: correção técnica                                          │
-│                                                                             │
-│  SE avaliacao.conclusao == "ITERAR":                                        │
-│      → BacklogItem(tipo: "ciclo_epistemologico", destino: "EPISTEMOLOGIA")  │
-│      → Contexto: "iterar solução para feature X"                            │
-│      → Aprendizados da avaliação anexados                                   │
-│                                                                             │
-│  SE avaliacao.conclusao == "THRESHOLD_INADEQUADO":                          │
-│      → Ajustar threshold da feature                                         │
-│      → Reavaliar com novos parâmetros                                       │
-│                                                                             │
-│  SE produto não atinge threshold (mesmo features OK):                       │
-│      → DECIDE via Raciocínio (H→E→I→D):                                     │
-│        H1: Nova feature resolve?                                            │
-│        H2: Aumentar threshold features existentes resolve?                  │
-│      → BacklogItem conforme decisão                                         │
+│              CASE "implantar":                                              │
+│                  processar_implantar(item)                                  │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 6. Invariantes
+## 7. Invariantes
 
 | Invariante | Descrição |
 |------------|-----------|
@@ -559,74 +538,29 @@ As seguintes classes permanecem conforme v1.1:
 | **FEATURE-PRODUTO** | Toda Feature deve ter produto_ref |
 | **FEATURE-HIPOTESE** | Toda Feature deve ter hipótese no formato "SE...ENTÃO" |
 | **FEATURE-CRITERIO** | Toda Feature deve ter ≥1 CriterioSucesso |
-| **EPICO-FEATURE** | Todo Épico deve ter feature_ref |
 | **CRITERIO-BASELINE** | Todo Critério deve ter baseline antes de meta |
-| **AVALIACAO-CONCLUSAO** | Toda Avaliação deve ter conclusão definida |
+| **COMUNICACAO-BACKLOG** | Toda comunicação com outros MS via BacklogItem |
 
 ---
 
-## 7. Triggers de Roteamento
+## 8. Triggers de Roteamento
 
 ```yaml
 problema_que_resolve: "Como gerenciar ciclo de vida de Produtos"
-triggers:
-  - tenho uma dor
-  - quero criar produto
-  - novo produto
-  - feature
-  - hipótese
-  - critério de sucesso
-  - threshold
-  - roadmap
-  - épico
-  - release
-  - implantar
-  - health score
-  - feedback
-  - portfólio
-  - avaliar efetividade
-exemplos_uso:
-  - "tenho uma dor: vendedores perdem tempo no reporte"
-  - "criar feature para o produto X"
-  - "qual o health score dos clientes"
-  - "avaliar se a feature atingiu o threshold"
-```
 
----
+# MS_Produto não é chamado diretamente
+# É ativado via MS_Backlog quando consome seus tipos
 
-## 8. Catalogação para GENESIS
+tipos_que_ativam_ms_produto:
+  - estruturar_produto  # GENESIS produz após entrevistar
+  - criar_feature       # Usuário ou sistema solicita nova feature
+  - implantar           # PO aprova release
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    MS_PRODUTO: CATALOGAÇÃO PARA GENESIS                     │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  O que MS_Produto cataloga:                                                 │
-│  ─────────────────────────                                                  │
-│  • Prontuários (dores estruturadas)                                         │
-│  • Produtos + Health Scores                                                 │
-│  • Features + Critérios de Sucesso                                          │
-│  • Avaliações de Efetividade + Aprendizados                                 │
-│                                                                             │
-│  GENESIS usa para:                                                          │
-│  ─────────────────                                                          │
-│  • Encontrar dores similares a novas dores                                  │
-│  • Reutilizar features que funcionaram                                      │
-│  • Aprender padrões de sucesso/falha                                        │
-│  • Sugerir thresholds baseado em histórico                                  │
-│                                                                             │
-│  Schema de catalogação:                                                     │
-│  ──────────────────────                                                     │
-│  {                                                                          │
-│    sistema_origem: "MS_Produto",                                            │
-│    tipo: "prontuario" | "produto" | "feature" | "avaliacao",                │
-│    embedding: [float],                                                      │
-│    tags: [string],                                                          │
-│    score_reuso: number,                                                     │
-│    vezes_reutilizado: number                                                │
-│  }                                                                          │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+triggers_usuario:
+  # Usuário fala com GENESIS, que produz BacklogItem apropriado
+  - "tenho uma dor"        → GENESIS.entrevistar_dor → estruturar_produto
+  - "criar feature"        → criar_feature
+  - "implantar release"    → implantar
 ```
 
 ---
@@ -636,11 +570,10 @@ exemplos_uso:
 | Documento | Relação |
 |-----------|---------|
 | genesis/GENESIS.md | Pai - propósito do sistema |
-| genesis/GENESIS_Arquitetura.md | Contratos e fluxos técnicos |
-| docs/04_P/MS_Produto_Arquitetura.md | Detalhes técnicos deste MS |
-| docs/00_E/00_E_Epistemologia.md | Método de especificação |
-| docs/00_I/00_I_2_1_Backlog.md | Gestão de itens de trabalho |
-| genesis/PROMETHEUS.md | Fábrica de execução |
+| docs/04_B/MS_Backlog.md | Message Broker - comunicação |
+| docs/04_P/MS_Produto_Arquitetura.md | Detalhes técnicos |
+| docs/00_E/00_E_Epistemologia.md | Consome ciclo_epistemologico |
+| genesis/PROMETHEUS.md | Consome desenvolvimento |
 
 ---
 
@@ -648,6 +581,5 @@ exemplos_uso:
 
 | Versão | Data | Alteração |
 |--------|------|-----------|
-| 1.0 | 2025-12-09 | Criação inicial com M0-M4 |
-| 1.1 | 2025-12-09 | Extensões em Backlog e Sprint |
-| 2.0 | 2025-12-16 | **Refatoração completa**: Prontuário (entrevista de dor), Feature (hipótese testável), CriterioSucesso (baseline/meta), AvaliacaoEfetividade. Hierarquia Dor→Produto→Feature. Relação explícita com Epistemologia e Backlog. Tipos de BacklogItem. Método iterar_feature(). Propagação GENESIS v4.0. |
+| 1.0-2.0 | 2025-12-09 a 2025-12-16 | Versões anteriores |
+| 2.1 | 2025-12-16 | **Refatoração arquitetural**: Comunicação exclusiva via MS_Backlog. tipos_consumidos e tipos_produzidos definidos. Loop de consumo. MS_Produto não conhece outros MS diretamente. Fluxo de saga documentado. |
