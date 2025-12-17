@@ -5,14 +5,14 @@
 ```yaml
 codigo: S024
 titulo: "Hello World de GENESIS - Discovery de Capacidades"
-status: ativa
+status: concluida
 data_inicio: "2025-12-17"
+data_fim: "2025-12-17"
 responsavel: leonardo
 backlog_items:
   - BKL-G01
   - BKL-M01 (parcial)
 esforco_estimado_total: 10h
-task_atual: T01
 ```
 
 ---
@@ -20,6 +20,22 @@ task_atual: T01
 ## Objetivo
 
 GENESIS descobre MS via `db.capacidades`, apresenta menu hierárquico, roteia comandos. **Roteamento transparente:** usuário não sabe se executa LLM ou código.
+
+---
+
+## Resultado
+
+✅ **SPRINT CONCLUÍDA** - 7/7 tasks
+
+---
+
+## Artefatos Produzidos
+
+| Artefato | Descrição |
+|----------|-----------|
+| `db.capacidades` | Collection MongoDB com 4 MS e 13 comandos |
+| `genesis/GENESIS_Bootstrap.md` | Especificação completa do bootstrap v6.0 |
+| `docs/schemas/capacidades.md` | Documentação do schema |
 
 ---
 
@@ -54,162 +70,17 @@ GENESIS descobre MS via `db.capacidades`, apresenta menu hierárquico, roteia co
 
 ---
 
-## Arquitetura: Roteamento Transparente
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    ROTEAMENTO TRANSPARENTE                                  │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  USUÁRIO                                                                    │
-│     │                                                                       │
-│     │ "genesis dor"                                                         │
-│     ▼                                                                       │
-│  GENESIS.rotear()                                                           │
-│     │                                                                       │
-│     │ cap = db.capacidades.findOne({comando})                               │
-│     │                                                                       │
-│     ├─────────────────────────────────────────────────────────────┐         │
-│     │                                                             │         │
-│     ▼                                                             ▼         │
-│  if fase in ["draft", "spec"]:              if fase in ["code", "prod"]:    │
-│     │                                                             │         │
-│     │ executar_llm(cap.path)                    executar_codigo(ref)        │
-│     │   ↓                                            ↓                      │
-│     │ LLM lê .md e executa                   STUB (NotImplemented)          │
-│     │                                        → Futuro: Camunda/Python       │
-│     │                                                             │         │
-│     └─────────────────────┬───────────────────────────────────────┘         │
-│                           │                                                 │
-│                           ▼                                                 │
-│                    MESMO OUTPUT                                             │
-│                    (usuário não sabe)                                       │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Fluxo: Menu Multinível
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         FLUXO COMPLETO                                      │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  USUÁRIO                                                                    │
-│     │                                                                       │
-│     │ "oi"                                                                  │
-│     ▼                                                                       │
-│  GENESIS ──────► db.capacidades.find({tipo: "meta_sistema"})                │
-│     │                                                                       │
-│     │ Menu Nível 1:                                                         │
-│     │ ┌─────────────────────────────────────────┐                           │
-│     │ │ 1. 📚 Conhecer                          │                           │
-│     │ │ 2. 📋 Gerenciar                         │                           │
-│     │ │ 3. ✅ Aprovar                           │                           │
-│     │ └─────────────────────────────────────────┘                           │
-│     │                                                                       │
-│     │ Usuário: "1"                                                          │
-│     │                                                                       │
-│     │ Menu Nível 2:                                                         │
-│     │ ┌─────────────────────────────────────────┐                           │
-│     │ │ 1.1 Criar nova Dor                      │                           │
-│     │ │ 1.2 Executar M0-M4                      │                           │
-│     │ │ 1.3 Buscar conhecimento                 │                           │
-│     │ └─────────────────────────────────────────┘                           │
-│     │                                                                       │
-│     │ Usuário: "1.1"                                                        │
-│     ▼                                                                       │
-│  GENESIS.rotear("genesis dor")                                              │
-│     │                                                                       │
-│     │ if maturidade.fase == "draft":                                        │
-│     │   executar_llm(MS_Epistemologia)                                      │
-│     │                                                                       │
-│     ▼                                                                       │
-│  db.backlog.insert(BKL-XXX)                                                 │
-│     │                                                                       │
-│     │ "Iniciar sprint?"                                                     │
-│     ▼                                                                       │
-│  MS_Sprint.iniciar()                                                        │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Schema: db.capacidades
-
-```yaml
-Capacidade:
-  _id: ObjectId
-  id: String                      # "ms_epistemologia"
-  tipo: "meta_sistema" | "modulo" | "ferramenta"
-  
-  # UX
-  nome: String                    # "Epistemologia"
-  icone: String                   # "📚"
-  descricao_curta: String
-  descricao_longa: String
-  
-  # Localização
-  path: String                    # "docs/00_E/00_E_Epistemologia.md"
-  versao: String
-  
-  # Hierarquia
-  pai_id: String?                 # null = raiz
-  ordem: Number
-  
-  # Maturidade (D003 - absorvido de BKL-M01)
-  maturidade:
-    fase: "draft" | "spec" | "code" | "prod"
-    prometheus_ref: String?       # ID do código gerado (futuro)
-  
-  # Capacidades (comandos)
-  capacidades: [{
-    id: String                    # "criar_dor"
-    nome: String
-    descricao: String
-    comando: String               # "genesis dor"
-    gera_backlog: Boolean
-    tipo_item_backlog: String?
-    consome_backlog: String?
-    requer_sprint: Boolean
-    autonomo: Boolean
-  }]
-  
-  created_at: DateTime
-  updated_at: DateTime
-```
-
----
-
 ## Tasks
 
-| # | Título | Descrição | Esforço | Status |
-|---|--------|-----------|---------|--------|
-| T01 | Schema db.capacidades com maturidade | Criar collection com schema completo incluindo maturidade | 1.5h | 🔄 |
-| T02 | Popular db.capacidades | Registrar MS existentes, todas em fase=draft | 1.5h | ⬜ |
-| T03 | GENESIS - Menu multinível | Bootstrap consulta db.capacidades, menu navegável | 2h | ⬜ |
-| T04 | GENESIS - Roteamento transparente | if/else por fase: draft→LLM, code→stub | 2h | ⬜ |
-| T05 | Fluxo gera_backlog → sprint | Após gera_backlog=true, perguntar se inicia sprint | 1h | ⬜ |
-| T06 | MS_Epistemologia - criar_dor | Adicionar capacidade criar_dor ao registro | 0.5h | ⬜ |
-| T07 | Testes | Validar fluxo completo + stub retorna NotImplemented | 1.5h | ⬜ |
-
-**Total estimado: 10h**
-
----
-
-## GAPs Identificados
-
-| GAP | Descrição | Severidade | Solução |
-|-----|-----------|------------|---------|
-| G1 | `db.capacidades` não existe | 🔴 | T01 |
-| G2 | MS não têm capacidades registradas | 🔴 | T02 |
-| G3 | GENESIS não tem menu multinível | 🟡 | T03 |
-| G4 | Roteamento por fase não existe | 🟡 | T04 |
-| G5 | Fluxo gera_backlog não existe | 🟡 | T05 |
-| G6 | MS_Epistemologia sem criar_dor | 🟢 | T06 |
+| # | Título | Status | Artefato |
+|---|--------|--------|----------|
+| T01 | Schema db.capacidades com maturidade | ✅ | db.capacidades + docs/schemas/capacidades.md |
+| T02 | Popular db.capacidades | ✅ | 4 MS, 13 comandos |
+| T03 | GENESIS - Menu multinível | ✅ | genesis/GENESIS_Bootstrap.md |
+| T04 | GENESIS - Roteamento transparente | ✅ | genesis/GENESIS_Bootstrap.md#rotear |
+| T05 | Fluxo gera_backlog → sprint | ✅ | genesis/GENESIS_Bootstrap.md#gera_backlog |
+| T06 | MS_Epistemologia - criar_dor | ✅ | db.capacidades/ms_epistemologia |
+| T07 | Testes | ✅ | Validado durante execução |
 
 ---
 
@@ -226,14 +97,49 @@ Capacidade:
 
 ---
 
+## db.capacidades - Conteúdo Final
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         MENU GENESIS (db.capacidades)                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1. 📚 Conhecer (ms_epistemologia)           fase: draft                    │
+│     ├── genesis dor              → Criar nova Dor                           │
+│     ├── genesis conhecer         → Executar M0-M4                           │
+│     └── genesis buscar           → Buscar conhecimento                      │
+│                                                                             │
+│  2. 📋 Executar (ms_sprint)                  fase: draft                    │
+│     ├── genesis sprint iniciar   → Iniciar sprint                           │
+│     ├── genesis sprint status    → Ver status                               │
+│     ├── genesis sprint pausar    → Pausar sprint                            │
+│     ├── genesis sprint retomar   → Retomar sprint                           │
+│     └── genesis sprint task-concluir → Concluir task                        │
+│                                                                             │
+│  3. 📦 Organizar (ms_backlog)                fase: draft                    │
+│     ├── genesis backlog status   → Ver backlog                              │
+│     ├── genesis backlog pendentes → Listar pendentes                        │
+│     └── genesis backlog adicionar → Adicionar item                          │
+│                                                                             │
+│  4. ✅ Aprovar (ms_produto)                  fase: draft                    │
+│     ├── genesis produto status   → Ver produtos                             │
+│     └── genesis aprovar          → Aprovar release                          │
+│                                                                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Total: 4 MS │ 13 comandos │ Todos em fase=draft (LLM-based)                │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## Referências
 
 | Documento | Relação |
 |-----------|---------|
 | _backlog/BKL-G01_Genesis_Hello_World.md | Item de backlog principal |
 | _backlog/BKL-M01_Modelo_Maturidade.md | Parcialmente absorvido |
-| _backlog/BKL-C01_Catalogo_v2.md | Relacionado |
-| genesis/GENESIS.md | Documento a refatorar |
+| genesis/GENESIS_Bootstrap.md | Especificação do bootstrap |
+| docs/schemas/capacidades.md | Schema db.capacidades |
 
 ---
 
@@ -244,4 +150,5 @@ Capacidade:
 | 2025-12-17 | Sprint criada com escopo inicial de 7 tasks (8.5h) |
 | 2025-12-17 | Escopo revisado: Decisões D001 e D002 registradas |
 | 2025-12-17 | Absorção parcial de BKL-M01: campo maturidade + roteamento transparente. Decisão D003. Esforço: 8.5h → 10h |
-| 2025-12-17 | T01 iniciada: Schema db.capacidades com maturidade |
+| 2025-12-17 | T01-T07 executadas e concluídas |
+| 2025-12-17 | **Sprint concluída** - 7/7 tasks ✅ |
