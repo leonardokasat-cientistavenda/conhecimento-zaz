@@ -4,7 +4,7 @@
 
 ```yaml
 nome: GENESIS
-versao: "5.2"
+versao: "5.3"
 tipo: Framework
 status: Publicado
 nivel: C1
@@ -380,6 +380,7 @@ PORTFÓLIO
 | Arquivo | Descrição |
 |---------|-----------|
 | genesis/GENESIS.md | Este documento (propósito) |
+| genesis/GENESIS_Bootstrap.md | Bootstrap e menu dinâmico |
 | genesis/GENESIS_Arquitetura.md | Detalhes técnicos |
 | genesis/PROMETHEUS.md | Fábrica de execução |
 
@@ -603,3 +604,4 @@ MS_Sprint ──► MS_Backlog.listar_filhos(sprint_id, task_codigo)
 | 5.0 | 2025-12-16 | **Refatoração arquitetural**: GENESIS deixa de ser orquestrador. Papel simplificado: entrada (entrevista dor) + validação (avalia efetividade). Toda orquestração delegada para MS_Backlog. Comunicação entre MS exclusivamente via BacklogItems tipados. |
 | 5.1 | 2025-12-17 | **Integração MS_Sprint**: Adição de MS_Sprint no índice de sistemas. Seção 10 documenta bootstrap com sprint (carregar sessão pausada, exibir contexto). Tabela L0-L4 inclui MS_Sprint. Sprint S021/T04. |
 | 5.2 | 2025-12-17 | **Fluxo task-concluir**: Documentado consulta de filhos via MS_Backlog.listar_filhos(). SSOT de origem é db.backlog_items. Sprint S022/T04. |
+| 5.3 | 2025-12-17 | **Índice Bootstrap**: Adicionado GENESIS_Bootstrap.md ao índice de sistemas (Nível C1). Sprint S025/T01. |
