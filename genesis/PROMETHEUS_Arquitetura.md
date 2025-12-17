@@ -1,10 +1,10 @@
-# PROMETHEUS Arquitetura v1.0
+# PROMETHEUS Arquitetura v1.1
 
 ---
 
 ```yaml
 nome: PROMETHEUS_Arquitetura
-versao: "1.0"
+versao: "1.1"
 tipo: Documento
 status: Publicado
 camada: C2
@@ -452,47 +452,6 @@ def verificar_desbloqueio(item_concluido_id: str):
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 3.3 Exemplo Prático
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    EXEMPLO: SPEC COM 2 GAPS                                 │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  PROMETHEUS precifica spec_001:                                             │
-│  - Precisa: Whisper API (não tem)                                           │
-│  - Precisa: GPU runtime (não tem)                                           │
-│                                                                             │
-│  PRODUZ:                                                                    │
-│  ────────                                                                   │
-│  gap_001: {tipo: entrevistar_dor, contexto: {sintoma: "Falta Whisper"}}     │
-│  gap_002: {tipo: entrevistar_dor, contexto: {sintoma: "Falta GPU"}}         │
-│  orc_001: {tipo: aprovar_orcamento, depende_de: [gap_001, gap_002],         │
-│            status: "Bloqueado"}                                             │
-│                                                                             │
-│  ESTADO INICIAL:                                                            │
-│  ────────────────                                                           │
-│  gap_001: Pendente                                                          │
-│  gap_002: Pendente                                                          │
-│  orc_001: Bloqueado (deps: gap_001, gap_002)                                │
-│                                                                             │
-│  APÓS gap_001 concluído:                                                    │
-│  ─────────────────────────                                                  │
-│  gap_001: Concluido ───► verificar_desbloqueio(orc_001)                     │
-│  gap_002: Pendente       │                                                  │
-│  orc_001: Bloqueado      └── gap_002 não concluído, mantém bloqueado        │
-│                                                                             │
-│  APÓS gap_002 concluído:                                                    │
-│  ─────────────────────────                                                  │
-│  gap_001: Concluido                                                         │
-│  gap_002: Concluido ───► verificar_desbloqueio(orc_001)                     │
-│  orc_001: Pendente       └── todas deps concluídas, DESBLOQUEIA!            │
-│                                                                             │
-│  AGORA MS_PRODUTO pode consumir orc_001                                     │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
 ---
 
 ## 4. Workers por Vertente
@@ -523,9 +482,6 @@ def verificar_desbloqueio(item_concluido_id: str):
 │            └── vertente: "C" (Integração)                                   │
 │                    └──► WORKER_C                                            │
 │                                                                             │
-│  Cada worker pode produzir items internos:                                  │
-│  tipo: worker_estrutura, worker_processo, worker_dados, etc.                │
-│                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -538,42 +494,6 @@ def verificar_desbloqueio(item_concluido_id: str):
 | **WORKER_D** | Decisional (DMN) | spec_dmn | Tabelas DMN + testes | _catalogo/templates/M3_D_DMN.md |
 | **WORKER_I** | Interface | spec_interface | UI components + testes | (a definir) |
 | **WORKER_C** | Integração | spec_integracao | Conectores + mocks | (a definir) |
-
-### 4.3 Fluxo Interno de Worker
-
-```python
-class Worker:
-    def executar(self, spec, spec_recursos):
-        """
-        Fluxo padrão de qualquer worker
-        """
-        # 1. Carregar template da vertente
-        template = carregar_template(self.vertente)
-        
-        # 2. Gerar código baseado na spec
-        codigo = self.gerar_codigo(spec, template)
-        
-        # 3. Gerar testes baseado no schema_tdd
-        testes = self.gerar_testes(spec.schema_tdd)
-        
-        # 4. Executar testes
-        resultado = self.executar_testes(codigo, testes)
-        
-        # 5. Se falhar, tentar corrigir (loop limitado)
-        tentativas = 0
-        while not resultado.passou and tentativas < 3:
-            codigo = self.corrigir(codigo, resultado.erros)
-            resultado = self.executar_testes(codigo, testes)
-            tentativas += 1
-        
-        # 6. Retornar artefatos
-        return {
-            "codigo": codigo,
-            "testes": testes,
-            "resultado": resultado,
-            "tentativas": tentativas
-        }
-```
 
 ---
 
@@ -620,7 +540,7 @@ def precificar(self, spec: Spec) -> SpecRecursos:
         "horas_dev": self.estimar_horas_dev(spec, workers),
         "horas_teste": self.estimar_horas_teste(spec_recursos.teste),
         "horas_deploy": self.estimar_horas_deploy(spec),
-        "total": None,  # calculado abaixo
+        "total": None,
         "workers": workers
     }
     spec_recursos.esforco["total"] = (
@@ -629,7 +549,10 @@ def precificar(self, spec: Spec) -> SpecRecursos:
         spec_recursos.esforco["horas_deploy"]
     )
     
-    # 5. DEPENDÊNCIAS
+    # 5. CUSTO ESTIMADO (v1.1)
+    spec_recursos.custo = self.calcular_custo_estimado(spec_recursos)
+    
+    # 6. DEPENDÊNCIAS
     gaps = self.identificar_gaps(spec)
     spec_recursos.dependencias = {
         "specs_pre_requisito": spec.depende_de or [],
@@ -638,50 +561,6 @@ def precificar(self, spec: Spec) -> SpecRecursos:
     }
     
     return spec_recursos, gaps
-```
-
-### 5.2 Identificação de GAPs
-
-```python
-def identificar_gaps(self, spec: Spec) -> List[Gap]:
-    """
-    Verifica quais recursos a spec precisa que PROMETHEUS não tem
-    """
-    gaps = []
-    
-    # Verificar APIs externas
-    for api in spec.runtime.apis_externas:
-        if api not in self.capacidades_disponiveis["apis"]:
-            gaps.append(Gap(
-                tipo="api_externa",
-                recurso=api,
-                descricao=f"API {api} não configurada",
-                criterio=f"{api} funcional com credenciais válidas",
-                alternativas=self.buscar_alternativas(api)
-            ))
-    
-    # Verificar GPU
-    if spec.runtime.gpu and not self.capacidades_disponiveis["gpu"]:
-        gaps.append(Gap(
-            tipo="hardware",
-            recurso="gpu",
-            descricao="GPU não disponível",
-            criterio="GPU CUDA funcional",
-            alternativas=["CPU (mais lento)", "API externa"]
-        ))
-    
-    # Verificar containers base
-    for container in spec.runtime.containers_necessarios:
-        if container not in self.capacidades_disponiveis["containers"]:
-            gaps.append(Gap(
-                tipo="container",
-                recurso=container,
-                descricao=f"Container {container} não disponível",
-                criterio=f"Container {container} rodando",
-                alternativas=[]
-            ))
-    
-    return gaps
 ```
 
 ---
@@ -695,30 +574,341 @@ SE é DEFINIÇÃO (template, spec, framework) → GitHub
 SE é INSTÂNCIA (dado real, transação, estado) → MongoDB
 ```
 
-### 6.2 O que PROMETHEUS Persiste
+### 6.2 Collections PROMETHEUS
 
 | Collection | Conteúdo | Tipo |
 |------------|----------|------|
-| `specs_recursos` | Orçamentos calculados | MongoDB |
+| `specs_recursos` | Orçamentos calculados (estimado) | MongoDB |
+| `execucoes` | Execuções com estimado vs realizado (v1.1) | MongoDB |
 | `releases` | Releases geradas | MongoDB |
 | `implantacoes` | Histórico de deploys | MongoDB |
 | `capacidades` | Capacidades disponíveis | MongoDB |
-| `metricas_build` | Tempo de build, testes, etc. | MongoDB |
 
-### 6.3 O que PROMETHEUS Lê
+### 6.3 Schema: execucoes (v1.1 NOVO)
 
-| Collection/Arquivo | Sistema Dono | Uso |
-|-------------------|--------------|-----|
-| specs (GitHub) | Epistemologia | Input para precificar/desenvolver |
-| templates (GitHub) | Epistemologia | Templates por vertente |
-| backlog_items | MS_Backlog | Consumo/Produção |
-| produtos, features | MS_Produto | Contexto |
+```yaml
+# Collection: execucoes
+# Persiste estimado vs realizado para cada execução
+# Registrada automaticamente ao final de cada fase
+
+execucoes:
+  _id: ObjectId
+  id: string                   # exec_001
+  
+  # Referências
+  spec_ref: string
+  release_ref: string
+  backlog_item_ref: string     # Item de desenvolvimento que originou
+  saga_id: string
+  
+  # ════════════════════════════════════════════════════════════════════════
+  # ESTIMADO (copiado do spec_recursos no início)
+  # ════════════════════════════════════════════════════════════════════════
+  estimado:
+    horas:
+      dev: number              # Horas estimadas desenvolvimento
+      teste: number            # Horas estimadas teste
+      deploy: number           # Horas estimadas deploy
+      total: number            # Soma
+    recursos:
+      tokens_llm: number       # Tokens LLM estimados
+      cpu_horas: number        # CPU-horas estimadas
+      ram_gb_horas: number     # RAM GB-horas estimadas
+      chamadas_api: object     # {api_name: count_estimado}
+      storage_mb: number       # Storage estimado
+    custo:
+      total: number            # Custo total estimado em R$
+      breakdown:               # Detalhamento
+        llm: number
+        infra: number
+        apis: number
+    cobertura_testes: number   # % cobertura planejada
+  
+  # ════════════════════════════════════════════════════════════════════════
+  # REALIZADO (preenchido durante/após execução)
+  # ════════════════════════════════════════════════════════════════════════
+  realizado:
+    horas:
+      dev: number              # Calculado: dev_fim - dev_inicio
+      teste: number            # Calculado: teste_fim - teste_inicio
+      deploy: number           # Calculado: deploy_fim - deploy_inicio
+      total: number            # Soma
+    recursos:
+      tokens_llm: number       # Soma de tokens consumidos
+      cpu_horas: number        # CPU real consumida
+      ram_gb_horas: number     # RAM real consumida
+      chamadas_api: object     # {api_name: count_real}
+      storage_mb: number       # Storage real usado
+    custo:
+      total: number            # Custo real em R$
+      breakdown:
+        llm: number
+        infra: number
+        apis: number
+    cobertura_testes: number   # % cobertura atingida
+    tentativas_correcao: number # Loops de correção
+    passou_primeira: boolean   # Passou testes na primeira?
+  
+  # ════════════════════════════════════════════════════════════════════════
+  # PRECISÃO (calculado: realizado / estimado)
+  # ════════════════════════════════════════════════════════════════════════
+  precisao:
+    horas:
+      dev: number              # realizado.horas.dev / estimado.horas.dev
+      teste: number
+      deploy: number
+      total: number
+    recursos:
+      tokens_llm: number
+      custo: number            # realizado.custo.total / estimado.custo.total
+    geral: number              # Média ponderada
+  
+  # ════════════════════════════════════════════════════════════════════════
+  # TIMESTAMPS (para calcular duração)
+  # ════════════════════════════════════════════════════════════════════════
+  timestamps:
+    # Spec/Orçamento
+    spec_criada_at: datetime
+    orcamento_aprovado_at: datetime
+    
+    # Desenvolvimento
+    dev_inicio_at: datetime
+    dev_fim_at: datetime
+    
+    # Teste
+    teste_inicio_at: datetime
+    teste_fim_at: datetime
+    
+    # Deploy
+    deploy_inicio_at: datetime
+    deploy_fim_at: datetime
+    
+    # Geral
+    created_at: datetime
+    updated_at: datetime
+  
+  # ════════════════════════════════════════════════════════════════════════
+  # QUALIDADE
+  # ════════════════════════════════════════════════════════════════════════
+  qualidade:
+    bugs_encontrados: number   # Durante teste
+    bugs_producao: number      # Após deploy (atualizado posteriormente)
+    severidade_bugs: object    # {critico: n, alto: n, medio: n, baixo: n}
+  
+  # ════════════════════════════════════════════════════════════════════════
+  # WORKERS (detalhamento por vertente)
+  # ════════════════════════════════════════════════════════════════════════
+  workers:
+    - worker: string           # "WORKER_E"
+      vertente: string         # "Estrutural"
+      inicio_at: datetime
+      fim_at: datetime
+      duracao_minutos: number
+      tokens_consumidos: number
+      tentativas: number
+      passou_primeira: boolean
+      artefatos: [string]
+
+# Índices
+indexes:
+  - {spec_ref: 1}
+  - {release_ref: 1}
+  - {saga_id: 1}
+  - {"timestamps.deploy_fim_at": -1}
+  - {"precisao.geral": 1}
+```
+
+### 6.4 Método: registrar_execucao()
+
+```python
+def registrar_execucao(self, fase: str, spec_ref: str, dados: dict):
+    """
+    Registra dados de execução em cada fase.
+    Chamado automaticamente pelo PROMETHEUS durante processamento.
+    
+    Fases: "inicio", "dev", "teste", "deploy", "fim"
+    """
+    
+    execucao = db.execucoes.find_one({"spec_ref": spec_ref, "status": "em_andamento"})
+    
+    if fase == "inicio":
+        # Criar novo registro com estimado
+        spec_recursos = dados["spec_recursos"]
+        execucao = {
+            "id": gerar_id("exec"),
+            "spec_ref": spec_ref,
+            "backlog_item_ref": dados["backlog_item_ref"],
+            "saga_id": dados["saga_id"],
+            "status": "em_andamento",
+            
+            # Copiar estimado
+            "estimado": {
+                "horas": spec_recursos["esforco"],
+                "recursos": {
+                    "tokens_llm": spec_recursos["runtime"]["tokens_llm_estimado"],
+                    "cpu_horas": spec_recursos["runtime"].get("cpu_horas", 0),
+                    "ram_gb_horas": spec_recursos["runtime"].get("ram_gb_horas", 0),
+                    "chamadas_api": spec_recursos["runtime"].get("apis_externas", {}),
+                    "storage_mb": spec_recursos["runtime"].get("storage_mb", 0)
+                },
+                "custo": spec_recursos.get("custo", {}),
+                "cobertura_testes": spec_recursos["teste"]["cobertura"]
+            },
+            
+            # Inicializar realizado
+            "realizado": {
+                "horas": {"dev": 0, "teste": 0, "deploy": 0, "total": 0},
+                "recursos": {
+                    "tokens_llm": 0,
+                    "cpu_horas": 0,
+                    "ram_gb_horas": 0,
+                    "chamadas_api": {},
+                    "storage_mb": 0
+                },
+                "custo": {"total": 0, "breakdown": {}},
+                "cobertura_testes": 0,
+                "tentativas_correcao": 0,
+                "passou_primeira": None
+            },
+            
+            "timestamps": {
+                "spec_criada_at": dados.get("spec_criada_at"),
+                "orcamento_aprovado_at": datetime.now(),
+                "created_at": datetime.now(),
+                "updated_at": datetime.now()
+            },
+            
+            "workers": [],
+            "qualidade": {"bugs_encontrados": 0, "bugs_producao": 0}
+        }
+        db.execucoes.insert_one(execucao)
+    
+    elif fase == "dev_inicio":
+        db.execucoes.update_one(
+            {"id": execucao["id"]},
+            {"$set": {"timestamps.dev_inicio_at": datetime.now()}}
+        )
+    
+    elif fase == "dev_fim":
+        dev_inicio = execucao["timestamps"]["dev_inicio_at"]
+        dev_duracao = (datetime.now() - dev_inicio).total_seconds() / 3600
+        
+        db.execucoes.update_one(
+            {"id": execucao["id"]},
+            {
+                "$set": {
+                    "timestamps.dev_fim_at": datetime.now(),
+                    "realizado.horas.dev": dev_duracao,
+                    "realizado.recursos.tokens_llm": dados.get("tokens_consumidos", 0),
+                    "realizado.tentativas_correcao": dados.get("tentativas", 0)
+                },
+                "$push": {
+                    "workers": dados.get("workers_detalhes", [])
+                }
+            }
+        )
+    
+    elif fase == "teste_inicio":
+        db.execucoes.update_one(
+            {"id": execucao["id"]},
+            {"$set": {"timestamps.teste_inicio_at": datetime.now()}}
+        )
+    
+    elif fase == "teste_fim":
+        teste_inicio = execucao["timestamps"]["teste_inicio_at"]
+        teste_duracao = (datetime.now() - teste_inicio).total_seconds() / 3600
+        
+        db.execucoes.update_one(
+            {"id": execucao["id"]},
+            {
+                "$set": {
+                    "timestamps.teste_fim_at": datetime.now(),
+                    "realizado.horas.teste": teste_duracao,
+                    "realizado.cobertura_testes": dados.get("cobertura", 0),
+                    "realizado.passou_primeira": dados.get("passou_primeira", False),
+                    "qualidade.bugs_encontrados": dados.get("bugs_encontrados", 0)
+                }
+            }
+        )
+    
+    elif fase == "deploy_inicio":
+        db.execucoes.update_one(
+            {"id": execucao["id"]},
+            {"$set": {"timestamps.deploy_inicio_at": datetime.now()}}
+        )
+    
+    elif fase == "deploy_fim":
+        deploy_inicio = execucao["timestamps"]["deploy_inicio_at"]
+        deploy_duracao = (datetime.now() - deploy_inicio).total_seconds() / 3600
+        
+        db.execucoes.update_one(
+            {"id": execucao["id"]},
+            {
+                "$set": {
+                    "timestamps.deploy_fim_at": datetime.now(),
+                    "realizado.horas.deploy": deploy_duracao,
+                    "release_ref": dados.get("release_ref")
+                }
+            }
+        )
+    
+    elif fase == "fim":
+        # Calcular totais e precisão
+        execucao = db.execucoes.find_one({"spec_ref": spec_ref, "status": "em_andamento"})
+        
+        total_horas = (
+            execucao["realizado"]["horas"]["dev"] +
+            execucao["realizado"]["horas"]["teste"] +
+            execucao["realizado"]["horas"]["deploy"]
+        )
+        
+        # Calcular precisão
+        precisao = {
+            "horas": {
+                "dev": safe_div(execucao["realizado"]["horas"]["dev"], 
+                               execucao["estimado"]["horas"]["dev"]),
+                "teste": safe_div(execucao["realizado"]["horas"]["teste"],
+                                 execucao["estimado"]["horas"]["teste"]),
+                "deploy": safe_div(execucao["realizado"]["horas"]["deploy"],
+                                  execucao["estimado"]["horas"]["deploy"]),
+                "total": safe_div(total_horas, execucao["estimado"]["horas"]["total"])
+            },
+            "recursos": {
+                "tokens_llm": safe_div(execucao["realizado"]["recursos"]["tokens_llm"],
+                                       execucao["estimado"]["recursos"]["tokens_llm"])
+            }
+        }
+        
+        # Precisão geral (média ponderada)
+        precisao["geral"] = (
+            precisao["horas"]["total"] * 0.5 +
+            precisao["recursos"]["tokens_llm"] * 0.3 +
+            (1.0 if execucao["realizado"]["passou_primeira"] else 0.7) * 0.2
+        )
+        
+        db.execucoes.update_one(
+            {"id": execucao["id"]},
+            {
+                "$set": {
+                    "status": "concluido",
+                    "realizado.horas.total": total_horas,
+                    "precisao": precisao,
+                    "timestamps.updated_at": datetime.now()
+                }
+            }
+        )
+
+
+def safe_div(a, b):
+    """Divisão segura, retorna 1.0 se denominador é 0"""
+    return a / b if b and b > 0 else 1.0
+```
 
 ---
 
-## 7. Loop de Consumo
+## 7. Loop de Consumo (v1.1 com Registro)
 
-### 7.1 Implementação
+### 7.1 Implementação Atualizada
 
 ```python
 class PROMETHEUS:
@@ -729,79 +919,75 @@ class PROMETHEUS:
         "corrigir_bug"
     ]
     
-    def run(self):
-        """Loop principal de consumo"""
-        while True:
-            # Buscar próximo item
-            item = MS_Backlog.consumir(self.tipos_consumidos)
-            
-            if item is None:
-                aguardar(segundos=5)
-                continue
-            
-            try:
-                # Processar conforme tipo
-                if item.tipo == "orcar_spec":
-                    self.processar_orcar(item)
-                
-                elif item.tipo == "desenvolvimento":
-                    self.processar_desenvolver(item)
-                
-                elif item.tipo == "implantar":
-                    self.processar_implantar(item)
-                
-                elif item.tipo == "corrigir_bug":
-                    self.processar_corrigir(item)
-                
-            except Exception as e:
-                MS_Backlog.falhar(item.id, str(e))
-    
-    def processar_orcar(self, item):
-        spec = carregar_spec(item.contexto["spec_ref"])
-        
-        # Precificar
-        spec_recursos, gaps = self.precificar(spec)
-        
-        # Persistir orçamento
-        db.specs_recursos.insert_one(spec_recursos.to_dict())
-        
-        # Produzir GAPs
-        gap_ids = []
-        for gap in gaps:
-            gap_item = MS_Backlog.produzir({
-                "tipo": "entrevistar_dor",
-                "produtor": "PROMETHEUS",
-                "contexto": gap.to_contexto_dor(),
-                "spec_origem_ref": spec.id
-            })
-            gap_ids.append(gap_item["id"])
-        
-        # Produzir orçamento
-        items_gerados = [{
-            "tipo": "aprovar_orcamento",
-            "spec_ref": spec.id,
-            "spec_recursos": spec_recursos.to_dict(),
-            "depende_de": gap_ids,
-            "status": "Bloqueado" if gap_ids else "Pendente"
-        }]
-        
-        MS_Backlog.concluir(item.id, {"spec_recursos_id": spec_recursos.id}, items_gerados)
-    
     def processar_desenvolver(self, item):
         spec = carregar_spec(item.contexto["spec_ref"])
         spec_recursos = item.contexto["spec_recursos"]
         
-        # Desenvolver via workers
+        # ══════════════════════════════════════════════════════════════
+        # v1.1: REGISTRAR INÍCIO
+        # ══════════════════════════════════════════════════════════════
+        self.registrar_execucao("inicio", spec.id, {
+            "spec_recursos": spec_recursos,
+            "backlog_item_ref": item.id,
+            "saga_id": item.saga_id,
+            "spec_criada_at": spec.created_at
+        })
+        
+        # ══════════════════════════════════════════════════════════════
+        # DESENVOLVIMENTO
+        # ══════════════════════════════════════════════════════════════
+        self.registrar_execucao("dev_inicio", spec.id, {})
+        
         artefatos = []
+        workers_detalhes = []
+        tokens_total = 0
+        tentativas_total = 0
+        
         for worker_tipo in spec_recursos["esforco"]["workers"]:
             worker = self.get_worker(worker_tipo)
+            
+            worker_inicio = datetime.now()
             resultado = worker.executar(spec, spec_recursos)
+            worker_fim = datetime.now()
+            
             artefatos.extend(resultado["artefatos"])
+            tokens_total += resultado.get("tokens_consumidos", 0)
+            tentativas_total += resultado.get("tentativas", 0)
+            
+            workers_detalhes.append({
+                "worker": worker_tipo,
+                "vertente": worker.vertente,
+                "inicio_at": worker_inicio,
+                "fim_at": worker_fim,
+                "duracao_minutos": (worker_fim - worker_inicio).total_seconds() / 60,
+                "tokens_consumidos": resultado.get("tokens_consumidos", 0),
+                "tentativas": resultado.get("tentativas", 0),
+                "passou_primeira": resultado.get("tentativas", 0) == 0,
+                "artefatos": resultado["artefatos"]
+            })
         
-        # Testar
+        self.registrar_execucao("dev_fim", spec.id, {
+            "tokens_consumidos": tokens_total,
+            "tentativas": tentativas_total,
+            "workers_detalhes": workers_detalhes
+        })
+        
+        # ══════════════════════════════════════════════════════════════
+        # TESTE
+        # ══════════════════════════════════════════════════════════════
+        self.registrar_execucao("teste_inicio", spec.id, {})
+        
         resultado_testes = self.testar(artefatos, spec.schema_tdd)
         
-        # Criar release
+        self.registrar_execucao("teste_fim", spec.id, {
+            "cobertura": resultado_testes.cobertura,
+            "passou_primeira": resultado_testes.passou,
+            "bugs_encontrados": len(resultado_testes.falhas)
+        })
+        
+        # ══════════════════════════════════════════════════════════════
+        # RELEASE
+        # ══════════════════════════════════════════════════════════════
         release = Release.criar(
             spec_ref=spec.id,
             artefatos=artefatos,
@@ -819,10 +1005,25 @@ class PROMETHEUS:
     
     def processar_implantar(self, item):
         release = db.releases.find_one({"id": item.contexto["release_ref"]})
+        spec_ref = release["spec_ref"]
+        
+        # ══════════════════════════════════════════════════════════════
+        # v1.1: REGISTRAR DEPLOY
+        # ══════════════════════════════════════════════════════════════
+        self.registrar_execucao("deploy_inicio", spec_ref, {})
         
         # Deploy
         implantacao = self.deployar(release)
         db.implantacoes.insert_one(implantacao.to_dict())
+        
+        self.registrar_execucao("deploy_fim", spec_ref, {
+            "release_ref": release["id"]
+        })
+        
+        # ══════════════════════════════════════════════════════════════
+        # v1.1: FINALIZAR EXECUÇÃO
+        # ══════════════════════════════════════════════════════════════
+        self.registrar_execucao("fim", spec_ref, {})
         
         # Produzir validação
         MS_Backlog.concluir(item.id, {"implantacao_ref": implantacao.id}, [{
@@ -831,54 +1032,168 @@ class PROMETHEUS:
             "implantacao_ref": implantacao.id,
             "ambiente": implantacao.ambiente
         }])
-    
-    def processar_corrigir(self, item):
-        # Similar a desenvolver, mas focado no bug
-        feature = db.features.find_one({"id": item.contexto["feature_ref"]})
-        spec = carregar_spec(feature["spec_ref"])
-        
-        # Corrigir
-        artefatos = self.corrigir_bug(spec, item.contexto["erro"])
-        
-        # Testar
-        resultado_testes = self.testar(artefatos, spec.schema_tdd)
-        
-        # Criar release de correção
-        release = Release.criar(
-            spec_ref=spec.id,
-            artefatos=artefatos,
-            testes=resultado_testes,
-            tipo="hotfix"
-        )
-        db.releases.insert_one(release.to_dict())
-        
-        MS_Backlog.concluir(item.id, {"release_ref": release.id}, [{
-            "tipo": "aprovar_release",
-            "release_ref": release.id
-        }])
 ```
 
 ---
 
-## 8. Métricas
+## 8. Métricas Completas (v1.1)
 
-### 8.1 Métricas de Fábrica
+### 8.1 Precisão de Orçamento
 
-| Métrica | Cálculo | Uso |
-|---------|---------|-----|
-| **Precisão de Orçamento** | esforço_real / esforço_estimado | Calibrar estimativas |
-| **Taxa de GAPs** | specs_com_gap / total_specs | Maturidade da infra |
-| **Tempo de Desbloqueio** | média(desbloqueio - bloqueio) | Velocidade de resolução |
-| **Lead Time Desenvolvimento** | concluido_at - inicio_at | Eficiência |
-| **Taxa de Retrabalho** | corrigir_bug / total_releases | Qualidade |
+| Métrica | Cálculo | Uso | Collection |
+|---------|---------|-----|------------|
+| **Precisão Esforço (geral)** | Σ horas_real / Σ horas_estimado | Calibração global | execucoes |
+| **Precisão Dev** | horas_dev_real / horas_dev_estimado | Calibrar estimativa dev | execucoes |
+| **Precisão Teste** | horas_teste_real / horas_teste_estimado | Calibrar estimativa teste | execucoes |
+| **Precisão Deploy** | horas_deploy_real / horas_deploy_estimado | Calibrar estimativa deploy | execucoes |
+| **Variância** | stddev(precisao) por período | Confiança nas estimativas | execucoes |
+| **Tendência** | slope(precisao) ao longo do tempo | Melhoria contínua | execucoes |
 
-### 8.2 Métricas por Worker
+### 8.2 Consumo de Recursos
 
-| Métrica | Descrição |
-|---------|-----------|
-| **Tempo médio por vertente** | Quanto tempo cada worker leva |
-| **Taxa de sucesso de testes** | % de testes que passam na primeira |
-| **Tentativas de correção** | Média de loops de correção |
+| Métrica | Cálculo | Uso | Collection |
+|---------|---------|-----|------------|
+| **Tokens LLM** | tokens_real / tokens_estimado | Custo LLM | execucoes |
+| **CPU-horas** | cpu_real / cpu_estimado | Custo infra | execucoes |
+| **RAM-horas** | ram_real / ram_estimado | Custo infra | execucoes |
+| **Chamadas API** | chamadas_real por API | Custo APIs externas | execucoes |
+| **Storage** | mb_real / mb_estimado | Custo storage | execucoes |
+
+### 8.3 Custo
+
+| Métrica | Cálculo | Uso | Collection |
+|---------|---------|-----|------------|
+| **Custo por Spec** | Σ(recursos × preço_unitário) | Budget | execucoes |
+| **Custo por Release** | Σ custos da release | Budget | execucoes |
+| **Custo por Worker** | custos agrupados por worker | Otimização | execucoes |
+| **Precisão Custo** | custo_real / custo_estimado | Calibrar preços | execucoes |
+
+### 8.4 Qualidade
+
+| Métrica | Cálculo | Uso | Collection |
+|---------|---------|-----|------------|
+| **Cobertura Real vs Planejada** | cobertura_real / cobertura_spec | Qualidade | execucoes |
+| **Taxa Sucesso 1ª Tentativa** | passou_primeira / total | Eficiência | execucoes |
+| **Taxa de Retrabalho** | corrigir_bug / total_releases | Qualidade | backlog_items |
+| **Bugs por Severidade** | count GROUP BY severidade | Risco | execucoes |
+| **MTTR** | avg(fix_at - bug_at) | Agilidade | backlog_items |
+
+### 8.5 Velocidade / Throughput
+
+| Métrica | Cálculo | Uso | Collection |
+|---------|---------|-----|------------|
+| **Lead Time** | deploy_fim - spec_criada | Eficiência E2E | execucoes |
+| **Cycle Time** | concluido - iniciado | Eficiência por fase | execucoes |
+| **Throughput Specs/Semana** | count specs por período | Capacidade | execucoes |
+| **Throughput Releases/Semana** | count releases por período | Capacidade | releases |
+| **Deploys/Dia** | count deploys por dia | Frequência | implantacoes |
+
+### 8.6 Infraestrutura / GAPs
+
+| Métrica | Cálculo | Uso | Collection |
+|---------|---------|-----|------------|
+| **Taxa de GAPs** | specs_com_gap / total_specs | Maturidade infra | backlog_items |
+| **Tempo Médio Desbloqueio** | avg(desbloq - bloq) | Velocidade resolução | backlog_items |
+| **GAPs por Tipo** | count GROUP BY tipo_recurso | Priorização | backlog_items |
+| **Capacidades Adicionadas** | count novas/mês | Evolução | capacidades |
+| **Backlog de GAPs** | count GAPs pendentes | Dívida técnica | backlog_items |
+
+### 8.7 Workers
+
+| Métrica | Cálculo | Uso | Collection |
+|---------|---------|-----|------------|
+| **Tempo Médio por Vertente** | avg(duracao) GROUP BY worker | Capacidade | execucoes.workers |
+| **Taxa Sucesso por Worker** | passou_primeira / total | Qualidade | execucoes.workers |
+| **Tentativas de Correção** | avg(tentativas) por worker | Eficiência | execucoes.workers |
+| **Tokens por Worker** | avg(tokens) por worker | Custo | execucoes.workers |
+
+### 8.8 Queries de Métricas
+
+```javascript
+// Precisão média de orçamento (últimos 30 dias)
+db.execucoes.aggregate([
+  {$match: {
+    status: "concluido",
+    "timestamps.deploy_fim_at": {$gte: ISODate("2025-11-17")}
+  }},
+  {$group: {
+    _id: null,
+    precisao_media: {$avg: "$precisao.geral"},
+    precisao_horas: {$avg: "$precisao.horas.total"},
+    precisao_tokens: {$avg: "$precisao.recursos.tokens_llm"},
+    total_execucoes: {$sum: 1}
+  }}
+])
+
+// Tempo médio por worker
+db.execucoes.aggregate([
+  {$unwind: "$workers"},
+  {$group: {
+    _id: "$workers.worker",
+    tempo_medio_min: {$avg: "$workers.duracao_minutos"},
+    tokens_medio: {$avg: "$workers.tokens_consumidos"},
+    taxa_sucesso_primeira: {$avg: {$cond: ["$workers.passou_primeira", 1, 0]}},
+    total: {$sum: 1}
+  }},
+  {$sort: {tempo_medio_min: -1}}
+])
+
+// Lead time por semana
+db.execucoes.aggregate([
+  {$match: {status: "concluido"}},
+  {$project: {
+    semana: {$week: "$timestamps.deploy_fim_at"},
+    lead_time_horas: {
+      $divide: [
+        {$subtract: ["$timestamps.deploy_fim_at", "$timestamps.spec_criada_at"]},
+        3600000
+      ]
+    }
+  }},
+  {$group: {
+    _id: "$semana",
+    lead_time_medio: {$avg: "$lead_time_horas"},
+    count: {$sum: 1}
+  }},
+  {$sort: {_id: 1}}
+])
+
+// Taxa de GAPs por período
+db.backlog_items.aggregate([
+  {$match: {
+    tipo: "orcar_spec",
+    status: "Concluido"
+  }},
+  {$lookup: {
+    from: "backlog_items",
+    localField: "items_gerados",
+    foreignField: "id",
+    as: "filhos"
+  }},
+  {$project: {
+    tem_gap: {
+      $gt: [
+        {$size: {$filter: {
+          input: "$filhos",
+          cond: {$and: [
+            {$eq: ["$$this.tipo", "entrevistar_dor"]},
+            {$eq: ["$$this.produtor", "PROMETHEUS"]}
+          ]}
+        }}},
+        0
+      ]
+    }
+  }},
+  {$group: {
+    _id: null,
+    total: {$sum: 1},
+    com_gap: {$sum: {$cond: ["$tem_gap", 1, 0]}}
+  }},
+  {$project: {
+    taxa_gaps: {$divide: ["$com_gap", "$total"]}
+  }}
+])
+```
 
 ---
 
@@ -900,3 +1215,4 @@ class PROMETHEUS:
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-17 | Criação inicial. Ciclo precificar→gap→desenvolver. Workers por vertente. Contratos MS_Backlog. Regra de desbloqueio. Loop de consumo. Sprint S020/E02. |
+| 1.1 | 2025-12-17 | **Collection execucoes**: Persistência de estimado vs realizado. **Métricas completas**: 8 categorias (Precisão, Recursos, Custo, Qualidade, Velocidade, Infra, Workers). **registrar_execucao()**: Método para coleta automática durante processamento. **Queries agregação**: Exemplos de consultas para métricas. |
