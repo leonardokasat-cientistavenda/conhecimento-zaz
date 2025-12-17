@@ -1,10 +1,10 @@
-# MS_Backlog Arquitetura v1.3
+# MS_Backlog Arquitetura v1.4
 
 ---
 
 ```yaml
 nome: MS_Backlog_Arquitetura
-versao: "1.3"
+versao: "1.4"
 tipo: Documento
 status: Publicado
 camada: 4
@@ -30,6 +30,7 @@ produzir:
   input:
     tipo: TipoBacklogItem           # Obrigatório
     titulo: string                  # Obrigatório
+    esforco_estimado_horas: number  # Obrigatório (v1.4) - estimativa do produtor
     contexto: object                # Dados para processamento
     prioridade?: "🔴" | "🟡" | "🟢" # Default: 🟡
     saga_id?: string                # Herda do pai se não fornecido
@@ -570,7 +571,10 @@ backlog_items:
   titulo: string
   contexto: object
   status: string           # Pendente | Bloqueado | EmProcessamento | Concluido | Erro | Cancelado
-  prioridade: string
+prioridade: string
+  
+  # Esforço (v1.4)
+  esforco_estimado_horas: number   # Obrigatório - estimativa do produtor
   
   # Rastreabilidade
   produtor: string         # v1.1: Sistema que produziu (GENESIS, PROMETHEUS, etc.)
@@ -1157,3 +1161,5 @@ cancelar:
 | 1.1 | 2025-12-17 | **Tipos novos PROMETHEUS v3.0**: orcar_spec, aprovar_orcamento, ajustar_spec, validar_implantacao. **Desbloqueio por dependência**: status Bloqueado, depende_de[], verificar_desbloqueio(). **Produtor**: campo produtor para identificar origem (PROMETHEUS para GAPs). Sprint S020/E04. |
 | 1.2 | 2025-12-17 | **Interface MS_Sprint**: Métodos de consulta (listar_saga, metricas_fila, itens_bloqueados, lead_time, pipeline_saga). Métodos de notificação (devolver, cancelar). Campos adicionais (devolvido_*, cancelado_*). Sprint S021. |
 | 1.3 | 2025-12-17 | **Rastreabilidade Sprint**: Campo `origem` no schema (sprint_id, task_codigo, auto_pull). Método `listar_filhos(sprint_id, task_codigo?)`. Método `transferir_para_sprint(item_id, sprint_id, task_pai?)`. Índice `origem.sprint_id`. Diagrama de sequência task-concluir com filhos. Sprint S022/T02. |
+| 1.4 | 2025-12-17 | **Estimativa obrigatória**: Campo `esforco_estimado_horas` obrigatório no schema e interface produtor. MS_Sprint herda estimativa ao puxar item. Sprint S023/T03. |
+
