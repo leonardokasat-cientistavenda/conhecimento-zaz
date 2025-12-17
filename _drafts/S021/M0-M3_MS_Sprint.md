@@ -4,7 +4,7 @@
 
 ```yaml
 nome: MS_Sprint
-versao: "0.2-draft"
+versao: "0.3-draft"
 tipo: Meta Sistema
 status: Draft
 camada: 4
@@ -30,6 +30,8 @@ atualizado: "2025-12-17"
 | **Task** | Subdivisão de um BacklogItem dentro da sprint |
 | **Pausa** | Interrupção com preservação de contexto |
 | **Retomada** | Continuação de sessão pausada |
+| **Escopo** | Conjunto de itens/tasks selecionados para sprint |
+| **Variação** | Mudança de escopo durante execução |
 
 ### 1.2 Diagrama do Problema
 
@@ -56,6 +58,12 @@ atualizado: "2025-12-17"
 │  DOR 6: "Não tenho visão de progresso e impedimentos"                       │
 │         → Falta relatórios de execução                                      │
 │                                                                             │
+│  DOR 7: "Sprint muda durante execução e perco rastreabilidade"              │
+│         → Falta controle de variação de escopo                              │
+│                                                                             │
+│  DOR 8: "Não sei quais comandos posso usar"                                 │
+│         → Falta guia do usuário auto-explicativo                            │
+│                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -73,6 +81,8 @@ atualizado: "2025-12-17"
 > - Pausa/retomada de sessões de trabalho
 > - Persistência de contexto entre conversas
 > - Relatórios de progresso
+> - Controle de variação de escopo
+> - Guia auto-explicativo de comandos
 
 ### 1.4 Escopo
 
@@ -85,6 +95,8 @@ atualizado: "2025-12-17"
 | Gera relatórios consolidados | Define prioridade absoluta (MS_Backlog faz) |
 | Pausa/retoma execução | Resolve bloqueios (sistemas específicos fazem) |
 | Rastreia esforço humano | Autenticar usuários |
+| Controla mutações de escopo | - |
+| Explica comandos disponíveis | - |
 
 ---
 
@@ -100,6 +112,8 @@ atualizado: "2025-12-17"
 | **Event Sourcing** | Fowler | Histórico de ações para auditoria |
 | **Checkpointing** | Sistemas Distribuídos | Salvar estado para recuperação |
 | **Dashboard** | BI | Consolidar métricas de múltiplas fontes |
+| **Scope Creep Control** | PM | Rastrear mudanças de escopo |
+| **CLI Pattern** | UX | Comandos auto-documentados |
 
 ### 2.2 Síntese
 
@@ -149,6 +163,8 @@ atualizado: "2025-12-17"
 | Checkpoint de contexto | Processador de domínio |
 | Dashboard consolidador | Decisor de prioridade absoluta |
 | Rastreador de esforço | Sistema de autenticação |
+| Controlador de escopo | - |
+| Guia de comandos | - |
 
 ### 3.2 Modelo de Operação
 
@@ -187,7 +203,7 @@ atualizado: "2025-12-17"
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │                        RELATÓRIOS                                   │    │
 │  │                                                                     │    │
-│  │  Backlog │ Sprint │ Saga │ Velocidade │ Bloqueios                   │    │
+│  │  Backlog │ Sprint │ Saga │ Velocidade │ Bloqueios │ Variação        │    │
 │  │                                                                     │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
@@ -252,6 +268,45 @@ atualizado: "2025-12-17"
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
+### 3.6 Mutações de Escopo
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    SPRINT COM MUTAÇÕES DE ESCOPO                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  INÍCIO DA SPRINT                                                           │
+│  ════════════════                                                           │
+│  escopo_inicial: [A, B, C]                                                  │
+│  tasks: [T01, T02, T03, T04]                                                │
+│                                                                             │
+│       │                                                                     │
+│       │ adicionar_item(D, "dependência descoberta")                         │
+│       ▼                                                                     │
+│  escopo: [A, B, C, D]                                                       │
+│  tasks: [T01, T02, T03, T04, T05]                                           │
+│       │                                                                     │
+│       │ deprecar_item(B, "requisito mudou")                                 │
+│       ▼                                                                     │
+│  escopo: [A, C, D]                                                          │
+│  deprecados: [B]                                                            │
+│  tasks: [T01, T̶0̶2̶, T03, T04, T05]                                           │
+│       │                                                                     │
+│       │ remover_item(C, "repriorizado para próxima sprint")                 │
+│       ▼                                                                     │
+│  escopo: [A, D]                                                             │
+│  deprecados: [B]                                                            │
+│  devolvidos: [C → MS_Backlog]                                               │
+│                                                                             │
+│  FIM DA SPRINT                                                              │
+│  ═════════════                                                              │
+│  escopo_final: [A, D]                                                       │
+│  Variação: -1 item (iniciou 3, terminou 2)                                  │
+│  Taxa de mudança: 66% (2 de 3 itens sofreram alteração)                     │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
 ---
 
 ## 4. Classe (M3)
@@ -268,6 +323,7 @@ atualizado: "2025-12-17"
 │  + titulo: String                    # Descrição curta                      │
 │  + descricao: String?                # Detalhamento opcional                │
 │  + status: Enum                      # pendente | em_andamento | concluida  │
+│                                      # | deprecada                          │
 │  + item_ref: String                  # BacklogItem pai                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Atributos Estimativa                                                       │
@@ -283,15 +339,22 @@ atualizado: "2025-12-17"
 │  ───────────────────                                                        │
 │  + iniciada_em: DateTime?                                                   │
 │  + concluida_em: DateTime?                                                  │
+│  + deprecada_em: DateTime?                                                  │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Atributos Resultado                                                        │
 │  ───────────────────                                                        │
 │  + artefatos: [String]               # Paths de arquivos gerados            │
 │  + notas: String?                    # Observações de conclusão             │
+│  + motivo_deprecacao: String?        # Por que foi cancelada                │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 Estados da Task:
+
 ⬜ pendente ──iniciar()──► 🔄 em_andamento ──concluir()──► ✅ concluida
+     │                           │
+     │ deprecar()                │ deprecar()
+     │                           │
+     └───────────► ❌ deprecada ◄┘
 ```
 
 ### 4.2 Classe: SprintSession
@@ -306,8 +369,34 @@ Estados da Task:
 │  + titulo: String                    # Nome descritivo da sprint            │
 │  + objetivo: String                  # O que entregar                       │
 │  + status: Enum                      # ativa | pausada | concluida          │
-│  + items_selecionados: [String]      # IDs de BacklogItems                  │
+│  + items_selecionados: [String]      # IDs de BacklogItems (ativos)         │
 │  + tasks: [Task]                     # Subdivisões de execução              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Atributos Controle de Escopo                                               │
+│  ────────────────────────────                                               │
+│  + escopo_inicial: {                 # Snapshot no iniciar()                │
+│      items: [String],                # IDs dos BacklogItems                 │
+│      tasks: [{ codigo, titulo }],    # Snapshot das tasks                   │
+│      capturado_em: DateTime                                                 │
+│    }                                                                        │
+│  + mudancas_escopo: [{               # Event log de mutações                │
+│      tipo: "adicao" | "remocao" | "deprecacao",                             │
+│      item_id: String?,               # Se mutação de item                   │
+│      task_codigo: String?,           # Se mutação de task                   │
+│      motivo: String,                                                        │
+│      timestamp: DateTime,                                                   │
+│      user_id: String?                                                       │
+│    }]                                                                       │
+│  + items_deprecados: [{              # Itens cancelados                     │
+│      item_id: String,                                                       │
+│      motivo: String,                                                        │
+│      deprecado_em: DateTime                                                 │
+│    }]                                                                       │
+│  + items_removidos: [{               # Itens devolvidos ao backlog          │
+│      item_id: String,                                                       │
+│      motivo: String,                                                        │
+│      removido_em: DateTime                                                  │
+│    }]                                                                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Atributos Responsabilidade (porta para multi-user)                         │
 │  ──────────────────────────────────────────────────                         │
@@ -324,8 +413,9 @@ Estados da Task:
 │      tasks_completadas: Number,                                             │
 │      tasks_em_andamento: Number,                                            │
 │      tasks_pendentes: Number,                                               │
+│      tasks_deprecadas: Number,                                              │
 │      tasks_total: Number,                                                   │
-│      percentual: Number                                                     │
+│      percentual: Number              # Exclui deprecadas do cálculo         │
 │    }                                                                        │
 │  + task_atual: String?               # Código da task em execução           │
 │  + bloqueios: [{task_codigo, motivo, desde}]                                │
@@ -353,7 +443,32 @@ Estados da Task:
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.3 Classe: MS_Sprint (Gerenciador)
+### 4.3 Classe: Comando
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                            CLASSE: COMANDO                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Atributos                                                                  │
+│  ──────────                                                                 │
+│  + nome: String                      # "iniciar", "pausar", etc.            │
+│  + alias: [String]?                  # ["start", "começar"]                 │
+│  + categoria: Enum                   # sprint | escopo | task | relatorio   │
+│  + descricao_curta: String           # Para listagem                        │
+│  + descricao_longa: String           # Para ajuda detalhada                 │
+│  + sintaxe: String                   # "genesis sprint iniciar <titulo>"    │
+│  + parametros: [{                                                           │
+│      nome: String,                                                          │
+│      tipo: String,                                                          │
+│      obrigatorio: Boolean,                                                  │
+│      descricao: String                                                      │
+│    }]                                                                       │
+│  + exemplos: [String]                                                       │
+│  + pre_condicoes: [String]?          # "Requer sprint ativa"                │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.4 Classe: MS_Sprint (Gerenciador)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -364,6 +479,7 @@ Estados da Task:
 │  + sessao_ativa: SprintSession?      # Máx 1 ativa (WIP limit)              │
 │  + backlog: MS_Backlog               # Dependência                          │
 │  + produto: MS_Produto               # Dependência (relatórios saga)        │
+│  + comandos: [Comando]               # Catálogo de comandos disponíveis     │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Métodos Ciclo de Vida                                                      │
 │  ─────────────────────                                                      │
@@ -372,11 +488,18 @@ Estados da Task:
 │  + retomar(): SprintSession                                                 │
 │  + concluir(): void                                                         │
 ├─────────────────────────────────────────────────────────────────────────────┤
+│  Métodos Mutação de Escopo                                                  │
+│  ─────────────────────────                                                  │
+│  + adicionar_item(item_id, motivo): void                                    │
+│  + remover_item(item_id, motivo): void                                      │
+│  + deprecar_item(item_id, motivo): void                                     │
+├─────────────────────────────────────────────────────────────────────────────┤
 │  Métodos Task                                                               │
 │  ────────────                                                               │
-│  + adicionar_task(task): void                                               │
+│  + adicionar_task(item_id, task, motivo?): void                             │
 │  + iniciar_task(codigo): void                                               │
 │  + concluir_task(codigo, resultado?): void                                  │
+│  + deprecar_task(codigo, motivo): void                                      │
 │  + registrar_esforco(codigo, horas, user_id?): void                         │
 │  + bloquear_task(codigo, motivo): void                                      │
 │  + desbloquear_task(codigo): void                                           │
@@ -388,15 +511,20 @@ Estados da Task:
 │  + relatorio_saga(saga_id): RelatorioSaga                                   │
 │  + relatorio_velocidade(periodo?): RelatorioVelocidade                      │
 │  + relatorio_bloqueios(): RelatorioBloqueios                                │
+│  + relatorio_variacao(): RelatorioVariacaoEscopo                            │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Métodos Sessão                                                             │
 │  ──────────────                                                             │
 │  + carregar_sessao(): SprintSession?                                        │
 │  + existe_sessao_ativa(): Boolean                                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Métodos Ajuda                                                              │
+│  ─────────────                                                              │
+│  + ajuda(comando?): String                                                  │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.4 Classes de Relatório
+### 4.5 Classes de Relatório
 
 #### RelatorioBacklog
 
@@ -448,6 +576,7 @@ Estados da Task:
 │      tasks_completadas: Number,                                             │
 │      tasks_em_andamento: Number,                                            │
 │      tasks_pendentes: Number,                                               │
+│      tasks_deprecadas: Number,                                              │
 │      percentual: Number                                                     │
 │    }                                                                        │
 │  + tasks: [{                                                                │
@@ -598,7 +727,52 @@ Estados da Task:
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.5 Métodos de Consulta (MS_Backlog deve expor)
+#### RelatorioVariacaoEscopo
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    CLASSE: RELATORIO_VARIACAO_ESCOPO                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Fonte: SprintSession                                                       │
+│  Pergunta: "O que mudou entre início e fim da sprint?"                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  + sprint: {                                                                │
+│      titulo: String,                                                        │
+│      objetivo: String                                                       │
+│    }                                                                        │
+│  + escopo_inicial: {                                                        │
+│      items: [{ id, titulo }],                                               │
+│      tasks_total: Number,                                                   │
+│      esforco_estimado: Number                                               │
+│    }                                                                        │
+│  + escopo_final: {                                                          │
+│      items: [{ id, titulo }],                                               │
+│      tasks_total: Number,                                                   │
+│      esforco_estimado: Number                                               │
+│    }                                                                        │
+│  + variacoes: {                                                             │
+│      items_adicionados: [{ id, titulo, motivo, quando }],                   │
+│      items_removidos: [{ id, titulo, motivo, quando }],                     │
+│      items_deprecados: [{ id, titulo, motivo, quando }],                    │
+│      tasks_adicionadas: [{ codigo, titulo, item_id, quando }],              │
+│      tasks_deprecadas: [{ codigo, titulo, motivo, quando }]                 │
+│    }                                                                        │
+│  + metricas: {                                                              │
+│      delta_items: Number,          # final - inicial                        │
+│      delta_tasks: Number,                                                   │
+│      delta_esforco_estimado: Number,                                        │
+│      taxa_variacao: Number,        # % de mudança                           │
+│      estabilidade: "alta" | "media" | "baixa"                               │
+│    }                                                                        │
+│  + timeline: [{                    # Cronologia das mudanças                │
+│      timestamp: DateTime,                                                   │
+│      tipo: String,                                                          │
+│      descricao: String                                                      │
+│    }]                                                                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.6 Métodos de Consulta (MS_Backlog deve expor)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -637,7 +811,7 @@ Estados da Task:
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.6 Métodos Detalhados (Ciclo de Vida)
+### 4.7 Métodos Detalhados
 
 #### iniciar()
 
@@ -659,16 +833,25 @@ Estados da Task:
 │  Passos:                                                                    │
 │  1. SE existe_sessao_ativa() → ERRO: "Conclua ou pause sessão atual"        │
 │  2. Validar items existem no MS_Backlog                                     │
-│  3. Criar SprintSession {                                                   │
+│  3. Capturar escopo_inicial {                                               │
+│       items: items,                                                         │
+│       tasks: tasks.map(t => {codigo, titulo}),                              │
+│       capturado_em: now()                                                   │
+│     }                                                                       │
+│  4. Criar SprintSession {                                                   │
 │       status: "ativa",                                                      │
 │       items_selecionados: items,                                            │
 │       tasks: tasks || [],                                                   │
+│       escopo_inicial: escopo_inicial,                                       │
+│       mudancas_escopo: [],                                                  │
+│       items_deprecados: [],                                                 │
+│       items_removidos: [],                                                  │
 │       responsavel_id: responsavel_id,                                       │
 │       progresso: calcular_progresso(tasks)                                  │
 │     }                                                                       │
-│  4. Persistir no MongoDB                                                    │
-│  5. Registrar ação no histórico                                             │
-│  6. Retornar sessão                                                         │
+│  5. Persistir no MongoDB                                                    │
+│  6. Registrar ação no histórico                                             │
+│  7. Retornar sessão                                                         │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -728,6 +911,155 @@ Estados da Task:
 │  - Contexto de pausa                                                        │
 │  - Task atual                                                               │
 │  - Progresso                                                                │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### adicionar_item()
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       MÉTODO: adicionar_item()                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Input:                                                                     │
+│  - item_id: String (ID do BacklogItem)                                      │
+│  - motivo: String (por que está adicionando)                                │
+│                                                                             │
+│  Output: void                                                               │
+│                                                                             │
+│  Pré-condição: Sprint ativa, item existe no MS_Backlog                      │
+│                                                                             │
+│  Passos:                                                                    │
+│  1. SE !sessao_ativa → ERRO: "Nenhuma sprint ativa"                         │
+│  2. SE item_id in items_selecionados → ERRO: "Item já está na sprint"       │
+│  3. Validar item existe no MS_Backlog                                       │
+│  4. Adicionar item_id a items_selecionados                                  │
+│  5. Registrar em mudancas_escopo {                                          │
+│       tipo: "adicao",                                                       │
+│       item_id: item_id,                                                     │
+│       motivo: motivo,                                                       │
+│       timestamp: now()                                                      │
+│     }                                                                       │
+│  6. Persistir no MongoDB                                                    │
+│  7. Registrar ação no histórico                                             │
+│                                                                             │
+│  Exemplo:                                                                   │
+│  MS_Sprint.adicionar_item("BKL-042", "dependência descoberta")              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### remover_item()
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       MÉTODO: remover_item()                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Input:                                                                     │
+│  - item_id: String                                                          │
+│  - motivo: String (por que está removendo)                                  │
+│                                                                             │
+│  Output: void                                                               │
+│                                                                             │
+│  Pré-condição: Sprint ativa, item está na sprint                            │
+│                                                                             │
+│  Passos:                                                                    │
+│  1. SE !sessao_ativa → ERRO: "Nenhuma sprint ativa"                         │
+│  2. SE item_id not in items_selecionados → ERRO: "Item não está na sprint"  │
+│  3. Remover item_id de items_selecionados                                   │
+│  4. Remover tasks associadas ao item (marcar como removidas)                │
+│  5. Adicionar a items_removidos {                                           │
+│       item_id: item_id,                                                     │
+│       motivo: motivo,                                                       │
+│       removido_em: now()                                                    │
+│     }                                                                       │
+│  6. Registrar em mudancas_escopo {                                          │
+│       tipo: "remocao",                                                      │
+│       item_id: item_id,                                                     │
+│       motivo: motivo,                                                       │
+│       timestamp: now()                                                      │
+│     }                                                                       │
+│  7. Notificar MS_Backlog.devolver(item_id) → status: Pendente               │
+│  8. Persistir no MongoDB                                                    │
+│  9. Registrar ação no histórico                                             │
+│                                                                             │
+│  Exemplo:                                                                   │
+│  MS_Sprint.remover_item("BKL-015", "repriorizado para próxima sprint")      │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### deprecar_item()
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       MÉTODO: deprecar_item()                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Input:                                                                     │
+│  - item_id: String                                                          │
+│  - motivo: String (por que está cancelando)                                 │
+│                                                                             │
+│  Output: void                                                               │
+│                                                                             │
+│  Pré-condição: Sprint ativa, item está na sprint                            │
+│                                                                             │
+│  Passos:                                                                    │
+│  1. SE !sessao_ativa → ERRO: "Nenhuma sprint ativa"                         │
+│  2. SE item_id not in items_selecionados → ERRO: "Item não está na sprint"  │
+│  3. Remover item_id de items_selecionados                                   │
+│  4. Marcar tasks associadas como deprecadas                                 │
+│  5. Adicionar a items_deprecados {                                          │
+│       item_id: item_id,                                                     │
+│       motivo: motivo,                                                       │
+│       deprecado_em: now()                                                   │
+│     }                                                                       │
+│  6. Registrar em mudancas_escopo {                                          │
+│       tipo: "deprecacao",                                                   │
+│       item_id: item_id,                                                     │
+│       motivo: motivo,                                                       │
+│       timestamp: now()                                                      │
+│     }                                                                       │
+│  7. Notificar MS_Backlog.cancelar(item_id) → status: Cancelado              │
+│  8. Persistir no MongoDB                                                    │
+│  9. Registrar ação no histórico                                             │
+│                                                                             │
+│  Diferença de remover_item:                                                 │
+│  - remover: item volta para backlog (status: Pendente)                      │
+│  - deprecar: item é cancelado definitivamente (status: Cancelado)           │
+│                                                                             │
+│  Exemplo:                                                                   │
+│  MS_Sprint.deprecar_item("BKL-008", "requisito não existe mais")            │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### deprecar_task()
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       MÉTODO: deprecar_task()                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Input:                                                                     │
+│  - codigo: String (T01, T02, etc.)                                          │
+│  - motivo: String (por que está cancelando)                                 │
+│                                                                             │
+│  Output: void                                                               │
+│                                                                             │
+│  Passos:                                                                    │
+│  1. Buscar task pelo código                                                 │
+│  2. Atualizar task {                                                        │
+│       status: "deprecada",                                                  │
+│       deprecada_em: now(),                                                  │
+│       motivo_deprecacao: motivo                                             │
+│     }                                                                       │
+│  3. Registrar em mudancas_escopo {                                          │
+│       tipo: "deprecacao",                                                   │
+│       task_codigo: codigo,                                                  │
+│       motivo: motivo,                                                       │
+│       timestamp: now()                                                      │
+│     }                                                                       │
+│  4. Recalcular progresso (exclui deprecadas do total)                       │
+│  5. Persistir no MongoDB                                                    │
+│  6. Registrar ação no histórico                                             │
+│                                                                             │
+│  Exemplo:                                                                   │
+│  MS_Sprint.deprecar_task("T03", "abordagem mudou, não precisamos mais")     │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -793,7 +1125,242 @@ Estados da Task:
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.7 Invariantes
+#### ajuda()
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           MÉTODO: ajuda()                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Input:                                                                     │
+│  - comando: String? (opcional, para ajuda específica)                       │
+│                                                                             │
+│  Output: String (texto formatado)                                           │
+│                                                                             │
+│  Comportamento:                                                             │
+│  - SE comando == null → Exibe lista resumida por categoria                  │
+│  - SE comando != null → Exibe detalhes do comando específico                │
+│                                                                             │
+│  Fonte dos dados: Array comandos (hardcoded no MS_Sprint)                   │
+│                                                                             │
+│  Exemplo:                                                                   │
+│  MS_Sprint.ajuda()           → Lista todos os comandos                      │
+│  MS_Sprint.ajuda("iniciar")  → Detalhes do comando iniciar                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.8 Catálogo de Comandos (Guia do Usuário)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    GUIA DO USUÁRIO: MS_SPRINT                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  "genesis sprint ajuda"                                                     │
+│                                                                             │
+│  ════════════════════════════════════════════════════════════════════════   │
+│                                                                             │
+│  📋 GERENCIAR SPRINT                                                        │
+│  ───────────────────                                                        │
+│  • iniciar    → Criar nova sprint com itens do backlog                      │
+│  • pausar     → Salvar contexto e interromper                               │
+│  • retomar    → Continuar sprint pausada                                    │
+│  • concluir   → Finalizar sprint e gerar retrospectiva                      │
+│                                                                             │
+│  📦 GERENCIAR ESCOPO                                                        │
+│  ──────────────────                                                         │
+│  • adicionar  → Puxar item do backlog para sprint                           │
+│  • remover    → Devolver item ao backlog                                    │
+│  • deprecar   → Cancelar item (não volta ao backlog)                        │
+│                                                                             │
+│  ✅ GERENCIAR TASKS                                                         │
+│  ─────────────────                                                          │
+│  • nova-task     → Adicionar task a um item                                 │
+│  • task-iniciar  → Começar trabalho em task                                 │
+│  • task-concluir → Marcar task como feita                                   │
+│  • task-bloquear → Registrar impedimento                                    │
+│  • task-deprecar → Cancelar task                                            │
+│  • esforco       → Registrar horas trabalhadas                              │
+│                                                                             │
+│  📊 RELATÓRIOS                                                              │
+│  ────────────                                                               │
+│  • status     → Progresso da sprint atual                                   │
+│  • backlog    → Visão da fila de trabalho                                   │
+│  • bloqueios  → Itens/tasks travados                                        │
+│  • saga       → Pipeline completo de uma dor                                │
+│  • velocidade → Histórico de entregas                                       │
+│  • variacao   → Mudanças de escopo na sprint                                │
+│                                                                             │
+│  ❓ AJUDA                                                                    │
+│  ───────                                                                    │
+│  • ajuda      → Esta lista de comandos                                      │
+│  • ajuda <cmd>→ Detalhes de um comando específico                           │
+│                                                                             │
+│  ════════════════════════════════════════════════════════════════════════   │
+│                                                                             │
+│  Exemplos:                                                                  │
+│  • genesis sprint iniciar "S021" "Criar MS_Sprint"                          │
+│  • genesis sprint adicionar BKL-042 "dependência descoberta"                │
+│  • genesis sprint task-concluir T02 2.5 "validado"                          │
+│  • genesis sprint status                                                    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.9 Detalhamento dos Comandos
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    COMANDOS: SPRINT (Ciclo de Vida)                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  INICIAR                                                                    │
+│  ────────                                                                   │
+│  Alias: start, nova                                                         │
+│  Sintaxe: genesis sprint iniciar "<titulo>" "<objetivo>"                    │
+│  Pré-condição: Nenhuma sprint ativa ou pausada                              │
+│  Exemplo: genesis sprint iniciar "S021" "Criar MS_Sprint"                   │
+│                                                                             │
+│  PAUSAR                                                                     │
+│  ──────                                                                     │
+│  Alias: pause, salvar                                                       │
+│  Sintaxe: genesis sprint pausar "<contexto>"                                │
+│  Pré-condição: Sprint ativa                                                 │
+│  Exemplo: genesis sprint pausar "T02 em andamento, falta validar M3"        │
+│                                                                             │
+│  RETOMAR                                                                    │
+│  ───────                                                                    │
+│  Alias: resume, continuar                                                   │
+│  Sintaxe: genesis sprint retomar                                            │
+│  Pré-condição: Sprint pausada                                               │
+│  Exibe: Título, objetivo, contexto de pausa, task atual, progresso          │
+│                                                                             │
+│  CONCLUIR                                                                   │
+│  ────────                                                                   │
+│  Alias: finish, fechar                                                      │
+│  Sintaxe: genesis sprint concluir                                           │
+│  Pré-condição: Sprint ativa                                                 │
+│  Gera: Relatório de variação + atualiza velocidade histórica                │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    COMANDOS: ESCOPO (Mutações)                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ADICIONAR                                                                  │
+│  ─────────                                                                  │
+│  Alias: add, puxar                                                          │
+│  Sintaxe: genesis sprint adicionar <item_id> "<motivo>"                     │
+│  Pré-condição: Sprint ativa, item existe no backlog                         │
+│  Exemplo: genesis sprint adicionar BKL-042 "dependência descoberta"         │
+│  Registra: Mudança de escopo para relatório de variação                     │
+│                                                                             │
+│  REMOVER                                                                    │
+│  ───────                                                                    │
+│  Alias: remove, devolver                                                    │
+│  Sintaxe: genesis sprint remover <item_id> "<motivo>"                       │
+│  Pré-condição: Sprint ativa, item está na sprint                            │
+│  Exemplo: genesis sprint remover BKL-015 "repriorizado para próxima"        │
+│  Ação: Item volta para MS_Backlog com status Pendente                       │
+│                                                                             │
+│  DEPRECAR (item)                                                            │
+│  ───────────────                                                            │
+│  Alias: cancelar, descartar                                                 │
+│  Sintaxe: genesis sprint deprecar <item_id> "<motivo>"                      │
+│  Pré-condição: Sprint ativa, item está na sprint                            │
+│  Exemplo: genesis sprint deprecar BKL-008 "requisito não existe mais"       │
+│  Ação: Item marcado como cancelado, NÃO volta ao backlog                    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    COMANDOS: TASKS (Execução)                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  NOVA-TASK                                                                  │
+│  ─────────                                                                  │
+│  Alias: task, criar-task                                                    │
+│  Sintaxe: genesis sprint nova-task <item_id> "<titulo>" [horas]             │
+│  Exemplo: genesis sprint nova-task BKL-042 "Implementar API" 4              │
+│  Gera: Código automático (T01, T02, ...)                                    │
+│                                                                             │
+│  TASK-INICIAR                                                               │
+│  ────────────                                                               │
+│  Alias: começar, work                                                       │
+│  Sintaxe: genesis sprint task-iniciar <codigo>                              │
+│  Exemplo: genesis sprint task-iniciar T02                                   │
+│                                                                             │
+│  TASK-CONCLUIR                                                              │
+│  ─────────────                                                              │
+│  Alias: done, feito                                                         │
+│  Sintaxe: genesis sprint task-concluir <codigo> [horas] ["notas"]           │
+│  Exemplo: genesis sprint task-concluir T02 2.5 "validado com Leonardo"      │
+│                                                                             │
+│  TASK-BLOQUEAR                                                              │
+│  ─────────────                                                              │
+│  Alias: bloquear, impedimento                                               │
+│  Sintaxe: genesis sprint task-bloquear <codigo> "<motivo>"                  │
+│  Exemplo: genesis sprint task-bloquear T03 "aguardando API externa"         │
+│                                                                             │
+│  TASK-DEPRECAR                                                              │
+│  ─────────────                                                              │
+│  Alias: task-cancelar                                                       │
+│  Sintaxe: genesis sprint task-deprecar <codigo> "<motivo>"                  │
+│  Exemplo: genesis sprint task-deprecar T03 "abordagem mudou"                │
+│                                                                             │
+│  ESFORCO                                                                    │
+│  ───────                                                                    │
+│  Alias: horas, tempo                                                        │
+│  Sintaxe: genesis sprint esforco <codigo> <horas>                           │
+│  Exemplo: genesis sprint esforco T01 1.5                                    │
+│  Nota: Pode registrar múltiplas vezes (acumula)                             │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    COMANDOS: RELATÓRIOS (Visibilidade)                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  STATUS                                                                     │
+│  ──────                                                                     │
+│  Alias: progresso, como-esta                                                │
+│  Sintaxe: genesis sprint status                                             │
+│  Exibe: Objetivo, tasks (✅🔄⬜❌), burndown, bloqueios                      │
+│                                                                             │
+│  BACKLOG                                                                    │
+│  ───────                                                                    │
+│  Alias: fila, pendentes                                                     │
+│  Sintaxe: genesis sprint backlog                                            │
+│  Exibe: Por prioridade, bloqueados, sugestões de próximos                   │
+│                                                                             │
+│  BLOQUEIOS                                                                  │
+│  ─────────                                                                  │
+│  Alias: impedimentos, travados                                              │
+│  Sintaxe: genesis sprint bloqueios                                          │
+│  Exibe: Backlog + Sprint, por tipo, mais antigos, sugestões                 │
+│                                                                             │
+│  SAGA                                                                       │
+│  ────                                                                       │
+│  Alias: pipeline, fluxo                                                     │
+│  Sintaxe: genesis sprint saga <saga_id>                                     │
+│  Exibe: Etapas, gargalos, lead time                                         │
+│                                                                             │
+│  VELOCIDADE                                                                 │
+│  ──────────                                                                 │
+│  Alias: historico, capacidade                                               │
+│  Sintaxe: genesis sprint velocidade [periodo]                               │
+│  Exibe: Médias, tendência, comparativo                                      │
+│                                                                             │
+│  VARIACAO                                                                   │
+│  ────────                                                                   │
+│  Alias: escopo, mudancas                                                    │
+│  Sintaxe: genesis sprint variacao                                           │
+│  Exibe: Itens add/rem/dep, delta, taxa de mudança, timeline                 │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.10 Invariantes
 
 | Invariante | Descrição |
 |------------|-----------|
@@ -804,8 +1371,10 @@ Estados da Task:
 | **CONTEXTO-PAUSA** | Pausar exige contexto para retomada |
 | **HISTORICO-IMUTAVEL** | Ações registradas não podem ser alteradas |
 | **ESFORCO-POSITIVO** | Horas registradas devem ser > 0 |
+| **ESCOPO-RASTREAVEL** | Toda mutação de escopo registrada em mudancas_escopo |
+| **MOTIVO-OBRIGATORIO** | Mutações de escopo exigem motivo |
 
-### 4.8 Persistência
+### 4.11 Persistência
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -830,7 +1399,7 @@ Estados da Task:
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.9 Quem Sabe O Quê (SSOT)
+### 4.12 Quem Sabe O Quê (SSOT)
 
 | Métrica | SSOT | Consultado por |
 |---------|------|----------------|
@@ -843,6 +1412,7 @@ Estados da Task:
 | Bloqueios na execução | MS_Sprint | - |
 | Velocidade histórica | MS_Sprint (MongoDB) | - |
 | Produto/Feature | MS_Produto | MS_Sprint |
+| Variação de escopo | MS_Sprint | - |
 
 ---
 
@@ -854,7 +1424,7 @@ Estados da Task:
 | **Arq** | Detalhar contratos MongoDB | MS_Sprint_Arquitetura.md |
 | **Dep** | Deprecar legado | 00_I_2_2_Sprint.md → deprecated |
 | **Backlog** | Adicionar métodos consulta | MS_Backlog_Arquitetura.md |
-| **MVP** | Implementar no Claude | Comandos pausa/retoma funcionais |
+| **MVP** | Implementar no Claude | Comandos funcionais |
 
 ---
 
