@@ -1,10 +1,10 @@
-# MS_Backlog Arquitetura v1.1
+# MS_Backlog Arquitetura v1.2
 
 ---
 
 ```yaml
 nome: MS_Backlog_Arquitetura
-versao: "1.1"
+versao: "1.2"
 tipo: Documento
 status: Publicado
 camada: 4
@@ -748,11 +748,258 @@ compensacao:
 
 ---
 
+## 9. Interface MS_Sprint (v1.2 Novo)
+
+### 9.1 Visão Geral
+
+MS_Sprint consome dados do MS_Backlog para gerar relatórios consolidados e gerenciar ciclos de execução. Esta seção define os métodos que MS_Backlog expõe para MS_Sprint.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    MS_BACKLOG ← MS_SPRINT                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  MS_SPRINT                                                                  │
+│  ─────────                                                                  │
+│  Consulta: [listar_saga, metricas_fila, itens_bloqueados,                   │
+│             lead_time, pipeline_saga]                                       │
+│  Notifica: [devolver, cancelar]                                             │
+│                                                                             │
+│  Não consome/produz BacklogItems diretamente.                               │
+│  Gerencia execução em camada acima (sprint_sessions).                       │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 9.2 Métodos de Consulta
+
+#### listar_saga()
+
+```yaml
+listar_saga:
+  descricao: "Retorna todos os items de uma saga, ordenados por sequência"
+  uso: RelatorioSaga, RelatorioBacklog
+  
+  input:
+    saga_id: string
+  
+  output:
+    items: [BacklogItem]      # Ordenados por created_at ASC
+  
+  query_mongodb: |
+    db.backlog_items.find({ saga_id: saga_id }).sort({ created_at: 1 })
+```
+
+#### metricas_fila()
+
+```yaml
+metricas_fila:
+  descricao: "Retorna métricas agregadas da fila de backlog"
+  uso: RelatorioBacklog
+  
+  input: (nenhum)
+  
+  output:
+    total: number
+    por_status:
+      Pendente: number
+      Bloqueado: number
+      EmProcessamento: number
+      Concluido: number
+      Erro: number
+      Cancelado: number
+    por_tipo:
+      ciclo_epistemologico: number
+      desenvolvimento: number
+      # ... outros tipos
+    por_prioridade:
+      "🔴": number
+      "🟡": number
+      "🟢": number
+  
+  query_mongodb: |
+    db.backlog_items.aggregate([
+      { $facet: {
+        total: [{ $count: "count" }],
+        por_status: [{ $group: { _id: "$status", count: { $sum: 1 }}}],
+        por_tipo: [{ $group: { _id: "$tipo", count: { $sum: 1 }}}],
+        por_prioridade: [{ $group: { _id: "$prioridade", count: { $sum: 1 }}}]
+      }}
+    ])
+```
+
+#### itens_bloqueados()
+
+```yaml
+itens_bloqueados:
+  descricao: "Retorna items com status Bloqueado e seus motivos"
+  uso: RelatorioBloqueios
+  
+  input: (nenhum)
+  
+  output:
+    items: [{
+      item: BacklogItem,
+      motivo: string,           # Derivado de depende_de ou contexto
+      dependencia_de: [string]?, # IDs das dependências
+      dias_bloqueado: number
+    }]
+  
+  query_mongodb: |
+    db.backlog_items.find({ status: "Bloqueado" })
+```
+
+#### lead_time()
+
+```yaml
+lead_time:
+  descricao: "Calcula tempo de ciclo de um item"
+  uso: RelatorioSaga, RelatorioVelocidade
+  
+  input:
+    item_id: string
+  
+  output:
+    inicio: datetime          # created_at
+    fim: datetime?            # completed_at (null se não concluído)
+    duracao_horas: number     # Diferença em horas
+  
+  query_mongodb: |
+    item = db.backlog_items.find_one({ id: item_id })
+    # Calcular duracao_horas no código
+```
+
+#### pipeline_saga()
+
+```yaml
+pipeline_saga:
+  descricao: "Retorna etapas do pipeline de uma saga com status"
+  uso: RelatorioSaga
+  
+  input:
+    saga_id: string
+  
+  output:
+    etapas: [{
+      etapa: string,           # Tipo do item (ex: ciclo_epistemologico)
+      status: string,          # Pendente | EmProcessamento | Concluido
+      tempo_horas: number?,    # Se concluído
+      item_id: string?         # ID do item nessa etapa
+    }]
+  
+  logica: |
+    # Agrupar items da saga por tipo
+    # Ordenar por sequência típica do fluxo
+    # Calcular tempo se concluído
+```
+
+### 9.3 Métodos de Notificação
+
+#### devolver()
+
+```yaml
+devolver:
+  descricao: "Devolve item ao backlog (repriorização)"
+  chamado_por: MS_Sprint.remover_item()
+  
+  input:
+    item_id: string
+  
+  output: void
+  
+  side_effects:
+    - status: "Pendente"
+    - updated_at: now()
+    - devolvido_em: now()
+    - devolvido_por: "MS_Sprint"
+  
+  query_mongodb: |
+    db.backlog_items.update_one(
+      { id: item_id },
+      { $set: {
+        status: "Pendente",
+        updated_at: new Date(),
+        devolvido_em: new Date(),
+        devolvido_por: "MS_Sprint"
+      }}
+    )
+```
+
+#### cancelar()
+
+```yaml
+cancelar:
+  descricao: "Cancela item definitivamente"
+  chamado_por: MS_Sprint.deprecar_item()
+  
+  input:
+    item_id: string
+    motivo: string
+  
+  output: void
+  
+  side_effects:
+    - status: "Cancelado"
+    - updated_at: now()
+    - cancelado_em: now()
+    - cancelado_por: "MS_Sprint"
+    - motivo_cancelamento: motivo
+  
+  query_mongodb: |
+    db.backlog_items.update_one(
+      { id: item_id },
+      { $set: {
+        status: "Cancelado",
+        updated_at: new Date(),
+        cancelado_em: new Date(),
+        cancelado_por: "MS_Sprint",
+        motivo_cancelamento: motivo
+      }}
+    )
+    
+    # Registrar evento
+    db.eventos.insert_one({
+      tipo: "cancelamento",
+      item_ref: item_id,
+      dados: { motivo: motivo, origem: "MS_Sprint" },
+      timestamp: new Date()
+    })
+```
+
+### 9.4 Campos Adicionais em backlog_items (v1.2)
+
+```yaml
+# Campos novos para suportar interface MS_Sprint
+backlog_items:
+  # ... campos existentes ...
+  
+  # v1.2: Campos de devolução/cancelamento
+  devolvido_em: datetime?
+  devolvido_por: string?
+  cancelado_em: datetime?
+  cancelado_por: string?
+  motivo_cancelamento: string?
+```
+
+### 9.5 Índices Adicionais (v1.2)
+
+```yaml
+indexes:
+  # ... índices existentes ...
+  
+  # v1.2: Para interface MS_Sprint
+  - {status: 1, saga_id: 1}       # Para pipeline_saga()
+  - {cancelado_em: -1}            # Para auditoria de cancelamentos
+```
+
+---
+
 ## Referências
 
 | Documento | Relação |
 |-----------|---------|
 | docs/04_B/MS_Backlog.md | Documento pai - propósito |
+| docs/04_S/MS_Sprint.md | Consumidor (v1.2) |
 | genesis/GENESIS.md | Produtor/Consumidor |
 | genesis/PROMETHEUS.md | Produtor/Consumidor (v1.1: orcar_spec) |
 | genesis/PROMETHEUS_Arquitetura.md | Detalhes do ciclo PROMETHEUS |
@@ -767,3 +1014,4 @@ compensacao:
 |--------|------|-----------|
 | 1.0 | 2025-12-16 | Criação inicial. Contratos produtor/consumidor. Roteamento por tipo. Persistência MongoDB. Observabilidade. Human-in-the-loop. Compensação (Saga Pattern). |
 | 1.1 | 2025-12-17 | **Tipos novos PROMETHEUS v3.0**: orcar_spec, aprovar_orcamento, ajustar_spec, validar_implantacao. **Desbloqueio por dependência**: status Bloqueado, depende_de[], verificar_desbloqueio(). **Produtor**: campo produtor para identificar origem (PROMETHEUS para GAPs). Sprint S020/E04. |
+| 1.2 | 2025-12-17 | **Interface MS_Sprint**: Métodos de consulta (listar_saga, metricas_fila, itens_bloqueados, lead_time, pipeline_saga). Métodos de notificação (devolver, cancelar). Campos adicionais (devolvido_*, cancelado_*). Sprint S021. |
