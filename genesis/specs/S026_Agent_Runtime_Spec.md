@@ -1,7 +1,7 @@
-# S026 - Agent Runtime para GENESIS no Mattermost
+# S026 - MS_Agente: Agent Runtime Reutilizável
 
 > **Sprint:** S026  
-> **Status:** Em andamento (M1 concluído, M2-M4 pendentes)  
+> **Status:** Em andamento (M1 ✅, M2 ✅, M3-M4 pendentes)  
 > **Backlog:** BKL-026 (tipo: ciclo_epistemologico)  
 > **Esforço estimado:** 4h
 
@@ -58,307 +58,156 @@ GENESIS roda em LLM Mode (Claude Desktop + MCP), excelente para prototipar mas n
 | Entry Point | Recebe mensagem, decide roteamento (Bot MM) |
 | Context | Payload API Anthropic (system prompt + histórico + mensagem + tools) |
 | Execução | Registro chamada LLM com métricas (tokens, latência, capacidade, custo) |
-| Rate Limit | Limite de requisições/tokens por período imposto pela API |
-| 429 Error | Resposta HTTP indicando que limite foi excedido |
-| Token Bucket | Algoritmo que distribui chamadas em intervalos menores |
-| Prompt Caching | Reutilização de contexto entre chamadas para reduzir custo/latência |
-| Custeio | Cálculo do custo em USD de cada execução baseado em tokens × pricing |
+| MS_Agente | Meta System reutilizável que implementa Agent Loop genérico |
 
 ---
 
-## M1 - Quadro Teórico
+## M1 - Quadro Teórico ✅
 
-### Fontes Externas
+> **Status:** Validado (Zarah em produção confirma padrões)
 
-**Mattermost Bot API:**
-- Bot accounts via personal access tokens
-- Não contam para licenciamento
-- WebSocket para eventos, REST para posting
-
-**Camunda External Task:**
-- Task aguarda worker externo sem chamar explicitamente
-- Configurado por topic
-- Benefícios: temporal decoupling, polyglot, scaling, avoid timeouts
-
-**Anthropic API:**
-- Limites: RPM, ITPM, OTPM, Spend Limit
-- Headers `anthropic-ratelimit-tokens-*` mostram limite mais restritivo
-- Erro 429 se excedido
-
-### Fontes Internas (Repos ZAZ)
+### Fontes Internas (Repos ZAZ) - VALIDADAS
 
 #### Estrutura Orquestrador-Zarah
 ```
 ZAZ-vendas/Orquestrador-Zarah
-├── config/
-│   └── camunda/index.js      # initCamunda, startProcessCamundaV2, sendSignalCamundaV2
-├── controller/
-│   └── mattermostController.js  # Webhook handler MM → Camunda
-├── database/
-│   └── index.js              # MongoDB abstraction layer
-├── utils/
-│   └── validations.js        # getListaVariaveis, setarVariaveisCamunda
+├── config/camunda/index.js      # initCamunda, startProcessCamundaV2, sendSignalCamundaV2
+├── controller/mattermostController.js  # Webhook handler MM → Camunda
+├── database/index.js            # MongoDB abstraction layer (database layer)
+├── utils/validations.js         # getListaVariaveis, setarVariaveisCamunda
 └── worker/
-    ├── llama/index.js        # Worker LLM existente
-    ├── openAI/index.js       # Worker OpenAI existente
-    ├── sistemas/
-    │   └── mattermost/index.js  # sendMessage, atualizarPostMattermost
-    └── interno/
-        └── mongo/index.js    # Workers MongoDB
+    ├── llama/index.js           # Padrão worker LLM
+    ├── openAI/index.js          # Worker OpenAI
+    └── sistemas/mattermost/     # sendMessage, atualizarPost
 ```
 
-#### Padrão de Worker (descoberto)
+#### Padrão de Worker (confirmado)
 ```javascript
 module.exports = {
   nomeDoWorker: async ({ task, taskService }) => {
-    // 1. Extrair variáveis
     const { var1, var2 } = getListaVariaveis({ var1: "", var2: "" }, task);
-    
-    // 2. Executar lógica
     const response = await algumaAPI(...);
-    
-    // 3. Completar task com retorno
     await taskService.complete(task, setarVariaveisCamunda({ resultado }));
   }
 }
 ```
 
-#### Helpers Críticos (utils/validations.js)
-```javascript
-// Extrai variáveis do processo Camunda
-getListaVariaveis: (lista, task) => {
-  const dados = {};
-  Object.keys(lista).forEach((nome) => {
-    dados[nome] = !task.variables.get(nome) ? lista[nome] : task.variables.get(nome);
-  });
-  return dados;
-}
-
-// Formata variáveis para retornar ao Camunda
-setarVariaveisCamunda: (lista) => {
-  const processVariables = new Variables();
-  Object.keys(lista).forEach((item, index) => {
-    processVariables.set(item, Object.values(lista)[index]);
-  });
-  return processVariables;
-}
-```
-
 #### Database Layer (database/index.js)
+Camada de abstração MongoDB que gerencia conexões e expõe operações padronizadas:
 ```javascript
-// Operações disponíveis
-findOne({ query, collection, db })
-find({ query, limit, skip, sort, collection, db })
-findCustom({ query, collection, db })
-insertOne({ insert, collection, db })
-insertMany({ insert, collection, db })
-updateOne({ query, update, collection, db })
-updateMany({ query, update, collection, db })
-deleteOne({ query, collection, db })
-deleteMany({ query, collection, db })
-countDocuments({ query, collection, db })
-aggregateCustom({ pipeline, collection, db })
+findOne, find, insertOne, insertMany, updateOne, updateMany, 
+deleteOne, deleteMany, countDocuments, aggregateCustom
 ```
 
-#### Config Camunda (config/camunda/index.js)
-```javascript
-// Client setup
-const client = new Client({
-  baseUrl: process.env.CAMUNDA_BASE_URL,
-  workerId: uuidv4(),
-  asyncResponseTimeout: 10000,
-  maxParallelExecutions: 32,
-  lockDuration: 30000,
-  interval: 2000,
-  maxTasks: 32,
-});
-
-// Iniciar processo
-startProcessCamundaV2: async (processDefinitionKey, variables, tenantId) => {
-  const url = `${CAMUNDA_BASE_URL}/process-definition/key/${processDefinitionKey}/start`;
-  await axios.post(url, { variables });
-}
-
-// Enviar signal para processo existente
-sendSignalCamundaV2: async ({ signalName, variables }) => {
-  await axios.post(`${CAMUNDA_BASE_URL}/signal`, { name: signalName, variables });
-}
-```
-
-#### Controller MM → Camunda (mattermostController.js)
-```javascript
-// Fluxo descoberto:
-// 1. Outgoing Webhook do MM chama /api/mattermost/webhook
-// 2. Controller extrai: channel_id, user_id, text, file_ids
-// 3. DMN decide qual processo iniciar: dmn_processo_iniciar_orquestrador
-// 4. Se processo existe → sendSignalCamundaV2 (continua conversa)
-// 5. Se não existe → startProcessCamundaV2 (nova conversa)
-
-// Variáveis padrão enviadas ao processo:
-{
-  channel_id: { value, type: "String" },
-  user_id: { value, type: "String" },
-  login: { value, type: "String" },
-  input: { value, type: "String" },
-  tipo_orquestrador: { value, type: "String" },
-  token_orquestrador: { value, type: "String" },
-  inputFiles: { value: JSON.stringify(files), type: "Json" },
-}
-```
-
-#### Workers LLM Existentes
-```javascript
-// worker/llama/index.js - padrão para GENESIS seguir
-perguntaLlama: async ({ task, taskService }) => {
-  const { pergunta } = getListaVariaveis({ pergunta: "" }, task);
-  
-  const messages = [
-    { role: "system", content: "..." },
-    { role: "user", content: pergunta },
-  ];
-  
-  const response = await consultarLlama(messages, "llama3");
-  const resposta = response?.message?.content;
-  
-  await taskService.complete(task, setarVariaveisCamunda({ resposta }));
-}
-```
-
-#### Workers MM Existentes (reusar)
-```javascript
-// worker/sistemas/mattermost/index.js
-sendMessage              // Envia mensagem simples
-sendMessageMultipleChoice // Envia com botões
-sendMessageCustom        // Payload customizado
-atualizarPostMattermost  // Edita mensagem existente ✅
-consultarPostMattermost  // Busca post por ID
-```
-
-### Stack Confirmada (Padrão ZAZ)
+### Stack Confirmada
 - **Interface:** Mattermost (Outgoing Webhook → Controller → Camunda)
 - **Orquestrador:** Camunda 7 + BPMN
 - **Workers:** Node.js + camunda-external-task-client-js
-- **LLM:** API externa (já tem OpenAI, Llama → adicionar Anthropic)
-- **Persistência:** MongoDB (database/index.js) + GitHub
+- **LLM:** API externa (Llama, OpenAI → adicionar Anthropic)
+- **Persistência:** MongoDB + GitHub
 
-### Padrões ZAZ a Seguir
-- Workers = microsserviços de função única
-- Sempre via worker, nunca connector
-- External Task Pattern (polling por topic)
-- Variáveis em camelCase, datas ISO 8601
-- Tokens/secrets via env vars (12-factor)
-- Processos modulares e reutilizáveis
-- Instâncias não ficam abertas para sempre (timeout)
-- `getListaVariaveis()` para entrada, `setarVariaveisCamunda()` para saída
+### Decisão: Outgoing Webhook para MVP
 
-### O que Existe vs O que Criar
+**Decisão tomada:** Seguir padrão Zarah (Outgoing Webhook) para MVP.
 
-| Componente | Status | Onde |
-|------------|--------|------|
-| Controller MM → Camunda | ✅ Existe | mattermostController.js |
-| startProcessCamundaV2 | ✅ Existe | config/camunda/index.js |
-| sendSignalCamundaV2 | ✅ Existe | config/camunda/index.js |
-| sendMessage MM | ✅ Existe | worker/sistemas/mattermost |
-| atualizarPostMattermost | ✅ Existe | worker/sistemas/mattermost |
-| database/index.js | ✅ Existe | database/index.js |
-| Worker Llama | ✅ Existe | worker/llama |
-| Worker OpenAI | ✅ Existe | worker/openAI |
-| **Worker Anthropic** | ❌ Criar | worker/anthropic |
-| **Worker GitHub** | ❌ Criar | worker/github |
-| **Agent Loop BPMN** | ❌ Criar | bpmn/genesis-agent-loop.bpmn |
-| **Entrada DMN genesis** | ❌ Criar | DMNs/dmn_processo_iniciar_orquestrador |
+**Limitação aceita:** Só funciona em canais públicos (DM/privado no backlog BKL-027).
 
-### Gerenciamento de Quotas Anthropic
-
-**Limites API:**
-- RPM (Requests per Minute)
-- ITPM (Input Tokens per Minute)
-- OTPM (Output Tokens per Minute)
-- Spend Limit (custo máximo mensal)
-
-**Estratégias:**
-- Smart Context Management: system prompt + últimas N mensagens no budget
-- Token Bucket Algorithm: distribuir requisições
-- Exponential Backoff: retry ao receber 429
-
-**Pricing (referência):**
-| Modelo | Input/1M | Output/1M | Uso |
-|--------|----------|-----------|-----|
-| Haiku | $0.25 | $1.25 | Tarefas simples |
-| Sonnet | $3.00 | $15.00 | Default, uso geral |
-| Opus | $15.00 | $75.00 | Tarefas complexas |
-
-### Decisão: Outgoing Webhook (padrão Zarah)
-
-**Descoberta importante:** Zarah já usa Outgoing Webhook, não Bot + WebSocket.
-
-**Fluxo atual Zarah:**
+**Fluxo:**
 ```
-@zarah mensagem
-  ↓
-Mattermost (Outgoing Webhook)
-  ↓ POST /api/mattermost/webhook
-mattermostController.js
-  ↓ DMN decide processo
-  ↓ startProcessCamundaV2 ou sendSignalCamundaV2
-Camunda (BPMN)
-  ↓ Workers executam
-  ↓ sendMessage responde
+@genesis mensagem → Outgoing Webhook → mattermostController.js → DMN → Camunda → Workers
 ```
 
-**Limitação:** Outgoing Webhook não funciona em DM ou canais privados.
+### Backlog Relacionado
 
-**Opções para GENESIS:**
-1. **Seguir padrão Zarah** (Outgoing Webhook) → Menos esforço, só canais públicos
-2. **Bot + WebSocket** → Mais código, mas funciona em DM/privado
-
-**Decisão pendente:** Depende se DM é requisito.
+| ID | Título | Status |
+|----|--------|--------|
+| BKL-027 | Bot + WebSocket para DM e canais privados | Backlog |
+| BKL-028 | Multi-modelo dinâmico por capacidade | Backlog |
+| BKL-029 | Prompt Caching para redução de custos | Backlog |
 
 ---
 
-## M2 - Fronteiras
+## M2 - Fronteiras ✅
 
-### O que É (Escopo)
-- Entrada no DMN para `@genesis` → processo `bpmn_genesis_agent_loop`
-- Workflow Agent Loop: BPMN orquestra ciclo LLM ↔ Tools
-- Worker Anthropic: chama API, persiste métricas (seguindo padrão worker/llama)
-- Worker GitHub: get_file_contents, push_files (novo)
-- Reusar: database/index.js, sendMessage, helpers
-- Observabilidade: db.execucoes com tokens, latência, modo, custo
-- Validação pré-chamada: limite contexto e consumo por usuário
+> **Status:** Validado
 
-### O que NÃO É (Fora do Escopo)
-- Alterar specs dos MS (permanecem iguais)
-- Alterar mattermostController.js (só adicionar case no DMN)
-- Criar novo database layer (reusar existente)
-- Voice/STT/TTS (só texto)
-- WhatsApp/Meta (só Mattermost)
-- Multi-tenant (um bot, uma org)
+### Visão Arquitetural: MS_Agente
 
-### Schemas
+**Decisão:** Agent Loop como Meta System reutilizável, não específico do GENESIS.
 
-**db.execucoes (com custeio):**
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    MS_Agente (genérico)                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  Entrada: { agente_id, user_id, user_login, channel_id, input } │
+│                                                                 │
+│  Loop:                                                          │
+│    [Montar Contexto] → [Chamar LLM] → <tool_use?> → [Executar]  │
+│                                                                 │
+│  Saída: resposta + persistência em agente.execucoes             │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+          │
+          │ consome
+          ▼
+┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+│   GENESIS    │  │   Zarah v2   │  │  Futuro Bot  │
+│  agente_id:  │  │  agente_id:  │  │  agente_id:  │
+│  "genesis"   │  │  "zarah"     │  │  "xxx"       │
+└──────────────┘  └──────────────┘  └──────────────┘
+```
+
+### O que É (Escopo MVP)
+
+```
+REUSAR (0 código novo)
+├── mattermostController.js (só add case DMN)
+├── database/index.js
+├── utils/validations.js
+├── config/camunda/index.js
+└── worker/sistemas/mattermost/sendMessage
+
+CRIAR
+├── worker/anthropic/index.js      (~50 linhas)
+├── worker/agente/github.js        (~80 linhas)
+├── worker/agente/contexto.js      (~40 linhas)
+├── worker/agente/persistir.js     (~30 linhas)
+├── bpmn_ms_agente.bpmn            (diagrama)
+└── Linha no DMN existente         (1 linha)
+
+TOTAL: ~200 linhas de código novo
+```
+
+### O que NÃO É (Fora do Escopo MVP)
+
+- ❌ Alterar mattermostController.js (só DMN)
+- ❌ Criar novo database layer (reusar)
+- ❌ Bot + WebSocket (BKL-027)
+- ❌ Multi-modelo dinâmico (BKL-028)
+- ❌ Prompt caching (BKL-029)
+- ❌ WhatsApp/Telegram
+- ❌ Code mode (só LLM mode)
+
+### Schema: agente.execucoes
+
 ```javascript
 {
   _id: ObjectId,
-  conversa_id: "conv-123",
-  user_id: "leonardo",
-  capacidade_id: "sprint_status",
-  sprint_id: "S026",
+  agente_id: "genesis",              // Qual bot/agente
+  channel_id: "abc123",              // Canal MM
+  user_id: "mm_user_id_xxx",         // ID do usuário Mattermost
+  user_login: "leonardo",            // Login MM (vem do webhook)
+  input: "status do sprint",
+  output: "Sprint S026 está em 67%...",
   tokens_input: 1523,
   tokens_output: 847,
   tokens_total: 2370,
-  custo_input: 0.02284,
-  custo_output: 0.01270,
-  custo_total: 0.03554,
-  pricing: {
-    modelo: "claude-sonnet-4-20250514",
-    input_per_million: 3.00,
-    output_per_million: 15.00
-  },
-  modo: "llm",
+  custo_usd: 0.0355,
+  modelo: "claude-sonnet-4-20250514",
   latencia_ms: 2340,
-  timestamp: ISODate("2025-12-17T20:15:00Z")
+  tool_calls: ["github:get_file_contents", "mongodb:find"],
+  created_at: ISODate("2025-12-17T20:15:00Z")
 }
 ```
 
@@ -366,46 +215,42 @@ Camunda (BPMN)
 
 ## M3 - Especificação
 
-### Arquitetura de Componentes
+### Fluxo BPMN: bpmn_ms_agente
 
 ```
-@genesis mensagem no MM
-  ↓
-Mattermost (Outgoing Webhook existente)
-  ↓ POST /api/mattermost/webhook
-mattermostController.js (existente)
-  ↓ DMN: dmn_processo_iniciar_orquestrador
-  ↓ tipo_orquestrador = "genesis" → processo = "bpmn_genesis_agent_loop"
-  ↓
-CAMUNDA WORKFLOW: bpmn_genesis_agent_loop.bpmn (CRIAR)
-  [Start] → [Montar Contexto] → [Validar Limites] →
-  [Chamar LLM] → <Gateway> → [Executar Tool] ─┐
-      │                        │               │
-      │ (resposta final)       │ (loop)        │
-      ▼                        │               │
-  [Responder MM] ← ───────────┘               │
-      │                                        │
-  [Persistir Execução] → [End]                │
-  ↓
-WORKERS (adicionar ao Orquestrador-Zarah)
-  - worker/anthropic/index.js      (CRIAR)
-  - worker/genesis/github.js       (CRIAR)
-  - worker/genesis/montar-contexto.js (CRIAR)
-  - worker/genesis/validar-limites.js (CRIAR)
-  - worker/genesis/persistir.js    (CRIAR)
-  - worker/sistemas/mattermost     (REUSAR sendMessage)
-  - database/index.js              (REUSAR)
+[Start]
+   │ vars: agente_id, user_id, user_login, channel_id, input
+   ▼
+[Montar Contexto]
+   │ topic: agente-contexto
+   │ busca: system prompt (GitHub), histórico (MongoDB), config agente
+   ▼
+[Chamar LLM]
+   │ topic: workerAnthropic
+   │ input: messages, modelo, tools
+   │ output: resposta, toolCalls, stopReason, tokens, latencia
+   ▼
+<Gateway: stopReason?>
+   │
+   ├── "end_turn" ──► [Responder MM] ──► [Persistir] ──► [End]
+   │                   topic: sendMessage   topic: agente-persistir
+   │
+   └── "tool_use" ──► [Executar Tool] ─────────────────┐
+                       topic: agente-tool              │
+                       │                               │
+                       └───────────────────────────────┘
+                                    (loop para Montar Contexto)
 ```
 
 ### Workers a Criar
 
-**Worker: Anthropic** (topic: perguntaAnthropic)
+#### workerAnthropic (topic: workerAnthropic)
 ```javascript
-// worker/anthropic/index.js - seguindo padrão worker/llama
+// worker/anthropic/index.js
 const Anthropic = require("@anthropic-ai/sdk");
 
 module.exports = {
-  perguntaAnthropic: async ({ task, taskService }) => {
+  workerAnthropic: async ({ task, taskService }) => {
     const { messages, modelo, tools } = getListaVariaveis({
       messages: [],
       modelo: "claude-sonnet-4-20250514",
@@ -419,11 +264,11 @@ module.exports = {
       model: modelo,
       max_tokens: 4096,
       messages,
-      tools,
+      tools: tools.length > 0 ? tools : undefined,
     });
     
     const latencia_ms = Date.now() - startTime;
-    const resposta = response.content[0]?.text || "";
+    const resposta = response.content.find(c => c.type === "text")?.text || "";
     const toolCalls = response.content.filter(c => c.type === "tool_use");
     
     await taskService.complete(task, setarVariaveisCamunda({
@@ -438,24 +283,94 @@ module.exports = {
 };
 ```
 
-**Worker: GitHub** (topic: githubGetFile, githubPushFiles)
+#### agente-contexto (topic: agente-contexto)
 ```javascript
-// worker/genesis/github.js
-const { Octokit } = require("@octokit/rest");
-
+// worker/agente/contexto.js
 module.exports = {
-  githubGetFile: async ({ task, taskService }) => {
-    const { owner, repo, path, branch } = getListaVariaveis({...}, task);
-    const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+  montarContextoAgente: async ({ task, taskService }) => {
+    const { agente_id, input, channel_id } = getListaVariaveis({...}, task);
     
-    const { data } = await octokit.repos.getContent({ owner, repo, path, ref: branch });
-    const content = Buffer.from(data.content, "base64").toString();
+    // 1. Buscar config do agente (system prompt, tools, modelo)
+    const config = await findOne({ 
+      query: { agente_id }, 
+      collection: "agentes", 
+      db: "genesis" 
+    });
     
-    await taskService.complete(task, setarVariaveisCamunda({ content, sha: data.sha }));
-  },
-  
-  githubPushFiles: async ({ task, taskService }) => {
-    // Similar...
+    // 2. Buscar histórico da conversa (últimas N mensagens)
+    const historico = await find({
+      query: { channel_id, agente_id },
+      collection: "execucoes",
+      db: "agente",
+      limit: 10,
+      sort: { created_at: -1 }
+    });
+    
+    // 3. Montar messages array
+    const messages = [
+      ...historico.reverse().flatMap(h => [
+        { role: "user", content: h.input },
+        { role: "assistant", content: h.output }
+      ]),
+      { role: "user", content: input }
+    ];
+    
+    await taskService.complete(task, setarVariaveisCamunda({
+      messages: JSON.stringify(messages),
+      systemPrompt: config.system_prompt,
+      modelo: config.modelo || "claude-sonnet-4-20250514",
+      tools: JSON.stringify(config.tools || []),
+    }));
+  }
+};
+```
+
+#### agente-persistir (topic: agente-persistir)
+```javascript
+// worker/agente/persistir.js
+module.exports = {
+  persistirExecucaoAgente: async ({ task, taskService }) => {
+    const vars = getListaVariaveis({
+      agente_id: "",
+      channel_id: "",
+      user_id: "",
+      user_login: "",
+      input: "",
+      resposta: "",
+      tokens_input: 0,
+      tokens_output: 0,
+      modelo: "",
+      latencia_ms: 0,
+      toolCalls: "[]",
+    }, task);
+    
+    // Calcular custo
+    const pricing = { "claude-sonnet-4-20250514": { input: 3, output: 15 } };
+    const p = pricing[vars.modelo] || { input: 3, output: 15 };
+    const custo_usd = (vars.tokens_input * p.input + vars.tokens_output * p.output) / 1000000;
+    
+    await insertOne({
+      insert: {
+        agente_id: vars.agente_id,
+        channel_id: vars.channel_id,
+        user_id: vars.user_id,
+        user_login: vars.user_login,
+        input: vars.input,
+        output: vars.resposta,
+        tokens_input: vars.tokens_input,
+        tokens_output: vars.tokens_output,
+        tokens_total: vars.tokens_input + vars.tokens_output,
+        custo_usd,
+        modelo: vars.modelo,
+        latencia_ms: vars.latencia_ms,
+        tool_calls: JSON.parse(vars.toolCalls).map(t => t.name),
+        created_at: new Date(),
+      },
+      collection: "execucoes",
+      db: "agente",
+    });
+    
+    await taskService.complete(task);
   }
 };
 ```
@@ -466,7 +381,33 @@ Adicionar linha em `dmn_processo_iniciar_orquestrador`:
 
 | tipo_orquestrador | processo | token_orquestrador |
 |-------------------|----------|-------------------|
-| genesis | bpmn_genesis_agent_loop | MATTERMOST_TOKEN_BOT |
+| genesis | bpmn_ms_agente | MATTERMOST_TOKEN_BOT |
+
+### Config do Agente GENESIS
+
+```javascript
+// db.genesis.agentes
+{
+  agente_id: "genesis",
+  nome: "GENESIS",
+  descricao: "Assistente de gestão de conhecimento",
+  system_prompt_ref: "genesis/GENESIS.md",  // GitHub path
+  modelo: "claude-sonnet-4-20250514",
+  tools: [
+    { name: "github:get_file_contents", ... },
+    { name: "github:push_files", ... },
+    { name: "mongodb:find", ... },
+    { name: "mongodb:aggregate", ... },
+    { name: "mongodb:insert-many", ... },
+  ],
+  limites: {
+    contexto_maximo: 150000,
+    tokens_diarios_usuario: 500000,
+  },
+  created_at: ISODate(),
+  updated_at: ISODate(),
+}
+```
 
 ---
 
@@ -474,34 +415,36 @@ Adicionar linha em `dmn_processo_iniciar_orquestrador`:
 
 | # | Decisão | Rationale |
 |---|---------|-----------|
-| 1 | Reusar mattermostController | Já tem fluxo webhook → Camunda |
-| 2 | Reusar database/index.js | Abstração MongoDB pronta |
-| 3 | Reusar sendMessage | Workers MM funcionando |
-| 4 | Criar worker/anthropic | Seguir padrão worker/llama |
-| 5 | Adicionar no DMN existente | Menor impacto, padrão ZAZ |
-| 6 | Novo BPMN para agent loop | Lógica específica do ciclo LLM ↔ Tools |
+| 1 | MS_Agente como módulo | Reutilizável por outros bots (Zarah v2, futuros) |
+| 2 | workerAnthropic (não perguntaAnthropic) | Nomenclatura padrão worker* |
+| 3 | agente.execucoes genérico | agente_id distingue qual bot, user_login do MM |
+| 4 | Outgoing Webhook MVP | Reusar infra Zarah, DM no backlog |
+| 5 | Config por agente em db | system_prompt, modelo, tools por agente |
+| 6 | Reusar database/index.js | Database layer já abstrai MongoDB |
 
 ---
 
 ## Próximos Passos
 
-- [x] **M0:** Glossário, dor, causas, requisitos ✅
-- [x] **M1:** Quadro teórico com fontes internas ZAZ ✅
-- [ ] **M2:** Validar fronteiras
-- [ ] **M3:** Finalizar especificação de workers
+- [x] **M0:** Problema ✅
+- [x] **M1:** Quadro teórico (validado - Zarah em prod) ✅
+- [x] **M2:** Fronteiras (validado) ✅
+- [ ] **M3:** Detalhar workers restantes (agente-tool, github)
 - [ ] **M4:** Documento final
 - [ ] Implementar:
   - [ ] worker/anthropic/index.js
-  - [ ] worker/genesis/github.js
-  - [ ] bpmn_genesis_agent_loop.bpmn
+  - [ ] worker/agente/contexto.js
+  - [ ] worker/agente/persistir.js
+  - [ ] worker/agente/github.js
+  - [ ] bpmn_ms_agente.bpmn
   - [ ] Entrada no DMN
+  - [ ] Config agente GENESIS em db
 
 ---
 
 ## Referências
 
 ### Externas
-- Mattermost Bot API: https://developers.mattermost.com/integrate/reference/bot-accounts/
 - Camunda External Task: https://docs.camunda.org/manual/latest/user-guide/process-engine/external-tasks/
 - Anthropic API: https://docs.anthropic.com/en/api/messages
 
@@ -510,7 +453,9 @@ Adicionar linha em `dmn_processo_iniciar_orquestrador`:
 - Orquestrador-Zarah/controller/mattermostController.js
 - Orquestrador-Zarah/database/index.js
 - Orquestrador-Zarah/utils/validations.js
-- Orquestrador-Zarah/worker/llama/index.js (padrão LLM)
-- Orquestrador-Zarah/worker/sistemas/mattermost/index.js
+- Orquestrador-Zarah/worker/llama/index.js (padrão)
 - Zarah-Camunda/DMNs/
-- Zarah-Camunda/Zarah-Mattermost/Processos/
+
+### Backlog Specs
+- genesis/specs/BKL027_Bot_WebSocket.md
+- genesis/specs/BKL028_Multi_Modelo.md
