@@ -1,15 +1,15 @@
-# GENESIS v5.0
+# GENESIS v5.1
 
 ---
 
 ```yaml
 nome: GENESIS
-versao: "5.0"
+versao: "5.1"
 tipo: Framework
 status: Publicado
 nivel: C1
 camadas: [L0, L1, L2, L3, L4]
-data_publicacao: "2025-12-16"
+data_publicacao: "2025-12-17"
 ```
 
 ---
@@ -111,6 +111,19 @@ GENESIS é o **agente autopoiético** que:
 │  ├── ROTEAR: por tipagem para consumidor correto                            │
 │  ├── RASTREAR: saga completa do início ao fim                               │
 │  └── PERSISTIR: todo histórico para auditoria                               │
+│                                                                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  MS_SPRINT (Execução Humana) ◄── v5.1 NOVO                                  │
+│  ════════════════════════════                                               │
+│  PROPÓSITO: Gerenciar ciclos finitos de execução humana                     │
+│                                                                             │
+│  Funções:                                                                   │
+│  ├── SELECIONAR: itens do MS_Backlog para sprint                            │
+│  ├── SUBDIVIDIR: itens em tasks executáveis                                 │
+│  ├── PAUSAR/RETOMAR: sessões de trabalho com contexto                       │
+│  ├── RASTREAR: esforço e progresso                                          │
+│  └── REPORTAR: status, bloqueios, variação de escopo                        │
 │                                                                             │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
@@ -222,6 +235,7 @@ GENESIS é o **agente autopoiético** que:
 > **Solução v5.0:**
 > - GENESIS é entrada e validação (PORTAS)
 > - MS_Backlog orquestra comunicação (BROKER)
+> - MS_Sprint gerencia execução humana (CICLOS)
 > - MS_Produto define objetivos (O QUÊ)
 > - Epistemologia especifica (COMO)
 > - PROMETHEUS executa (FAZ)
@@ -238,6 +252,7 @@ GENESIS é o **agente autopoiético** que:
 | Ponto de validação (avalia efetividade) | Executor técnico (PROMETHEUS faz) |
 | Aprendiz de padrões | Framework de objetivo (MS_Produto faz) |
 | Produtor/Consumidor de BacklogItems | Método de especificação (Epistemologia faz) |
+| | Gerenciador de sprints (MS_Sprint faz) |
 
 ---
 
@@ -328,13 +343,13 @@ aprender:
 
 ### 6.2 Como os Sistemas Manifestam L0-L4
 
-| Camada | GENESIS | MS_Backlog | MS_Produto | Epistemologia | PROMETHEUS |
-|--------|---------|------------|------------|---------------|------------|
-| L0 | GENESIS.md | BacklogItems | Produtos | Specs | Artefatos |
-| L1 | Avalia efetividade | Métricas fila | Health Score | Cobertura | CI/CD |
-| L2 | Produz items | Roteia items | Implanta | Especifica | Executa |
-| L3 | Valida JTD | Valida saga | Valida critérios | Valida specs | Valida testes |
-| L4 | Decide iteração | Prioriza fila | Prioriza features | Decide escopo | Decide pipeline |
+| Camada | GENESIS | MS_Backlog | MS_Sprint | MS_Produto | Epistemologia | PROMETHEUS |
+|--------|---------|------------|-----------|------------|---------------|------------|
+| L0 | GENESIS.md | BacklogItems | SprintSession | Produtos | Specs | Artefatos |
+| L1 | Avalia efetividade | Métricas fila | Progresso/Burndown | Health Score | Cobertura | CI/CD |
+| L2 | Produz items | Roteia items | Executa tasks | Implanta | Especifica | Executa |
+| L3 | Valida JTD | Valida saga | Valida escopo | Valida critérios | Valida specs | Valida testes |
+| L4 | Decide iteração | Prioriza fila | Decide pausar/retomar | Prioriza features | Decide escopo | Decide pipeline |
 
 ---
 
@@ -374,6 +389,7 @@ PORTFÓLIO
 |---------|-----------|
 | docs/04_B/MS_Backlog.md | Message Broker entre MS |
 | docs/04_B/MS_Backlog_Arquitetura.md | Contratos e roteamento |
+| docs/04_S/MS_Sprint.md | Ciclos de execução humana |
 | docs/04_P/MS_Produto.md | Ciclo de vida de produtos |
 | docs/04_P/MS_Produto_Arquitetura.md | Fluxos e persistência |
 
@@ -392,7 +408,7 @@ PORTFÓLIO
 | docs/00_I/00_I_1_1_GitHub.md | Persistência de definições |
 | docs/00_I/00_I_1_3_MongoDB.md | Persistência transacional |
 | docs/00_I/00_I_2_1_Backlog.md | ⚠️ Legado - migrado para MS_Backlog |
-| docs/00_I/00_I_2_2_Sprint.md | Gestão de sprints humanas |
+| docs/00_I/00_I_2_2_Sprint.md | ⚠️ Legado - migrado para MS_Sprint |
 
 ---
 
@@ -409,10 +425,133 @@ SEMPRE: GENESIS.md (ponto de entrada)
 ENTÃO: Conforme necessidade
 ═══════════════════════════
 • MS_Backlog.md → orquestração entre sistemas
+• MS_Sprint.md → ciclos de execução humana
 • MS_Produto.md → ciclo de vida de produtos
 • Epistemologia.md → especificação M0-M4
 • PROMETHEUS.md → execução técnica
 • *_Arquitetura.md → detalhes técnicos
+```
+
+---
+
+## 10. Integração com MS_Sprint (v5.1 Novo)
+
+### 10.1 Bootstrap com Sprint
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    GENESIS: BOOTSTRAP COM MS_SPRINT                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  AO INICIAR CONVERSA:                                                       │
+│  ════════════════════                                                       │
+│                                                                             │
+│  1. Carregar GENESIS.md (este documento)                                    │
+│                                                                             │
+│  2. Verificar sprint ativa:                                                 │
+│     sessao = MS_Sprint.carregar_sessao()                                    │
+│                                                                             │
+│  3. SE sessao.status == "pausada":                                          │
+│     ┌─────────────────────────────────────────────────────────────────┐     │
+│     │  📋 SPRINT PAUSADA: "{sessao.titulo}"                           │     │
+│     │                                                                 │     │
+│     │  Objetivo: {sessao.objetivo}                                    │     │
+│     │  Progresso: {sessao.progresso.percentual}%                      │     │
+│     │  Task atual: {sessao.task_atual}                                │     │
+│     │                                                                 │     │
+│     │  💡 Contexto de pausa:                                          │     │
+│     │  "{sessao.contexto_pausa}"                                      │     │
+│     │                                                                 │     │
+│     │  Deseja retomar? (genesis sprint retomar)                       │     │
+│     └─────────────────────────────────────────────────────────────────┘     │
+│                                                                             │
+│  4. SE sessao.status == "ativa":                                            │
+│     ┌─────────────────────────────────────────────────────────────────┐     │
+│     │  📋 SPRINT ATIVA: "{sessao.titulo}"                             │     │
+│     │                                                                 │     │
+│     │  Objetivo: {sessao.objetivo}                                    │     │
+│     │  Progresso: {sessao.progresso.percentual}%                      │     │
+│     │  Task atual: {sessao.task_atual} - {task.titulo}                │     │
+│     │                                                                 │     │
+│     │  Próximas tasks: [T02, T03, ...]                                │     │
+│     └─────────────────────────────────────────────────────────────────┘     │
+│                                                                             │
+│  5. SE !sessao:                                                             │
+│     → Comportamento normal (sem sprint ativa)                               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 10.2 Fluxo de Decisão
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    GENESIS: DECISÃO DE CONTEXTO                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  USUÁRIO DIZ ALGO                                                           │
+│         │                                                                   │
+│         ▼                                                                   │
+│  ┌─────────────────────┐                                                    │
+│  │ Há sprint ativa/    │                                                    │
+│  │ pausada?            │                                                    │
+│  └──────────┬──────────┘                                                    │
+│             │                                                               │
+│     ┌───────┴───────┐                                                       │
+│     │               │                                                       │
+│     ▼ SIM           ▼ NÃO                                                   │
+│  ┌──────────┐    ┌──────────┐                                               │
+│  │Contexto  │    │Contexto  │                                               │
+│  │Sprint    │    │Livre     │                                               │
+│  └────┬─────┘    └────┬─────┘                                               │
+│       │               │                                                     │
+│       ▼               ▼                                                     │
+│  Relacionar msg    Comportamento                                            │
+│  à sprint atual    normal                                                   │
+│                                                                             │
+│  COMANDOS SPRINT:                                                           │
+│  • genesis sprint status                                                    │
+│  • genesis sprint pausar "contexto"                                         │
+│  • genesis sprint retomar                                                   │
+│  • genesis sprint task-concluir T01                                         │
+│  • genesis sprint ajuda                                                     │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 10.3 MS_Sprint no Ecossistema
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    MS_SPRINT: POSIÇÃO NO ECOSSISTEMA                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  MS_BACKLOG (Prateleira Infinita)                                           │
+│  ════════════════════════════════                                           │
+│  • Fila de BacklogItems                                                     │
+│  • Orquestra entre MS                                                       │
+│  • Não sabe de sprints                                                      │
+│         │                                                                   │
+│         │ seleciona                                                         │
+│         ▼                                                                   │
+│  MS_SPRINT (Carrinho Finito)                                                │
+│  ═══════════════════════════                                                │
+│  • Ciclo fechado de execução                                                │
+│  • Tasks = subdivisão de BacklogItems                                       │
+│  • Pausa/retoma contexto                                                    │
+│  • Rastreia esforço                                                         │
+│         │                                                                   │
+│         │ notifica                                                          │
+│         ▼                                                                   │
+│  MS_BACKLOG                                                                 │
+│  ═════════                                                                  │
+│  • devolver(item) → status: Pendente                                        │
+│  • cancelar(item) → status: Cancelado                                       │
+│                                                                             │
+│  MS_Sprint NÃO é produtor/consumidor de BacklogItems.                       │
+│  MS_Sprint GERENCIA EXECUÇÃO de BacklogItems selecionados.                  │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -425,6 +564,7 @@ ENTÃO: Conforme necessidade
 |-----------|---------|
 | genesis/GENESIS_Arquitetura.md | Detalhes técnicos |
 | docs/04_B/MS_Backlog.md | Message Broker |
+| docs/04_S/MS_Sprint.md | Ciclos de execução |
 | docs/04_P/MS_Produto.md | Framework de objetivo |
 | docs/00_E/00_E_Epistemologia.md | Método de especificação |
 | genesis/PROMETHEUS.md | Fábrica de execução |
@@ -447,3 +587,4 @@ ENTÃO: Conforme necessidade
 |--------|------|-----------|
 | 0.1-4.0 | 2025-12-02 a 2025-12-16 | Versões anteriores |
 | 5.0 | 2025-12-16 | **Refatoração arquitetural**: GENESIS deixa de ser orquestrador. Papel simplificado: entrada (entrevista dor) + validação (avalia efetividade). Toda orquestração delegada para MS_Backlog. Comunicação entre MS exclusivamente via BacklogItems tipados. |
+| 5.1 | 2025-12-17 | **Integração MS_Sprint**: Adição de MS_Sprint no índice de sistemas. Seção 10 documenta bootstrap com sprint (carregar sessão pausada, exibir contexto). Tabela L0-L4 inclui MS_Sprint. Sprint S021/T04. |
