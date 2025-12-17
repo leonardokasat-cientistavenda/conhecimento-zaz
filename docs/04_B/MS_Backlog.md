@@ -1,10 +1,10 @@
-# MS_Backlog v1.0
+# MS_Backlog v1.1
 
 ---
 
 ```yaml
 nome: MS_Backlog
-versao: "1.0"
+versao: "1.1"
 tipo: Meta Sistema
 status: Publicado
 camada: 4
@@ -33,6 +33,8 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 | **Polling** | Ato de consumidor buscar itens de seu tipo |
 | **Roteamento** | Direcionamento de item para consumidor correto |
 | **Saga** | Fluxo completo composto de múltiplos BacklogItems |
+| **Origem** | Rastreabilidade de onde/como item foi criado (v1.1) |
+| **auto_pull** | Flag que indica se Sprint deve puxar item automaticamente (v1.1) |
 
 ### 1.2 Diagrama do Problema
 
@@ -88,6 +90,7 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 | Persiste histórico completo | Toma decisões de negócio |
 | Permite interceptação/auditoria | Implementa regras específicas |
 | Gerencia status de items | Substitui validação humana |
+| Rastreia origem (sprint/task) | Decide se deve puxar (isso é Sprint) |
 
 ---
 
@@ -144,6 +147,7 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 | Persistidor de histórico | Decisor de negócio |
 | Ponto de interceptação | Substituto de validação humana |
 | Orquestrador de sagas | Implementador de regras |
+| SSOT de origem de items | Gerenciador de sprints |
 
 ### 3.2 Modelo de Comunicação
 
@@ -192,6 +196,7 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 | **MS_Produto** | Produtor + Consumidor (múltiplos tipos) |
 | **Epistemologia** | Produtor + Consumidor (ciclo_epistemo) |
 | **PROMETHEUS** | Produtor + Consumidor (desenvolvimento, workers) |
+| **MS_Sprint** | Consumidor de interface (listar_filhos, transferir) |
 | **Catálogo** | Dependência - indexação de items |
 | **Humano** | Consumidor especial - aprovações |
 
@@ -222,6 +227,17 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 │  + saga_id: String?                  # Agrupa items do mesmo fluxo          │
 │  + pai_ref: String?                  # BacklogItem que originou este        │
 │  + filhos: [String]                  # BacklogItems gerados por este        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Atributos Origem (Sprint) [v1.1]                                           │
+│  ────────────────────────────────                                           │
+│  + origem: {                         # Rastreabilidade de criação           │
+│      tipo: Enum,                     # sprint_task | manual | ms_producao   │
+│      sprint_id: String?,             # Ex: S022                             │
+│      task_codigo: String?,           # Ex: T01                              │
+│      ms_origem: String?,             # Epistemologia, PROMETHEUS, etc.      │
+│      auto_pull: Boolean,             # true = sprint puxa automaticamente   │
+│      criado_em: DateTime             # Timestamp de criação                 │
+│    }?                                # Opcional (items manuais não têm)     │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Atributos Referência                                                       │
 │  ────────────────────                                                       │
@@ -322,6 +338,11 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 │  + iniciar_saga(titulo): saga_id                                            │
 │  + obter_status_saga(saga_id): SagaStatus                                   │
 │  + compensar_saga(saga_id): void                                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Métodos Interface Sprint [v1.1]                                            │
+│  ───────────────────────────────                                            │
+│  + listar_filhos(sprint_id, task_codigo?): [BacklogItem]                    │
+│  + transferir_para_sprint(item_id, sprint_id, task_pai?): BacklogItem       │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -433,6 +454,74 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
+#### listar_filhos() [v1.1]
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       MÉTODO: listar_filhos() [v1.1]                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Input:                                                                     │
+│  - sprint_id: String              # Ex: "S022"                              │
+│  - task_codigo?: String           # Ex: "T01" (opcional)                    │
+│                                                                             │
+│  Output: [BacklogItem]            # Items com origem na sprint/task         │
+│                                                                             │
+│  Passos:                                                                    │
+│  1. Construir filtro:                                                       │
+│     - "origem.sprint_id": sprint_id                                         │
+│     - SE task_codigo: "origem.task_codigo": task_codigo                     │
+│     - status: "pendente"                                                    │
+│  2. Buscar no MongoDB                                                       │
+│  3. Retornar lista                                                          │
+│                                                                             │
+│  Query MongoDB:                                                             │
+│  db.backlog.find({                                                          │
+│    "origem.sprint_id": "S022",                                              │
+│    "origem.task_codigo": "T01",    // opcional                              │
+│    "status": "pendente"                                                     │
+│  })                                                                         │
+│                                                                             │
+│  Exemplo:                                                                   │
+│  # Sprint consulta filhos da task T01                                       │
+│  filhos = MS_Backlog.listar_filhos("S022", "T01")                           │
+│  # Retorna: [{id: "BKL-042", titulo: "Validar spec", auto_pull: true}]      │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### transferir_para_sprint() [v1.1]
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                   MÉTODO: transferir_para_sprint() [v1.1]                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Input:                                                                     │
+│  - item_id: String                # ID do BacklogItem                       │
+│  - sprint_id: String              # Sprint destino                          │
+│  - task_pai?: String              # Task pai (para gerar código subtask)    │
+│                                                                             │
+│  Output: BacklogItem              # Item atualizado                         │
+│                                                                             │
+│  Passos:                                                                    │
+│  1. Buscar item por ID                                                      │
+│  2. Atualizar:                                                              │
+│     - status = "em_sprint"                                                  │
+│     - sprint_ref = sprint_id                                                │
+│     - updated_at = agora                                                    │
+│  3. Persistir                                                               │
+│  4. Retornar item atualizado                                                │
+│                                                                             │
+│  Exemplo:                                                                   │
+│  # Sprint puxa item filho                                                   │
+│  item = MS_Backlog.transferir_para_sprint("BKL-042", "S022", "T01")         │
+│  # Sprint usa item.titulo para criar subtask T01.1                          │
+│                                                                             │
+│  Nota: A criação da subtask (T01.1) é responsabilidade do MS_Sprint,        │
+│        não do MS_Backlog. MS_Backlog apenas atualiza status do item.        │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
 ---
 
 ## 5. Fluxo de Saga Completa
@@ -530,6 +619,8 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 | **STATUS-TRANSICAO** | Pendente → EmProcessamento → Concluido/Erro |
 | **CONSUMIDOR-UNICO** | Item só pode ser consumido por um sistema |
 | **RASTREABILIDADE** | Todo item deve ser persistido antes de processar |
+| **ORIGEM-OPCIONAL** | Campo origem é opcional (items manuais não têm) [v1.1] |
+| **SSOT-ORIGEM** | Origem persiste apenas no BacklogItem [v1.1] |
 
 ---
 
@@ -579,6 +670,7 @@ consumidores:
 | docs/04_P/MS_Produto.md | Produtor/Consumidor |
 | docs/00_E/00_E_Epistemologia.md | Consumidor |
 | genesis/PROMETHEUS.md | Consumidor |
+| docs/04_S/MS_Sprint.md | Consumidor de interface (listar_filhos, transferir) |
 
 ---
 
@@ -587,3 +679,4 @@ consumidores:
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-16 | Criação inicial. Promoção de Backlog (Infra C2) para MS_Backlog (Meta Sistema C4). Modelo Event Sourcing + Saga. Tipagem expandida. Métodos produzir/consumir/concluir. |
+| 1.1 | 2025-12-17 | **Interface Sprint**: +campo `origem` em BacklogItem (sprint_id, task_codigo, auto_pull). +métodos `listar_filhos()`, `transferir_para_sprint()`. +invariantes ORIGEM-OPCIONAL, SSOT-ORIGEM. Sprint S022/T02. |
