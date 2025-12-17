@@ -1,10 +1,10 @@
-# MS_Backlog Arquitetura v1.2
+# MS_Backlog Arquitetura v1.3
 
 ---
 
 ```yaml
 nome: MS_Backlog_Arquitetura
-versao: "1.2"
+versao: "1.3"
 tipo: Documento
 status: Publicado
 camada: 4
@@ -37,6 +37,7 @@ produzir:
     produtor?: string               # Sistema que produziu (v1.1)
     depende_de?: [string]           # IDs de items que bloqueiam este (v1.1)
     status?: string                 # "Pendente" | "Bloqueado" (v1.1)
+    origem?: object                 # Rastreabilidade sprint/task (v1.3)
     # Refs opcionais
     prontuario_ref?: string
     produto_ref?: string
@@ -558,7 +559,7 @@ def concluir(item_id: str, resultado: dict, items_gerados: List[dict] = None):
 
 ## 5. Persistência
 
-### 5.1 MongoDB Collections (v1.1 Atualizada)
+### 5.1 MongoDB Collections (v1.3 Atualizada)
 
 ```yaml
 # Collection: backlog_items
@@ -577,6 +578,15 @@ backlog_items:
   saga_id: string
   pai_ref: string?
   filhos: [string]
+  
+  # Origem Sprint/Task (v1.3 Novo)
+  origem:
+    tipo: string           # sprint_task | manual | ms_producao
+    sprint_id: string?     # Ex: "S022"
+    task_codigo: string?   # Ex: "T01"
+    ms_origem: string?     # Epistemologia, PROMETHEUS, etc.
+    auto_pull: boolean     # true = sprint puxa automaticamente
+    criado_em: datetime    # Timestamp de criação
   
   # Dependências (v1.1 Novo)
   depende_de: [string]     # IDs de items que bloqueiam este
@@ -602,8 +612,19 @@ backlog_items:
   resultado: object?
   erro: string?
   items_gerados: [string]
+  
+  # Devolução/Cancelamento (v1.2)
+  devolvido_em: datetime?
+  devolvido_por: string?
+  cancelado_em: datetime?
+  cancelado_por: string?
+  motivo_cancelamento: string?
+  
+  # Sprint (v1.3)
+  sprint_ref: string?      # Sprint que puxou este item
+  transferido_em: datetime?
 
-# Índices (v1.1 Atualizado)
+# Índices (v1.3 Atualizado)
 indexes:
   - {tipo: 1, status: 1, prioridade: -1, created_at: 1}  # Para consumir()
   - {saga_id: 1}                                          # Para listar_saga()
@@ -611,11 +632,14 @@ indexes:
   - {status: 1, created_at: 1}                            # Para histórico
   - {depende_de: 1, status: 1}                            # v1.1: Para verificar_desbloqueio()
   - {produtor: 1}                                         # v1.1: Para filtrar por produtor
+  - {cancelado_em: -1}                                    # v1.2: Para auditoria
+  - {"origem.sprint_id": 1, "origem.task_codigo": 1}      # v1.3: Para listar_filhos()
+  - {sprint_ref: 1}                                       # v1.3: Para items em sprint
 
 # Collection: eventos (v1.1 Novo)
 eventos:
   _id: ObjectId
-  tipo: string             # desbloqueio, erro, compensacao
+  tipo: string             # desbloqueio, erro, compensacao, transferencia
   item_ref: string
   dados: object
   timestamp: datetime
@@ -672,6 +696,15 @@ metricas:
   idade_fila:
     query: "MAX(NOW - created_at) WHERE status=Pendente"
     uso: "Item mais antigo aguardando"
+  
+  # v1.3: Métricas de Sprint
+  filhos_por_sprint:
+    query: "COUNT WHERE origem.sprint_id GROUP BY origem.sprint_id"
+    uso: "Quantos items gerados por sprint"
+  
+  auto_pull_rate:
+    query: "COUNT WHERE origem.auto_pull=true / COUNT WHERE origem != null"
+    uso: "Taxa de items com auto-pull"
 ```
 
 ---
@@ -748,7 +781,7 @@ compensacao:
 
 ---
 
-## 9. Interface MS_Sprint (v1.2 Novo)
+## 9. Interface MS_Sprint (v1.3 Atualizada)
 
 ### 9.1 Visão Geral
 
@@ -756,14 +789,14 @@ MS_Sprint consome dados do MS_Backlog para gerar relatórios consolidados e gere
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                    MS_BACKLOG ← MS_SPRINT                                   │
+│                    MS_BACKLOG ← MS_SPRINT v1.3                              │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  MS_SPRINT                                                                  │
 │  ─────────                                                                  │
 │  Consulta: [listar_saga, metricas_fila, itens_bloqueados,                   │
-│             lead_time, pipeline_saga]                                       │
-│  Notifica: [devolver, cancelar]                                             │
+│             lead_time, pipeline_saga, listar_filhos]                        │
+│  Mutação:  [transferir_para_sprint, devolver, cancelar]                     │
 │                                                                             │
 │  Não consome/produz BacklogItems diretamente.                               │
 │  Gerencia execução em camada acima (sprint_sessions).                       │
@@ -893,7 +926,99 @@ pipeline_saga:
     # Calcular tempo se concluído
 ```
 
-### 9.3 Métodos de Notificação
+#### listar_filhos() [v1.3 Novo]
+
+```yaml
+listar_filhos:
+  descricao: "Retorna items gerados por uma sprint/task específica"
+  uso: MS_Sprint.task-concluir (consultar filhos ao finalizar task)
+  
+  input:
+    sprint_id: string         # Ex: "S022"
+    task_codigo?: string      # Ex: "T01" (opcional)
+  
+  output:
+    items: [BacklogItem]      # Items com origem na sprint/task
+  
+  query_mongodb: |
+    # Se task_codigo fornecido
+    db.backlog_items.find({
+      "origem.sprint_id": sprint_id,
+      "origem.task_codigo": task_codigo,
+      "status": "pendente"
+    })
+    
+    # Se apenas sprint_id
+    db.backlog_items.find({
+      "origem.sprint_id": sprint_id,
+      "status": "pendente"
+    })
+  
+  exemplo: |
+    # Sprint consulta filhos da task T01
+    filhos = MS_Backlog.listar_filhos("S022", "T01")
+    # Retorna: [{
+    #   id: "BKL-042",
+    #   titulo: "Validar spec MS_Sprint",
+    #   origem: { sprint_id: "S022", task_codigo: "T01", auto_pull: true }
+    # }]
+```
+
+### 9.3 Métodos de Mutação
+
+#### transferir_para_sprint() [v1.3 Novo]
+
+```yaml
+transferir_para_sprint:
+  descricao: "Move item do backlog para uma sprint ativa"
+  chamado_por: MS_Sprint (quando auto_pull=true ou humano confirma)
+  
+  input:
+    item_id: string           # ID do BacklogItem
+    sprint_id: string         # Sprint destino (ex: "S022")
+    task_pai?: string         # Task pai para gerar código subtask (ex: "T01")
+  
+  output:
+    item: BacklogItem         # Item atualizado
+  
+  side_effects:
+    - sprint_ref: sprint_id
+    - status: "em_sprint"
+    - transferido_em: now()
+    - updated_at: now()
+  
+  query_mongodb: |
+    db.backlog_items.find_one_and_update(
+      { "id": item_id },
+      { "$set": {
+        "sprint_ref": sprint_id,
+        "status": "em_sprint",
+        "transferido_em": new Date(),
+        "updated_at": new Date()
+      }},
+      { returnDocument: "after" }
+    )
+    
+    # Registrar evento
+    db.eventos.insert_one({
+      "tipo": "transferencia",
+      "item_ref": item_id,
+      "dados": {
+        "sprint_destino": sprint_id,
+        "task_pai": task_pai
+      },
+      "timestamp": new Date()
+    })
+  
+  exemplo: |
+    # Sprint puxa item filho automaticamente
+    item = MS_Backlog.transferir_para_sprint("BKL-042", "S022", "T01")
+    # MS_Sprint usa item.titulo para criar subtask T01.1
+  
+  nota: |
+    A criação da subtask (T01.1) é responsabilidade do MS_Sprint,
+    não do MS_Backlog. MS_Backlog apenas atualiza status do item.
+```
 
 #### devolver()
 
@@ -909,6 +1034,7 @@ devolver:
   
   side_effects:
     - status: "Pendente"
+    - sprint_ref: null
     - updated_at: now()
     - devolvido_em: now()
     - devolvido_por: "MS_Sprint"
@@ -918,6 +1044,7 @@ devolver:
       { id: item_id },
       { $set: {
         status: "Pendente",
+        sprint_ref: null,
         updated_at: new Date(),
         devolvido_em: new Date(),
         devolvido_por: "MS_Sprint"
@@ -966,30 +1093,44 @@ cancelar:
     })
 ```
 
-### 9.4 Campos Adicionais em backlog_items (v1.2)
+### 9.4 Fluxo: Sprint Consulta Filhos ao Concluir Task
 
-```yaml
-# Campos novos para suportar interface MS_Sprint
-backlog_items:
-  # ... campos existentes ...
-  
-  # v1.2: Campos de devolução/cancelamento
-  devolvido_em: datetime?
-  devolvido_por: string?
-  cancelado_em: datetime?
-  cancelado_por: string?
-  motivo_cancelamento: string?
 ```
-
-### 9.5 Índices Adicionais (v1.2)
-
-```yaml
-indexes:
-  # ... índices existentes ...
-  
-  # v1.2: Para interface MS_Sprint
-  - {status: 1, saga_id: 1}       # Para pipeline_saga()
-  - {cancelado_em: -1}            # Para auditoria de cancelamentos
+┌─────────────────────────────────────────────────────────────────────────────┐
+│              FLUXO: task-concluir COM CONSULTA DE FILHOS v1.3               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Humano          MS_Sprint              MS_Backlog              MongoDB     │
+│    │                │                       │                       │       │
+│    │ task-concluir  │                       │                       │       │
+│    │ T01            │                       │                       │       │
+│    │───────────────►│                       │                       │       │
+│    │                │                       │                       │       │
+│    │                │ update T01=concluída  │                       │       │
+│    │                │──────────────────────────────────────────────►│       │
+│    │                │                       │                       │       │
+│    │                │ listar_filhos(S022,T01)                       │       │
+│    │                │──────────────────────►│                       │       │
+│    │                │                       │ find({origem...})     │       │
+│    │                │                       │──────────────────────►│       │
+│    │                │                       │◄──────────────────────│       │
+│    │                │◄──────────────────────│ [{BKL-042, auto:true}]│       │
+│    │                │                       │                       │       │
+│    │                │ transferir(BKL-042,S022,T01)                   │       │
+│    │                │──────────────────────►│                       │       │
+│    │                │                       │ update + evento       │       │
+│    │                │                       │──────────────────────►│       │
+│    │                │◄──────────────────────│                       │       │
+│    │                │                       │                       │       │
+│    │                │ insert subtask T01.1  │                       │       │
+│    │                │──────────────────────────────────────────────►│       │
+│    │                │                       │                       │       │
+│    │◄───────────────│                       │                       │       │
+│    │ "T01 concluída.│                       │                       │       │
+│    │  Puxado: T01.1 │                       │                       │       │
+│    │  Validar spec" │                       │                       │       │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -999,7 +1140,7 @@ indexes:
 | Documento | Relação |
 |-----------|---------|
 | docs/04_B/MS_Backlog.md | Documento pai - propósito |
-| docs/04_S/MS_Sprint.md | Consumidor (v1.2) |
+| docs/04_S/MS_Sprint.md | Consumidor (v1.3) |
 | genesis/GENESIS.md | Produtor/Consumidor |
 | genesis/PROMETHEUS.md | Produtor/Consumidor (v1.1: orcar_spec) |
 | genesis/PROMETHEUS_Arquitetura.md | Detalhes do ciclo PROMETHEUS |
@@ -1015,3 +1156,4 @@ indexes:
 | 1.0 | 2025-12-16 | Criação inicial. Contratos produtor/consumidor. Roteamento por tipo. Persistência MongoDB. Observabilidade. Human-in-the-loop. Compensação (Saga Pattern). |
 | 1.1 | 2025-12-17 | **Tipos novos PROMETHEUS v3.0**: orcar_spec, aprovar_orcamento, ajustar_spec, validar_implantacao. **Desbloqueio por dependência**: status Bloqueado, depende_de[], verificar_desbloqueio(). **Produtor**: campo produtor para identificar origem (PROMETHEUS para GAPs). Sprint S020/E04. |
 | 1.2 | 2025-12-17 | **Interface MS_Sprint**: Métodos de consulta (listar_saga, metricas_fila, itens_bloqueados, lead_time, pipeline_saga). Métodos de notificação (devolver, cancelar). Campos adicionais (devolvido_*, cancelado_*). Sprint S021. |
+| 1.3 | 2025-12-17 | **Rastreabilidade Sprint**: Campo `origem` no schema (sprint_id, task_codigo, auto_pull). Método `listar_filhos(sprint_id, task_codigo?)`. Método `transferir_para_sprint(item_id, sprint_id, task_pai?)`. Índice `origem.sprint_id`. Diagrama de sequência task-concluir com filhos. Sprint S022/T02. |
