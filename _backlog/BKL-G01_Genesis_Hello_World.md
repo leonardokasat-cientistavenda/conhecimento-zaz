@@ -43,27 +43,72 @@ GENESIS.md:
 
 ---
 
-## 2. Solução Proposta
+## ⚠️ ANTI-PADRÃO A EVITAR
 
-### 2.1 Capacidades Auto-Registradas
+```
+ERRADO (limita GENESIS a continuador de sprints):
+────────────────────────────────────────────────
+Bootstrap:
+  1. Consultar MongoDB sprint_sessions
+  2. Se sprint pausada → mostrar contexto
+  3. Perguntar se retoma
+
+GENESIS vira "gerenciador de sprints" - mas isso é só UMA capacidade!
+
+CORRETO (GENESIS como orquestrador de capacidades):
+───────────────────────────────────────────────────
+Bootstrap:
+  1. Consultar Catálogo de capacidades
+  2. Apresentar TODAS as capacidades disponíveis:
+     - 📋 Sprint (gerenciar execução)
+     - 🎯 Dor (entrevistar nova dor)
+     - ✅ Produto (aprovar releases)
+     - 📚 Conhecimento (buscar documentação)
+     - ... outras que surgirão
+  3. Rotear para MS correto conforme comando
+
+GENESIS é o PONTO DE ENTRADA, não o executor de sprints.
+```
+
+---
+
+## 2. Capacidades de GENESIS (exemplos)
+
+| Capacidade | MS Responsável | Comando |
+|------------|----------------|---------|
+| Gerenciar sprints | MS_Sprint | `genesis sprint *` |
+| Entrevistar dor | GENESIS | `genesis dor` |
+| Aprovar release | MS_Produto | `genesis aprovar` |
+| Buscar documentação | Catálogo | `genesis buscar` |
+| Ver backlog | MS_Backlog | `genesis backlog *` |
+
+**GENESIS não executa diretamente** - ele roteia para o MS correto.
+
+---
+
+## 3. Solução Proposta
+
+### 3.1 Capacidades Auto-Registradas
 
 Cada MS registra suas capacidades em formato padronizado:
 
 ```yaml
 # Em cada MS (ex: MS_Sprint.md)
 capacidades:
-  - id: "sprint.iniciar"
-    descricao: "Iniciar nova sprint com saga"
-    comando: "genesis sprint iniciar"
-  - id: "sprint.sagas"
-    descricao: "Listar sagas pendentes"
-    comando: "genesis sprint sagas"
-  - id: "sprint.status"
-    descricao: "Ver status da sprint atual"
-    comando: "genesis sprint status"
+  namespace: "sprint"
+  comandos:
+    - id: "sprint.iniciar"
+      descricao: "Iniciar nova sprint com saga"
+      comando: "genesis sprint iniciar"
+    - id: "sprint.sagas"
+      descricao: "Listar sagas pendentes"
+      comando: "genesis sprint sagas"
+    - id: "sprint.status"
+      descricao: "Ver status da sprint atual"
+      comando: "genesis sprint status"
 ```
 
-### 2.2 GENESIS Discovery
+### 3.2 GENESIS Discovery
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -83,18 +128,18 @@ capacidades:
 │  │                                                                 │        │
 │  │  O que você gostaria de fazer?                                  │        │
 │  │                                                                 │        │
+│  │  🎯 DOR                                                         │        │
+│  │     • genesis dor - Reportar nova dor/problema                  │        │
+│  │                                                                 │        │
 │  │  📋 SPRINT                                                      │        │
 │  │     • genesis sprint sagas - Ver sagas pendentes                │        │
-│  │     • genesis sprint iniciar - Iniciar nova sprint              │        │
 │  │     • genesis sprint status - Ver sprint atual                  │        │
 │  │                                                                 │        │
 │  │  📦 BACKLOG                                                     │        │
 │  │     • genesis backlog status - Métricas da fila                 │        │
-│  │     • genesis backlog pendentes - Items aguardando              │        │
 │  │                                                                 │        │
-│  │  🎯 PRODUTO                                                     │        │
-│  │     • genesis produto listar - Ver produtos                     │        │
-│  │     • genesis dor - Reportar nova dor                           │        │
+│  │  ✅ PRODUTO                                                     │        │
+│  │     • genesis aprovar - Aprovar release pendente                │        │
 │  │                                                                 │        │
 │  │  💡 genesis ajuda <comando> - Detalhes de um comando            │        │
 │  └─────────────────────────────────────────────────────────────────┘        │
@@ -102,7 +147,7 @@ capacidades:
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 2.3 Roteamento Dinâmico
+### 3.3 Roteamento Dinâmico
 
 ```python
 def rotear_comando(input: str):
@@ -125,9 +170,9 @@ def rotear_comando(input: str):
 
 ---
 
-## 3. Impacto
+## 4. Impacto
 
-### 3.1 Arquivos a Modificar
+### 4.1 Arquivos a Modificar
 
 | Arquivo | Mudança | Esforço |
 |---------|---------|---------|
@@ -136,7 +181,7 @@ def rotear_comando(input: str):
 | docs/04_B/MS_Backlog.md | Adicionar seção capacidades | Baixo |
 | docs/04_P/MS_Produto.md | Adicionar seção capacidades | Baixo |
 
-### 3.2 Catálogo
+### 4.2 Catálogo
 
 - Precisa indexar MS com suas capacidades
 - Query: `tipo="meta_sistema"` retorna lista de MS
@@ -144,24 +189,25 @@ def rotear_comando(input: str):
 
 ---
 
-## 4. Pré-requisitos
+## 5. Pré-requisitos
 
 - [ ] S022 concluída (MS_Sprint como Orquestrador)
 - [ ] MS com capacidades definidas para registrar
 
 ---
 
-## 5. Critérios de Aceite
+## 6. Critérios de Aceite
 
 1. ✅ GENESIS não tem conhecimento hardcoded de MS específicos
 2. ✅ MS registram suas capacidades em formato padronizado
 3. ✅ `genesis ajuda` lista todas capacidades descobertas
 4. ✅ Comandos são roteados dinamicamente para MS correto
 5. ✅ Adicionar novo MS não requer mudar GENESIS
+6. ✅ GENESIS não consulta sprint_sessions diretamente (anti-padrão)
 
 ---
 
-## 6. Tasks Previstas
+## 7. Tasks Previstas
 
 | # | Task | Descrição |
 |---|------|-----------|
@@ -175,7 +221,7 @@ def rotear_comando(input: str):
 
 ---
 
-## 7. Relação com S022
+## 8. Relação com S022
 
 ```
 S022: MS_Sprint como Orquestrador de Sagas
