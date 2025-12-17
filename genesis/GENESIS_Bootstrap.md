@@ -8,7 +8,7 @@ versao: "6.0"
 tipo: Especificação
 status: Publicado
 sprint: S024
-task: T03
+task: T03, T04, T05
 data_publicacao: "2025-12-17"
 ```
 
@@ -241,11 +241,11 @@ def executar_llm(path: str, capacidade: dict):
     doc = github.get_file_contents(path)
     
     # LLM executa conforme instruções do documento
-    # ... lógica específica do MS
+    resultado = executar_conforme_documento(doc, capacidade)
     
-    # Se capacidade gera backlog
+    # Se capacidade gera backlog → fluxo especial (ver seção 6.1)
     if capacidade.get("gera_backlog"):
-        item = criar_backlog_item(capacidade)
+        item = criar_backlog_item(capacidade, resultado)
         perguntar_iniciar_sprint(item)
     
     return resultado
@@ -262,6 +262,108 @@ def executar_codigo(ref: str, capacidade: dict):
         f"Ref: {ref}"
     )
 ```
+
+### 6.1 Fluxo gera_backlog → sprint (T05)
+
+Quando uma capacidade tem `gera_backlog=true`, após execução bem-sucedida, GENESIS oferece iniciar sprint:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    FLUXO: GERA_BACKLOG → SPRINT                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1. Usuário executa capacidade (ex: "genesis dor")                          │
+│         │                                                                   │
+│         ▼                                                                   │
+│  2. Capacidade executa (LLM lê MS e processa)                               │
+│         │                                                                   │
+│         ▼                                                                   │
+│  3. Verificar: capacidade.gera_backlog == true?                             │
+│         │                                                                   │
+│     ┌───┴───┐                                                               │
+│     │       │                                                               │
+│     ▼ SIM   ▼ NÃO                                                           │
+│     │       └── FIM (retorna resultado normal)                              │
+│     │                                                                       │
+│     ▼                                                                       │
+│  4. Criar item no backlog:                                                  │
+│     db.backlog.insertOne({                                                  │
+│       tipo: capacidade.tipo_item_backlog,  // ex: "ciclo_epistemologico"    │
+│       titulo: gerado_da_execucao,                                           │
+│       status: "Pendente",                                                   │
+│       origem: {                                                             │
+│         capacidade_id: capacidade.id,                                       │
+│         timestamp: now()                                                    │
+│       }                                                                     │
+│     })                                                                      │
+│         │                                                                   │
+│         ▼                                                                   │
+│  5. Apresentar resultado + oferta:                                          │
+│     ┌─────────────────────────────────────────────────────────────────┐     │
+│     │  ✅ Dor documentada com sucesso!                                │     │
+│     │                                                                 │     │
+│     │  📦 Item criado no backlog: BKL-XXX                             │     │
+│     │     Tipo: ciclo_epistemologico                                  │     │
+│     │     Título: "Resolver problema X"                               │     │
+│     │                                                                 │     │
+│     │  ┌───────────────────────────────────────────────────────────┐  │     │
+│     │  │ 🚀 Deseja iniciar uma sprint para trabalhar nisso agora?  │  │     │
+│     │  │                                                           │  │     │
+│     │  │    [sim] → genesis sprint iniciar                         │  │     │
+│     │  │    [não] → item fica no backlog para depois               │  │     │
+│     │  └───────────────────────────────────────────────────────────┘  │     │
+│     └─────────────────────────────────────────────────────────────────┘     │
+│         │                                                                   │
+│     ┌───┴───┐                                                               │
+│     │       │                                                               │
+│     ▼ SIM   ▼ NÃO                                                           │
+│     │       └── FIM (item no backlog, usuário trabalha depois)              │
+│     │                                                                       │
+│     ▼                                                                       │
+│  6. Iniciar sprint com o item:                                              │
+│     GENESIS.rotear("genesis sprint iniciar", item_sugerido=item)            │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Algoritmo:**
+
+```python
+def perguntar_iniciar_sprint(item: dict):
+    """
+    Após criar item no backlog, oferece iniciar sprint.
+    """
+    print(f"✅ Execução concluída!\n")
+    print(f"📦 Item criado no backlog: {item['id']}")
+    print(f"   Tipo: {item['tipo']}")
+    print(f"   Título: {item['titulo']}\n")
+    
+    print("┌─────────────────────────────────────────────────────────┐")
+    print("│ 🚀 Deseja iniciar uma sprint para trabalhar nisso?      │")
+    print("│                                                         │")
+    print("│    [sim] → criar sprint com este item                   │")
+    print("│    [não] → item fica no backlog para depois             │")
+    print("└─────────────────────────────────────────────────────────┘")
+    
+    resposta = aguardar_resposta()
+    
+    if resposta in ["sim", "s", "yes", "y", "1"]:
+        # Rotear para iniciar sprint com item pré-selecionado
+        return rotear("genesis sprint iniciar", contexto={
+            "item_sugerido": item
+        })
+    else:
+        print(f"Ok! O item {item['id']} está no backlog.")
+        print("Use 'genesis backlog pendentes' para ver depois.")
+        return None
+```
+
+**Capacidades que geram backlog (db.capacidades):**
+
+| MS | Capacidade | gera_backlog | tipo_item_backlog |
+|----|------------|--------------|-------------------|
+| ms_epistemologia | criar_dor | `true` | ciclo_epistemologico |
+| ms_backlog | backlog_adicionar | `true` | manual |
 
 ---
 
@@ -328,6 +430,7 @@ GENESIS.rotear("genesis dor")  → executa diretamente
 | **ROTEAMENTO-TRANSPARENTE** | Usuário não sabe se é LLM ou código |
 | **MENU-NAVEGAVEL** | Sempre há caminho de volta |
 | **COMANDO-DIRETO** | Atalhos funcionam em qualquer contexto |
+| **GERA-BACKLOG-OFERECE-SPRINT** | Capacidade com gera_backlog=true sempre oferece iniciar sprint |
 
 ---
 
