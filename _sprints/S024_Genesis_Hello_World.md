@@ -10,14 +10,16 @@ data_inicio: "2025-12-17"
 responsavel: leonardo
 backlog_items:
   - BKL-G01
-esforco_estimado_total: 8.5h
+  - BKL-M01 (parcial)
+esforco_estimado_total: 10h
+task_atual: T01
 ```
 
 ---
 
 ## Objetivo
 
-GENESIS descobre MS dinamicamente via `db.capacidades`, apresenta menu hierárquico de capacidades, roteia comandos. Arquitetura LLM-based.
+GENESIS descobre MS via `db.capacidades`, apresenta menu hierárquico, roteia comandos. **Roteamento transparente:** usuário não sabe se executa LLM ou código.
 
 ---
 
@@ -41,13 +43,58 @@ GENESIS descobre MS dinamicamente via `db.capacidades`, apresenta menu hierárqu
 | **Alternativas descartadas** | Índice YAML manual, Ler cada MS.md no bootstrap |
 | **Motivo** | Anti-entrópico: uma fonte, uma query |
 
+### D003: Absorção parcial de BKL-M01
+
+| Aspecto | Valor |
+|---------|-------|
+| **Contexto** | Porta barata (~1.5h extra) evita retrabalho significativo quando PROMETHEUS existir |
+| **Decisão** | Incluir campo `maturidade` e roteamento transparente em S024. Stub para código. Métricas e promoção ficam para futuro. |
+| **Alternativas descartadas** | Deixar BKL-M01 completamente separado |
+| **Motivo** | Usuário não sabe se capacidade roda via LLM ou código. Roteamento transparente. |
+
 ---
 
-## Arquitetura
+## Arquitetura: Roteamento Transparente
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                         FLUXO S024                                          │
+│                    ROTEAMENTO TRANSPARENTE                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  USUÁRIO                                                                    │
+│     │                                                                       │
+│     │ "genesis dor"                                                         │
+│     ▼                                                                       │
+│  GENESIS.rotear()                                                           │
+│     │                                                                       │
+│     │ cap = db.capacidades.findOne({comando})                               │
+│     │                                                                       │
+│     ├─────────────────────────────────────────────────────────────┐         │
+│     │                                                             │         │
+│     ▼                                                             ▼         │
+│  if fase in ["draft", "spec"]:              if fase in ["code", "prod"]:    │
+│     │                                                             │         │
+│     │ executar_llm(cap.path)                    executar_codigo(ref)        │
+│     │   ↓                                            ↓                      │
+│     │ LLM lê .md e executa                   STUB (NotImplemented)          │
+│     │                                        → Futuro: Camunda/Python       │
+│     │                                                             │         │
+│     └─────────────────────┬───────────────────────────────────────┘         │
+│                           │                                                 │
+│                           ▼                                                 │
+│                    MESMO OUTPUT                                             │
+│                    (usuário não sabe)                                       │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Fluxo: Menu Multinível
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         FLUXO COMPLETO                                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  USUÁRIO                                                                    │
@@ -74,9 +121,10 @@ GENESIS descobre MS dinamicamente via `db.capacidades`, apresenta menu hierárqu
 │     │                                                                       │
 │     │ Usuário: "1.1"                                                        │
 │     ▼                                                                       │
-│  GENESIS carrega MS_Epistemologia                                           │
+│  GENESIS.rotear("genesis dor")                                              │
 │     │                                                                       │
-│     │ Executa entrevista                                                    │
+│     │ if maturidade.fase == "draft":                                        │
+│     │   executar_llm(MS_Epistemologia)                                      │
 │     │                                                                       │
 │     ▼                                                                       │
 │  db.backlog.insert(BKL-XXX)                                                 │
@@ -112,6 +160,11 @@ Capacidade:
   pai_id: String?                 # null = raiz
   ordem: Number
   
+  # Maturidade (D003 - absorvido de BKL-M01)
+  maturidade:
+    fase: "draft" | "spec" | "code" | "prod"
+    prometheus_ref: String?       # ID do código gerado (futuro)
+  
   # Capacidades (comandos)
   capacidades: [{
     id: String                    # "criar_dor"
@@ -133,17 +186,17 @@ Capacidade:
 
 ## Tasks
 
-| # | Título | Descrição | Esforço |
-|---|--------|-----------|---------|
-| T01 | Schema db.capacidades | Criar collection com schema para MS, hierarquia, capacidades | 1h |
-| T02 | Popular db.capacidades | Registrar MS_Sprint, MS_Backlog, MS_Produto, MS_Epistemologia | 1.5h |
-| T03 | GENESIS - Menu multinível | Bootstrap consulta db.capacidades, apresenta menu navegável | 2h |
-| T04 | GENESIS - Roteamento dinâmico | rotear() carrega MS correto baseado em comando | 1.5h |
-| T05 | Fluxo gera_backlog → sprint | Após execução com gera_backlog=true, perguntar se inicia sprint | 1h |
-| T06 | MS_Epistemologia - criar_dor | Adicionar capacidade criar_dor ao registro | 0.5h |
-| T07 | Testes | Validar fluxo completo: bootstrap → menu → execução → backlog → sprint | 1h |
+| # | Título | Descrição | Esforço | Status |
+|---|--------|-----------|---------|--------|
+| T01 | Schema db.capacidades com maturidade | Criar collection com schema completo incluindo maturidade | 1.5h | 🔄 |
+| T02 | Popular db.capacidades | Registrar MS existentes, todas em fase=draft | 1.5h | ⬜ |
+| T03 | GENESIS - Menu multinível | Bootstrap consulta db.capacidades, menu navegável | 2h | ⬜ |
+| T04 | GENESIS - Roteamento transparente | if/else por fase: draft→LLM, code→stub | 2h | ⬜ |
+| T05 | Fluxo gera_backlog → sprint | Após gera_backlog=true, perguntar se inicia sprint | 1h | ⬜ |
+| T06 | MS_Epistemologia - criar_dor | Adicionar capacidade criar_dor ao registro | 0.5h | ⬜ |
+| T07 | Testes | Validar fluxo completo + stub retorna NotImplemented | 1.5h | ⬜ |
 
-**Total estimado: 8.5h**
+**Total estimado: 10h**
 
 ---
 
@@ -154,8 +207,9 @@ Capacidade:
 | G1 | `db.capacidades` não existe | 🔴 | T01 |
 | G2 | MS não têm capacidades registradas | 🔴 | T02 |
 | G3 | GENESIS não tem menu multinível | 🟡 | T03 |
-| G4 | Fluxo gera_backlog não existe | 🟡 | T05 |
-| G5 | MS_Epistemologia sem criar_dor | 🟢 | T06 |
+| G4 | Roteamento por fase não existe | 🟡 | T04 |
+| G5 | Fluxo gera_backlog não existe | 🟡 | T05 |
+| G6 | MS_Epistemologia sem criar_dor | 🟢 | T06 |
 
 ---
 
@@ -167,6 +221,8 @@ Capacidade:
 4. ✅ Comandos roteados dinamicamente para MS correto
 5. ✅ Capacidade com `gera_backlog=true` cria item e oferece sprint
 6. ✅ Adicionar novo MS = registrar em db.capacidades (não mudar GENESIS)
+7. ✅ Campo `maturidade.fase` existe em todas capacidades
+8. ✅ Roteamento transparente: draft/spec→LLM, code/prod→stub
 
 ---
 
@@ -174,8 +230,9 @@ Capacidade:
 
 | Documento | Relação |
 |-----------|---------|
-| _backlog/BKL-G01_Genesis_Hello_World.md | Item de backlog |
-| _backlog/BKL-C01_Catalogo_v2.md | Relacionado (absorvido parcialmente) |
+| _backlog/BKL-G01_Genesis_Hello_World.md | Item de backlog principal |
+| _backlog/BKL-M01_Modelo_Maturidade.md | Parcialmente absorvido |
+| _backlog/BKL-C01_Catalogo_v2.md | Relacionado |
 | genesis/GENESIS.md | Documento a refatorar |
 
 ---
@@ -184,5 +241,7 @@ Capacidade:
 
 | Data | Evento |
 |------|--------|
-| 2025-12-17 | Sprint criada com escopo inicial de 7 tasks |
-| 2025-12-17 | Escopo revisado após análise de arquitetura. Decisões D001 e D002 registradas |
+| 2025-12-17 | Sprint criada com escopo inicial de 7 tasks (8.5h) |
+| 2025-12-17 | Escopo revisado: Decisões D001 e D002 registradas |
+| 2025-12-17 | Absorção parcial de BKL-M01: campo maturidade + roteamento transparente. Decisão D003. Esforço: 8.5h → 10h |
+| 2025-12-17 | T01 iniciada: Schema db.capacidades com maturidade |
