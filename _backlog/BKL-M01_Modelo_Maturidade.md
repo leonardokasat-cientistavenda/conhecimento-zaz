@@ -7,7 +7,7 @@ id: BKL-M01
 titulo: "Modelo de Maturidade - LLM-based → Código → Produção"
 tipo: arquitetura
 prioridade: "🟡"
-status: Pendente
+status: Parcialmente absorvido por S024
 data_criacao: "2025-12-17"
 saga_id: null
 depende_de:
@@ -18,6 +18,10 @@ tags:
   - maturidade
   - prometheus
   - llm-based
+absorvido_por:
+  sprint: S024
+  escopo: "Porta para roteamento transparente (campo maturidade + stub)"
+  data: "2025-12-17"
 ```
 
 ---
@@ -50,7 +54,71 @@ Hoje não há distinção formal entre capacidades em prototipação (LLM-based)
 
 ---
 
-## 3. Proposta: Ciclo de Maturidade
+## 3. Decisão: Absorção Parcial por S024
+
+**Data:** 2025-12-17
+
+**Contexto:** Durante planejamento de S024, identificou-se que adicionar a "porta" para roteamento transparente agora evita retrabalho futuro.
+
+**O que foi absorvido por S024:**
+
+| Elemento | Status |
+|----------|--------|
+| Campo `maturidade` em db.capacidades | ✅ Incluído em S024/T01 |
+| Roteamento por fase (if draft→LLM, if code→worker) | ✅ Incluído em S024/T04 |
+| Stub para `executar_codigo()` | ✅ Incluído em S024/T04 |
+
+**O que permanece em BKL-M01 (futuro):**
+
+| Elemento | Status |
+|----------|--------|
+| Coleta de métricas (execuções, erros) | ⬜ Pendente |
+| Comando `genesis promover` | ⬜ Pendente |
+| Critérios automáticos de promoção | ⬜ Pendente |
+| PROMETHEUS (compilador) | ⬜ Pendente |
+| Exibir fase no menu | ⬜ Pendente |
+
+---
+
+## 4. Arquitetura: Roteamento Transparente
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    ROTEAMENTO TRANSPARENTE (S024)                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  USUÁRIO                                                                    │
+│     │                                                                       │
+│     │ "genesis dor"                                                         │
+│     ▼                                                                       │
+│  GENESIS.rotear()                                                           │
+│     │                                                                       │
+│     │ cap = db.capacidades.findOne({comando})                               │
+│     │                                                                       │
+│     ├─────────────────────────────────────────────────────────────┐         │
+│     │                                                             │         │
+│     ▼                                                             ▼         │
+│  if fase in ["draft", "spec"]:              if fase in ["code", "prod"]:    │
+│     │                                                             │         │
+│     │ executar_llm(cap.path)                    executar_codigo(ref)        │
+│     │   ↓                                            ↓                      │
+│     │ LLM lê .md e executa                   STUB (NotImplemented)          │
+│     │                                        → Futuro: Camunda/Python       │
+│     │                                                             │         │
+│     └─────────────────────┬───────────────────────────────────────┘         │
+│                           │                                                 │
+│                           ▼                                                 │
+│                    MESMO OUTPUT                                             │
+│                    (usuário não sabe)                                       │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Benefício:** Quando PROMETHEUS existir, basta implementar `executar_codigo()` e promover capacidades. Nenhuma refatoração em GENESIS.
+
+---
+
+## 5. Proposta: Ciclo de Maturidade
 
 ```
 DRAFT (LLM-based)
@@ -68,28 +136,28 @@ CODE (PROMETHEUS gera)
 PROD (Publicado)
 ```
 
-### 3.1 DRAFT
+### 5.1 DRAFT
 
 - Capacidade definida em Markdown
 - LLM interpreta e executa
 - Alta entropia, alta velocidade
 - Métricas coletadas: execuções, erros, mudanças de spec
 
-### 3.2 SPEC
+### 5.2 SPEC
 
 - Fluxo documentado formalmente
 - Inputs/outputs tipados
 - Testes definidos
 - LLM ainda executa, mas spec "congelada"
 
-### 3.3 CODE
+### 5.3 CODE
 
 - PROMETHEUS lê spec e gera código
 - Worker Camunda ou função Python
 - LLM não necessário para execução
 - Baixa entropia, baixo custo
 
-### 3.4 PROD
+### 5.4 PROD
 
 - Sistema produtivo
 - Versionado, monitorado
@@ -97,28 +165,36 @@ PROD (Publicado)
 
 ---
 
-## 4. Schema Proposto
+## 6. Schema (implementado em S024)
 
 ```yaml
-# Adição em db.capacidades
+# db.capacidades
 Capacidade:
   ...
   maturidade:
     fase: "draft" | "spec" | "code" | "prod"
-    execucoes: Number
-    erros: Number
-    taxa_erro: Number
-    ultima_mudanca_spec: DateTime
-    spec_congelada_em: DateTime?
-    promovido_code_em: DateTime?
-    promovido_prod_em: DateTime?
-    prometheus_ref: String?          # ID do código gerado
-    rollback_para: "draft" | "spec"? # Se precisar voltar
+    prometheus_ref: String?          # ID do código gerado (futuro)
+```
+
+**Schema completo (futuro BKL-M01):**
+
+```yaml
+maturidade:
+  fase: "draft" | "spec" | "code" | "prod"
+  execucoes: Number
+  erros: Number
+  taxa_erro: Number
+  ultima_mudanca_spec: DateTime
+  spec_congelada_em: DateTime?
+  promovido_code_em: DateTime?
+  promovido_prod_em: DateTime?
+  prometheus_ref: String?
+  rollback_para: "draft" | "spec"?
 ```
 
 ---
 
-## 5. Questões em Aberto
+## 7. Questões em Aberto (para futuro)
 
 | Questão | Opções |
 |---------|--------|
@@ -127,64 +203,48 @@ Capacidade:
 | Coexistência | MS pode ter capacidades em fases diferentes? |
 | Rollback | Automático se erro > X%? Manual? |
 | Formato de spec | BPMN? State machine? YAML? |
-| PROMETHEUS existe? | Não. Precisa ser criado ou é conceitual? |
+| PROMETHEUS existe? | Não. Precisa ser criado. |
 
 ---
 
-## 6. Relação com PROMETHEUS
+## 8. Critérios de Aceite (restantes)
 
-PROMETHEUS foi mencionado em `_backlog/BKL-P03_PROMETHEUS_v3.md` como sistema de geração de código. Este BKL propõe que PROMETHEUS seja o **compilador** de specs para código:
-
-```
-Capacidade.spec (Markdown/YAML)
-        │
-        │ PROMETHEUS.compilar()
-        ▼
-Worker Camunda / Função Python
-```
+1. ~~Campo `maturidade` adicionado a db.capacidades~~ → S024
+2. ⬜ Critérios de promoção definidos e documentados
+3. ⬜ GENESIS exibe fase de maturidade no menu
+4. ⬜ Comando `genesis promover <capacidade>` implementado
+5. ⬜ Métricas de execução sendo coletadas
+6. ⬜ PROMETHEUS funcional (BKL separado)
 
 ---
 
-## 7. Critérios de Aceite (para este BKL)
-
-1. ✅ Campo `maturidade` adicionado a db.capacidades
-2. ✅ Critérios de promoção definidos e documentados
-3. ✅ GENESIS exibe fase de maturidade no menu
-4. ✅ Comando `genesis promover <capacidade>` implementado
-5. ✅ Métricas de execução sendo coletadas
-6. ⬜ PROMETHEUS funcional (pode ser BKL separado)
-
----
-
-## 8. Tasks Previstas
+## 9. Tasks Restantes (após S024)
 
 | # | Task | Esforço |
 |---|------|---------|
 | T01 | Definir critérios numéricos de promoção | 1h |
-| T02 | Adicionar campo maturidade em db.capacidades | 0.5h |
-| T03 | Implementar coleta de métricas (execuções, erros) | 2h |
-| T04 | Comando `genesis promover` | 1.5h |
-| T05 | Documentar formato de spec para CODE | 2h |
-| T06 | Avaliar se PROMETHEUS é BKL separado | 0.5h |
+| T02 | Implementar coleta de métricas (execuções, erros) | 2h |
+| T03 | Comando `genesis promover` | 1.5h |
+| T04 | Documentar formato de spec para CODE | 2h |
+| T05 | Avaliar/criar PROMETHEUS | TBD |
 
-**Estimativa total: ~7.5h**
+**Estimativa restante: ~6.5h + PROMETHEUS**
 
 ---
 
-## 9. Dependências
+## 10. Dependências Atualizadas
 
 ```
 S024 (Hello World GENESIS)
     │
-    │ db.capacidades existe
-    │ Menu de capacidades funciona
+    │ ✅ db.capacidades com campo maturidade
+    │ ✅ Roteamento transparente com stub
     ▼
-BKL-M01 (este)
+BKL-M01 (restante)
     │
-    │ Maturidade implementada
-    │ Métricas coletadas
+    │ Métricas, promoção, critérios
     ▼
-PROMETHEUS (futuro)
+PROMETHEUS (BKL separado)
     │
     │ Compila spec → código
     ▼
@@ -199,7 +259,7 @@ MS em produção (código)
 |-----------|---------|
 | _backlog/BKL-G01_Genesis_Hello_World.md | Pré-requisito |
 | _backlog/BKL-P03_PROMETHEUS_v3.md | Sistema de geração de código |
-| _sprints/S024_Genesis_Hello_World.md | Sprint que habilita este BKL |
+| _sprints/S024_Genesis_Hello_World.md | Sprint que absorveu parte deste BKL |
 
 ---
 
@@ -208,3 +268,4 @@ MS em produção (código)
 | Data | Evento |
 |------|--------|
 | 2025-12-17 | Criado durante discussão de arquitetura S024. Insight de Leonardo sobre ciclo LLM → código. |
+| 2025-12-17 | **Absorção parcial por S024**: Campo maturidade, roteamento transparente e stub incluídos na sprint. Restante permanece como backlog futuro. |
