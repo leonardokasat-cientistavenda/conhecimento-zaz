@@ -1,10 +1,10 @@
-# GENESIS v5.1
+# GENESIS v5.2
 
 ---
 
 ```yaml
 nome: GENESIS
-versao: "5.1"
+versao: "5.2"
 tipo: Framework
 status: Publicado
 nivel: C1
@@ -553,7 +553,21 @@ ENTÃO: Conforme necessidade
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
+### 10.4 Fluxo task-concluir (v5.2)
 
+Ao concluir uma task, MS_Sprint consulta MS_Backlog por filhos gerados durante a execução:
+```
+task-concluir T01
+       │
+       ▼
+MS_Sprint ──► MS_Backlog.listar_filhos(sprint_id, task_codigo)
+       │
+       ▼
+  auto_pull=true  → cria subtask (T01.1)
+  auto_pull=false → notifica humano
+```
+
+**SSOT:** `origem` persiste em `db.backlog_items`, MS_Sprint apenas consulta.
 ---
 
 ## Referências
@@ -588,3 +602,4 @@ ENTÃO: Conforme necessidade
 | 0.1-4.0 | 2025-12-02 a 2025-12-16 | Versões anteriores |
 | 5.0 | 2025-12-16 | **Refatoração arquitetural**: GENESIS deixa de ser orquestrador. Papel simplificado: entrada (entrevista dor) + validação (avalia efetividade). Toda orquestração delegada para MS_Backlog. Comunicação entre MS exclusivamente via BacklogItems tipados. |
 | 5.1 | 2025-12-17 | **Integração MS_Sprint**: Adição de MS_Sprint no índice de sistemas. Seção 10 documenta bootstrap com sprint (carregar sessão pausada, exibir contexto). Tabela L0-L4 inclui MS_Sprint. Sprint S021/T04. |
+| 5.2 | 2025-12-17 | **Fluxo task-concluir**: Documentado consulta de filhos via MS_Backlog.listar_filhos(). SSOT de origem é db.backlog_items. Sprint S022/T04. |
