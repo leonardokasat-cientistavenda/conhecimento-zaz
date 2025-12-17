@@ -1,15 +1,15 @@
-# MS_Backlog v1.1
+# MS_Backlog v1.2
 
 ---
 
 ```yaml
 nome: MS_Backlog
-versao: "1.1"
+versao: "1.2"
 tipo: Meta Sistema
 status: Publicado
 camada: 4
 dominio: Orquestração
-data_publicacao: "2025-12-16"
+data_publicacao: "2025-12-17"
 pai: genesis/GENESIS.md
 depende_de:
   - genesis/GENESIS.md
@@ -35,6 +35,7 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 | **Saga** | Fluxo completo composto de múltiplos BacklogItems |
 | **Origem** | Rastreabilidade de onde/como item foi criado (v1.1) |
 | **auto_pull** | Flag que indica se Sprint deve puxar item automaticamente (v1.1) |
+| **esforco_estimado** | Estimativa de horas para completar o item (v1.2) |
 
 ### 1.2 Diagrama do Problema
 
@@ -64,6 +65,7 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 │  • Rastreabilidade parcial                                                  │
 │  • Difícil interceptar/auditar fluxos                                       │
 │  • Human-in-the-loop apenas em alguns pontos                                │
+│  • Sem estimativa de esforço (impossível planejar)                          │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -78,6 +80,7 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 > - **Human-in-the-loop universal** - todo item pode ser aprovado/rejeitado
 > - **Rastreabilidade completa** - tudo é documento persistido
 > - **Saga como fluxo** - sequência de items forma processo completo
+> - **Estimativa obrigatória** - todo item nasce com esforço estimado (v1.2)
 >
 > **Padrão:** Event Sourcing + Saga Pattern
 
@@ -91,6 +94,7 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 | Permite interceptação/auditoria | Implementa regras específicas |
 | Gerencia status de items | Substitui validação humana |
 | Rastreia origem (sprint/task) | Decide se deve puxar (isso é Sprint) |
+| Valida estimativa obrigatória | Executa o trabalho estimado |
 
 ---
 
@@ -148,6 +152,7 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 | Ponto de interceptação | Substituto de validação humana |
 | Orquestrador de sagas | Implementador de regras |
 | SSOT de origem de items | Gerenciador de sprints |
+| Validador de estimativa | Executor do trabalho |
 
 ### 3.2 Modelo de Comunicação
 
@@ -219,6 +224,10 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 │  + status: StatusBacklogItem         # Pendente|EmProcessamento|Concluido|  │
 │  +                                   # Cancelado|Erro                       │
 │  + prioridade: Enum                  # 🔴|🟡|🟢                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Atributos Esforço [v1.2]                                                   │
+│  ────────────────────────                                                   │
+│  + esforco_estimado_horas: Number    # OBRIGATÓRIO - estimativa do produtor │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Atributos Rastreabilidade                                                  │
 │  ─────────────────────────                                                  │
@@ -357,21 +366,28 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 │  Input: BacklogItem (parcial)                                               │
 │  Output: BacklogItem (completo, persistido)                                 │
 │                                                                             │
+│  Validação [v1.2]:                                                          │
+│  ─────────────────                                                          │
+│  SE esforco_estimado_horas não fornecido OU <= 0:                           │
+│      ERRO: "esforco_estimado_horas é obrigatório e deve ser > 0"            │
+│                                                                             │
 │  Passos:                                                                    │
-│  1. Gerar ID único                                                          │
-│  2. Definir timestamps (created_at, updated_at)                             │
-│  3. Status = Pendente                                                       │
-│  4. SE saga_id não fornecido E pai_ref existe:                              │
+│  1. Validar esforco_estimado_horas (obrigatório) [v1.2]                     │
+│  2. Gerar ID único                                                          │
+│  3. Definir timestamps (created_at, updated_at)                             │
+│  4. Status = Pendente                                                       │
+│  5. SE saga_id não fornecido E pai_ref existe:                              │
 │        saga_id = pai.saga_id                                                │
-│  5. Persistir no MongoDB                                                    │
-│  6. Indexar no Catálogo                                                     │
-│  7. Retornar item completo                                                  │
+│  6. Persistir no MongoDB                                                    │
+│  7. Indexar no Catálogo                                                     │
+│  8. Retornar item completo                                                  │
 │                                                                             │
 │  Exemplo:                                                                   │
 │  MS_Backlog.produzir({                                                      │
 │    tipo: "ciclo_epistemologico",                                            │
 │    titulo: "Especificar Feature Reporte por Voz",                           │
 │    produtor: "MS_Produto",                                                  │
+│    esforco_estimado_horas: 4,              # OBRIGATÓRIO [v1.2]             │
 │    contexto: {problema: "...", criterios: [...]},                           │
 │    feature_ref: "feat_001",                                                 │
 │    saga_id: "saga_001"                                                      │
@@ -432,6 +448,7 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 │     - resultado = input.resultado                                           │
 │  3. SE items_gerados:                                                       │
 │     PARA CADA novo_item:                                                    │
+│       - Validar esforco_estimado_horas [v1.2]                               │
 │       - novo_item.pai_ref = item_id                                         │
 │       - novo_item.saga_id = item.saga_id                                    │
 │       - MS_Backlog.produzir(novo_item)                                      │
@@ -447,6 +464,7 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 │      tipo: "desenvolvimento",                                               │
 │      titulo: "Desenvolver Feature Reporte por Voz",                         │
 │      produtor: "Epistemologia",                                             │
+│      esforco_estimado_horas: 8,            # OBRIGATÓRIO [v1.2]             │
 │      spec_ref: "spec_001"                                                   │
 │    }]                                                                       │
 │  )                                                                          │
@@ -515,6 +533,7 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 │  # Sprint puxa item filho                                                   │
 │  item = MS_Backlog.transferir_para_sprint("BKL-042", "S022", "T01")         │
 │  # Sprint usa item.titulo para criar subtask T01.1                          │
+│  # Sprint herda item.esforco_estimado_horas para a task [v1.2]              │
 │                                                                             │
 │  Nota: A criação da subtask (T01.1) é responsabilidade do MS_Sprint,        │
 │        não do MS_Backlog. MS_Backlog apenas atualiza status do item.        │
@@ -536,7 +555,8 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │ 1. ENTRADA                                                          │    │
 │  │    USUÁRIO: "Tenho uma dor"                                         │    │
-│  │    → produzir({tipo: entrevistar_dor, saga_id: saga_001})           │    │
+│  │    → produzir({tipo: entrevistar_dor, saga_id: saga_001,            │    │
+│  │               esforco_estimado_horas: 1})                           │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                          │                                                  │
 │                          ▼                                                  │
@@ -544,7 +564,8 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 │  │ 2. GENESIS consome(entrevistar_dor)                                 │    │
 │  │    → Executa entrevista, cria Prontuário                            │    │
 │  │    → concluir(resultado: {prontuario_id}, items_gerados: [          │    │
-│  │        {tipo: estruturar_produto, prontuario_ref}                   │    │
+│  │        {tipo: estruturar_produto, prontuario_ref,                   │    │
+│  │         esforco_estimado_horas: 2}                                  │    │
 │  │      ])                                                             │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                          │                                                  │
@@ -553,7 +574,8 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 │  │ 3. MS_PRODUTO consome(estruturar_produto)                           │    │
 │  │    → Cria Produto + Feature                                         │    │
 │  │    → concluir(resultado: {produto_id, feature_id}, items_gerados: [ │    │
-│  │        {tipo: ciclo_epistemologico, feature_ref}                    │    │
+│  │        {tipo: ciclo_epistemologico, feature_ref,                    │    │
+│  │         esforco_estimado_horas: 4}                                  │    │
 │  │      ])                                                             │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                          │                                                  │
@@ -563,7 +585,8 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 │  │    → Executa M0-M4, gera Spec                                       │    │
 │  │    → SE não-folha: items_gerados inclui ciclo_epistemo (recursivo)  │    │
 │  │    → concluir(resultado: {spec_id}, items_gerados: [                │    │
-│  │        {tipo: desenvolvimento, spec_ref}                            │    │
+│  │        {tipo: desenvolvimento, spec_ref,                            │    │
+│  │         esforco_estimado_horas: 8}                                  │    │
 │  │      ])                                                             │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                          │                                                  │
@@ -573,7 +596,8 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 │  │    → Executa TDD, gera Release                                      │    │
 │  │    → Internamente: produz worker_* para cada vertente               │    │
 │  │    → concluir(resultado: {release_id}, items_gerados: [             │    │
-│  │        {tipo: aprovar_release, release_ref}                         │    │
+│  │        {tipo: aprovar_release, release_ref,                         │    │
+│  │         esforco_estimado_horas: 0.5}                                │    │
 │  │      ])                                                             │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                          │                                                  │
@@ -582,7 +606,8 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 │  │ 6. PO consome(aprovar_release)                                      │    │
 │  │    → Humano valida release                                          │    │
 │  │    → concluir(resultado: {aprovado: true}, items_gerados: [         │    │
-│  │        {tipo: implantar, release_ref}                               │    │
+│  │        {tipo: implantar, release_ref,                               │    │
+│  │         esforco_estimado_horas: 2}                                  │    │
 │  │      ])                                                             │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                          │                                                  │
@@ -591,7 +616,8 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 │  │ 7. MS_PRODUTO consome(implantar)                                    │    │
 │  │    → Setup + Treinamento                                            │    │
 │  │    → concluir(resultado: {implantacao_id}, items_gerados: [         │    │
-│  │        {tipo: avaliar_efetividade, release_ref, produto_ref}        │    │
+│  │        {tipo: avaliar_efetividade, release_ref, produto_ref,        │    │
+│  │         esforco_estimado_horas: 1}                                  │    │
 │  │      ])                                                             │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                          │                                                  │
@@ -600,8 +626,10 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 │  │ 8. GENESIS consome(avaliar_efetividade)                             │    │
 │  │    → Coleta métricas, avalia                                        │    │
 │  │    → SE sucesso: concluir(resultado: {conclusao: SUCESSO})          │    │
-│  │    → SE iterar: items_gerados: [{tipo: iterar_feature}]             │    │
-│  │    → SE bug: items_gerados: [{tipo: corrigir_bug}]                  │    │
+│  │    → SE iterar: items_gerados: [{tipo: iterar_feature,              │    │
+│  │                                  esforco_estimado_horas: 4}]        │    │
+│  │    → SE bug: items_gerados: [{tipo: corrigir_bug,                   │    │
+│  │                               esforco_estimado_horas: 2}]           │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -615,6 +643,7 @@ arquitetura: docs/04_B/MS_Backlog_Arquitetura.md
 |------------|-----------|
 | **TIPO-OBRIGATORIO** | Todo BacklogItem deve ter tipo definido |
 | **PRODUTOR-OBRIGATORIO** | Todo BacklogItem deve ter produtor |
+| **ESTIMATIVA-OBRIGATORIA** | Todo BacklogItem deve ter esforco_estimado_horas > 0 [v1.2] |
 | **SAGA-HERANCA** | Item filho herda saga_id do pai |
 | **STATUS-TRANSICAO** | Pendente → EmProcessamento → Concluido/Erro |
 | **CONSUMIDOR-UNICO** | Item só pode ser consumido por um sistema |
@@ -680,3 +709,4 @@ consumidores:
 |--------|------|-----------|
 | 1.0 | 2025-12-16 | Criação inicial. Promoção de Backlog (Infra C2) para MS_Backlog (Meta Sistema C4). Modelo Event Sourcing + Saga. Tipagem expandida. Métodos produzir/consumir/concluir. |
 | 1.1 | 2025-12-17 | **Interface Sprint**: +campo `origem` em BacklogItem (sprint_id, task_codigo, auto_pull). +métodos `listar_filhos()`, `transferir_para_sprint()`. +invariantes ORIGEM-OPCIONAL, SSOT-ORIGEM. Sprint S022/T02. |
+| 1.2 | 2025-12-17 | **Estimativa obrigatória**: +campo `esforco_estimado_horas` obrigatório em BacklogItem. +invariante ESTIMATIVA-OBRIGATORIA. +validação em produzir(). MS_Sprint herda estimativa ao puxar item. Sprint S023/T02. |
