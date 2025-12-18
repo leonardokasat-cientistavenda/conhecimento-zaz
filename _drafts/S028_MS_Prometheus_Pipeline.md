@@ -1,10 +1,10 @@
-# MS_Prometheus_Pipeline v1.0
+# MS_Prometheus_Pipeline v1.1
 
 ---
 
 ```yaml
 nome: MS_Prometheus_Pipeline
-versao: "1.0"
+versao: "1.1"
 tipo: Meta-Sistema
 status: Draft
 sprint: S028
@@ -69,7 +69,72 @@ desenvolver() → [VALIDATE+TEST] → aprovar_release → MS_PRODUTO → [DEPLOY
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 2.2 Fluxo Completo
+### 2.2 Arquitetura de Infraestrutura (IMPLEMENTADA)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  INFRAESTRUTURA REAL                                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌───────────────┐                                                          │
+│  │   GitHub      │                                                          │
+│  │               │                                                          │
+│  │ ZAZ-vendas/   │ ◄── Workers + Backend (código)                           │
+│  │ Orquestrador  │                                                          │
+│  │ -Zarah        │                                                          │
+│  │               │                                                          │
+│  │ ZAZ-vendas/   │ ◄── Artefatos Camunda (BPMN/DMN/Forms)                   │
+│  │ _Zarah-Camunda│                                                          │
+│  │   ├─ Genesis/ │                                                          │
+│  │   └─ Prometheus│                                                         │
+│  └───────┬───────┘                                                          │
+│          │                                                                  │
+│          │ webhook (HMAC)                                                   │
+│          ▼                                                                  │
+│  ┌───────────────┐      ┌───────────────┐                                   │
+│  │ Servidor      │      │ Servidor      │                                   │
+│  │ Worker        │─────►│ Camunda       │                                   │
+│  │ (exposto)     │ API  │ (interno)     │                                   │
+│  │               │ REST │               │                                   │
+│  │ /deploy       │      │ :8080         │                                   │
+│  │ /deploy-camunda      │               │                                   │
+│  └───────────────┘      └───────────────┘                                   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 2.3 Estrutura de Pastas no Servidor
+
+```
+/home/camunda-orquestrador/
+│
+├── Orquestrador-Zarah/              # Git: ZAZ-vendas/Orquestrador-Zarah
+│   ├── worker/                      # Workers Camunda
+│   │   ├── openAI/
+│   │   ├── gemini/
+│   │   ├── anthropic/               # NOVO - S027
+│   │   └── agente/                  # NOVO - S027
+│   ├── controller/
+│   │   └── gitActionsController.js  # Endpoints de deploy
+│   ├── src/services/servidor/
+│   │   ├── deployService.js         # Deploy workers
+│   │   └── camundaDeployService.js  # Deploy Camunda (NOVO)
+│   └── scripts/
+│       ├── deploy-gitActions.sh     # Deploy workers (existente)
+│       └── deploy-camunda.sh        # Deploy Camunda (NOVO)
+│
+└── _Zarah-Camunda/                  # Git: ZAZ-vendas/_Zarah-Camunda (NOVO)
+    ├── Genesis/                     # Artefatos GENESIS
+    │   ├── bpmn/
+    │   ├── dmn/
+    │   └── forms/
+    └── Prometheus/                  # Artefatos PROMETHEUS
+        ├── bpmn/
+        ├── dmn/
+        └── forms/
+```
+
+### 2.4 Fluxo Completo
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -133,28 +198,15 @@ desenvolver() → [VALIDATE+TEST] → aprovar_release → MS_PRODUTO → [DEPLOY
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 2.3 Tecnologias
+### 2.5 Tecnologias
 
 | Componente | Tecnologia | Justificativa |
 |------------|------------|---------------|
 | Orquestração | GitHub Actions | CI/CD nativo, integrado com repos |
 | Deploy BPMN/DMN | Camunda 7 REST API | POST /engine-rest/deployment/create |
-| Deploy Workers | Git push | Copy para ZAZ-vendas repo |
+| Deploy Workers | Git push + webhook | Trigger via HMAC |
 | Testes Workers | Jest | Stack JS existente |
 | Validação | xmllint + ESLint | Sintaxe XML e JS |
-
-### 2.4 Camunda 7 REST API
-
-```bash
-# Deploy BPMN/DMN
-curl -X POST http://camunda:8080/engine-rest/deployment/create \
-  -F "deployment-name=S026-MS-Agente" \
-  -F "bpmn_ms_agente.bpmn=@path/to/bpmn_ms_agente.bpmn" \
-  -F "dmn_entrada_genesis.dmn=@path/to/dmn_entrada_genesis.dmn"
-
-# Verificar deploy
-curl http://camunda:8080/engine-rest/process-definition?key=bpmn_ms_agente
-```
 
 ---
 
@@ -213,332 +265,337 @@ resultado:
       checks: []
 ```
 
-### 3.4 Etapas por Modo
+### 3.4 Extensões Suportadas
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  MODO: validar                                                              │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  [VALIDATE]                                                                 │
-│  ├── BPMN: xmllint --schema bpmn20.xsd                                      │
-│  ├── DMN: xmllint --schema dmn13.xsd                                        │
-│  └── Workers: eslint *.js                                                   │
-│                                                                             │
-│  [TEST]                                                                     │
-│  ├── Workers: jest --coverage                                               │
-│  └── Cobertura mínima: 70%                                                  │
-│                                                                             │
-│  Produz: tipo "aprovar_release" (se sucesso)                                │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  MODO: implantar                                                            │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  [DEPLOY]                                                                   │
-│  ├── BPMN/DMN: POST /engine-rest/deployment/create                          │
-│  └── Workers: git push para ZAZ-vendas/Orquestrador-Zarah/worker/           │
-│                                                                             │
-│  [VERIFY]                                                                   │
-│  ├── Process definition exists?                                             │
-│  ├── Decision definition exists?                                            │
-│  └── Worker healthcheck (se aplicável)                                      │
-│                                                                             │
-│  Produz: tipo "validar_implantacao" (se sucesso)                            │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 3.5 Estados
-
-```
-┌──────────┐     consumir()     ┌────────────────┐
-│ Pendente │ ─────────────────► │ EmProcessamento│
-└──────────┘                    └───────┬────────┘
-                                        │
-                    ┌───────────────────┼───────────────────┐
-                    │                   │                   │
-                    ▼                   ▼                   ▼
-            ┌───────────┐       ┌───────────┐       ┌───────────┐
-            │ Concluido │       │  Falhou   │       │ Bloqueado │
-            │ (sucesso) │       │  (erro)   │       │  (retry)  │
-            └───────────┘       └───────────┘       └───────────┘
-```
+| Extensão | Tipo | Descrição |
+|----------|------|-----------|
+| `.bpmn` | Processo | Definição de processo BPMN 2.0 |
+| `.dmn` | Decisão | Tabela de decisão DMN |
+| `.form` | Formulário | Camunda Forms (JSON) |
+| `.html` | Formulário | Embedded Forms (HTML) |
 
 ---
 
-## 4. Classe (M3)
+## 4. Classe (M3) - Implementação
 
-### 4.1 Schema: Item no Backlog
+### 4.1 Deploy Workers (Existente - Corrigido)
 
-```yaml
-# db.backlog document
-backlog_item:
-  _id: ObjectId
-  id: "BKL-XXX"
-  tipo: "executar_pipeline"
-  
-  contexto:
-    modo: "validar" | "implantar"
-    release_ref: "rel_001"
-    sprint_origem: "S026"
-    artefatos:
-      - tipo: "bpmn"
-        arquivo: "bpmn_ms_agente.bpmn"
-        path: "_sprints/S026_MS_Agente/artefatos/bpmn/bpmn_ms_agente.bpmn"
-        sha: "abc123"
-      - tipo: "dmn"
-        arquivo: "dmn_entrada_genesis.dmn"
-        path: "_sprints/S026_MS_Agente/artefatos/dmn/dmn_entrada_genesis.dmn"
-        sha: "def456"
-      - tipo: "worker"
-        arquivo: "workerAnthropic.js"
-        path: "_sprints/S026_MS_Agente/artefatos/workers/workerAnthropic.js"
-        sha: "ghi789"
-  
-  status: "Pendente" | "EmProcessamento" | "Concluido" | "Falhou"
-  
-  resultado:
-    status: "sucesso" | "falha"
-    modo: "validar"
-    etapas:
-      validate:
-        status: "success"
-        inicio: datetime
-        fim: datetime
-        erros: []
-      test:
-        status: "success"
-        inicio: datetime
-        fim: datetime
-        cobertura: 85
-        passou: 12
-        falhou: 0
-  
-  items_gerados:
-    - "BKL-XXX"  # aprovar_release ou validar_implantacao
-  
-  created_at: datetime
-  updated_at: datetime
+**Problema resolvido:** Script fazia `pm2 stop 0` + `pm2 start 0`, mas o stop matava o processo antes do start executar.
+
+**Solução:** Usar `pm2 restart 0` (atômico).
+
+```bash
+#!/bin/bash
+# deploy-gitActions.sh (CORRIGIDO)
+
+cd /home/camunda-orquestrador/Orquestrador-Zarah
+
+# Git pull
+git pull
+
+# Atualizar bibliotecas NPM
+npm install
+
+# Restart atômico (não usa stop/start separados)
+pm2 restart 0
 ```
 
-### 4.2 Contrato Event-Driven
+### 4.2 Deploy Camunda (NOVO)
 
-```yaml
-# MS_Prometheus_Pipeline
-tipos_consumidos:
-  - executar_pipeline
+#### 4.2.1 Script: deploy-camunda.sh
 
-tipos_produzidos:
-  - aprovar_release        # após modo=validar sucesso
-  - validar_implantacao    # após modo=implantar sucesso
+```bash
+#!/bin/bash
+# deploy-camunda.sh
+
+set -e
+
+# Configurações
+BASE_DIR="/home/camunda-orquestrador"
+REPO_DIR="$BASE_DIR/_Zarah-Camunda"
+CAMUNDA_URL="${CAMUNDA_URL:-http://localhost:8080}"
+CAMUNDA_USER="${CAMUNDA_USER:-demo}"
+CAMUNDA_PASS="${CAMUNDA_PASS:-demo}"
+
+# Pastas de produtos
+PRODUTOS=("Genesis" "Prometheus")
+
+# Extensões suportadas
+EXTENSOES="bpmn dmn form html"
+
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
+}
+
+# Verifica conexão com Camunda
+check_camunda() {
+    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+        -u "$CAMUNDA_USER:$CAMUNDA_PASS" \
+        "$CAMUNDA_URL/engine-rest/engine")
+    
+    if [ "$HTTP_CODE" -eq 200 ]; then
+        log "✓ Camunda acessível"
+        return 0
+    else
+        log "✗ Camunda não acessível (HTTP $HTTP_CODE)"
+        return 1
+    fi
+}
+
+# Deploy de uma pasta de produto
+deploy_produto() {
+    local produto=$1
+    local pasta="$REPO_DIR/$produto"
+    
+    log "Processando: $produto"
+    
+    if [ ! -d "$pasta" ]; then
+        log "✗ Pasta não encontrada: $pasta"
+        return 1
+    fi
+    
+    # Encontrar arquivos suportados
+    local arquivos=()
+    local curl_args=()
+    
+    for ext in $EXTENSOES; do
+        while IFS= read -r -d '' arquivo; do
+            arquivos+=("$arquivo")
+        done < <(find "$pasta" -type f -name "*.$ext" -print0 2>/dev/null)
+    done
+    
+    if [ ${#arquivos[@]} -eq 0 ]; then
+        log "Nenhum artefato encontrado"
+        return 0
+    fi
+    
+    log "Encontrados ${#arquivos[@]} arquivo(s)"
+    
+    # Montar argumentos do curl
+    for arquivo in "${arquivos[@]}"; do
+        nome=$(basename "$arquivo")
+        log "  - $nome"
+        curl_args+=(-F "$nome=@$arquivo")
+    done
+    
+    # Nome do deployment
+    local deployment_name="$produto-$(date '+%Y%m%d-%H%M%S')"
+    
+    # Fazer deploy
+    RESPONSE=$(curl -s -w "\n%{http_code}" \
+        -u "$CAMUNDA_USER:$CAMUNDA_PASS" \
+        -F "deployment-name=$deployment_name" \
+        -F "deploy-changed-only=true" \
+        -F "enable-duplicate-filtering=true" \
+        "${curl_args[@]}" \
+        "$CAMUNDA_URL/engine-rest/deployment/create")
+    
+    HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+    
+    if [ "$HTTP_CODE" -eq 200 ]; then
+        log "✓ Deploy concluído!"
+        return 0
+    else
+        log "✗ Falha no deploy (HTTP $HTTP_CODE)"
+        return 1
+    fi
+}
+
+# Main
+main() {
+    log "========================================"
+    log "DEPLOY CAMUNDA - Início"
+    log "========================================"
+    
+    # Git pull
+    cd "$REPO_DIR"
+    git pull
+    
+    # Verificar Camunda
+    check_camunda || exit 1
+    
+    # Deploy cada produto
+    for produto in "${PRODUTOS[@]}"; do
+        deploy_produto "$produto"
+    done
+    
+    log "========================================"
+    log "✓ DEPLOY CAMUNDA - Concluído!"
+    log "========================================"
+}
+
+main "$@"
 ```
 
-### 4.3 Método Principal
+#### 4.2.2 Service: camundaDeployService.js
 
-```python
-class MS_Prometheus_Pipeline:
-    tipos_consumidos = ["executar_pipeline"]
-    
-    def consumir(self, item):
-        modo = item.contexto["modo"]
-        artefatos = item.contexto["artefatos"]
-        
-        if modo == "validar":
-            resultado = self.executar_validar(artefatos)
-            if resultado["status"] == "sucesso":
-                self.produzir_aprovar_release(item, resultado)
-        
-        elif modo == "implantar":
-            resultado = self.executar_implantar(artefatos)
-            if resultado["status"] == "sucesso":
-                self.produzir_validar_implantacao(item, resultado)
-        
-        return resultado
-    
-    def executar_validar(self, artefatos):
-        resultado = {"modo": "validar", "etapas": {}}
-        
-        # VALIDATE
-        resultado["etapas"]["validate"] = self.validate(artefatos)
-        if resultado["etapas"]["validate"]["status"] == "failed":
-            resultado["status"] = "falha"
-            return resultado
-        
-        # TEST
-        resultado["etapas"]["test"] = self.test(artefatos)
-        if resultado["etapas"]["test"]["status"] == "failed":
-            resultado["status"] = "falha"
-            return resultado
-        
-        resultado["status"] = "sucesso"
-        return resultado
-    
-    def executar_implantar(self, artefatos):
-        resultado = {"modo": "implantar", "etapas": {}}
-        
-        # DEPLOY
-        resultado["etapas"]["deploy"] = self.deploy(artefatos)
-        if resultado["etapas"]["deploy"]["status"] == "failed":
-            resultado["status"] = "falha"
-            return resultado
-        
-        # VERIFY
-        resultado["etapas"]["verify"] = self.verify(artefatos)
-        if resultado["etapas"]["verify"]["status"] == "failed":
-            resultado["status"] = "falha"
-            return resultado
-        
-        resultado["status"] = "sucesso"
-        return resultado
+```javascript
+// src/services/servidor/camundaDeployService.js
+
+const { spawn } = require('child_process');
+
+const SCRIPT_PATH = process.env.CAMUNDA_DEPLOY_SCRIPT || 
+  '/home/camunda-orquestrador/Orquestrador-Zarah/scripts/deploy-camunda.sh';
+
+const REPO_PATH = process.env.REPO_PATH || 
+  '/home/camunda-orquestrador/Orquestrador-Zarah';
+
+function deployCamunda() {
+  console.log('[CamundaDeploy] Iniciando script de deploy...');
+
+  const child = spawn('/bin/bash', [SCRIPT_PATH], {
+    detached: true,
+    stdio: 'inherit',
+    cwd: REPO_PATH,
+    env: {
+      ...process.env,
+      CAMUNDA_URL: process.env.CAMUNDA_URL || 'http://localhost:8080',
+      CAMUNDA_USER: process.env.CAMUNDA_USER || 'demo',
+      CAMUNDA_PASS: process.env.CAMUNDA_PASS || 'demo'
+    }
+  });
+
+  child.unref();
+  console.log('[CamundaDeploy] Script iniciado em background');
+}
+
+module.exports = { deployCamunda };
 ```
 
-### 4.4 GitHub Actions Workflow
+#### 4.2.3 Controller: Endpoint /deploy-camunda
+
+```javascript
+// Adicionar ao gitActionsController.js
+
+const { deployCamunda } = require("../src/services/servidor/camundaDeployService.js");
+
+const webhookCamunda = async (req, res) => {
+  console.log('[GitActions] Recebido: POST /deploy-camunda');
+
+  if (!isValidSignature(req)) {
+    return res.status(401).json({ error: "Não Autorizado" });
+  }
+
+  if (req.body.branch && req.body.branch !== "main") {
+    return res.status(200).json({ message: "Branch ignorada" });
+  }
+
+  deployCamunda(); // execução assíncrona
+
+  return res.status(202).json({ 
+    success: true,
+    message: "Deploy Camunda agendado" 
+  });
+};
+
+router.post("/deploy-camunda", webhookCamunda);
+```
+
+#### 4.2.4 Workflow: deploy-camunda.yml
 
 ```yaml
-# .github/workflows/prometheus-pipeline.yml
-name: PROMETHEUS Pipeline
+# .github/workflows/deploy-camunda.yml
+# Repo: ZAZ-vendas/_Zarah-Camunda
+
+name: Deploy Camunda
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
-    inputs:
-      modo:
-        description: 'Modo do pipeline'
-        required: true
-        type: choice
-        options:
-          - validar
-          - implantar
-      release_ref:
-        description: 'Referência da release'
-        required: true
-      artefatos_json:
-        description: 'JSON com artefatos'
-        required: true
 
 jobs:
-  # ══════════════════════════════════════════════════════════════════════════
-  # MODO: VALIDAR
-  # ══════════════════════════════════════════════════════════════════════════
-  validate:
-    if: ${{ inputs.modo == 'validar' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Parse artefatos
-        id: parse
-        run: |
-          echo '${{ inputs.artefatos_json }}' > artefatos.json
-          
-      - name: Validate BPMN
-        run: |
-          for f in $(jq -r '.[] | select(.tipo=="bpmn") | .path' artefatos.json); do
-            xmllint --noout "$f"
-          done
-          
-      - name: Validate DMN
-        run: |
-          for f in $(jq -r '.[] | select(.tipo=="dmn") | .path' artefatos.json); do
-            xmllint --noout "$f"
-          done
-          
-      - name: Lint Workers
-        run: |
-          npm install eslint
-          for f in $(jq -r '.[] | select(.tipo=="worker") | .path' artefatos.json); do
-            npx eslint "$f"
-          done
-
-  test:
-    if: ${{ inputs.modo == 'validar' }}
-    needs: validate
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          
-      - name: Run Tests
-        run: |
-          npm install
-          npm test -- --coverage --coverageThreshold='{"global":{"lines":70}}'
-
-  # ══════════════════════════════════════════════════════════════════════════
-  # MODO: IMPLANTAR
-  # ══════════════════════════════════════════════════════════════════════════
   deploy:
-    if: ${{ inputs.modo == 'implantar' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Parse artefatos
-        run: echo '${{ inputs.artefatos_json }}' > artefatos.json
-        
-      - name: Deploy to Camunda
-        env:
-          CAMUNDA_URL: ${{ secrets.CAMUNDA_URL }}
-          CAMUNDA_USER: ${{ secrets.CAMUNDA_USER }}
-          CAMUNDA_PASSWORD: ${{ secrets.CAMUNDA_PASSWORD }}
+      - name: Build signature
+        id: sign
         run: |
-          # Construir comando curl com todos BPMN/DMN
-          CURL_CMD="curl -X POST ${CAMUNDA_URL}/engine-rest/deployment/create"
-          CURL_CMD="$CURL_CMD -u ${CAMUNDA_USER}:${CAMUNDA_PASSWORD}"
-          CURL_CMD="$CURL_CMD -F deployment-name=${{ inputs.release_ref }}"
-          
-          for f in $(jq -r '.[] | select(.tipo=="bpmn" or .tipo=="dmn") | .path' artefatos.json); do
-            filename=$(basename "$f")
-            CURL_CMD="$CURL_CMD -F ${filename}=@${f}"
-          done
-          
-          eval $CURL_CMD
-          
-      - name: Deploy Workers to ZAZ-vendas
-        env:
-          ZAZ_DEPLOY_KEY: ${{ secrets.ZAZ_VENDAS_DEPLOY_KEY }}
-        run: |
-          # Clone ZAZ-vendas, copy workers, commit, push
-          git clone git@github.com:zaz/ZAZ-vendas.git /tmp/zaz-vendas
-          
-          for f in $(jq -r '.[] | select(.tipo=="worker") | .path' artefatos.json); do
-            cp "$f" /tmp/zaz-vendas/Orquestrador-Zarah/worker/
-          done
-          
-          cd /tmp/zaz-vendas
-          git add .
-          git commit -m "Deploy workers from ${{ inputs.release_ref }}"
-          git push
+          TIMESTAMP=$(date +%s%3N)
+          BODY='{"branch":"main"}'
+          SIGNATURE=$(echo -n "$TIMESTAMP.$BODY" \
+            | openssl dgst -sha256 -hmac "${{ secrets.DEPLOY_SECRET }}" \
+            | sed 's/^.* //')
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+          echo "body=$BODY" >> $GITHUB_OUTPUT
+          echo "signature=$SIGNATURE" >> $GITHUB_OUTPUT
 
-  verify:
-    if: ${{ inputs.modo == 'implantar' }}
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Verify Camunda Deployment
-        env:
-          CAMUNDA_URL: ${{ secrets.CAMUNDA_URL }}
+      - name: Call deploy API
         run: |
-          # Verificar process definitions
-          curl -s "${CAMUNDA_URL}/engine-rest/process-definition" | jq .
-          
-          # Verificar decision definitions
-          curl -s "${CAMUNDA_URL}/engine-rest/decision-definition" | jq .
+          curl -X POST "${{ secrets.DEPLOY_URL }}-camunda" \
+            -H "Content-Type: application/json" \
+            -H "X-Timestamp: ${{ steps.sign.outputs.timestamp }}" \
+            -H "X-Signature: sha256=${{ steps.sign.outputs.signature }}" \
+            --data-raw '${{ steps.sign.outputs.body }}'
 ```
 
-### 4.5 Secrets Necessários
+### 4.3 Configuração
 
-| Secret | Descrição | Onde |
-|--------|-----------|------|
-| CAMUNDA_URL | URL do Camunda (ex: http://camunda:8080) | GitHub Secrets |
-| CAMUNDA_USER | Usuário Camunda | GitHub Secrets |
-| CAMUNDA_PASSWORD | Senha Camunda | GitHub Secrets |
-| ZAZ_VENDAS_DEPLOY_KEY | SSH key para push em ZAZ-vendas | GitHub Secrets |
+#### 4.3.1 Variáveis de Ambiente (.env)
+
+```env
+# Camunda
+CAMUNDA_URL=http://localhost:8080
+CAMUNDA_USER=admin
+CAMUNDA_PASS=senha
+
+# Anthropic (para worker MS_Agente)
+ANTHROPIC_API_KEY=sk-ant-api03-xxxxx
+
+# Paths
+REPO_PATH=/home/camunda-orquestrador/Orquestrador-Zarah
+CAMUNDA_DEPLOY_SCRIPT=/home/camunda-orquestrador/Orquestrador-Zarah/scripts/deploy-camunda.sh
+```
+
+#### 4.3.2 GitHub Secrets
+
+| Secret | Repositório | Descrição |
+|--------|-------------|-----------|
+| `DEPLOY_SECRET` | Orquestrador-Zarah | HMAC key |
+| `DEPLOY_URL` | Orquestrador-Zarah | URL base webhook |
+| `DEPLOY_SECRET` | _Zarah-Camunda | HMAC key (mesmo) |
+| `DEPLOY_URL` | _Zarah-Camunda | URL base webhook (mesmo) |
+
+### 4.4 Fluxo de Deploy
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  DEPLOY WORKERS                                                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Push: ZAZ-vendas/Orquestrador-Zarah                                        │
+│       │                                                                     │
+│       ▼                                                                     │
+│  GitHub Actions → POST /deploy (webhook)                                    │
+│       │                                                                     │
+│       ▼                                                                     │
+│  deploy-gitActions.sh:                                                      │
+│       ├── git pull                                                          │
+│       ├── npm install                                                       │
+│       └── pm2 restart 0  ◄── CORRIGIDO (antes era stop/start)               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  DEPLOY CAMUNDA (BPMN/DMN/Forms)                                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Push: ZAZ-vendas/_Zarah-Camunda                                            │
+│       │                                                                     │
+│       ▼                                                                     │
+│  GitHub Actions → POST /deploy-camunda (webhook)                            │
+│       │                                                                     │
+│       ▼                                                                     │
+│  deploy-camunda.sh:                                                         │
+│       ├── git pull (_Zarah-Camunda)                                         │
+│       ├── check_camunda() - verifica conexão                                │
+│       └── para cada produto (Genesis, Prometheus):                          │
+│           ├── encontra .bpmn, .dmn, .form, .html                            │
+│           └── curl POST /engine-rest/deployment/create                      │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -546,24 +603,54 @@ jobs:
 
 | Critério | Status |
 |----------|--------|
+| Deploy workers via webhook funcional | ✅ |
+| Script workers corrigido (pm2 restart) | ✅ |
+| Estrutura _Zarah-Camunda definida | ✅ |
+| Script deploy-camunda.sh criado | ✅ |
+| Service camundaDeployService.js criado | ✅ |
+| Endpoint /deploy-camunda definido | ✅ |
+| Workflow GitHub Actions Camunda | ✅ |
+| Suporte a .bpmn, .dmn, .form, .html | ✅ |
 | MS consome tipo "executar_pipeline" do backlog | ⬜ |
 | Modo "validar" executa VALIDATE + TEST | ⬜ |
 | Modo "implantar" executa DEPLOY + VERIFY | ⬜ |
-| Sucesso em "validar" produz "aprovar_release" | ⬜ |
-| Sucesso em "implantar" produz "validar_implantacao" | ⬜ |
-| GitHub Actions workflow funcional | ⬜ |
-| Secrets configurados | ⬜ |
 
 ---
 
-## 6. Referências
+## 6. Artefatos Gerados
+
+| Artefato | Localização | Status |
+|----------|-------------|--------|
+| deploy-camunda.sh | scripts/ | ZIP gerado |
+| camundaDeployService.js | src/services/servidor/ | ZIP gerado |
+| gitActionsController (adicionar) | controller/ | ZIP gerado |
+| deploy-camunda.yml | .github/workflows/ | ZIP gerado |
+| README instalação | - | ZIP gerado |
+
+**ZIP:** `deploy-camunda-pipeline.zip`
+
+---
+
+## 7. Próximos Passos
+
+1. **Gabriel:** Criar repo `ZAZ-vendas/_Zarah-Camunda`
+2. **Gabriel:** Clonar no servidor ao lado de Orquestrador-Zarah
+3. **Gabriel:** Instalar arquivos do ZIP
+4. **Gabriel:** Configurar secrets no GitHub
+5. **Leonardo:** Criar API key Anthropic e enviar
+6. **Testar:** Deploy manual com `./scripts/deploy-camunda.sh`
+7. **Testar:** Push no _Zarah-Camunda para trigger automático
+
+---
+
+## 8. Referências
 
 | Documento | Relação |
 |-----------|---------|
 | genesis/PROMETHEUS.md | Pai - fluxo desenvolver/deployar |
 | genesis/PROMETHEUS_Arquitetura.md | Contratos e ciclo |
 | docs/04_B/MS_Backlog.md | Message broker |
-| _sprints/S026_MS_Agente/ | Artefatos de exemplo |
+| _artefatos/S027/worker/ | Workers Anthropic e Agente |
 
 ---
 
@@ -571,4 +658,5 @@ jobs:
 
 | Versão | Data | Alteração |
 |--------|------|-----------|
-| 1.0 | 2025-12-18 | Documento consolidado M1-M2-M3. Dois modos (validar/implantar). Integração com fluxo PROMETHEUS. Sprint S028. |
+| 1.0 | 2025-12-18 | Documento consolidado M1-M2-M3. Dois modos (validar/implantar). |
+| 1.1 | 2025-12-18 | Implementação real: correção pm2 restart, script deploy-camunda.sh, service, controller, workflow. Estrutura _Zarah-Camunda/Genesis e Prometheus. |
