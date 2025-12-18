@@ -3,7 +3,7 @@ id: S028
 nome: Pipeline PROMETHEUS - Teste e Deploy
 status: em_andamento
 inicio: 2025-12-17
-etapa_atual: M0
+etapa_atual: M2
 itens_origem: [BKL-050, BKL-051, BKL-052]
 ---
 
@@ -16,7 +16,7 @@ Definir estratégia completa de Teste e Deploy para PROMETHEUS, eliminando opera
 ## Estado Atual
 
 ```
-M0 🔄 → M1 ⬜ → M2 ⬜ → M3 ⬜ → M4 ⬜
+M0 ✅ → M1 ✅ → M2 ✅ → M3 ⬜ → M4 ⬜
 ```
 
 ## Contexto para Recuperação
@@ -24,9 +24,22 @@ M0 🔄 → M1 ⬜ → M2 ⬜ → M3 ⬜ → M4 ⬜
 ### Carregar Primeiro
 ```
 1. _drafts/S028_M0_Pipeline_PROMETHEUS.md  # Problema
-2. genesis/PROMETHEUS.md                    # Framework atual
-3. db.genesis.backlog (id: BKL-05*)         # Itens origem
+2. _drafts/S028_M1_Pipeline_PROMETHEUS.md  # Framework (Camunda 7)
+3. _drafts/S028_M2_Pipeline_PROMETHEUS.md  # Object Definition
 4. db.genesis.backlog (id: BKL-06*)         # Tasks M0-M4
+```
+
+### Descoberta Crítica: Camunda 7 CE
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  ZAZ usa Camunda 7 Community Edition (não Camunda 8)            │
+├─────────────────────────────────────────────────────────────────┤
+│  - Camunda 8 NÃO tem Community Edition (requer licença)         │
+│  - Deploy via REST API: POST /engine-rest/deployment/create     │
+│  - Testes: camunda-bpm-assert + JUnit (Java) ou Jest (Workers)  │
+│  - GitHub Action oficial: NÃO EXISTE (usar curl customizado)    │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ### Itens Origem (Mergeados)
@@ -43,11 +56,49 @@ M0 🔄 → M1 ⬜ → M2 ⬜ → M3 ⬜ → M4 ⬜
 
 | ID | Task | Status |
 |----|------|--------|
-| BKL-060 | M0 - Definir Problema | 🔄 em_andamento |
-| BKL-061 | M1 - Marco Teórico | ⬜ pendente |
-| BKL-062 | M2 - Definir Objeto | ⬜ pendente |
+| BKL-060 | M0 - Definir Problema | ✅ concluído |
+| BKL-061 | M1 - Marco Teórico | ✅ concluído (v2.0 Camunda 7) |
+| BKL-062 | M2 - Definir Objeto | ✅ concluído |
 | BKL-063 | M3 - Especificar Classe | ⬜ pendente |
 | BKL-064 | M4 - Publicar | ⬜ pendente |
+
+---
+
+## Resumo M1 (Camunda 7)
+
+**Deploy:**
+```bash
+curl -X POST http://camunda:8080/engine-rest/deployment/create \
+  -F "deployment-name=ms-agente" \
+  -F "bpmn_ms_agente.bpmn=@./bpmn/bpmn_ms_agente.bpmn"
+```
+
+**Pipeline Stages:**
+1. VALIDATE → xmllint (BPMN/DMN) + ESLint (Workers)
+2. TEST → Jest (Workers)
+3. DEPLOY → REST API Camunda 7
+4. VERIFY → Health check process definition
+
+---
+
+## Resumo M2 (Object Definition)
+
+**PROMETHEUS É:**
+- Validador de sintaxe
+- Executor de testes
+- Deployer de artefatos
+- Verificador de deploy
+- Transportador de workers
+
+**PROMETHEUS NÃO É:**
+- Gerador de artefatos (GENESIS)
+- Executor de processos (Camunda)
+- Rollback automático (MVP futuro)
+
+**Secrets Requeridos:**
+- CAMUNDA_URL
+- ZAZ_VENDAS_DEPLOY_KEY
+- SLACK_WEBHOOK
 
 ---
 
@@ -64,3 +115,7 @@ M0 🔄 → M1 ⬜ → M2 ⬜ → M3 ⬜ → M4 ⬜
 | Data | Evento |
 |------|--------|
 | 2025-12-17 | Sprint criada. BKL-050/051/052 mergeados. M0 iniciado. |
+| 2025-12-17 | M0 concluído. Problema definido. |
+| 2025-12-18 | M1 pesquisa inicial (Camunda 8 frameworks). |
+| 2025-12-18 | DESCOBERTA: ZAZ usa Camunda 7 CE (não 8). M1 refatorado. |
+| 2025-12-18 | M1 v2.0 concluído (Camunda 7). M2 concluído. |
