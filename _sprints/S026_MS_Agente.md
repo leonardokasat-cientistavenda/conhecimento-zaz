@@ -1,89 +1,71 @@
 ---
 id: S026
 nome: MS_Agente - Agent Runtime
-status: em_andamento
+status: finalizada
 inicio: 2025-12-17
-etapa_atual: M3
+fim: 2025-12-17
+etapa_atual: M4
 m2_ref: _drafts/S026_M2_MS_Agente.md
+m4_ref: genesis/specs/MS_Agente_v1.0.md
 ---
 
-# Sprint S026 - MS_Agente: Agent Runtime
+# Sprint S026 - MS_Agente: Agent Runtime ✅
 
 ## Objetivo
 
 Especificar MS_Agente, módulo genérico de Agent Loop para migração GENESIS de Claude Desktop para Mattermost+Camunda.
 
-## Estado Atual
+## Estado Final
 
 ```
-M0 ✅ → M1 ✅ → M2 ✅ → M3 🔄 → M4 ⬜
+M0 ✅ → M1 ✅ → M2 ✅ → M3 ✅ → M4 ✅
 ```
 
-## Contexto para Recuperação
+## Entregáveis
 
-### Carregar Primeiro
+### M4 - Especificação Final
 ```
-1. _drafts/S026_M2_MS_Agente.md    # M2 completo com schemas e fluxo
-2. db.genesis.backlog (id: BKL-03*) # Itens da sprint
+genesis/specs/MS_Agente_v1.0.md
 ```
 
-### Arquivos Relacionados
-```
-genesis/specs/S026_Agent_Runtime_Spec.md   # Spec consolidada (parcial)
-genesis/specs/BKL027_Bot_WebSocket.md      # DM/privado (backlog futuro)
-genesis/specs/BKL028_Multi_Modelo.md       # Multi-modelo (backlog futuro)
-_catalogo/templates/M3_E_POO.md            # Template para workers
-_catalogo/templates/M3_P_BPMN.md           # Template para BPMN
-```
+### Specs por Vertente
+
+| Vertente | Spec | Arquivo |
+|----------|------|---------|
+| M3.E | workerAnthropic | _drafts/S026_M3E_workerAnthropic.md |
+| M3.E | agente-contexto | _drafts/S026_M3E_agenteContexto.md |
+| M3.E | agente-persistir | _drafts/S026_M3E_agentePersistir.md |
+| M3.E | agente-github | _drafts/S026_M3E_agenteGithub.md |
+| M3.P | bpmn_ms_agente | _drafts/S026_M3P_bpmn_ms_agente.md |
+| M3.D | dmn_entrada_genesis | _drafts/S026_M3D_dmn_entrada_genesis.md |
+| M3.C | schema_execucoes | _drafts/S026_M3C_schema_execucoes.md |
+
+### Templates Criados
+
+| Template | Arquivo |
+|----------|---------|
+| M3.D - DMN | _catalogo/templates/M3_D_DMN.md |
+| M3.C - Config | _catalogo/templates/M3_C_Config.md |
 
 ---
 
-## Backlog da Sprint (db.genesis.backlog)
+## Backlog da Sprint (CONCLUÍDO)
 
-### Sem Bloqueio - Pode Iniciar
-
-| ID | Título | Vertente | Prioridade | Status |
-|----|--------|----------|------------|--------|
-| BKL-030 | Spec workerAnthropic | M3.E | 🔴 | pendente |
-| BKL-031 | Spec agente-contexto | M3.E | 🔴 | pendente |
-| BKL-032 | Spec agente-persistir | M3.E | 🟡 | pendente |
-| BKL-033 | Spec agente-github | M3.E | 🟡 | pendente |
-| BKL-034 | Spec bpmn_ms_agente | M3.P | 🔴 | pendente |
-
-### Ciclos Epistemológicos (criar templates)
-
-| ID | Título | Output | Status |
-|----|--------|--------|--------|
-| BKL-035 | Template M3.D - DMN | _catalogo/templates/M3_D_DMN.md | pendente |
-| BKL-036 | Template M3.C - Config | _catalogo/templates/M3_C_Config.md | pendente |
-
-### Com Bloqueio
-
-| ID | Título | Vertente | Bloqueado Por | Status |
-|----|--------|----------|---------------|--------|
-| BKL-037 | Spec dmn_entrada_genesis | M3.D | BKL-035 | bloqueado |
-| BKL-038 | Spec schema_execucoes | M3.C | BKL-036 | bloqueado |
+| ID | Título | Vertente | Status |
+|----|--------|----------|--------|
+| BKL-030 | Spec workerAnthropic | M3.E | ✅ enviado_desenvolvimento |
+| BKL-031 | Spec agente-contexto | M3.E | ✅ enviado_desenvolvimento |
+| BKL-032 | Spec agente-persistir | M3.E | ✅ enviado_desenvolvimento |
+| BKL-033 | Spec agente-github | M3.E | ✅ enviado_desenvolvimento |
+| BKL-034 | Spec bpmn_ms_agente | M3.P | ✅ enviado_desenvolvimento |
+| BKL-035 | Template M3.D - DMN | - | ✅ enviado_desenvolvimento |
+| BKL-036 | Template M3.C - Config | - | ✅ enviado_desenvolvimento |
+| BKL-037 | Spec dmn_entrada_genesis | M3.D | ✅ enviado_desenvolvimento |
+| BKL-038 | Spec schema_execucoes | M3.C | ✅ enviado_desenvolvimento |
 
 ---
 
-## Fluxo M3 → M4
-
-```
-1. Especificar M3.E.* (workers) usando M3_E_POO.md
-2. Especificar M3.P.* (BPMN) usando M3_P_BPMN.md
-3. Criar template M3.D via ciclo epistemológico (BKL-035)
-4. Especificar M3.D.01 (DMN) → desbloqueia BKL-037
-5. Criar template M3.C via ciclo epistemológico (BKL-036)
-6. Especificar M3.C.01 (Schema) → desbloqueia BKL-038
-7. Consolidar todas as specs em M4 final
-8. Publicar M4 em genesis/specs/MS_Agente_v1.0.md
-9. Atualizar status backlog → "enviado_desenvolvimento"
-10. Sprint S027 (PROMETHEUS) desenvolve artefatos
-```
-
----
-
-## Decisões Arquiteturais (já tomadas)
+## Decisões Arquiteturais
 
 | Decisão | Escolha | Motivo |
 |---------|---------|--------|
@@ -95,7 +77,7 @@ _catalogo/templates/M3_P_BPMN.md           # Template para BPMN
 
 ---
 
-## Componentes a Implementar
+## Componentes Especificados
 
 ### Workers (Node.js)
 ```
@@ -123,9 +105,24 @@ agente.execucoes               # Log de execuções
 
 ---
 
+## Próxima Sprint
+
+**S027 - PROMETHEUS: Desenvolvimento MS_Agente**
+- Consumir specs de `genesis/specs/MS_Agente_v1.0.md`
+- Gerar artefatos (.js, .bpmn, .dmn, collections)
+- Testar conforme Schema TDD
+- Deploy em ambiente de desenvolvimento
+
+---
+
 ## Histórico
 
 | Data | Evento |
 |------|--------|
 | 2025-12-17 | Sprint iniciada. M0-M2 validados. |
 | 2025-12-17 | M2 persistido em _drafts/. Backlog criado (BKL-030 a BKL-038). |
+| 2025-12-17 | M3.E specs criadas (4 workers). |
+| 2025-12-17 | M3.P spec criada (BPMN). |
+| 2025-12-17 | Templates M3.D e M3.C criados. |
+| 2025-12-17 | M3.D e M3.C specs criadas. |
+| 2025-12-17 | **M4 publicado. Sprint FINALIZADA.** |
