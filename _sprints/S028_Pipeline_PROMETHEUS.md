@@ -7,8 +7,9 @@ sprint_id: S028
 nome: MS_Prometheus_Pipeline
 status: pausado
 inicio: 2025-12-18
-previsao_fim: 2025-12-20
-etapa_atual: M3
+previsao_fim: a definir
+etapa_atual: M4
+bloqueio: aguardando configuração self-hosted runner pela TI
 ```
 
 ---
@@ -22,16 +23,29 @@ Especificar e implementar o MS_Prometheus_Pipeline - sistema de validação, tes
 ## Progresso
 
 ```
-M0 ✅ → M1 ✅ → M2 ✅ → M3 ✅ → M4 ⬜
+M0 ✅ → M1 ✅ → M2 ✅ → M3 ✅ → M4 🔒 (bloqueado)
 ```
 
 | Etapa | Status | Documento |
-|-------|--------|------------|
+|-------|--------|-----------|
 | M0 - Problema | ✅ concluído | _drafts/S028_MS_Prometheus_Pipeline.md §1 |
 | M1 - Marco Teórico | ✅ concluído | _drafts/S028_MS_Prometheus_Pipeline.md §2 |
 | M2 - Objeto | ✅ concluído | _drafts/S028_MS_Prometheus_Pipeline.md §3 |
 | M3 - Classe | ✅ concluído | _drafts/S028_MS_Prometheus_Pipeline.md §4 |
-| M4 - Publicação | ⬜ pendente | - |
+| M4 - Implementação | 🔒 bloqueado | Aguardando runner |
+
+---
+
+## Bloqueio Atual
+
+**Dependência:** Self-hosted runner do GitHub Actions na infra ZAZ
+
+**Ação:** Solicitação enviada para TI
+
+**Informações necessárias da TI:**
+- URL do Camunda (endpoint REST API)
+- Usuário e senha do Camunda
+- Label do runner configurado
 
 ---
 
@@ -59,23 +73,13 @@ desenvolver() → executar_pipeline(validar) → aprovar_release
 
 ---
 
-## Próximos Passos (M4)
+## Próximos Passos (quando desbloquear)
 
-1. **Implementar GitHub Actions workflow**
-   - prometheus-pipeline.yml
-   - Jobs: validate, test, deploy, verify
-
-2. **Configurar secrets no GitHub**
-   - CAMUNDA_URL, CAMUNDA_USER, CAMUNDA_PASSWORD
-   - ZAZ_VENDAS_DEPLOY_KEY
-
-3. **Testar com artefatos S026**
-   - bpmn_ms_agente.bpmn
-   - dmn_entrada_genesis.dmn
-   - workers/*.js
-
-4. **Publicar documento final**
-   - Mover de _drafts/ para docs/
+1. **Receber info da TI** - URL Camunda, credenciais, label runner
+2. **Configurar secrets no GitHub** - CAMUNDA_URL, USER, PASSWORD
+3. **Implementar workflow** - prometheus-pipeline.yml
+4. **Testar com artefatos S026** - BPMN, DMN, Workers
+5. **Publicar** - Mover de _drafts/ para docs/
 
 ---
 
@@ -86,8 +90,8 @@ desenvolver() → executar_pipeline(validar) → aprovar_release
 | BKL-061 | M1 - Marco Teórico | ✅ concluído |
 | BKL-062 | M2 - Objeto | ✅ concluído |
 | BKL-063 | M3 - Classe | ✅ concluído |
-| BKL-064 | M4 - Implementação workflow | ⬜ pendente |
-| BKL-065 | M4 - Configurar secrets | ⬜ pendente |
+| BKL-064 | M4 - Implementação workflow | 🔒 bloqueado |
+| BKL-065 | M4 - Configurar secrets | 🔒 bloqueado |
 | BKL-066 | M4 - Testar com S026 | ⬜ pendente |
 | BKL-067 | M4 - Publicar | ⬜ pendente |
 
@@ -101,4 +105,5 @@ desenvolver() → executar_pipeline(validar) → aprovar_release
 | 2025-12-18 | Descoberta: ZAZ usa Camunda 7 CE |
 | 2025-12-18 | Definição arquitetura: dois modos (validar/implantar) |
 | 2025-12-18 | M1-M2-M3 consolidados em documento único |
-| 2025-12-18 | Sprint pausado - retomar M4 amanhã |
+| 2025-12-18 | Sprint pausado - aguardando runner |
+| 2025-12-18 | Solicitação enviada para TI |
