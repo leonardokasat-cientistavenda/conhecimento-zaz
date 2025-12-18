@@ -1,112 +1,95 @@
----
-id: S028
-nome: Pipeline PROMETHEUS - Teste e Deploy
-status: em_andamento
-inicio: 2025-12-17
-etapa_atual: M2
-itens_origem: [BKL-050, BKL-051, BKL-052]
+# Sprint S028 - MS_Prometheus_Pipeline
+
 ---
 
-# Sprint S028 - Pipeline PROMETHEUS: Teste e Deploy
+```yaml
+sprint_id: S028
+nome: MS_Prometheus_Pipeline
+status: pausado
+inicio: 2025-12-18
+previsao_fim: 2025-12-20
+etapa_atual: M3
+```
+
+---
 
 ## Objetivo
 
-Definir estratégia completa de Teste e Deploy para PROMETHEUS, eliminando operação manual e entropia cognitiva.
-
-## Estado Atual
-
-```
-M0 ✅ → M1 ✅ → M2 ✅ → M3 ⬜ → M4 ⬜
-```
-
-## Contexto para Recuperação
-
-### Carregar Primeiro
-```
-1. _drafts/S028_M0_Pipeline_PROMETHEUS.md  # Problema
-2. _drafts/S028_M1_Pipeline_PROMETHEUS.md  # Framework (Camunda 7)
-3. _drafts/S028_M2_Pipeline_PROMETHEUS.md  # Object Definition
-4. db.genesis.backlog (id: BKL-06*)         # Tasks M0-M4
-```
-
-### Descoberta Crítica: Camunda 7 CE
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  ZAZ usa Camunda 7 Community Edition (não Camunda 8)            │
-├─────────────────────────────────────────────────────────────────┤
-│  - Camunda 8 NÃO tem Community Edition (requer licença)         │
-│  - Deploy via REST API: POST /engine-rest/deployment/create     │
-│  - Testes: camunda-bpm-assert + JUnit (Java) ou Jest (Workers)  │
-│  - GitHub Action oficial: NÃO EXISTE (usar curl customizado)    │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### Itens Origem (Mergeados)
-
-| ID | Título | Foco |
-|----|--------|------|
-| BKL-050 | Estratégia de Publicação | CI/CD vs Framework |
-| BKL-051 | Framework de Teste | Por tipo de artefato |
-| BKL-052 | Fronteira Teste/Deploy | Definição de gates |
+Especificar e implementar o MS_Prometheus_Pipeline - sistema de validação, teste, deploy e verificação de artefatos gerados pelo PROMETHEUS.
 
 ---
 
-## Backlog da Sprint
+## Progresso
 
-| ID | Task | Status |
-|----|------|--------|
-| BKL-060 | M0 - Definir Problema | ✅ concluído |
-| BKL-061 | M1 - Marco Teórico | ✅ concluído (v2.0 Camunda 7) |
-| BKL-062 | M2 - Definir Objeto | ✅ concluído |
-| BKL-063 | M3 - Especificar Classe | ⬜ pendente |
-| BKL-064 | M4 - Publicar | ⬜ pendente |
-
----
-
-## Resumo M1 (Camunda 7)
-
-**Deploy:**
-```bash
-curl -X POST http://camunda:8080/engine-rest/deployment/create \
-  -F "deployment-name=ms-agente" \
-  -F "bpmn_ms_agente.bpmn=@./bpmn/bpmn_ms_agente.bpmn"
+```
+M0 ✅ → M1 ✅ → M2 ✅ → M3 ✅ → M4 ⬜
 ```
 
-**Pipeline Stages:**
-1. VALIDATE → xmllint (BPMN/DMN) + ESLint (Workers)
-2. TEST → Jest (Workers)
-3. DEPLOY → REST API Camunda 7
-4. VERIFY → Health check process definition
+| Etapa | Status | Documento |
+|-------|--------|------------|
+| M0 - Problema | ✅ concluído | _drafts/S028_MS_Prometheus_Pipeline.md §1 |
+| M1 - Marco Teórico | ✅ concluído | _drafts/S028_MS_Prometheus_Pipeline.md §2 |
+| M2 - Objeto | ✅ concluído | _drafts/S028_MS_Prometheus_Pipeline.md §3 |
+| M3 - Classe | ✅ concluído | _drafts/S028_MS_Prometheus_Pipeline.md §4 |
+| M4 - Publicação | ⬜ pendente | - |
 
 ---
 
-## Resumo M2 (Object Definition)
+## Descobertas Chave
 
-**PROMETHEUS É:**
-- Validador de sintaxe
-- Executor de testes
-- Deployer de artefatos
-- Verificador de deploy
-- Transportador de workers
+### Camunda 7 CE
+- ZAZ usa Camunda 7 Community Edition (não Camunda 8)
+- Deploy via REST API: POST /engine-rest/deployment/create
+- Gratuito, Apache 2.0
 
-**PROMETHEUS NÃO É:**
-- Gerador de artefatos (GENESIS)
-- Executor de processos (Camunda)
-- Rollback automático (MVP futuro)
+### Arquitetura Pipeline
+- **Um MS, dois modos**: validar | implantar
+- **modo=validar**: VALIDATE + TEST (antes de aprovar_release)
+- **modo=implantar**: DEPLOY + VERIFY (após MS_PRODUTO aprovar)
+- **Storage**: db.backlog (sem collection nova - YAGNI)
 
-**Secrets Requeridos:**
-- CAMUNDA_URL
-- ZAZ_VENDAS_DEPLOY_KEY
-- SLACK_WEBHOOK
+### Fluxo Integrado
+```
+desenvolver() → executar_pipeline(validar) → aprovar_release
+                                                    ↓
+                                              MS_PRODUTO
+                                                    ↓
+                            executar_pipeline(implantar) → validar_implantacao
+```
 
 ---
 
-## Contexto Adicional (do Usuário)
+## Próximos Passos (M4)
 
-- **Usuário não é dev:** Muita entropia cerebral operacionalizar fluxo manual no Git
-- **Preferência:** Mais fácil especificar processo e persistir 1x do que executar manual
-- **Ganho:** Contexto persistido para próximos deploys
+1. **Implementar GitHub Actions workflow**
+   - prometheus-pipeline.yml
+   - Jobs: validate, test, deploy, verify
+
+2. **Configurar secrets no GitHub**
+   - CAMUNDA_URL, CAMUNDA_USER, CAMUNDA_PASSWORD
+   - ZAZ_VENDAS_DEPLOY_KEY
+
+3. **Testar com artefatos S026**
+   - bpmn_ms_agente.bpmn
+   - dmn_entrada_genesis.dmn
+   - workers/*.js
+
+4. **Publicar documento final**
+   - Mover de _drafts/ para docs/
+
+---
+
+## Backlog Items
+
+| ID | Tarefa | Status |
+|----|--------|--------|
+| BKL-061 | M1 - Marco Teórico | ✅ concluído |
+| BKL-062 | M2 - Objeto | ✅ concluído |
+| BKL-063 | M3 - Classe | ✅ concluído |
+| BKL-064 | M4 - Implementação workflow | ⬜ pendente |
+| BKL-065 | M4 - Configurar secrets | ⬜ pendente |
+| BKL-066 | M4 - Testar com S026 | ⬜ pendente |
+| BKL-067 | M4 - Publicar | ⬜ pendente |
 
 ---
 
@@ -114,8 +97,8 @@ curl -X POST http://camunda:8080/engine-rest/deployment/create \
 
 | Data | Evento |
 |------|--------|
-| 2025-12-17 | Sprint criada. BKL-050/051/052 mergeados. M0 iniciado. |
-| 2025-12-17 | M0 concluído. Problema definido. |
-| 2025-12-18 | M1 pesquisa inicial (Camunda 8 frameworks). |
-| 2025-12-18 | DESCOBERTA: ZAZ usa Camunda 7 CE (não 8). M1 refatorado. |
-| 2025-12-18 | M1 v2.0 concluído (Camunda 7). M2 concluído. |
+| 2025-12-18 | Sprint iniciado |
+| 2025-12-18 | Descoberta: ZAZ usa Camunda 7 CE |
+| 2025-12-18 | Definição arquitetura: dois modos (validar/implantar) |
+| 2025-12-18 | M1-M2-M3 consolidados em documento único |
+| 2025-12-18 | Sprint pausado - retomar M4 amanhã |
