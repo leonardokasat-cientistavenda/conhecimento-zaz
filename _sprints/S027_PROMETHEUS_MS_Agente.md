@@ -1,40 +1,69 @@
 ---
 id: S027
 nome: PROMETHEUS - Desenvolvimento MS_Agente
-status: em_andamento
+status: finalizada
 inicio: 2025-12-17
-etapa_atual: Desenvolvimento
+fim: 2025-12-17
+etapa_atual: Deploy
 spec_ref: genesis/specs/MS_Agente_v1.0.md
 sprint_origem: S026
+release_ref: _artefatos/S027/README.md
 ---
 
-# Sprint S027 - PROMETHEUS: Desenvolvimento MS_Agente
+# Sprint S027 - PROMETHEUS: Desenvolvimento MS_Agente ✅
 
 ## Objetivo
 
 Desenvolver artefatos especificados em MS_Agente v1.0, transformando specs em código executável.
 
-## Estado Atual
+## Estado Final
 
 ```
-Precificar ✅ → Desenvolver 🔄 → Testar ⬜ → Deployar ⬜
+Precificar ✅ → Desenvolver ✅ → Testar ⬜ → Deployar ⬜
 ```
 
-## Contexto para Recuperação
+**Próximo passo:** Deploy manual nos ambientes ZAZ
 
-### Carregar Primeiro
+---
+
+## Entregáveis
+
+### Release Package
 ```
-1. genesis/specs/MS_Agente_v1.0.md         # Spec M4 completa
-2. _drafts/S026_M3E_*.md                   # Specs dos workers
-3. _drafts/S026_M3P_bpmn_ms_agente.md      # Spec BPMN
-4. _drafts/S026_M3D_dmn_entrada_genesis.md # Spec DMN
-5. _drafts/S026_M3C_schema_execucoes.md    # Spec Schema
-6. db.genesis.backlog (id: BKL-04*)        # Itens desta sprint
+_artefatos/S027/
+├── README.md                              # Instruções de deploy
+├── worker/
+│   ├── anthropic/index.js                 # workerAnthropic
+│   └── agente/
+│       ├── contexto.js                    # agente-contexto
+│       ├── persistir.js                   # agente-persistir
+│       └── github.js                      # agente-github-get/push
+├── bpmn/
+│   └── bpmn_ms_agente.bpmn               # Agent Loop
+├── dmn/
+│   └── dmn_update_genesis.xml            # Regra a adicionar
+└── scripts/
+    ├── create_collection_execucoes.js    # agente.execucoes
+    └── create_collection_agentes.js      # genesis.agentes
 ```
 
 ---
 
-## Spec Recursos (Orçamento)
+## Backlog da Sprint (CONCLUÍDO)
+
+| ID | Título | Worker | Status |
+|----|--------|--------|--------|
+| BKL-040 | Desenvolver workerAnthropic | Worker_E | ✅ concluido |
+| BKL-041 | Desenvolver agente-contexto | Worker_E | ✅ concluido |
+| BKL-042 | Desenvolver agente-persistir | Worker_E | ✅ concluido |
+| BKL-043 | Desenvolver agente-github | Worker_E | ✅ concluido |
+| BKL-044 | Desenvolver bpmn_ms_agente | Worker_P | ✅ concluido |
+| BKL-045 | Atualizar DMN entrada genesis | Worker_D | ✅ concluido |
+| BKL-046 | Criar collection execucoes | Worker_C | ✅ concluido |
+
+---
+
+## Spec Recursos (Realizado)
 
 ### Runtime
 ```yaml
@@ -45,75 +74,34 @@ runtime:
   mongodb: agente.execucoes + genesis.agentes
 ```
 
-### Esforço Estimado
+### Esforço Realizado
 ```yaml
 esforco:
-  workers_js: 4 arquivos (~200 linhas total)
+  workers_js: 4 arquivos (~300 linhas)
   bpmn: 1 arquivo
-  dmn: 1 linha adicional
-  collection: 1 + índices
-  total_horas: ~8h
+  dmn: 1 update
+  scripts: 2 arquivos
+  total_tempo: ~1h (assistido por GENESIS)
 ```
 
-### GAPs Identificados
+### GAPs
 ```yaml
-gaps: []  # Sem GAPs - infra já existe (Orquestrador-Zarah)
+gaps: []  # Sem GAPs - infra já existe
 ```
 
 ---
 
-## Backlog da Sprint (db.genesis.backlog)
+## Instruções de Deploy
 
-| ID | Título | Worker | Spec Ref | Status |
-|----|--------|--------|----------|--------|
-| BKL-040 | Desenvolver workerAnthropic | Worker_E | S026_M3E_workerAnthropic.md | pendente |
-| BKL-041 | Desenvolver agente-contexto | Worker_E | S026_M3E_agenteContexto.md | pendente |
-| BKL-042 | Desenvolver agente-persistir | Worker_E | S026_M3E_agentePersistir.md | pendente |
-| BKL-043 | Desenvolver agente-github | Worker_E | S026_M3E_agenteGithub.md | pendente |
-| BKL-044 | Desenvolver bpmn_ms_agente | Worker_P | S026_M3P_bpmn_ms_agente.md | pendente |
-| BKL-045 | Atualizar DMN entrada genesis | Worker_D | S026_M3D_dmn_entrada_genesis.md | pendente |
-| BKL-046 | Criar collection execucoes | Worker_C | S026_M3C_schema_execucoes.md | pendente |
+Ver `_artefatos/S027/README.md` para instruções completas.
 
----
-
-## Artefatos a Gerar
-
-### Workers (Node.js)
-```
-worker/anthropic/index.js      # workerAnthropic
-worker/agente/contexto.js      # agente-contexto  
-worker/agente/persistir.js     # agente-persistir
-worker/agente/github.js        # agente-github
-```
-
-### BPMN
-```
-bpmn/bpmn_ms_agente.bpmn       # Workflow Agent Loop
-```
-
-### DMN
-```
-dmn/dmn_processo_iniciar_orquestrador.dmn  # +1 linha genesis
-```
-
-### MongoDB
-```
-db.agente.execucoes            # Collection com schema validator
-db.genesis.agentes             # Collection de config
-```
-
----
-
-## Fluxo de Desenvolvimento
-
-```
-1. Worker_E: Gerar workers JS a partir das specs M3.E
-2. Worker_P: Gerar BPMN a partir da spec M3.P
-3. Worker_D: Atualizar DMN conforme spec M3.D
-4. Worker_C: Criar collections conforme spec M3.C
-5. Testar: Validar conforme Schema TDD de cada spec
-6. Consolidar: Pacote de release
-```
+### Resumo:
+1. Executar scripts MongoDB
+2. Copiar workers para Orquestrador-Zarah
+3. Deploy BPMN no Camunda
+4. Atualizar DMN existente
+5. Configurar Mattermost Webhook
+6. Testar fluxo end-to-end
 
 ---
 
@@ -122,3 +110,6 @@ db.genesis.agentes             # Collection de config
 | Data | Evento |
 |------|--------|
 | 2025-12-17 | Sprint iniciada. Spec MS_Agente v1.0 como entrada. |
+| 2025-12-17 | Workers JS desenvolvidos (4 arquivos). |
+| 2025-12-17 | BPMN, DMN update, scripts MongoDB criados. |
+| 2025-12-17 | **Sprint FINALIZADA. Release pronto para deploy.** |
