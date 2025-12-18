@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_MS_Agente"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+
+  <bpmn:process id="bpmn_ms_agente" name="MS Agente - Agent Loop" isExecutable="true">
+
+    <!-- START EVENT -->
+    <bpmn:startEvent id="start" name="Mensagem Recebida">
+      <bpmn:outgoing>flow_start_contexto</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- TASK: MONTAR CONTEXTO -->
+    <bpmn:serviceTask id="task_contexto" name="Montar Contexto" camunda:type="external" camunda:topic="agente-contexto">
+      <bpmn:extensionElements>
+        <camunda:failedJobRetryTimeCycle>R3/PT1M</camunda:failedJobRetryTimeCycle>
+      </bpmn:extensionElements>
+      <bpmn:incoming>flow_start_contexto</bpmn:incoming>
+      <bpmn:outgoing>flow_contexto_llm</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- TASK: CHAMAR LLM -->
+    <bpmn:serviceTask id="task_llm" name="Chamar LLM" camunda:type="external" camunda:topic="workerAnthropic">
+      <bpmn:extensionElements>
+        <camunda:failedJobRetryTimeCycle>R3/PT30S</camunda:failedJobRetryTimeCycle>
+      </bpmn:extensionElements>
+      <bpmn:incoming>flow_contexto_llm</bpmn:incoming>
+      <bpmn:incoming>flow_tool_llm</bpmn:incoming>
+      <bpmn:outgoing>flow_llm_gateway</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- GATEWAY: VERIFICAR STOP REASON -->
+    <bpmn:exclusiveGateway id="gw_stop_reason" name="Stop Reason?">
+      <bpmn:incoming>flow_llm_gateway</bpmn:incoming>
+      <bpmn:outgoing>flow_end_turn</bpmn:outgoing>
+      <bpmn:outgoing>flow_tool_use</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- TASK: EXECUTAR TOOL -->
+    <bpmn:serviceTask id="task_tool" name="Executar Tool" camunda:type="external" camunda:topic="agente-tool">
+      <bpmn:extensionElements>
+        <camunda:failedJobRetryTimeCycle>R2/PT10S</camunda:failedJobRetryTimeCycle>
+      </bpmn:extensionElements>
+      <bpmn:incoming>flow_tool_use</bpmn:incoming>
+      <bpmn:outgoing>flow_tool_llm</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- TASK: RESPONDER MATTERMOST -->
+    <bpmn:serviceTask id="task_responder" name="Responder Mattermost" camunda:type="external" camunda:topic="sendMessage">
+      <bpmn:extensionElements>
+        <camunda:failedJobRetryTimeCycle>R5/PT5S</camunda:failedJobRetryTimeCycle>
+      </bpmn:extensionElements>
+      <bpmn:incoming>flow_end_turn</bpmn:incoming>
+      <bpmn:outgoing>flow_responder_persistir</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- TASK: PERSISTIR EXECUÇÃO -->
+    <bpmn:serviceTask id="task_persistir" name="Persistir Execução" camunda:type="external" camunda:topic="agente-persistir">
+      <bpmn:extensionElements>
+        <camunda:failedJobRetryTimeCycle>R3/PT5S</camunda:failedJobRetryTimeCycle>
+      </bpmn:extensionElements>
+      <bpmn:incoming>flow_responder_persistir</bpmn:incoming>
+      <bpmn:outgoing>flow_persistir_end</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- END EVENT -->
+    <bpmn:endEvent id="end_success" name="Resposta Enviada">
+      <bpmn:incoming>flow_persistir_end</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- SEQUENCE FLOWS -->
+    <bpmn:sequenceFlow id="flow_start_contexto" sourceRef="start" targetRef="task_contexto" />
+    <bpmn:sequenceFlow id="flow_contexto_llm" sourceRef="task_contexto" targetRef="task_llm" />
+    <bpmn:sequenceFlow id="flow_llm_gateway" sourceRef="task_llm" targetRef="gw_stop_reason" />
+    
+    <bpmn:sequenceFlow id="flow_end_turn" name="end_turn" sourceRef="gw_stop_reason" targetRef="task_responder">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${stopReason == 'end_turn'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    
+    <bpmn:sequenceFlow id="flow_tool_use" name="tool_use" sourceRef="gw_stop_reason" targetRef="task_tool">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${stopReason == 'tool_use'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    
+    <bpmn:sequenceFlow id="flow_tool_llm" sourceRef="task_tool" targetRef="task_llm" />
+    <bpmn:sequenceFlow id="flow_responder_persistir" sourceRef="task_responder" targetRef="task_persistir" />
+    <bpmn:sequenceFlow id="flow_persistir_end" sourceRef="task_persistir" targetRef="end_success" />
+
+  </bpmn:process>
+
+  <!-- DIAGRAM -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="bpmn_ms_agente">
+      
+      <bpmndi:BPMNShape id="start_di" bpmnElement="start">
+        <dc:Bounds x="152" y="192" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      
+      <bpmndi:BPMNShape id="task_contexto_di" bpmnElement="task_contexto">
+        <dc:Bounds x="240" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      
+      <bpmndi:BPMNShape id="task_llm_di" bpmnElement="task_llm">
+        <dc:Bounds x="400" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      
+      <bpmndi:BPMNShape id="gw_stop_reason_di" bpmnElement="gw_stop_reason" isMarkerVisible="true">
+        <dc:Bounds x="555" y="185" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      
+      <bpmndi:BPMNShape id="task_tool_di" bpmnElement="task_tool">
+        <dc:Bounds x="530" y="300" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      
+      <bpmndi:BPMNShape id="task_responder_di" bpmnElement="task_responder">
+        <dc:Bounds x="670" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      
+      <bpmndi:BPMNShape id="task_persistir_di" bpmnElement="task_persistir">
+        <dc:Bounds x="830" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      
+      <bpmndi:BPMNShape id="end_success_di" bpmnElement="end_success">
+        <dc:Bounds x="992" y="192" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

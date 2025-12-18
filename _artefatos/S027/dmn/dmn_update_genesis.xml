@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  DMN Update - Adicionar entrada genesis
+  
+  Spec: _drafts/S026_M3D_dmn_entrada_genesis.md
+  Sprint: S027
+  
+  INSTRUÇÃO: Adicionar esta regra na tabela dmn_processo_iniciar_orquestrador existente
+-->
+
+<!--
+  REGRA A ADICIONAR:
+  
+  | tipo_orquestrador | processo         | token_orquestrador        |
+  |-------------------|------------------|---------------------------|
+  | "genesis"         | bpmn_ms_agente   | MATTERMOST_TOKEN_GENESIS  |
+  
+  XML da regra:
+-->
+<rule id="rule_genesis">
+  <inputEntry id="input_genesis">
+    <text>"genesis"</text>
+  </inputEntry>
+  <outputEntry id="output_processo_genesis">
+    <text>"bpmn_ms_agente"</text>
+  </outputEntry>
+  <outputEntry id="output_token_genesis">
+    <text>"MATTERMOST_TOKEN_GENESIS"</text>
+  </outputEntry>
+</rule>
+
+<!--
+  POSIÇÃO: Inserir ANTES da regra default (linha com "-")
+  
+  Resultado esperado:
+  
+  | tipo_orquestrador | processo                    | token_orquestrador        |
+  |-------------------|-----------------------------|---------------------------|
+  | "zarah"           | bpmn_orquestrador_zarah     | MATTERMOST_TOKEN_ZARAH    |
+  | "genesis"         | bpmn_ms_agente              | MATTERMOST_TOKEN_GENESIS  | <- NOVA
+  | -                 | bpmn_default                | MATTERMOST_TOKEN_DEFAULT  |
+-->
