@@ -1,0 +1,83 @@
+{
+  "versao": "1.0",
+  "criado_em": "2025-12-18",
+  "descricao": "Credenciais dos bots do Panteão GENESIS no Mattermost",
+  "team": {
+    "id": "wj5que7njfygpxdq4sijrdjwnr",
+    "name": "msagentes",
+    "display_name": "MS_Agentes"
+  },
+  "callback_url_base": "https://zaz.vc/webhook",
+  "agentes": {
+    "genesis": {
+      "proposito": "O início, criação - Sistema de Inteligência Híbrida",
+      "email": "genesis@zazvendas.com.br",
+      "user_id": "noecbzw95bbnub84f8gs5xtiey",
+      "token": "5g65c5kwj38hdbfuox3y34benr",
+      "webhook_id": "yigo8se5rin8pg4oarymerfacc",
+      "trigger_word": "@genesis",
+      "callback_url": "https://zaz.vc/webhook?user_id=noecbzw95bbnub84f8gs5xtiey",
+      "dmn": {
+        "tipo_orquestrador": "genesis",
+        "processo": "bpmn_ms_agente",
+        "token_orquestrador": "5g65c5kwj38hdbfuox3y34benr"
+      }
+    },
+    "prometheus": {
+      "proposito": "Traz capacidade aos humanos - Pipeline CI/CD",
+      "email": "prometheus@zazvendas.com.br",
+      "user_id": "8o5w6p39zind8ptiqohttjtqyo",
+      "token": "gr6pskjfx7fgdxjyggazrocuew",
+      "webhook_id": "panciqbkobbejrjnqipsapr3fa",
+      "trigger_word": "@prometheus",
+      "callback_url": "https://zaz.vc/webhook?user_id=8o5w6p39zind8ptiqohttjtqyo",
+      "dmn": {
+        "tipo_orquestrador": "prometheus",
+        "processo": "bpmn_ms_agente",
+        "token_orquestrador": "gr6pskjfx7fgdxjyggazrocuew"
+      }
+    },
+    "asclepius": {
+      "proposito": "Cura a dor - Gestão de Produtos",
+      "email": "asclepius@zazvendas.com.br",
+      "user_id": "4kb997sanjbgmci79mfm6efu8e",
+      "token": "rfayfmx7pfbufgka5tbipxrfjy",
+      "webhook_id": "w17884yqtbb3d8c4x3e5ghcbnh",
+      "trigger_word": "@asclepius",
+      "callback_url": "https://zaz.vc/webhook?user_id=4kb997sanjbgmci79mfm6efu8e",
+      "dmn": {
+        "tipo_orquestrador": "asclepius",
+        "processo": "bpmn_ms_agente",
+        "token_orquestrador": "rfayfmx7pfbufgka5tbipxrfjy"
+      }
+    },
+    "atlas": {
+      "proposito": "Carrega o trabalho pendente - Gestão de Backlog",
+      "email": "atlas@zazvendas.com.br",
+      "user_id": "pk5a91uzwtrm9fyzbu7q554q4a",
+      "token": "obxacdxwff8cmx1gpsbh9dsspc",
+      "webhook_id": "3tppxoe6qjr5bybrgwbpc51h4r",
+      "trigger_word": "@atlas",
+      "callback_url": "https://zaz.vc/webhook?user_id=pk5a91uzwtrm9fyzbu7q554q4a",
+      "dmn": {
+        "tipo_orquestrador": "atlas",
+        "processo": "bpmn_ms_agente",
+        "token_orquestrador": "obxacdxwff8cmx1gpsbh9dsspc"
+      }
+    },
+    "kairos": {
+      "proposito": "Momento certo de executar - Gestão de Sprints",
+      "email": "kairos@zazvendas.com.br",
+      "user_id": "iapa7h6sztd8pj66598enaxb1e",
+      "token": "g4seynz1wffbpbd4gy9hf3g4qy",
+      "webhook_id": "rapmxw69xiyzp8y169ouswhqto",
+      "trigger_word": "@kairos",
+      "callback_url": "https://zaz.vc/webhook?user_id=iapa7h6sztd8pj66598enaxb1e",
+      "dmn": {
+        "tipo_orquestrador": "kairos",
+        "processo": "bpmn_ms_agente",
+        "token_orquestrador": "g4seynz1wffbpbd4gy9hf3g4qy"
+      }
+    }
+  }
+}
