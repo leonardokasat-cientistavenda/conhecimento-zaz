@@ -1,10 +1,10 @@
-# MS_Prometheus_Logging v1.1
+# MS_Prometheus_Logging v1.2
 
 ---
 
 ```yaml
 nome: MS_Prometheus_Logging
-versao: "1.1"
+versao: "1.2"
 tipo: Especificação
 status: Aprovado
 pai: genesis/PROMETHEUS.md
@@ -14,7 +14,7 @@ backlog_ref: BKL-037
 
 # Público-alvo
 destinatario_mvp: PROMETHEUS (padrão de geração de código)
-destinatario_prd: Gabriel / Time Infra (Loki)
+destinatario_prd: Gabriel / Time Infra (ClickHouse)
 objetivo: Sistema de logging para pipeline TDD com evolução para produção
 ```
 
@@ -44,7 +44,7 @@ ANTES (problema):
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  Quem: PROMETHEUS (padrão no código gerado)                                 │
-│  Como: Pino → console / MongoDB                                             │
+│  Como: Pino → console                                                       │
 │  Interface: Leonardo cola output → Claude analisa                           │
 │                                                                             │
 │  ✅ Zero infra nova                                                         │
@@ -58,13 +58,14 @@ ANTES (problema):
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  Quem: Gabriel / Time Infra                                                 │
-│  Como: Pino → Loki                                                          │
-│  Interface: Claude consulta Loki via MCP Server                             │
+│  Como: Pino → ClickHouse                                                    │
+│  Interface: Claude consulta ClickHouse via MCP Server oficial               │
 │                                                                             │
-│  ✅ Banco especializado para logs                                           │
-│  ✅ Busca indexada, estruturado                                             │
-│  ✅ Escala para produção                                                    │
-│  ✅ Claude consulta diretamente                                             │
+│  ✅ Banco OLAP especializado                                                │
+│  ✅ Query via SQL (time já conhece)                                         │
+│  ✅ MCP Server oficial da ClickHouse                                        │
+│  ✅ Usado pela Anthropic internamente                                       │
+│  ✅ Pode unificar logs + métricas + analytics                               │
 │                                                                             │
 │  Backlog: BKL-037                                                           │
 │                                                                             │
@@ -118,17 +119,20 @@ Claude analisa → corrige → repete
 
 ---
 
-## 3. TRILHA 2: PRD - Loki (Gabriel / Infra)
+## 3. TRILHA 2: PRD - ClickHouse (Gabriel / Infra)
 
-### 3.1 Por Que Loki
+### 3.1 Por Que ClickHouse (não Loki)
 
-| Aspecto | MongoDB | Loki |
-|---------|---------|------|
-| Propósito | Banco genérico | Especializado em logs |
-| Indexação | Manual | Automática por labels |
-| Query | find() | LogQL (poderoso) |
-| Escala | Limitada | Alta |
-| Retenção | Manual | Configurável por level |
+| Aspecto | Loki | ClickHouse |
+|---------|------|------------|
+| Query Language | LogQL (nova) | **SQL (conhecida)** |
+| MCP Server | Comunidade | **Oficial ClickHouse** |
+| Usado por Anthropic | Não | **Sim** |
+| Unificação | Só logs | **Logs + métricas + analytics** |
+| Full-text search | Lento | **Rápido** |
+| Agregações | Básicas | **Poderosas** |
+
+**Decisão:** ClickHouse. Time já sabe SQL, MCP oficial, Anthropic usa.
 
 ### 3.2 Arquitetura Final
 
@@ -139,40 +143,43 @@ Claude analisa → corrige → repete
 │                                                                             │
 │  WORKER                                                                     │
 │       │                                                                     │
-│       │ Pino com transport pino-loki                                        │
+│       │ Pino com transport pino-clickhouse                                  │
 │       ▼                                                                     │
-│  LOKI (banco de logs)                                                       │
+│  CLICKHOUSE (banco OLAP)                                                    │
 │       │                                                                     │
-│       │ Logs estruturados com labels                                        │
+│       │ Logs estruturados, indexados, SQL                                   │
 │       ▼                                                                     │
 │  CLAUDE via MCP                                                             │
 │       │                                                                     │
-│       │ loki_query / search_logs                                            │
+│       │ SELECT * FROM logs WHERE spec_id = '...'                            │
 │       ▼                                                                     │
 │  Analisa erro, gera correção, ciclo automatizado                            │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 3.3 MCP Server para Loki
+### 3.3 MCP Server para ClickHouse
 
-**Já existe MCP Server oficial:**
+**MCP Server oficial:**
 
-| Opção | Linguagem | Instalação |
-|-------|-----------|------------|
-| simple-loki-mcp | Node.js | `npx -y simple-loki-mcp` |
-| grafana/loki-mcp | Go | Docker |
+```bash
+npx -y mcp-clickhouse
+```
 
 **Configuração no Claude Desktop:**
 
 ```json
 {
   "mcpServers": {
-    "loki": {
+    "clickhouse": {
       "command": "npx",
-      "args": ["-y", "simple-loki-mcp"],
+      "args": ["-y", "mcp-clickhouse"],
       "env": {
-        "LOKI_ADDR": "https://loki.zaz.com.br"
+        "CLICKHOUSE_HOST": "clickhouse.zaz.com.br",
+        "CLICKHOUSE_PORT": "8443",
+        "CLICKHOUSE_USER": "genesis_readonly",
+        "CLICKHOUSE_PASSWORD": "...",
+        "CLICKHOUSE_SECURE": "true"
       }
     }
   }
@@ -183,39 +190,95 @@ Claude analisa → corrige → repete
 
 | Tool | O que faz |
 |------|-----------|
-| `loki_query` | Executa LogQL |
-| `search_logs` | Busca por keyword |
-| `get_labels` | Lista labels disponíveis |
-| `get_label_values` | Valores de uma label |
+| `clickhouse_query` | Executa SELECT (read-only) |
+| `clickhouse_show_tables` | Lista tabelas |
+| `clickhouse_describe_table` | Schema da tabela |
 
-### 3.4 Checklist de Implementação (Gabriel)
+### 3.4 Schema da Tabela de Logs
+
+```sql
+CREATE DATABASE IF NOT EXISTS genesis;
+
+CREATE TABLE genesis.logs (
+  -- Timestamps
+  timestamp DateTime64(3) DEFAULT now64(3),
+  
+  -- Level
+  level String,
+  message String,
+  
+  -- Identificação
+  spec_id String,
+  iteration UInt32,
+  
+  -- Output
+  stdout String,
+  stderr String,
+  exit_code Int32,
+  
+  -- Código
+  code_snapshot String,
+  
+  -- Métricas
+  duration_ms UInt32,
+  
+  -- Contexto
+  sprint_id String,
+  task_id String,
+  
+  -- Metadados
+  service String DEFAULT 'genesis-pipeline',
+  version String
+  
+) ENGINE = MergeTree()
+ORDER BY (timestamp, spec_id)
+TTL timestamp + INTERVAL 90 DAY;
+
+-- Índices para queries comuns
+ALTER TABLE genesis.logs ADD INDEX idx_level (level) TYPE set(10) GRANULARITY 4;
+ALTER TABLE genesis.logs ADD INDEX idx_exit_code (exit_code) TYPE set(10) GRANULARITY 4;
+```
+
+### 3.5 Checklist de Implementação (Gabriel)
 
 | # | Tarefa | Detalhe | Esforço |
 |---|--------|---------|---------|
-| 1 | Subir Loki | Docker: `grafana/loki` ou K8s helm | 2h |
-| 2 | Configurar retenção | 7d DEBUG, 30d INFO, 90d ERROR | 30min |
-| 3 | Expor endpoint | URL acessível (ex: https://loki.zaz.com.br) | 30min |
-| 4 | Configurar auth | Basic auth ou token | 30min |
-| 5 | Testar com logcli | `logcli query '{job="test"}'` | 30min |
-| 6 | Documentar URL + auth | Para config MCP | 15min |
-| 7 | Instalar pino-loki | `npm install pino-loki` nos workers | 1h |
+| 1 | Subir ClickHouse | Docker: `clickhouse/clickhouse-server` | 1h |
+| 2 | Criar database e tabela | SQL acima | 30min |
+| 3 | Criar usuário read-only | Para MCP (segurança) | 15min |
+| 4 | Expor endpoint | HTTPS na porta 8443 | 30min |
+| 5 | Testar query | `SELECT * FROM genesis.logs LIMIT 10` | 15min |
+| 6 | Documentar credenciais | Host, port, user, password | 15min |
+| 7 | Instalar pino-clickhouse | Nos workers | 1h |
 
 **Tempo total estimado: 4-6 horas**
 
-### 3.5 Transport Pino → Loki
+### 3.6 Criar Usuário Read-Only
+
+```sql
+-- Usuário para MCP Server (só leitura)
+CREATE USER genesis_readonly 
+  IDENTIFIED BY 'senha_segura'
+  SETTINGS readonly = 1;
+
+GRANT SELECT ON genesis.* TO genesis_readonly;
+```
+
+### 3.7 Transport Pino → ClickHouse
 
 ```javascript
 // logger.js (versão PRD)
 const pino = require('pino');
 
 const transport = pino.transport({
-  target: 'pino-loki',
+  target: 'pino-clickhouse',
   options: {
-    host: process.env.LOKI_URL,
-    labels: { 
-      job: 'genesis-pipeline',
-      env: process.env.NODE_ENV 
-    }
+    host: process.env.CLICKHOUSE_HOST,
+    port: 8123,
+    database: 'genesis',
+    table: 'logs',
+    username: process.env.CLICKHOUSE_USER,
+    password: process.env.CLICKHOUSE_PASSWORD
   }
 });
 
@@ -228,46 +291,70 @@ module.exports = { logger };
 
 ---
 
-## 4. Exemplo de Uso (Quando Loki Estiver Pronto)
+## 4. Exemplo de Uso (Quando ClickHouse Estiver Pronto)
 
 **Leonardo:** "Claude, o que deu erro na spec_001?"
 
-**Claude executa:**
-```javascript
-loki_query({
-  query: '{job="genesis-pipeline", spec_id="spec_001"} |= "error"',
-  start: "-1h",
-  limit: 10
-})
+**Claude executa via MCP:**
+```sql
+SELECT timestamp, level, stderr, exit_code, duration_ms
+FROM genesis.logs 
+WHERE spec_id = 'spec_001' 
+  AND exit_code != 0
+ORDER BY timestamp DESC
+LIMIT 10
 ```
 
-**Claude responde:** "Achei 3 erros nas últimas 2 horas. O mais recente foi TypeError na linha 15..."
+**Claude responde:** "Achei 3 erros. O mais recente (há 10 minutos) foi TypeError na linha 15. Duração: 1.5s. Quer que eu analise o stderr completo?"
 
 ---
 
-## 5. Schema de Log (Comum MVP e PRD)
+## 5. Comparativo: Loki vs ClickHouse
+
+| Critério | Loki | ClickHouse | Vencedor |
+|----------|------|------------|----------|
+| Query language | LogQL | SQL | **ClickHouse** |
+| Curva aprendizado | Alta | Baixa (SQL) | **ClickHouse** |
+| MCP Server | Comunidade | Oficial | **ClickHouse** |
+| Usado por Anthropic | Não | Sim | **ClickHouse** |
+| Unificação | Só logs | Logs+métricas | **ClickHouse** |
+| Full-text search | Lento | Rápido | **ClickHouse** |
+| RAM mínima | 2-4 GB | 4-8 GB | Loki |
+| Setup | Simples | Médio | Loki |
+
+**Decisão: ClickHouse** para GENESIS.
+
+---
+
+## 6. Schema de Log (Comum MVP e PRD)
 
 ```javascript
 {
+  // Timestamps
+  timestamp: DateTime,
+  
+  // Level
+  level: String,           // "info", "error", "debug"
+  message: String,
+  
   // Identificação
-  spec_id: String,           // "spec_001"
-  iteration: Number,         // 1, 2, 3...
+  spec_id: String,         // "spec_001"
+  iteration: Number,       // 1, 2, 3...
   
   // Output
   stdout: String,
   stderr: String,
-  exit_code: Number,         // 0 = sucesso
+  exit_code: Number,       // 0 = sucesso
   
   // Código
-  code_snapshot: String,     // Código que rodou
+  code_snapshot: String,
   
   // Métricas
   duration_ms: Number,
-  timestamp: Date,
   
   // Contexto
-  sprint_id: String,         // "S030"
-  task_id: String,           // "T01"
+  sprint_id: String,       // "S030"
+  task_id: String,         // "T01"
   
   // Metadados
   service: "genesis-pipeline",
@@ -277,20 +364,20 @@ loki_query({
 
 ---
 
-## 6. Decisões de Design
+## 7. Decisões de Design
 
 | Decisão | Escolha | Razão |
 |---------|---------|-------|
 | Logger | Pino | Rápido, JSON nativo, transports flexíveis |
 | MVP | Console + copy/paste | Zero infra, funciona hoje |
-| PRD | Loki | Banco especializado, indexado |
+| PRD | ClickHouse | SQL, MCP oficial, Anthropic usa |
 | Interface PRD | Claude via MCP | Automação do ciclo TDD |
 | Grafana | Opcional | Claude é a interface principal |
-| Graylog | Descartado | Elasticsearch pesado demais |
+| Loki | Descartado | LogQL é curva extra, MCP não oficial |
 
 ---
 
-## 7. Cronograma
+## 8. Cronograma
 
 ```
 AGORA
@@ -300,33 +387,35 @@ AGORA
 
 PARALELO (Gabriel)
 ══════════════════
-• Subir Loki
+• Subir ClickHouse
+• Criar tabela genesis.logs
 • Configurar MCP Server
 • Backlog: BKL-037
 
-QUANDO LOKI PRONTO
-══════════════════
-• Trocar transport: console → Loki
-• Claude consulta direto
+QUANDO CLICKHOUSE PRONTO
+════════════════════════
+• Trocar transport: console → ClickHouse
+• Claude consulta via SQL
 • Ciclo TDD automatizado
 ```
 
 ---
 
-## 8. Referências
+## 9. Referências
 
 | Documento | Relação |
 |-----------|---------|
 | genesis/PROMETHEUS.md | Sistema pai |
 | docs/04_P/MS_Prometheus_Pipeline.md | Pipeline de deploy |
-| github.com/grafana/loki-mcp | MCP Server oficial |
-| github.com/ghrud92/simple-loki-mcp | MCP Server Node.js |
+| github.com/ClickHouse/mcp-clickhouse | MCP Server oficial |
+| clickhouse.com/docs/use-cases/AI/MCP | Documentação MCP |
 
 ---
 
-## 9. Histórico
+## 10. Histórico
 
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-19 | Documento inicial. Foco em MongoDB. |
-| 1.1 | 2025-12-19 | Refatorado para duas trilhas: MVP (padrão de código) + PRD (Loki). Adicionado MCP Server. |
+| 1.1 | 2025-12-19 | Refatorado para duas trilhas: MVP + Loki. |
+| 1.2 | 2025-12-19 | Trocado Loki por ClickHouse. SQL, MCP oficial, Anthropic usa. |
