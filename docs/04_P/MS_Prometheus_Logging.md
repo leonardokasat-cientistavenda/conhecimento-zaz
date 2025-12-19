@@ -1,10 +1,10 @@
-# MS_Prometheus_Logging v1.0
+# MS_Prometheus_Logging v1.1
 
 ---
 
 ```yaml
 nome: MS_Prometheus_Logging
-versao: "1.0"
+versao: "1.1"
 tipo: Especificação
 status: Aprovado
 pai: genesis/PROMETHEUS.md
@@ -13,8 +13,9 @@ sprint: S030
 backlog_ref: BKL-037
 
 # Público-alvo
-destinatario: Time de Infraestrutura
-objetivo: Implementar sistema de logging para pipeline TDD
+destinatario_mvp: PROMETHEUS (padrão de geração de código)
+destinatario_prd: Gabriel / Time Infra (Loki)
+objetivo: Sistema de logging para pipeline TDD com evolução para produção
 ```
 
 ---
@@ -35,366 +36,297 @@ ANTES (problema):
   ❌ Claude não consegue "ver" os erros diretamente
 ```
 
-### 1.2 Solução
-
-```
-DEPOIS (com logging):
-  Worker executa código → salva log no MongoDB → Claude lê direto
-  → Claude analisa erro → sugere correção → Worker executa → ...
-  
-  ✅ Claude acessa logs via MCP Server (já conectado)
-  ✅ Histórico completo de tentativas
-  ✅ Ciclo pode ser automatizado
-```
-
-### 1.3 Arquitetura Simplificada
+### 1.2 Estratégia de Duas Trilhas
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                              FLUXO                                          │
+│  TRILHA 1: MVP (agora)                                                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  WORKER (vocês implementam)                                                 │
-│       │                                                                     │
-│       │ executa código, captura stdout/stderr                               │
-│       │                                                                     │
-│       ▼                                                                     │
-│  MongoDB: db.logs.insertOne({...})                                          │
-│       │                                                                     │
-│       │ persistido em genesis.logs                                          │
-│       ▼                                                                     │
-│  CLAUDE (já conectado via MCP)                                              │
-│       │                                                                     │
-│       │ mongodb:find({collection: "logs", ...})                             │
-│       │                                                                     │
-│       ▼                                                                     │
-│  Analisa erro, gera correção, ciclo continua                                │
+│  Quem: PROMETHEUS (padrão no código gerado)                                 │
+│  Como: Pino → console / MongoDB                                             │
+│  Interface: Leonardo cola output → Claude analisa                           │
+│                                                                             │
+│  ✅ Zero infra nova                                                         │
+│  ✅ Funciona hoje                                                           │
+│  ⚠️ Não escala para produção pesada                                         │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  TRILHA 2: PRD (paralelo)                                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Quem: Gabriel / Time Infra                                                 │
+│  Como: Pino → Loki                                                          │
+│  Interface: Claude consulta Loki via MCP Server                             │
+│                                                                             │
+│  ✅ Banco especializado para logs                                           │
+│  ✅ Busca indexada, estruturado                                             │
+│  ✅ Escala para produção                                                    │
+│  ✅ Claude consulta diretamente                                             │
+│                                                                             │
+│  Backlog: BKL-037                                                           │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Claude já tem acesso ao MongoDB da ZAZ via MCP Server.** Vocês só precisam salvar os logs na collection certa.
+**As trilhas não se bloqueiam.** MVP funciona hoje, PRD melhora depois.
 
 ---
 
-## 2. O Que Implementar
+## 2. TRILHA 1: MVP (Padrão de Código)
 
-### 2.1 Instalar Pino
+### 2.1 O Que É
 
-```bash
-cd /home/camunda-orquestrador/Orquestrador-Zarah
-npm install pino --save
-```
+Todo código gerado por PROMETHEUS já vem com logging embutido.
 
-### 2.2 Criar Logger
+**Não é tarefa de infra.** É padrão de geração de código.
 
-**Arquivo:** `src/utils/logger.js`
+### 2.2 Template de Worker
 
 ```javascript
-/**
- * Logger para Pipeline TDD
- * 
- * Uso:
- *   const { logExecution } = require('./utils/logger');
- *   await logExecution(specId, iteration, resultado);
- */
+// Todo worker gerado por PROMETHEUS inclui:
 
 const pino = require('pino');
-const { MongoClient } = require('mongodb');
+const logger = pino({ 
+  level: process.env.LOG_LEVEL || 'info' 
+});
 
-// Logger para console (desenvolvimento)
-const logger = pino({
-  level: process.env.LOG_LEVEL || 'info',
-  transport: {
-    target: 'pino-pretty',
-    options: { colorize: true }
+// Nos pontos importantes:
+logger.info({ task_id, topic }, 'Task recebida');
+logger.error({ error: err.message, stack: err.stack }, 'Falha ao processar');
+logger.info({ result, duration_ms }, 'Task concluída');
+```
+
+### 2.3 Fluxo de Debug (Agora)
+
+```
+Claude gera código
+    │
+    ▼
+Leonardo copia → executa
+    │
+    ▼
+Leonardo cola output/erro no chat
+    │
+    ▼
+Claude analisa → corrige → repete
+```
+
+**Infra necessária: ZERO**
+
+---
+
+## 3. TRILHA 2: PRD - Loki (Gabriel / Infra)
+
+### 3.1 Por Que Loki
+
+| Aspecto | MongoDB | Loki |
+|---------|---------|------|
+| Propósito | Banco genérico | Especializado em logs |
+| Indexação | Manual | Automática por labels |
+| Query | find() | LogQL (poderoso) |
+| Escala | Limitada | Alta |
+| Retenção | Manual | Configurável por level |
+
+### 3.2 Arquitetura Final
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  FLUXO PRD                                                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  WORKER                                                                     │
+│       │                                                                     │
+│       │ Pino com transport pino-loki                                        │
+│       ▼                                                                     │
+│  LOKI (banco de logs)                                                       │
+│       │                                                                     │
+│       │ Logs estruturados com labels                                        │
+│       ▼                                                                     │
+│  CLAUDE via MCP                                                             │
+│       │                                                                     │
+│       │ loki_query / search_logs                                            │
+│       ▼                                                                     │
+│  Analisa erro, gera correção, ciclo automatizado                            │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 3.3 MCP Server para Loki
+
+**Já existe MCP Server oficial:**
+
+| Opção | Linguagem | Instalação |
+|-------|-----------|------------|
+| simple-loki-mcp | Node.js | `npx -y simple-loki-mcp` |
+| grafana/loki-mcp | Go | Docker |
+
+**Configuração no Claude Desktop:**
+
+```json
+{
+  "mcpServers": {
+    "loki": {
+      "command": "npx",
+      "args": ["-y", "simple-loki-mcp"],
+      "env": {
+        "LOKI_ADDR": "https://loki.zaz.com.br"
+      }
+    }
+  }
+}
+```
+
+**Tools disponíveis:**
+
+| Tool | O que faz |
+|------|-----------|
+| `loki_query` | Executa LogQL |
+| `search_logs` | Busca por keyword |
+| `get_labels` | Lista labels disponíveis |
+| `get_label_values` | Valores de uma label |
+
+### 3.4 Checklist de Implementação (Gabriel)
+
+| # | Tarefa | Detalhe | Esforço |
+|---|--------|---------|---------|
+| 1 | Subir Loki | Docker: `grafana/loki` ou K8s helm | 2h |
+| 2 | Configurar retenção | 7d DEBUG, 30d INFO, 90d ERROR | 30min |
+| 3 | Expor endpoint | URL acessível (ex: https://loki.zaz.com.br) | 30min |
+| 4 | Configurar auth | Basic auth ou token | 30min |
+| 5 | Testar com logcli | `logcli query '{job="test"}'` | 30min |
+| 6 | Documentar URL + auth | Para config MCP | 15min |
+| 7 | Instalar pino-loki | `npm install pino-loki` nos workers | 1h |
+
+**Tempo total estimado: 4-6 horas**
+
+### 3.5 Transport Pino → Loki
+
+```javascript
+// logger.js (versão PRD)
+const pino = require('pino');
+
+const transport = pino.transport({
+  target: 'pino-loki',
+  options: {
+    host: process.env.LOKI_URL,
+    labels: { 
+      job: 'genesis-pipeline',
+      env: process.env.NODE_ENV 
+    }
   }
 });
 
-// Conexão MongoDB (reusar conexão existente se houver)
-let db = null;
+const logger = pino(transport);
 
-async function getDb() {
-  if (!db) {
-    const client = await MongoClient.connect(process.env.MONGO_URI);
-    db = client.db('genesis');
-  }
-  return db;
-}
-
-/**
- * Salva log de execução no MongoDB
- * Claude lê esses logs para analisar erros e iterar
- * 
- * @param {string} specId - ID da spec sendo testada
- * @param {number} iteration - Número da tentativa (1, 2, 3...)
- * @param {object} resultado - Output da execução
- * @param {object} contexto - Contexto opcional (sprint, task, etc)
- */
-async function logExecution(specId, iteration, resultado, contexto = {}) {
-  const database = await getDb();
-  
-  const logRecord = {
-    // Identificação
-    spec_id: specId,
-    iteration: iteration,
-    
-    // Output da execução
-    stdout: resultado.stdout || '',
-    stderr: resultado.stderr || '',
-    exit_code: resultado.exitCode ?? -1,
-    
-    // Código que rodou (para histórico)
-    code_snapshot: resultado.code || null,
-    
-    // Métricas
-    duration_ms: resultado.durationMs || 0,
-    
-    // Timestamps
-    timestamp: new Date(),
-    
-    // Contexto (Claude usa para correlacionar)
-    sprint_id: contexto.sprintId || null,
-    task_id: contexto.taskId || null,
-    
-    // Metadados
-    service: 'genesis-pipeline',
-    version: '1.0.0'
-  };
-  
-  // Salvar no MongoDB
-  await database.collection('logs').insertOne(logRecord);
-  
-  // Log local também (para debug)
-  if (resultado.exitCode === 0) {
-    logger.info({ spec_id: specId, iteration }, 'Execução bem sucedida');
-  } else {
-    logger.error({ spec_id: specId, iteration, stderr: resultado.stderr?.slice(0, 200) }, 'Execução falhou');
-  }
-  
-  return logRecord;
-}
-
-/**
- * Log genérico (INFO, ERROR, etc)
- */
-function log(level, message, context = {}) {
-  logger[level]({ ...context, timestamp: new Date().toISOString() }, message);
-}
-
-module.exports = {
-  logger,
-  logExecution,
-  log,
-  getDb
-};
+module.exports = { logger };
 ```
 
-### 2.3 Criar Índices no MongoDB
-
-```javascript
-// Executar uma vez no mongo shell ou via script
-db.logs.createIndex({ spec_id: 1, iteration: -1 });
-db.logs.createIndex({ timestamp: -1 });
-db.logs.createIndex({ exit_code: 1 });
-db.logs.createIndex({ sprint_id: 1 });
-```
+**Código do worker não muda.** Só a config do transport.
 
 ---
 
-## 3. Schema: db.logs
+## 4. Exemplo de Uso (Quando Loki Estiver Pronto)
 
+**Leonardo:** "Claude, o que deu erro na spec_001?"
+
+**Claude executa:**
 ```javascript
-{
-  // Identificação (obrigatório)
-  _id: ObjectId,
-  spec_id: String,           // "spec_001" - qual spec estava testando
-  iteration: Number,         // 1, 2, 3... - tentativa
-  
-  // Output da execução (obrigatório)
-  stdout: String,            // Saída padrão
-  stderr: String,            // Saída de erro
-  exit_code: Number,         // 0 = sucesso, != 0 = falha
-  
-  // Código (recomendado)
-  code_snapshot: String,     // Código que rodou nessa iteração
-  
-  // Métricas (recomendado)
-  duration_ms: Number,       // Tempo de execução
-  timestamp: Date,           // Quando executou
-  
-  // Contexto (opcional mas útil)
-  sprint_id: String,         // "S030"
-  task_id: String,           // "T01"
-  
-  // Metadados (automático)
-  service: String,           // "genesis-pipeline"
-  version: String            // "1.0.0"
-}
-```
-
-### Exemplo de Documento
-
-```javascript
-{
-  _id: ObjectId("..."),
-  spec_id: "spec_usuario_criar",
-  iteration: 2,
-  
-  stdout: "Test started...\n",
-  stderr: "AssertionError: expected 5 to equal 4\n    at Context.<anonymous> (test.js:15:10)",
-  exit_code: 1,
-  
-  code_snapshot: "function criar(dados) {\n  return { id: 1, ...dados };\n}",
-  
-  duration_ms: 1523,
-  timestamp: ISODate("2025-12-19T15:30:00Z"),
-  
-  sprint_id: "S030",
-  task_id: "T03",
-  
-  service: "genesis-pipeline",
-  version: "1.0.0"
-}
-```
-
----
-
-## 4. Como Usar
-
-### 4.1 Exemplo de Integração
-
-```javascript
-const { logExecution } = require('./utils/logger');
-const { spawn } = require('child_process');
-
-async function executarCodigo(specId, codigo, iteration, contexto) {
-  const startTime = Date.now();
-  
-  // Salvar código em arquivo temporário
-  const tempFile = `/tmp/test_${specId}_${iteration}.js`;
-  fs.writeFileSync(tempFile, codigo);
-  
-  return new Promise((resolve) => {
-    const child = spawn('node', [tempFile], {
-      timeout: 60000  // 60 segundos
-    });
-    
-    let stdout = '';
-    let stderr = '';
-    
-    child.stdout.on('data', (data) => { stdout += data; });
-    child.stderr.on('data', (data) => { stderr += data; });
-    
-    child.on('close', async (exitCode) => {
-      const resultado = {
-        stdout,
-        stderr,
-        exitCode,
-        code: codigo,
-        durationMs: Date.now() - startTime
-      };
-      
-      // Salvar log para Claude ler
-      await logExecution(specId, iteration, resultado, contexto);
-      
-      resolve(resultado);
-    });
-  });
-}
-```
-
-### 4.2 Claude Consulta os Logs
-
-Quando Leonardo (ou vocês) perguntarem sobre uma execução, Claude faz:
-
-```javascript
-// Claude executa via MCP:
-mongodb:find({
-  database: "genesis",
-  collection: "logs",
-  filter: { spec_id: "spec_usuario_criar" },
-  sort: { iteration: -1 },
-  limit: 5
+loki_query({
+  query: '{job="genesis-pipeline", spec_id="spec_001"} |= "error"',
+  start: "-1h",
+  limit: 10
 })
 ```
 
-E recebe os últimos 5 logs daquela spec para analisar.
+**Claude responde:** "Achei 3 erros nas últimas 2 horas. O mais recente foi TypeError na linha 15..."
 
 ---
 
-## 5. Checklist de Implementação
+## 5. Schema de Log (Comum MVP e PRD)
 
-| # | Tarefa | Comando/Ação |
-|---|--------|--------------|
-| 1 | Instalar Pino | `npm install pino pino-pretty --save` |
-| 2 | Criar logger.js | Copiar código da seção 2.2 |
-| 3 | Criar índices | Executar comandos da seção 2.3 |
-| 4 | Testar insert | `await logExecution('test', 1, {stdout: 'ok', exitCode: 0})` |
-| 5 | Verificar no Mongo | `db.logs.find({spec_id: 'test'})` |
-| 6 | Avisar Leonardo | "Logs implementados, pode testar" |
-
-**Tempo estimado:** 1-2 horas
-
----
-
-## 6. Evolução Futura (Não Fazer Agora)
-
-```
-FASE 1 (AGORA) ✅
-════════════════
-Pino + MongoDB
-• Claude lê logs via MCP
-• Suficiente para debugar
-
-FASE 2 (QUANDO PRECISAR)
-════════════════════════
-Adicionar visualização
-• MongoDB Charts (grátis no Atlas)
-• OU Grafana + plugin MongoDB
-
-FASE 3 (SE ESCALAR)
-═══════════════════
-Stack dedicada
-• SE múltiplos servidores → Grafana + Loki
-• SE compliance pesado → Graylog
+```javascript
+{
+  // Identificação
+  spec_id: String,           // "spec_001"
+  iteration: Number,         // 1, 2, 3...
+  
+  // Output
+  stdout: String,
+  stderr: String,
+  exit_code: Number,         // 0 = sucesso
+  
+  // Código
+  code_snapshot: String,     // Código que rodou
+  
+  // Métricas
+  duration_ms: Number,
+  timestamp: Date,
+  
+  // Contexto
+  sprint_id: String,         // "S030"
+  task_id: String,           // "T01"
+  
+  // Metadados
+  service: "genesis-pipeline",
+  version: String
+}
 ```
 
-**Não instalar Graylog/Grafana agora.** Claude É a interface de visualização.
-
 ---
 
-## 7. Decisões de Design
+## 6. Decisões de Design
 
 | Decisão | Escolha | Razão |
 |---------|---------|-------|
-| Ferramenta de log | Pino | Rápido, JSON nativo, leve |
-| Persistência | MongoDB (genesis.logs) | Já temos, Claude já conecta |
-| Interface | Claude via MCP | Zero infra nova |
-| Graylog/Grafana | Não (por agora) | Overkill para o momento |
+| Logger | Pino | Rápido, JSON nativo, transports flexíveis |
+| MVP | Console + copy/paste | Zero infra, funciona hoje |
+| PRD | Loki | Banco especializado, indexado |
+| Interface PRD | Claude via MCP | Automação do ciclo TDD |
+| Grafana | Opcional | Claude é a interface principal |
+| Graylog | Descartado | Elasticsearch pesado demais |
 
 ---
 
-## 8. Contato
+## 7. Cronograma
 
-Dúvidas durante implementação:
-- Abrir chat com Claude no projeto GENESIS
-- Claude tem acesso a este documento e pode ajudar
+```
+AGORA
+═════
+• PROMETHEUS gera código com Pino embutido
+• Leonardo cola output → Claude analisa
+
+PARALELO (Gabriel)
+══════════════════
+• Subir Loki
+• Configurar MCP Server
+• Backlog: BKL-037
+
+QUANDO LOKI PRONTO
+══════════════════
+• Trocar transport: console → Loki
+• Claude consulta direto
+• Ciclo TDD automatizado
+```
 
 ---
 
-## Referências
+## 8. Referências
 
 | Documento | Relação |
 |-----------|---------|
 | genesis/PROMETHEUS.md | Sistema pai |
-| docs/04_P/MS_Prometheus_Pipeline.md | Pipeline de deploy (relacionado) |
-| _sprints/S030_Pipeline_TDD.md | Sprint que originou este doc |
+| docs/04_P/MS_Prometheus_Pipeline.md | Pipeline de deploy |
+| github.com/grafana/loki-mcp | MCP Server oficial |
+| github.com/ghrud92/simple-loki-mcp | MCP Server Node.js |
 
 ---
 
-## Histórico
+## 9. Histórico
 
 | Versão | Data | Alteração |
 |--------|------|-----------|
-| 1.0 | 2025-12-19 | Documento inicial. Spec para time de infra. Sprint S030. |
+| 1.0 | 2025-12-19 | Documento inicial. Foco em MongoDB. |
+| 1.1 | 2025-12-19 | Refatorado para duas trilhas: MVP (padrão de código) + PRD (Loki). Adicionado MCP Server. |
