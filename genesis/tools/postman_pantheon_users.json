@@ -1,0 +1,73 @@
+{
+  "info": {
+    "name": "PANTHEON - Criar Agentes Mattermost",
+    "description": "Collection para criar agentes do ecossistema PANTHEON no Mattermost. Inclui: criar usuário, gerar token, adicionar ao time, criar webhook.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "mattermost_url", "value": "https://mattermost.zaz.vc", "type": "string"},
+    {"key": "admin_token", "value": "SEU_TOKEN_ADMIN_AQUI", "type": "string"},
+    {"key": "password", "value": "zaz@2025", "type": "string"},
+    {"key": "team_id", "value": "wj5que7njfygpxdq4sijrdjwnr", "type": "string"},
+    {"key": "callback_base_url", "value": "https://zaz.vc/webhook", "type": "string"}
+  ],
+  "item": [
+    {
+      "name": "1. Criar Novo Agente (Template)",
+      "item": [
+        {
+          "name": "1.1 Criar Usuário",
+          "event": [{"listen": "test", "script": {"exec": ["if (pm.response.code === 201) {", "    var jsonData = pm.response.json();", "    pm.collectionVariables.set('new_agent_user_id', jsonData.id);", "    console.log('Agente criado com ID:', jsonData.id);", "}"], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"email\": \"NOME_AGENTE@zazvendas.com.br\",\n  \"username\": \"NOME_AGENTE\",\n  \"password\": \"{{password}}\",\n  \"first_name\": \"NOME_AGENTE\",\n  \"last_name\": \"Bot\",\n  \"nickname\": \"PROPOSITO_DO_AGENTE\"\n}"},
+            "url": {"raw": "{{mattermost_url}}/api/v4/users", "host": ["{{mattermost_url}}"], "path": ["api", "v4", "users"]}
+          }
+        },
+        {
+          "name": "1.2 Criar Token",
+          "event": [{"listen": "test", "script": {"exec": ["if (pm.response.code === 200) {", "    var jsonData = pm.response.json();", "    pm.collectionVariables.set('new_agent_token', jsonData.token);", "    console.log('Token criado:', jsonData.token);", "}"], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"description\": \"NOME_AGENTE Integration Token\"\n}"},
+            "url": {"raw": "{{mattermost_url}}/api/v4/users/{{new_agent_user_id}}/tokens", "host": ["{{mattermost_url}}"], "path": ["api", "v4", "users", "{{new_agent_user_id}}", "tokens"]}
+          }
+        },
+        {
+          "name": "1.3 Adicionar ao Time",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"team_id\": \"{{team_id}}\",\n  \"user_id\": \"{{new_agent_user_id}}\",\n  \"roles\": \"team_user\"\n}"},
+            "url": {"raw": "{{mattermost_url}}/api/v4/teams/{{team_id}}/members", "host": ["{{mattermost_url}}"], "path": ["api", "v4", "teams", "{{team_id}}", "members"]}
+          }
+        },
+        {
+          "name": "1.4 Criar Webhook",
+          "event": [{"listen": "test", "script": {"exec": ["if (pm.response.code === 201) {", "    var jsonData = pm.response.json();", "    pm.collectionVariables.set('new_agent_webhook_id', jsonData.id);", "    console.log('Webhook criado:', jsonData.id);", "}"], "type": "text/javascript"}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"team_id\": \"{{team_id}}\",\n  \"display_name\": \"NOME_AGENTE Webhook\",\n  \"trigger_words\": [\"@NOME_AGENTE\"],\n  \"callback_urls\": [\"{{callback_base_url}}?user_id={{new_agent_user_id}}\"],\n  \"content_type\": \"application/json\",\n  \"trigger_when\": 0\n}"},
+            "url": {"raw": "{{mattermost_url}}/api/v4/hooks/outgoing", "host": ["{{mattermost_url}}"], "path": ["api", "v4", "hooks", "outgoing"]}
+          }
+        },
+        {
+          "name": "1.5 Resumo do Agente",
+          "event": [{"listen": "prerequest", "script": {"exec": ["console.log('='.repeat(60));", "console.log('NOVO AGENTE CRIADO');", "console.log('='.repeat(60));", "console.log('user_id:', pm.collectionVariables.get('new_agent_user_id'));", "console.log('token:', pm.collectionVariables.get('new_agent_token'));", "console.log('webhook_id:', pm.collectionVariables.get('new_agent_webhook_id'));", "console.log('='.repeat(60));"], "type": "text/javascript"}}],
+          "request": {"method": "GET", "url": {"raw": "{{mattermost_url}}/api/v4/users/me"}}
+        }
+      ]
+    },
+    {
+      "name": "2. Utilitários",
+      "item": [
+        {"name": "Buscar usuário por username", "request": {"method": "GET", "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}], "url": {"raw": "{{mattermost_url}}/api/v4/users/username/NOME_AQUI"}}},
+        {"name": "Listar times", "request": {"method": "GET", "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}], "url": {"raw": "{{mattermost_url}}/api/v4/teams"}}},
+        {"name": "Listar webhooks do time", "request": {"method": "GET", "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}], "url": {"raw": "{{mattermost_url}}/api/v4/hooks/outgoing?team_id={{team_id}}"}}}
+      ]
+    }
+  ]
+}
