@@ -1,15 +1,15 @@
-# GENESIS v5.2
+# GENESIS v5.4
 
 ---
 
 ```yaml
 nome: GENESIS
-versao: "5.3"
+versao: "5.4"
 tipo: Framework
 status: Publicado
 nivel: C1
 camadas: [L0, L1, L2, L3, L4]
-data_publicacao: "2025-12-17"
+data_publicacao: "2025-12-19"
 ```
 
 ---
@@ -567,6 +567,29 @@ MS_Sprint ──► MS_Backlog.listar_filhos(sprint_id, task_codigo)
   auto_pull=true  → cria subtask (T01.1)
   auto_pull=false → notifica humano
 ```
+## 11. Padrões de Documentação
+
+### Princípio: Referência > Duplicação
+
+Documentos referenciam artefatos, não duplicam.
+
+| Tipo | Não fazer | Fazer |
+|------|-----------|-------|
+| Código | Copiar código no documento | `📁 github:{repo}/{path}` + diagrama |
+| Schema | Copiar estrutura JSON | `📊 mongodb:{db}.{collection}` + diagrama |
+| Config | Listar variáveis | `📁 github:{repo}/.env.example` |
+
+### Representação Visual
+
+| Aspecto | Representar com |
+|---------|-----------------|
+| Fluxo de execução | Diagrama de sequência ou flowchart |
+| Arquitetura | Diagrama de componentes (boxes + setas) |
+| Hierarquia | Árvore ou lista indentada |
+| Relacionamentos | Diagrama entidade-relacionamento |
+
+**Objetivo:** Documentos instruem *o quê* e *por quê*. Diagramas mostram *como se relaciona*. Código no Git mostra *como implementa*.
+```
 
 **SSOT:** `origem` persiste em `db.backlog_items`, MS_Sprint apenas consulta.
 ---
@@ -605,3 +628,4 @@ MS_Sprint ──► MS_Backlog.listar_filhos(sprint_id, task_codigo)
 | 5.1 | 2025-12-17 | **Integração MS_Sprint**: Adição de MS_Sprint no índice de sistemas. Seção 10 documenta bootstrap com sprint (carregar sessão pausada, exibir contexto). Tabela L0-L4 inclui MS_Sprint. Sprint S021/T04. |
 | 5.2 | 2025-12-17 | **Fluxo task-concluir**: Documentado consulta de filhos via MS_Backlog.listar_filhos(). SSOT de origem é db.backlog_items. Sprint S022/T04. |
 | 5.3 | 2025-12-17 | **Índice Bootstrap**: Adicionado GENESIS_Bootstrap.md ao índice de sistemas (Nível C1). Sprint S025/T01. |
+| 5.4 | 2025-12-18 | **Padrões de Documentação**: Seção 11 - princípio Referência > Duplicação. Representação visual de código/schemas. Sprint S028. |
