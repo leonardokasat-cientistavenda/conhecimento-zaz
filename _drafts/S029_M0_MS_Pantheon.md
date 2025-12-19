@@ -1,6 +1,6 @@
 ---
 nome: MS_Pantheon
-versao: "0.2"
+versao: "0.3"
 tipo: M0 - Descoberta de Dor
 classe_ref: MetaSystem
 origem: interno
@@ -57,15 +57,93 @@ MS_Agente era um Meta System genérico para Agent Loop, permitindo:
 
 ---
 
-## 3. Proposta: MS_Pantheon
+## 3. Decisões Arquiteturais
 
-### 3.1 Conceito
+### 3.1 Isolamento Total de Zarah
+
+| Decisão | D001 |
+|---------|------|
+| **Contexto** | Orquestrador-Zarah está em produção, atendendo clientes reais |
+| **Decisão** | **NÃO reutilizar código** do Orquestrador-Zarah |
+| **Justificativa** | Risco de derrubar sistema operacional com alterações |
+| **Consequência** | Código 100% novo para MS_Pantheon |
+
+### 3.2 Zarah como Referência Arquitetural
+
+| Decisão | D002 |
+|---------|------|
+| **Contexto** | Orquestrador-Zarah tem patterns validados em produção |
+| **Decisão** | **Usar Zarah como referência** para aprender os padrões |
+| **O que copiar** | Patterns de roteamento, estrutura de controllers, integração Camunda |
+| **O que NÃO copiar** | Código fonte diretamente |
+
+**Análise do Orquestrador-Zarah:**
+
+```
+Orquestrador-Zarah/
+├── controller/
+│   ├── mattermostController.js     # 5 rotas, lógica complexa
+│   └── mattermostV2Controller.js   # 1 rota, mais limpo (referência)
+├── src/services/
+│   ├── camunda/                    # evaluate(), startProcess()
+│   └── sistemas/
+│       ├── mattermost/             # posts, users, channel, files
+│       ├── rabbitmq/               # safeSendToQueue()
+│       └── whatsappV2/             # sendMessage()
+└── worker/                         # Workers Camunda
+```
+
+**Patterns identificados:**
+- Query params para contexto: `?user_id=XXX&wa_id=YYY`
+- DMN para roteamento: `dmn_processo_iniciar_orquestrador`
+- RabbitMQ para signals assíncronos: `safeSendToQueue("camunda-signal", ...)`
+- Upload de arquivos via MinIO
+
+### 3.3 Stack de Observabilidade
+
+| Decisão | D003 |
+|---------|------|
+| **Contexto** | Zarah usa `insertOne()` em MongoDB para logs (não estruturado) |
+| **Decisão** | Implementar **Pino + ClickHouse** para observabilidade |
+| **Justificativa** | Logs estruturados, análise em tempo real, custos menores |
+
+**Stack definida:**
+
+| Componente | Tecnologia | Propósito |
+|------------|------------|-----------|
+| Logger | **Pino** | Logs estruturados JSON, alta performance |
+| Storage | **ClickHouse** | Análise de logs, queries analíticas |
+| Transporte | Pino → ClickHouse | Stream direto ou via file rotation |
+
+**Schema de log proposto:**
+
+```sql
+CREATE TABLE pantheon_logs (
+    timestamp DateTime64(3),
+    level String,
+    service String,          -- 'webhook', 'worker', 'camunda'
+    agent String,            -- 'genesis', 'prometheus', etc
+    channel String,          -- 'mm', 'wa', 'ha', 'api'
+    user_id String,
+    channel_id String,
+    trace_id String,         -- Correlação entre logs
+    message String,
+    metadata JSON
+) ENGINE = MergeTree()
+ORDER BY (timestamp, service, agent);
+```
+
+---
+
+## 4. Proposta: MS_Pantheon
+
+### 4.1 Conceito
 
 **Pantheon** = morada dos deuses. Mattermost é o **lar** onde os agentes vivem e interagem. Canais externos (WhatsApp, Home Assistant, API) são **templos** onde humanos podem "orar" aos agentes.
 
-### 3.2 Os Cinco Agentes
+### 4.2 Os Cinco Agentes
 
-| Agente | Propósito | Domínio |
+| Agente | Propósito | Domínio | 
 |--------|-----------|---------| 
 | **GENESIS** | O início, criação | Sistema principal, inteligência híbrida |
 | **PROMETHEUS** | Traz capacidade aos humanos | Pipeline CI/CD, fábrica de software |
@@ -73,7 +151,7 @@ MS_Agente era um Meta System genérico para Agent Loop, permitindo:
 | **ATLAS** | Carrega o trabalho pendente | Gestão de backlog (MS_Backlog) |
 | **KAIROS** | Momento certo de executar | Gestão de sprints (MS_Sprint) |
 
-### 3.3 Arquitetura Conceitual
+### 4.3 Arquitetura Conceitual
 
 **IMPORTANTE:** APIs externas NÃO batem no Mattermost diretamente. O ponto de entrada é sempre o **Webhook do Orquestrador**. MM é um destino de saída, não entrada.
 
@@ -92,6 +170,7 @@ MS_Agente era um Meta System genérico para Agent Loop, permitindo:
 │              ┌──────────────────────────────┐                              │
 │              │  WEBHOOK ORQUESTRADOR        │                              │
 │              │  (Ponto único de entrada)    │                              │
+│              │  + Pino Logger               │                              │
 │              └──────────────┬───────────────┘                              │
 │                             ▼                                              │
 │              ┌──────────────────────────────┐                              │
@@ -113,6 +192,7 @@ MS_Agente era um Meta System genérico para Agent Loop, permitindo:
 │              │  - agente-contexto           │                              │
 │              │  - agente-persistir          │                              │
 │              │  - sendMessage (MM)          │                              │
+│              │  + Pino Logger em cada       │                              │
 │              └──────────────┬───────────────┘                              │
 │                             ▼                                              │
 │              ┌──────────────────────────────┐                              │
@@ -133,17 +213,22 @@ MS_Agente era um Meta System genérico para Agent Loop, permitindo:
 │   │ GENESIS │  │PROMETHEUS│  │ASCLEPIUS│  │ ATLAS │  │ KAIROS │          │
 │   └─────────┘  └──────────┘  └─────────┘  └───────┘  └────────┘          │
 │                                                                            │
+│                         ┌─────────────┐                                    │
+│                         │ ClickHouse  │ ◄── Logs estruturados              │
+│                         │   (Logs)    │                                    │
+│                         └─────────────┘                                    │
+│                                                                            │
 └───────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 3.4 Tipos de Mensagem
+### 4.4 Tipos de Mensagem
 
 | Tipo | Origem | Comportamento |
 |------|--------|---------------|
 | **Interação Humana** | WhatsApp, HA, MM | Humano → Webhook → DMN → @agente, resposta via DMN out |
 | **Consciência Interna** | API_LLM | Processamento interno, webhook direto, sem @usuário |
 
-### 3.5 Multi-Contexto
+### 4.5 Multi-Contexto
 
 Cada usuário pode ter sessões simultâneas em diferentes canais:
 - Thread WhatsApp com GENESIS
@@ -154,7 +239,7 @@ O agente mantém **consciência unificada** mas **contextos separados** por cana
 
 ---
 
-## 4. Faseamento do Desenvolvimento
+## 5. Faseamento do Desenvolvimento
 
 ### Fase 0: Criação de Novos Agentes
 > **Ciclo Epistemológico: BKL-029**
@@ -232,7 +317,7 @@ Validar comunicação com Camunda e LLM.
 
 ---
 
-## 5. Backlog Gerado
+## 6. Backlog Gerado
 
 | ID | Fase | Título | Bloqueante |
 |----|------|--------|------------|
@@ -246,25 +331,35 @@ Validar comunicação com Camunda e LLM.
 
 ---
 
-## 6. Artefatos Herdados de MS_Agente
+## 7. Artefatos de Referência
 
-Os seguintes artefatos do S027 serão **reaproveitados** após validação:
+> ⚠️ **IMPORTANTE:** Estes artefatos são apenas **referência para aprendizado**. Código será escrito do zero.
 
-| Artefato | Path | Status |
-|----------|------|--------|
-| bpmn_ms_agente.bpmn | _artefatos/S027/bpmn/ | Revisar |
-| worker anthropic | _artefatos/S027/worker/anthropic/ | OK |
-| worker contexto | _artefatos/S027/worker/agente/contexto.js | Revisar |
-| worker persistir | _artefatos/S027/worker/agente/persistir.js | OK |
-| worker github | _artefatos/S027/worker/agente/github.js | OK |
+### 7.1 Orquestrador-Zarah (ZAZ-vendas/Orquestrador-Zarah)
 
-### Gaps identificados
-- **agente-tool** (router de tools) **não foi implementado** no S027
-- **criar_agente** (workflow criação) **não existe**
+| Arquivo | Aprendizado |
+|---------|-------------|
+| `controller/mattermostV2Controller.js` | Pattern limpo de webhook único |
+| `src/services/camunda/` | evaluate(), startProcess() |
+| `src/services/sistemas/mattermost/` | API posts, users, channel |
+| `src/services/sistemas/rabbitmq/` | safeSendToQueue() para signals |
+
+### 7.2 MS_Agente S027 (leonardokasat-cientistavenda/conhecimento-zaz)
+
+| Arquivo | Aprendizado |
+|---------|-------------|
+| `_artefatos/S027/bpmn/bpmn_ms_agente.bpmn` | Estrutura agent loop |
+| `_artefatos/S027/worker/anthropic/` | Integração API Anthropic |
+| `_artefatos/S027/worker/agente/` | Patterns de contexto/persistência |
+
+### 7.3 Gaps identificados
+- **agente-tool** (router de tools) **não existe** - precisa ser criado
+- **criar_agente** (workflow criação) **não existe** - precisa ser criado
+- **Pino logger** - não existe em nenhum sistema atual
 
 ---
 
-## 7. Infraestrutura Já Criada
+## 8. Infraestrutura Já Criada
 
 Durante a sessão de hoje, configuramos no Mattermost:
 
@@ -284,16 +379,16 @@ Durante a sessão de hoje, configuramos no Mattermost:
 
 ---
 
-## 8. Próximos Passos
+## 9. Próximos Passos
 
 1. **Criar M1 (Referencial Teórico):** Consolidar arquitetura multi-agente, multi-contexto
-2. **Criar 7 itens BKL:** Um para cada ciclo epistemológico (Fases 0-4.3)
+2. **Criar 7 itens BKL:** ✅ Concluído (BKL-029 a BKL-035)
 3. **Iniciar Sprint S029:** Fase 0 - Criação de Novos Agentes
 4. **Validação incremental:** Cada fase é testável independentemente
 
 ---
 
-## 9. Referências
+## 10. Referências
 
 | Documento | Relação |
 |-----------|---------|
@@ -301,6 +396,7 @@ Durante a sessão de hoje, configuramos no Mattermost:
 | genesis/config/panteao_credenciais.json | Credenciais MM |
 | genesis/tools/postman_pantheon_users.json | Ferramenta criação agentes |
 | genesis/tools/README_pantheon_tools.md | Documentação ferramentas |
+| ZAZ-vendas/Orquestrador-Zarah | Referência arquitetural |
 | _sprints/S026_MS_Agente.md | Sprint original |
 | _sprints/S027_PROMETHEUS_MS_Agente.md | Sprint artefatos |
 
@@ -312,3 +408,4 @@ Durante a sessão de hoje, configuramos no Mattermost:
 |--------|------|-----------|
 | 0.1 | 2025-12-19 | M0 criado. Refatoração de MS_Agente para MS_Pantheon. |
 | 0.2 | 2025-12-19 | Correção arquitetura (webhook como entrada única). Adicionada Fase 0 (criação de agentes). Adicionada dor #6. |
+| 0.3 | 2025-12-19 | **Decisões Arquiteturais**: D001 (isolamento Zarah), D002 (Zarah como referência), D003 (Pino + ClickHouse). Análise mattermostV2Controller. Artefatos como referência, não reaproveitamento. |
