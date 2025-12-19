@@ -1,17 +1,17 @@
-# PROMETHEUS v3.0
+# PROMETHEUS v3.1
 
 ---
 
 ```yaml
 nome: PROMETHEUS
-versao: "3.0"
+versao: "3.1"
 tipo: Framework
 classe_ref: Framework
 origem: interno
 status: Publicado
 nivel: C2
 camadas: [L0, L1, L2, L3]
-data_publicacao: 2025-12-17
+data_publicacao: 2025-12-19
 
 # INTERFACE EVENT-DRIVEN (v3.0)
 tipos_consumidos:
@@ -43,6 +43,7 @@ tipos_produzidos:
 | **Spec Recursos** | Orçamento: runtime, teste, carga, esforço |
 | **Worker** | Executor especializado por vertente (E, P, D, I, C) |
 | **Bloco** | Domínio de responsabilidade (INFRA ou PRODUÇÃO) |
+| **Pipeline** | Fluxo automatizado de validação, teste e deploy |
 
 ### 1.2 Diagrama do Problema
 
@@ -75,12 +76,16 @@ tipos_produzidos:
 > - **Precificar**: Estimar recursos, identificar GAPs
 > - **Desenvolver**: Executar TDD via workers especializados
 > - **Testar**: Validar conforme Schema TDD
-> - **Deployar**: Implantar artefato em produção
+> - **Deployar**: Implantar artefato em produção (via Pipeline)
 >
 > **Diferencial v3.0:**
 > - PROMETHEUS orça ANTES de desenvolver
 > - GAPs de infra entram no ciclo como dor de PROMETHEUS
 > - Desenvolvimento bloqueado até dependências resolvidas
+>
+> **Diferencial v3.1:**
+> - Pipeline automatizado para deploy de artefatos
+> - Zero operação manual: push → webhook → deploy
 >
 > **Resultado:** Previsibilidade, sem surpresas de infra, orçamento aprovado.
 
@@ -96,6 +101,7 @@ tipos_produzidos:
 | **Linha de Produção** | Manufatura | Spec → Orçamento → Aprovação → Produção |
 | **Dependency Management** | DevOps | GAPs são dependências bloqueantes |
 | **Autopoiesis** | Maturana & Varela | PROMETHEUS constrói sua própria infra |
+| **CI/CD** | DevOps | Pipeline automatiza validação e deploy |
 
 ### 2.2 Síntese: Fábrica com Orçamento
 
@@ -112,7 +118,7 @@ tipos_produzidos:
 │  Aprovação cliente    ─────────►  MS_Produto aprova orçamento               │
 │  Linha de Produção    ─────────►  Workers (E, P, D, I, C)                   │
 │  Controle Qualidade   ─────────►  Testes (Schema TDD)                       │
-│  Entrega              ─────────►  Deploy + validação                        │
+│  Entrega              ─────────►  Deploy + validação (via Pipeline)         │
 │                                                                             │
 │  DIFERENCIAL: Cliente aprova ANTES de iniciar produção                      │
 │                                                                             │
@@ -161,7 +167,7 @@ tipos_produzidos:
 - **Precifica** estimando recursos e identificando GAPs
 - **Desenvolve** via workers especializados (após aprovação)
 - **Testa** conforme Schema TDD
-- **Deploya** em produção
+- **Deploya** em produção (via Pipeline automatizado)
 
 ### 3.2 Fronteiras
 
@@ -249,7 +255,7 @@ PROMETHEUS manifesta as camadas L0-L3:
 | `precificar()` | spec_tdd | spec_recursos + gaps[] | Estima recursos, identifica GAPs |
 | `desenvolver()` | spec_tdd + spec_recursos | release | Executa TDD via workers |
 | `testar()` | artefato + schema_tdd | resultado_testes | Valida conforme critérios |
-| `deployar()` | release | implantacao | Coloca em produção |
+| `deployar()` | release | implantacao | Coloca em produção (via Pipeline) |
 | `identificar_gaps()` | spec_tdd | gaps[] | Verifica capacidades faltantes |
 
 ### 4.3 Fluxo Completo via MS_Backlog
@@ -321,7 +327,7 @@ PROMETHEUS manifesta as camadas L0-L3:
 │       └── REJEITA: produz: {tipo: corrigir_bug, release_ref, motivo}        │
 │       │                                                                     │
 │       ▼                                                                     │
-│  PROMETHEUS.deployar()                                                      │
+│  PROMETHEUS.deployar() ◄── VIA PIPELINE AUTOMATIZADO                        │
 │       │                                                                     │
 │       └── produz: {tipo: validar_implantacao, release_ref}                  │
 │       │                                                                     │
@@ -410,9 +416,48 @@ gap_infra:
 
 ---
 
-## 5. Integração com MS_Backlog
+## 5. Pipeline (v3.1)
 
-### 5.1 Loop de Consumo
+### 5.1 Visão Geral
+
+O Pipeline automatiza o deploy de artefatos gerados pelo PROMETHEUS.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  PROMETHEUS gera artefatos → Pipeline publica → Camunda/Workers executam    │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 5.2 Fluxo
+
+```
+┌───────────────┐     webhook      ┌───────────────┐     REST API    ┌───────────────┐
+│    GitHub     │ ───────────────► │   Servidor    │ ──────────────► │   Camunda     │
+│  push main    │    (HMAC)        │   Worker      │                 │   Engine      │
+└───────────────┘                  └───────────────┘                 └───────────────┘
+```
+
+### 5.3 Artefatos Suportados
+
+| Tipo | Extensões | Destino |
+|------|-----------|---------|
+| Processos | `.bpmn` | Camunda Engine |
+| Decisões | `.dmn` | Camunda Engine |
+| Formulários | `.form`, `.html` | Camunda Engine |
+| Workers | `.js` | Servidor Worker (PM2) |
+
+### 5.4 Documentação Detalhada
+
+| Documento | Conteúdo |
+|-----------|----------|
+| `docs/04_P/MS_Prometheus_Pipeline.md` | Guia de uso |
+| `docs/04_P/MS_Prometheus_Pipeline_Arquitetura.md` | Arquitetura técnica |
+
+---
+
+## 6. Integração com MS_Backlog
+
+### 6.1 Loop de Consumo
 
 ```python
 class PROMETHEUS:
@@ -469,7 +514,7 @@ class PROMETHEUS:
         )
 ```
 
-### 5.2 Contratos
+### 6.2 Contratos
 
 ```yaml
 # PROMETHEUS consome:
@@ -515,9 +560,9 @@ corrigir_bug:
 
 ---
 
-## 6. Referências
+## 7. Referências
 
-### 6.1 Internas
+### 7.1 Internas
 
 | Documento | Relação |
 |-----------|---------|
@@ -526,10 +571,12 @@ corrigir_bug:
 | docs/04_B/MS_Backlog.md | Message Broker |
 | docs/04_B/MS_Backlog_Arquitetura.md | Contratos e roteamento |
 | docs/04_P/MS_Produto.md | Aprova orçamento e release |
+| **docs/04_P/MS_Prometheus_Pipeline.md** | Pipeline - guia de uso |
+| **docs/04_P/MS_Prometheus_Pipeline_Arquitetura.md** | Pipeline - arquitetura |
 | docs/00_E/00_E_Epistemologia.md | Produz specs |
 | docs/00_E/00_E_1_7_Schema_TDD.md | Estrutura de testes |
 
-### 6.2 Externas
+### 7.2 Externas
 
 | Fonte | Conceito |
 |-------|----------|
@@ -546,3 +593,4 @@ corrigir_bug:
 | 1.0 | 2025-12-14 | Documento inicial. 4 blocos, 5 camadas. |
 | 2.0 | 2025-12-15 | Simplificação: 2 blocos (INFRA, PRODUÇÃO). PROMETHEUS como fábrica instrumental. |
 | 3.0 | 2025-12-17 | **Fábrica com Precificação**: tipos_consumidos/produzidos. Ciclo orcar→desenvolver→testar→deployar. Schema Recursos. GAPs como dor de PROMETHEUS (autopoiese). Workers por vertente. Sprint S020/E01. |
+| 3.1 | 2025-12-19 | **Pipeline automatizado**: Seção 5 documenta pipeline de deploy. Referências para docs/04_P/MS_Prometheus_Pipeline*.md. Sprint S028. |
