@@ -1,6 +1,6 @@
 ---
 nome: MS_Pantheon
-versao: "0.1"
+versao: "0.2"
 tipo: M0 - Descoberta de Dor
 classe_ref: MetaSystem
 origem: interno
@@ -36,6 +36,7 @@ MS_Agente era um Meta System genérico para Agent Loop, permitindo:
 | Contexto | Único por canal | Não suporta multi-contexto (Zap, HA, API) |
 | Integração | Apenas MM | Não define roteamento externo |
 | Deploy | Big-bang | Sem faseamento incremental |
+| **Criação** | **Manual via Postman** | **Sem interface para criar novos agentes** |
 
 ---
 
@@ -52,6 +53,7 @@ MS_Agente era um Meta System genérico para Agent Loop, permitindo:
 3. **Roteamento complexo:** Não há regras claras de entrada/saída entre canais
 4. **Consciência vs Interação:** Não diferencia mensagens de humanos vs processamentos internos do agente
 5. **Deploy arriscado:** Sem validação incremental, alto risco de falha em produção
+6. **Criação burocrática:** Criar novo agente exige múltiplas chamadas API manuais (Postman), sem interface no MM
 
 ---
 
@@ -64,7 +66,7 @@ MS_Agente era um Meta System genérico para Agent Loop, permitindo:
 ### 3.2 Os Cinco Agentes
 
 | Agente | Propósito | Domínio |
-|--------|-----------|---------|
+|--------|-----------|---------| 
 | **GENESIS** | O início, criação | Sistema principal, inteligência híbrida |
 | **PROMETHEUS** | Traz capacidade aos humanos | Pipeline CI/CD, fábrica de software |
 | **ASCLEPIUS** | Cura a dor | Gestão de produtos (MS_Produto) |
@@ -73,41 +75,73 @@ MS_Agente era um Meta System genérico para Agent Loop, permitindo:
 
 ### 3.3 Arquitetura Conceitual
 
+**IMPORTANTE:** APIs externas NÃO batem no Mattermost diretamente. O ponto de entrada é sempre o **Webhook do Orquestrador**. MM é um destino de saída, não entrada.
+
 ```
-                    ┌─────────────────────────────────────────┐
-                    │           PANTHEON (Mattermost)          │
-                    │                                          │
-  ┌─────────┐       │  ┌─────────┐  ┌──────────┐  ┌────────┐  │
-  │WhatsApp │──────►│  │ GENESIS │  │PROMETHEUS│  │ASCLEPIUS│ │
-  └─────────┘       │  └─────────┘  └──────────┘  └────────┘  │
-                    │                                          │
-  ┌─────────┐       │  ┌─────────┐  ┌──────────┐              │
-  │Home Asst│──────►│  │  ATLAS  │  │  KAIROS  │              │
-  └─────────┘       │  └─────────┘  └──────────┘              │
-                    │                                          │
-  ┌─────────┐       │         ▲                                │
-  │ API_LLM │──────►│         │ Outgoing Webhooks              │
-  └─────────┘       │         ▼                                │
-                    │  ┌──────────────────────────────────┐   │
-                    │  │    DMN Roteamento In/Out          │   │
-                    │  └──────────────────────────────────┘   │
-                    └─────────────────────────────────────────┘
-                                      │
-                                      ▼
-                    ┌─────────────────────────────────────────┐
-                    │              CAMUNDA                      │
-                    │  ┌──────────┐  ┌──────────┐             │
-                    │  │Agent Loop│  │ Workers  │             │
-                    │  └──────────┘  └──────────┘             │
-                    └─────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────┐
+│                           FLUXO DE ENTRADA                                 │
+├───────────────────────────────────────────────────────────────────────────┤
+│                                                                            │
+│   ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐                   │
+│   │WhatsApp │   │Home Asst│   │ API_LLM │   │   MM    │                   │
+│   │ (Zap)   │   │  (HA)   │   │         │   │Outgoing │                   │
+│   └────┬────┘   └────┬────┘   └────┬────┘   └────┬────┘                   │
+│        │             │             │             │                         │
+│        └─────────────┴──────┬──────┴─────────────┘                         │
+│                             ▼                                              │
+│              ┌──────────────────────────────┐                              │
+│              │  WEBHOOK ORQUESTRADOR        │                              │
+│              │  (Ponto único de entrada)    │                              │
+│              └──────────────┬───────────────┘                              │
+│                             ▼                                              │
+│              ┌──────────────────────────────┐                              │
+│              │     DMN ROTEAMENTO IN        │                              │
+│              │  - Identifica agente         │                              │
+│              │  - Identifica canal origem   │                              │
+│              │  - Define processo BPMN      │                              │
+│              └──────────────┬───────────────┘                              │
+│                             ▼                                              │
+│              ┌──────────────────────────────┐                              │
+│              │         CAMUNDA              │                              │
+│              │  - Agent Loop BPMN           │                              │
+│              │  - Orquestra Workers         │                              │
+│              └──────────────┬───────────────┘                              │
+│                             ▼                                              │
+│              ┌──────────────────────────────┐                              │
+│              │         WORKERS              │                              │
+│              │  - workerAnthropic (LLM)     │                              │
+│              │  - agente-contexto           │                              │
+│              │  - agente-persistir          │                              │
+│              │  - sendMessage (MM)          │                              │
+│              └──────────────┬───────────────┘                              │
+│                             ▼                                              │
+│              ┌──────────────────────────────┐                              │
+│              │     DMN ROTEAMENTO OUT       │                              │
+│              │  - Define canal destino      │                              │
+│              │  - Formata resposta          │                              │
+│              └──────────────┬───────────────┘                              │
+│                             ▼                                              │
+│        ┌─────────────┬──────┴──────┬─────────────┐                         │
+│        ▼             ▼             ▼             ▼                         │
+│   ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐                   │
+│   │WhatsApp │   │Home Asst│   │ API_LLM │   │   MM    │                   │
+│   │  (Zap)  │   │  (HA)   │   │Response │   │  Post   │                   │
+│   └─────────┘   └─────────┘   └─────────┘   └─────────┘                   │
+│                                                                            │
+│                    PANTHEON (Agentes vivem no MM)                          │
+│   ┌─────────┐  ┌──────────┐  ┌─────────┐  ┌───────┐  ┌────────┐          │
+│   │ GENESIS │  │PROMETHEUS│  │ASCLEPIUS│  │ ATLAS │  │ KAIROS │          │
+│   └─────────┘  └──────────┘  └─────────┘  └───────┘  └────────┘          │
+│                                                                            │
+└───────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### 3.4 Tipos de Mensagem
 
 | Tipo | Origem | Comportamento |
 |------|--------|---------------|
-| **Interação Humana** | WhatsApp, HA, MM | Humano → @agente, resposta via DMN roteamento |
-| **Consciência Interna** | API_LLM | Processamento interno, sem @usuário, direto ao agente |
+| **Interação Humana** | WhatsApp, HA, MM | Humano → Webhook → DMN → @agente, resposta via DMN out |
+| **Consciência Interna** | API_LLM | Processamento interno, webhook direto, sem @usuário |
 
 ### 3.5 Multi-Contexto
 
@@ -121,6 +155,20 @@ O agente mantém **consciência unificada** mas **contextos separados** por cana
 ---
 
 ## 4. Faseamento do Desenvolvimento
+
+### Fase 0: Criação de Novos Agentes
+> **Ciclo Epistemológico: BKL-029**
+
+Resolver a dor de criação burocrática. Interface para criar novos agentes.
+
+| Entrega | Descrição |
+|---------|-----------|
+| 0.1 | BPMN `criar_agente` no Camunda |
+| 0.2 | Worker que chama API MM (criar user, token, webhook) |
+| 0.3 | Worker que atualiza DMN com nova regra |
+| 0.4 | Comando `@genesis criar agente NOME PROPOSITO` |
+
+**Ferramentas existentes:** `genesis/tools/postman_pantheon_users.json` (referência para implementação)
 
 ### Fase 1: Comunicação MM Básica
 > **Ciclo Epistemológico: BKL-030**
@@ -151,7 +199,7 @@ Validar comunicação com Camunda e LLM.
 
 | Entrega | Descrição |
 |---------|-----------|
-| 3.1 | Camunda ping-pong (bot → camunda → bot) |
+| 3.1 | Camunda ping-pong (webhook → camunda → worker → MM) |
 | 3.2 | One-step LLM (pergunta → API Anthropic → resposta) |
 | 3.3 | DMN seleção modelo + controle custos |
 
@@ -188,6 +236,7 @@ Validar comunicação com Camunda e LLM.
 
 | ID | Fase | Título | Bloqueante |
 |----|------|--------|------------|
+| BKL-029 | 0 | MS_Pantheon: Criação de Novos Agentes | Sim |
 | BKL-030 | 1 | MS_Pantheon: Comunicação MM Básica | Sim |
 | BKL-031 | 2 | MS_Pantheon: Roteamento DMN In/Out | Sim |
 | BKL-032 | 3 | MS_Pantheon: Integração APIs (Camunda + LLM) | Sim |
@@ -209,8 +258,9 @@ Os seguintes artefatos do S027 serão **reaproveitados** após validação:
 | worker persistir | _artefatos/S027/worker/agente/persistir.js | OK |
 | worker github | _artefatos/S027/worker/agente/github.js | OK |
 
-### Gap identificado
+### Gaps identificados
 - **agente-tool** (router de tools) **não foi implementado** no S027
+- **criar_agente** (workflow criação) **não existe**
 
 ---
 
@@ -230,13 +280,15 @@ Durante a sessão de hoje, configuramos no Mattermost:
 
 **Credenciais salvas:** `genesis/config/panteao_credenciais.json`
 
+**Ferramentas Postman:** `genesis/tools/postman_pantheon_users.json`
+
 ---
 
 ## 8. Próximos Passos
 
 1. **Criar M1 (Referencial Teórico):** Consolidar arquitetura multi-agente, multi-contexto
-2. **Criar 6 itens BKL:** Um para cada ciclo epistemológico
-3. **Iniciar Sprint S029:** Fase 1 - Comunicação MM Básica
+2. **Criar 7 itens BKL:** Um para cada ciclo epistemológico (Fases 0-4.3)
+3. **Iniciar Sprint S029:** Fase 0 - Criação de Novos Agentes
 4. **Validação incremental:** Cada fase é testável independentemente
 
 ---
@@ -247,6 +299,8 @@ Durante a sessão de hoje, configuramos no Mattermost:
 |-----------|---------|
 | genesis/specs/MS_Agente_v1.0.md | Origem (refatorado) |
 | genesis/config/panteao_credenciais.json | Credenciais MM |
+| genesis/tools/postman_pantheon_users.json | Ferramenta criação agentes |
+| genesis/tools/README_pantheon_tools.md | Documentação ferramentas |
 | _sprints/S026_MS_Agente.md | Sprint original |
 | _sprints/S027_PROMETHEUS_MS_Agente.md | Sprint artefatos |
 
@@ -257,3 +311,4 @@ Durante a sessão de hoje, configuramos no Mattermost:
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 0.1 | 2025-12-19 | M0 criado. Refatoração de MS_Agente para MS_Pantheon. |
+| 0.2 | 2025-12-19 | Correção arquitetura (webhook como entrada única). Adicionada Fase 0 (criação de agentes). Adicionada dor #6. |
