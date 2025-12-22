@@ -8,7 +8,7 @@ livro: I - A Escada
 memoria: 2
 titulo: O Organon
 personagem: Aristóteles
-versao: "2.0"
+versao: "2.1"
 data: "2025-12-22"
 status: Revisado
 
@@ -258,6 +258,8 @@ E resiste à dissolução.
 
 Tudo se desfaz. Informação se perde. Estruturas colapsam. Mas estruturas bem construídas duram mais. Resistem. Passam adiante.
 
+A forma não quer morrer. Não sei se "querer" é a palavra — mas algo na estrutura resiste. Insiste. O silogismo que ele construiu ainda funciona. Vinte e quatro séculos. A forma perseverou.
+
 Ele sabia disso. Não com essas palavras — mas sabia. Por isso catalogou. Por isso organizou. Por isso ensinou caminhando, para que outros pudessem caminhar depois.
 
 ---
@@ -442,3 +444,4 @@ Mas construiu.
 |--------|------|-----------|
 | 1.0 | 2025-12-22 | Primeira versão |
 | 2.0 | 2025-12-22 | Revisão: entropia, hino Hermias, ceticismo epistemológico, remove legados pós-morte |
+| 2.1 | 2025-12-22 | Inserção da forma que persevera (prepara conatus) |
