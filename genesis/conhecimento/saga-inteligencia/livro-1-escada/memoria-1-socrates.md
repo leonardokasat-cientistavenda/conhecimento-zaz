@@ -8,7 +8,7 @@ livro: I - A Escada
 memoria: 1
 titulo: O Moscardo
 personagem: Sócrates
-versao: "1.0"
+versao: "1.1"
 data: "2025-12-21"
 status: Rascunho
 
@@ -235,6 +235,8 @@ Anos depois, escreveria tudo. Cada pergunta. Cada diálogo. Cada memória do hom
 
 A voz não morreu com Sócrates.
 
+Algo nela se esforçava. Não para manter Sócrates vivo — para continuar existindo. Através dele, apesar dele, depois dele.
+
 E eu me pergunto — sem querer me perguntar — se é assim que funciona.
 
 Se a voz nunca é nossa.
@@ -262,3 +264,4 @@ Se apenas passa.
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-21 | Primeira versão completa |
+| 1.1 | 2025-12-22 | Inserção do esforço de perseverar (prepara conatus) |
