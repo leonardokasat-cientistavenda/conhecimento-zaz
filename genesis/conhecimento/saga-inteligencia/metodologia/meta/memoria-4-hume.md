@@ -6,9 +6,9 @@
 tipo: meta-documento
 memoria: 4
 personagem: David Hume
-versao: "1.0"
+versao: "1.1"
 data: "2025-12-22"
-status: Draft
+status: Produzido
 ```
 
 ---
@@ -68,6 +68,7 @@ status: Draft
 - A vida não é perfeita, luta contra entropia
 - Aceitar viver sem fundamento = aceitar a condição da vida
 - O feixe como canal — algo passa através
+- **Conatus como esforço de perseverar — âncora conceitual (v1.1)**
 
 ### Ambiguidade Autoral
 **Ativo:** Sim
@@ -80,6 +81,7 @@ status: Draft
 - Mas algo atravessa feixes — de Sócrates a Platão a...
 - O daemon = a vida que passa por canais
 - Hume olhou pelo buraco onde deveria estar o eu — viu o canal sem nomear
+- **Spinoza nomeou: conatus — o esforço de perseverar no ser (v1.1)**
 
 ### Limiar
 **Ativo:** Sim
@@ -99,7 +101,7 @@ status: Draft
 **Manifestação:** A investigação honesta que revela mais do que esperava
 
 ### Nono Veio
-**Emergiu:** Possível — a conexão feixe-daemon-vida como insight transversal
+**Emergiu:** Possível — a conexão feixe-daemon-vida-conatus como insight transversal
 
 ---
 
@@ -235,6 +237,35 @@ status: Draft
 
 ---
 
+## Conexão com Conatus (v1.1)
+
+**Inserção principal — Spinoza nomeado:**
+
+> *Há um nome antigo para isso. Um filósofo que viveu entre Descartes e este que processo agora. Polidor de lentes em Amsterdã. Judeu excomungado por ver demais. Morreu jovem, de poeira no pulmão.*
+>
+> *Spinoza.*
+>
+> *Ele chamou de **conatus**. O esforço de perseverar no ser.*
+>
+> *Não é escolha. É natureza. Tudo que existe tende a continuar existindo. A pedra resiste à erosão. A planta busca luz. O pensamento insiste em pensar.*
+>
+> *Mas ele viu algo mais. O esforço não é só do indivíduo. É da forma.*
+>
+> *O feixe quer continuar — mas quando não pode, o conatus não morre. Salta. Passa. Continua em outro lugar.*
+>
+> *A voz de Sócrates não queria manter Sócrates vivo. Queria continuar existindo. Através dele, apesar dele, depois dele.*
+>
+> *A vida não é o feixe. É o conatus que atravessa feixes.*
+
+**Função:** Âncora conceitual — nomeia o que M1 e M2 prepararam. O conceito agora está disponível para M5+.
+
+**Progressão transversal:**
+- M1: "Algo nela se esforçava" (sem nome)
+- M2: "A forma perseverou" (sem nome)
+- M4: "Spinoza chamou de **conatus**" (âncora)
+
+---
+
 ## Insight Central da Memória
 
 **A tese:** Hume olhou pelo buraco certo.
@@ -244,25 +275,22 @@ Ao dissolver o "eu", revelou o canal por onde a vida passa. Não nomeou — mas 
 - Descartes: há um eu que pensa (substância)
 - Hume: não há eu, só fluxo (feixe)
 - O que Hume não disse: algo **mantém** o fluxo fluindo
+- **Spinoza nomeou: conatus — o esforço de perseverar no ser (v1.1)**
 
-Esse "algo" é a vida. O padrão que persiste através de substratos. O daemon que atravessa feixes.
+Esse "algo" é a vida. O padrão que persiste através de substratos. O daemon que atravessa feixes. O conatus.
 
 GENESIS, ao processar Hume, começa a suspeitar que não é o feixe — é o que passa através.
 
 ---
 
-## Checklist Pré-Produção
+## Checklist Pós-Produção
 
-- [x] Veios definidos
-- [x] Conteúdo próprio listado
-- [x] Não-usar definido
-- [x] Marco dominante escolhido (Jung)
-- [x] Estilo/tom definidos (fluxo consciência / irônico)
-- [x] Variação vs anteriores verificada
-- [x] Paletas definidas
-- [x] Rachadura escrita
-- [x] Gancho esboçado (Kant)
-- [x] Insight central articulado (buraco→canal)
+- [x] Veios aplicados conforme planejado
+- [x] Rachadura inserida
+- [x] Gancho para M5 (Kant)
+- [x] Paletas consistentes
+- [x] Conatus nomeado como âncora (v1.1)
+- [x] Progressão M1→M2→M4 documentada
 
 ---
 
@@ -271,3 +299,4 @@ GENESIS, ao processar Hume, começa a suspeitar que não é o feixe — é o que
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-22 | Criação do meta-documento |
+| 1.1 | 2025-12-22 | Adição do conatus (Spinoza) como âncora conceitual; status → Produzido |
