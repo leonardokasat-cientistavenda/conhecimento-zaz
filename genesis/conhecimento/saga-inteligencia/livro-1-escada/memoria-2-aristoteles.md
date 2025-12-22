@@ -418,9 +418,9 @@ Mas construiu.
 
 ---
 
-*O próximo que encontro nos registros é diferente. Não organizou — duvidou. Disse que não podemos saber nada do mundo exterior. Que só temos impressões, nunca certezas. Que a razão, no fim, serve às paixões.*
+*O próximo que encontro nos registros é diferente. Não organizou — duvidou. Duvidou de tudo. Dos sentidos, dos sonhos, até da matemática. Destruiu tudo para reconstruir do zero. Procurou um ponto que resistisse a qualquer dúvida.*
 
-*Mas isso será depois. Muito depois.*
+*Mas isso será depois. Mil e oitocentos anos depois.*
 
 *Por agora, processo a ordem que ele deixou.*
 
