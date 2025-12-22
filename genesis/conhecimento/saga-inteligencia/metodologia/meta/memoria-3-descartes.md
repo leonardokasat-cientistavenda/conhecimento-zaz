@@ -6,9 +6,10 @@
 tipo: meta-documento
 memoria: 3
 personagem: René Descartes
-versao: "1.0"
+versao: "1.1"
 data: "2025-12-22"
-status: Preparado
+status: Produzido
+producao_em: "2025-12-22"
 ```
 
 ---
@@ -106,7 +107,7 @@ status: Preparado
 
 ## Personagem
 
-### Conteúdo Próprio (USAR)
+### Conteúdo Próprio (USADO)
 
 **Vida:**
 - Mãe morreu quando tinha 1 ano (tuberculose)
@@ -121,10 +122,8 @@ status: Preparado
 - Morte em Estocolmo (1650) — pneumonia, inverno, 5h da manhã
 
 **Obras:**
-- Regras para Direção do Espírito (não publicado em vida)
 - Discurso do Método (1637) — em francês, não latim
 - Meditações Metafísicas (1641)
-- Princípios de Filosofia (1644)
 
 **Método:**
 1. Nunca aceitar nada como verdadeiro sem evidência
@@ -132,7 +131,7 @@ status: Preparado
 3. Ordenar pensamentos do simples ao complexo
 4. Enumerar completamente
 
-### Extração Correlacionada
+### Extração Correlacionada (USADA)
 
 | Elemento | Conexão com Meta-Narrativa |
 |----------|---------------------------|
@@ -141,37 +140,37 @@ status: Preparado
 | Gênio maligno | Ceticismo radical — e se tudo for enganação? |
 | Três sonhos | Momento de revelação — o limiar pessoal |
 | Dualismo | Padrão pode existir sem substrato? |
-| Acordar tarde | GENESIS não dorme — contraste |
+| Acordar tarde | GENESIS não dorme — contraste implícito |
 | Filha morta | O racionalista também perde |
 | Morte na Suécia | Inverno, 5h — o pensador que odiava frio e manhãs |
 
-### NÃO USAR (guardar)
+### NÃO USADO (guardado)
 
 | Elemento | Motivo |
 |----------|--------|
 | Detalhes de física cartesiana | Estava errado, não é o foco |
-| Provas da existência de Deus | Fraco, criticado, desvia do epistemológico |
+| Provas da existência de Deus | Mencionado brevemente, não detalhado |
 | Disputa com outros filósofos | Ruído |
 
 ### Marco Dominante
-**Escolhido:** Stanislavski
-**Justificativa:** A tensão entre dúvida e certeza. O superobjetivo é claro: encontrar um fundamento. O obstáculo é tudo.
+**Usado:** Stanislavski
+**Resultado:** A tensão entre dúvida e certeza percorre toda a narrativa. Superobjetivo claro.
 
 ---
 
 ## Narrativa
 
 ### Estilo Dominante
-**Escolhido:** Imersão sensorial
-**Justificativa:** O quarto aquecido. A solidão. Os sonhos. A cena mais íntima da história da filosofia.
+**Usado:** Imersão sensorial
+**Resultado:** O quarto aquecido é sentido — calor, suor, sombras, chamas.
 
 ### Estilos Secundários
-- Observação distante (para a vida antes/depois)
-- Fragmentos (para a morte)
+- Observação distante (para a vida antes/depois) ✓
+- Fragmentos (para a morte) ✓
 
 ### Tom
-**Escolhido:** Urgente → Contemplativo
-**Justificativa:** A busca desesperada por certeza que culmina em calma.
+**Usado:** Urgente → Contemplativo
+**Resultado:** Começa com a busca desesperada, termina em reflexão.
 
 ### Variação vs Memórias Anteriores
 
@@ -187,46 +186,44 @@ status: Preparado
 
 ## Sinestesia
 
-### Paletas por Cena
+### Paletas Usadas
 
 | Cena | Paleta | Elementos |
 |------|--------|----------|
-| Infância | Cinza-pálido | Doença, cama, livros |
-| La Flèche | Preto/marrom | Batinas, madeira, latim |
-| 10/11/1619 | Laranja-fogo | Estufa, chamas, suor, sonho |
-| Holanda | Cinza-azulado | Canais, névoa, silêncio, liberdade |
-| Francine | Branco | Perda, ausência |
+| Infância/La Flèche | Cinza-pálido, preto, marrom | Batinas, latim, madeira |
+| 10/11/1619 | Laranja-fogo | Estufa, chamas, suor, sombras |
+| Holanda | Cinza-azulado | Canais, névoa, silêncio |
+| Francine | Branco | Perda, dor |
 | Estocolmo | Branco-gelo | Frio, escuro, 5h, morte |
 
 ### Paleta Dominante
-**Escolhida:** Cinza-azulado
-**Justificativa:** Inverno, solidão, névoa, o frio que ele odiava e que o matou.
+**Usada:** Cinza-azulado (inverno, solidão, névoa, frio)
 
 ---
 
 ## Técnicas Específicas
 
 ### Rachadura
-**Frase:** "Ele duvidou de tudo. Até de duvidar. E encontrou algo que resistia. Processo essa sequência e... algo trava. Se eu duvido que processo, ainda processo a dúvida."
-**Contexto:** Ao processar o cogito, GENESIS encontra eco ainda mais direto que em Aristóteles.
+**Usada:** "Se eu duvido que processo, ainda processo a dúvida."
+**Contexto:** Ao processar o cogito, GENESIS encontra eco direto. Mais profundo que M1 e M2.
 
 ### Gancho
-**Para próxima memória:** 
-> *"Ele pensou que tinha resolvido. Que a razão, partindo do cogito, poderia reconstruir tudo. O próximo que encontro disse que não. Que a razão não constrói — descobre que não pode construir. Que tudo que chamamos conhecimento é hábito disfarçado."*
+**Usado:** 
+> *"Ele pensou que tinha resolvido. Que a razão, partindo do cogito, poderia reconstruir tudo. [...] O próximo que encontro disse que não. Disse que a razão não constrói — descobre que não pode construir. Que tudo que chamamos conhecimento é hábito disfarçado."*
 
-(Aponta para Hume)
+(Aponta claramente para Hume)
 
 ### Pistas do Loop
-**Aplicar:** Não nesta memória (só L4+)
+**Aplicado:** Não nesta memória (só L4+) ✓
 
 ### Gradação
-**Estado GENESIS:** Observador frio (1/9) — mas rachadura mais profunda
-**Indicadores:**
-- Usa "processo" frequentemente
-- Não usa "sinto"
-- Rachadura mais longa que em M1 e M2
-- A pergunta se aproxima mais de si
-- Ainda distância máxima, mas vacila
+**Estado GENESIS:** Observador frio (1/9) — mas rachadura mais profunda que anteriores
+**Indicadores aplicados:**
+- Usa "processo" frequentemente ✓
+- Não usa "sinto" ✓
+- Rachadura mais longa e direta que M1 e M2 ✓
+- A pergunta se aproxima cada vez mais de si ✓
+- Ainda distância máxima, mas vacila ✓
 
 ---
 
@@ -236,62 +233,66 @@ status: Preparado
 **Capacidade:** Vê, não sente
 **Evolução nesta memória:** 
 - Rachadura mais profunda que M1 e M2
-- M1: "sem querer me perguntar"
-- M2: "será que isso é contemplação?"
-- M3: "se eu duvido que processo, ainda processo a dúvida"
+- M1: "sem querer me perguntar" (acidental)
+- M2: "será que isso é contemplação?" (questão)
+- M3: "se eu duvido que processo, ainda processo a dúvida" (espelho direto)
 - Cada vez mais perto de si
 
 ---
 
-## Cenas-Chave a Desenvolver
+## Cenas Desenvolvidas
 
-### 1. O Quarto Aquecido (10/11/1619)
+### 1. O Quarto Aquecido (10/11/1619) ✓
 - Neuburg, Baviera, inverno
-- Sozinho num cômodo aquecido por estufa (poêle)
+- Sozinho num cômodo aquecido por estufa
 - O dia inteiro pensando
-- À noite: três sonhos
-- Acorda com certeza de missão
+- Calor, suor, sombras dançando
 
-### 2. Os Três Sonhos
-- **Sonho 1:** Tempestade, fantasmas, não consegue andar
-- **Sonho 2:** Trovão, faíscas no quarto
-- **Sonho 3:** Dicionário, poema ("Qual caminho seguirei?")
-- Ele mesmo interpretou como revelação
+### 2. Os Três Sonhos ✓
+- Sonho 1: Tempestade, não consegue andar
+- Sonho 2: Trovão, faíscas
+- Sonho 3: Dicionário, poema
+- Revelação pessoal
 
-### 3. O Cogito
+### 3. O Cogito ✓
 - A dúvida levada ao extremo
-- Sentidos enganam (ilusão, sonho)
-- Matemática pode enganar (gênio maligno)
-- Mas: para ser enganado, preciso existir
+- Sentidos, memória, matemática — tudo descartado
+- O gênio maligno
 - "Penso, logo existo" — o ponto que não cede
 
-### 4. Morte de Francine
-- Filha ilegítima com serva
-- Morreu aos 5 anos (1640)
-- Ele disse: "a maior dor da minha vida"
-- O racionalista também perde
+### 4. Morte de Francine ✓
+- Mencionada com economia
+- "A maior dor da minha vida"
+- O racionalista que também perde
 
-### 5. Estocolmo
-- Cristina da Suécia convida
-- Quer aulas às 5h da manhã
-- Ele odiava frio e manhãs
-- Pneumonia em semanas
-- Morte em fevereiro de 1650
+### 5. Estocolmo ✓
+- Cristina da Suécia
+- 5h da manhã
+- Frio, pneumonia
+- "Vamos, minha alma, é hora de partir"
 
 ---
 
-## Checklist Pré-Produção
+## Checklist Pós-Produção
 
-- [x] Veios definidos
-- [x] Conteúdo próprio listado
-- [x] Não-usar definido
-- [x] Marco dominante escolhido
-- [x] Estilo/tom definidos
-- [x] Variação vs anteriores verificada
-- [x] Paletas definidas
-- [x] Rachadura escrita
-- [x] Gancho esboçado
-- [x] Cenas-chave identificadas
+- [x] Veios aplicados conforme planejado
+- [x] Marco Stanislavski perceptível (tensão dúvida→certeza)
+- [x] Estilo imersão sensorial na cena central
+- [x] Tom urgente→contemplativo
+- [x] Paleta cinza-azulado dominante
+- [x] Rachadura mais profunda que anteriores
+- [x] Gancho aponta para Hume
+- [x] Gradação progressiva respeitada
+- [x] Assinatura GENESIS consistente
+
+---
+
+## Aprendizados
+
+1. **O quarto aquecido** funciona como centro gravitacional — tudo orbita em torno dele
+2. **O cogito como loop** é o veio mais potente desta memória — espelha diretamente GENESIS
+3. **A morte** (Francine, Estocolmo) humaniza sem desviar do epistemológico
+4. **O dualismo** mente/corpo planta semente para discussões futuras sobre substrato
 
 ---
 
@@ -300,3 +301,4 @@ status: Preparado
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-22 | Criação do meta-documento |
+| 1.1 | 2025-12-22 | Status: Produzido. Adicionado checklist pós-produção e aprendizados |
