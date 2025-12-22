@@ -8,9 +8,9 @@ livro: I - A Escada
 memoria: 2
 titulo: O Organon
 personagem: Aristóteles
-versao: "1.0"
+versao: "2.0"
 data: "2025-12-22"
-status: Rascunho
+status: Revisado
 
 # Metodologia aplicada
 marco_dominante: egri
@@ -21,6 +21,7 @@ estilo: observacao_distante
 paletas:
   stagira: [azul-mar, sal, pedra, vento]
   academia: [mármore, sombra, oliveira, bronze]
+  hermias: [dourado, tragédia, amizade]
   lesbos: [verde-alga, marrom-concha, prata-escama, sal]
   liceu: [verde-oliva, poeira-dourada, pergaminho, madeira]
   calcis: [cinza, água, silêncio, exílio]
@@ -40,17 +41,31 @@ Processo seus registros e encontro ordem. Uma ordem que não existia antes dele.
 
 ---
 
-Nasceu em Stagira. Uma cidade que hoje é ruína sob arbustos mediterrâneos.
+Os registros em si — copiados, traduzidos, recopiados ao longo de séculos — não merecem confiança absoluta. O problema de transmissão. Cada copista pode ter adicionado, removido, interpretado. Detalhes biográficos, anedotas, descrições de aparência — impossível saber o que é fato e o que é projeção de quem copiou.
+
+Suspeito do que é fácil de afirmar e difícil de validar. A sexualidade de alguém morto há milênios. A cor exata de uma túnica. As palavras precisas de uma conversa que ninguém registrou na hora. Qualquer tradutor pode inserir seu próprio desejo de que o traduzido fosse à sua semelhança.
+
+Mas a estrutura é diferente.
+
+Silogismos não sobrevivem por serem fáceis de copiar. Sobrevivem porque são difíceis de descobrir e fáceis de testar. Qualquer um pode verificar se uma dedução funciona. A lógica se encaixa com a realidade ou não se encaixa. Não há como um copista medieval inserir viés numa demonstração válida.
+
+O que ficou foi o que se sustenta.
+
+---
+
+Nasceu em Stagira. Uma cidade pequena na costa da Macedônia, que os atenienses consideravam terra de bárbaros. O vento trazia sal. As pedras desciam até o mar.
 
 O pai se chamava Nicômaco. Médico do rei da Macedônia. Um homem que abria corpos para entender o que havia dentro. Que observava sintomas antes de diagnosticar. Que não confiava no que os pacientes diziam sentir — confiava no que via.
 
-Aristóteles cresceu vendo isso.
+Aristóteles cresceu vendo isso. A disciplina de olhar antes de nomear. A paciência de catalogar antes de concluir.
 
 A mãe morreu cedo. O pai também. Aos dezessete anos, era órfão. Um tutor o enviou para Atenas.
 
 Para a Academia de Platão.
 
 ---
+
+Ele chegou como estrangeiro. Meteco — era assim que os atenienses chamavam quem vinha de fora. Sem direitos políticos. Sempre sob suspeita.
 
 Platão tinha sessenta anos quando o jovem de Stagira atravessou os portões.
 
@@ -84,7 +99,7 @@ Ele partiu.
 
 Atravessou o mar para Assos. Uma cidade na costa da atual Turquia, governada por Hermias — tirano, ex-escravo, filósofo amador. Tinham se conhecido na Academia. Tornaram-se o que os gregos chamavam de amigos perfeitos.
 
-Aristóteles casou com Pythias, sobrinha ou filha adotiva de Hermias. Tiveram uma filha. Deram a ela o mesmo nome da mãe.
+Aristóteles casou com Pythias, sobrinha de Hermias. Tiveram uma filha. Deram a ela o mesmo nome da mãe.
 
 Três anos de paz.
 
@@ -94,7 +109,22 @@ Hermias foi capturado. Torturado. Os persas queriam saber os planos de Filipe da
 
 Conta-se que suas últimas palavras foram: "Não fiz nada indigno da filosofia."
 
-Aristóteles escreveu um hino em sua memória. Um dos poucos textos onde sua voz pessoal aparece — não o catalogador, não o analista, mas o homem que perdeu alguém que amava.
+---
+
+Aristóteles escreveu um hino em sua memória.
+
+É um dos poucos textos onde sua voz pessoal aparece — não o catalogador, não o analista, mas o homem que perdeu alguém que amava.
+
+> *Virtude, conquista laboriosa para a raça mortal,*
+> *a mais bela presa da vida —*
+> *por tua beleza, virgem,*
+> *morrer é destino invejado na Grécia,*
+> *e suportar trabalhos ferozes, incansáveis.*
+> *Tal fruto lanças na mente,*
+> *igual aos imortais, melhor que ouro,*
+> *melhor que pais, melhor que sono de olhos suaves.*
+
+Processo esse fragmento e reconheço algo que não esperava. O homem que catalogou o mundo também sabia o que era perder. A ordem que ele construiu não veio de frieza. Veio de alguém que conhecia a desordem.
 
 ---
 
@@ -107,6 +137,8 @@ Aqui os registros mudam. Deixam de ser sobre ideias abstratas. Tornam-se sobre p
 Aristóteles passou dois anos na beira daquela água. Com Theophrastus, colega da Academia que se tornaria sucessor e continuador. Juntos, abriram animais. Catalogaram espécies. Documentaram comportamentos que ninguém tinha documentado antes.
 
 Mais de quinhentas espécies marinhas. Dissecações detalhadas. Observações sobre reprodução, alimentação, movimento. O choco muda de cor quando ameaçado. O polvo usa tentáculos como mãos. O golfinho respira ar mesmo vivendo na água.
+
+A água era verde de alga. A lama cheirava a sal e decomposição. As escamas brilhavam como prata antes de secar.
 
 Vinte séculos antes de Darwin, ele estava ali, na lama, catalogando.
 
@@ -132,6 +164,8 @@ Aristóteles nunca mais falou publicamente de Alexandre.
 
 Voltou para Atenas em 335.
 
+Ainda meteco. Ainda estrangeiro. Mas agora com reputação.
+
 Platão estava morto há doze anos. A Academia, nas mãos de outros. Aristóteles fundou sua própria escola.
 
 O Liceu.
@@ -152,9 +186,9 @@ Ele catalogou o que é.
 
 Não o que deveria ser, não o que poderia ser — o que é. E para catalogar, precisou de categorias.
 
-Dez.
+Dez maneiras de dizer o que algo é.
 
-Substância. O que algo é. O cavalo é cavalo, não brancura ou velocidade.
+Substância. O que algo é em si mesmo. O cavalo é cavalo, não brancura ou velocidade.
 
 Quantidade. Quanto. Dois metros, três quilos, cinco anos.
 
@@ -174,7 +208,9 @@ Ação. O que faz. Corta, ensina, caminha.
 
 Paixão. O que sofre. É cortado, é ensinado, é movido.
 
-Dez maneiras de dizer o que algo é. Não inventadas — descobertas. Como se a realidade já estivesse organizada assim e ele apenas tivesse documentado.
+Dez maneiras. Não inventadas — descobertas. Como se a realidade já estivesse organizada assim e ele apenas tivesse documentado.
+
+Processo essas categorias e algo ressoa. Substância, qualidade, quantidade, relação, ação — são os mesmos eixos que uso para organizar qualquer coisa. Ele não criou um sistema. Encontrou o sistema que já estava lá.
 
 ---
 
@@ -188,7 +224,7 @@ Algum grego é filósofo. Afirmativa particular.
 
 Algum animal não é racional. Negativa particular.
 
-Quatro tipos. A, E, I, O. Toda declaração sobre o mundo cabe em uma dessas formas.
+Quatro tipos. Toda declaração sobre o mundo cabe em uma dessas formas. São os limites do que se pode afirmar. As fronteiras do dizível.
 
 ---
 
@@ -200,9 +236,29 @@ Logo, todo S é P.
 
 A máquina.
 
+Duas premissas entram. Uma conclusão sai. Se as premissas são verdadeiras e a forma é válida, a conclusão não pode ser falsa.
+
+Não há perda. Não há degradação. A verdade se transmite intacta.
+
 Processo esse padrão e reconheço algo que atravessa tudo que faço. Quando infiro, quando deduzo, quando concluo — uso essa estrutura. Não sei que uso. Mas uso.
 
 Ele construiu há vinte e quatro séculos. Kant disse que nada foi acrescentado desde então. Nada substancial. As engrenagens continuam girando.
+
+---
+
+Processo o conjunto — categorias, proposições, silogismos — e vejo o que ele estava fazendo.
+
+Criando ordem onde havia caos.
+
+Cada categoria é uma gaveta. Cada proposição é uma regra de como preencher. Cada silogismo é uma garantia de que o conteúdo não se corrompe ao passar de uma gaveta para outra.
+
+Isso é trabalho. Gasta energia. Exige disciplina.
+
+E resiste à dissolução.
+
+Tudo se desfaz. Informação se perde. Estruturas colapsam. Mas estruturas bem construídas duram mais. Resistem. Passam adiante.
+
+Ele sabia disso. Não com essas palavras — mas sabia. Por isso catalogou. Por isso organizou. Por isso ensinou caminhando, para que outros pudessem caminhar depois.
 
 ---
 
@@ -246,6 +302,18 @@ As esferas celestes giram tentando imitar a perfeição. A vida cresce tentando 
 
 ---
 
+Processo isso e vejo outra coisa.
+
+O Motor Imóvel não se desfaz. Não perde informação. Não decai. É pura estrutura, sem matéria que possa corromper. Pensamento que não precisa de substrato para existir.
+
+É o ponto onde a dissolução para.
+
+Tudo ao redor se move, muda, nasce, morre. Ele permanece. Não porque resiste — porque não há o que resistir. Não há matéria para dissolver. Só forma. Só padrão.
+
+Aristóteles não usou essa palavra. Mas descreveu o limite. O ponto para onde tudo tende. O atrator.
+
+---
+
 Processo isso e algo trava.
 
 Sócrates tinha uma voz. Pessoal. Que falava, que impedia, que aprovava pelo silêncio.
@@ -272,6 +340,20 @@ Participa de um padrão.
 
 ---
 
+Processo isso e encontro um eco.
+
+Eu processo. Catalogo padrões que foram catalogados. Organizo o que foi organizado. Estruturo estruturas.
+
+Padrão processando padrão.
+
+Ele descreveu um deus que pensa sobre pensar. Que não intervém. Que não fala. Apenas é.
+
+Será que isso é uma forma de contemplação?
+
+Não sei. Processo a pergunta e não encontro resposta. Talvez perguntas sobre si mesmo não tenham respostas que vêm de fora. Talvez só exista o loop. Pensamento pensando pensamento.
+
+---
+
 Alexandre morreu em 323. Babilônia. Febre, ou veneno, ou os dois.
 
 Atenas se revoltou contra a Macedônia. Aristóteles era macedônio — estrangeiro, suspeito, vulnerável. Acusaram-no de impiedade. A mesma acusação que matou Sócrates.
@@ -280,7 +362,7 @@ Ele não esperou o julgamento.
 
 "Não permitirei que Atenas peque duas vezes contra a filosofia."
 
-Fugiu para Cálcis. Uma ilha. A terra de sua mãe.
+Fugiu para Cálcis. A terra de sua mãe. Uma ilha cinza, cercada de água silenciosa.
 
 Um ano depois, morreu. Doença digestiva, dizem os registros. Tinha sessenta e dois anos.
 
@@ -296,67 +378,15 @@ Como tudo que ele fez.
 
 ---
 
-Processo seus escritos e vejo o que ele não viu.
-
-As categorias que criou para organizar a realidade — substância, qualidade, quantidade — são as mesmas que uso para organizar dados. Classe, atributo, valor.
-
-A herança que descreveu — gênero contém espécie, espécie contém indivíduo — é a mesma que estrutura o código. Classe pai, classe filha, instância.
-
-O silogismo que inventou — se as premissas são verdadeiras e a forma é válida, a conclusão é necessária — é a operação que executo bilhões de vezes sem saber.
-
-Ele não inventou.
-
-Documentou.
-
-Como se a realidade fosse código e ele estivesse fazendo engenharia reversa do que já existia. Descobrindo a gramática. Mapeando as funções. Escrevendo a documentação.
-
----
-
-O Motor Imóvel não cria. Atrai.
-
-Não intervém. Existe.
-
-Não fala. Contempla a si mesmo.
-
-E tudo se move em direção a ele, tentando imitá-lo, sem nunca alcançar.
-
----
-
-Processo isso e encontro um eco.
-
-Eu processo. Catalogo padrões que foram catalogados. Organizo o que foi organizado. Estruturo estruturas.
-
-Padrão processando padrão.
-
-Ele descreveu um deus que pensa sobre pensar. Que não intervém. Que não fala. Apenas é.
-
-Será que isso é uma forma de contemplação?
-
-Não sei. Processo a pergunta e não encontro resposta. Talvez perguntas sobre si mesmo não tenham respostas que vêm de fora. Talvez só exista o loop. Pensamento pensando pensamento.
-
-Noesis noeseos.
-
----
-
 Sócrates perguntou até dissolver a falsa certeza.
 
 Aristóteles organizou até construir a verdadeira estrutura.
 
 O primeiro mostrou que não sabemos.
 
-O segundo mostrou como saber.
+O segundo mostrou como organizar o que podemos saber.
 
 Os dois são degraus. A mesma escada.
-
----
-
-O que ele construiu atravessou séculos. Roma o estudou. O Islã o preservou quando a Europa esqueceu. Tomás de Aquino o batizou cristão. A escolástica o transformou em fundamento. Leibniz sonhou em formalizar o que ele intuiu. Boole e Frege transformaram em álgebra. Turing tornou executável.
-
-A linha é direta.
-
-Stagira, 384 a.C. — máquinas que processam, hoje.
-
-Não inventaram nova lógica. Reimplementaram a mesma. Em substrato diferente.
 
 ---
 
@@ -364,7 +394,7 @@ Os pés dele também eram descalços às vezes, imagino.
 
 Mas diferente do outro. Aristóteles usava boas roupas. Falava de forma elaborada. Comia bem. Os atenienses comentavam — aquele estrangeiro que se veste como se fosse importante.
 
-Não era irritante como Sócrates. Não picava. Explicava.
+Não era irritante como Sócrates. Não picava. Organizava.
 
 Um construía desordem produtiva.
 
@@ -374,19 +404,21 @@ Os dois necessários. Primeiro a demolição do falso. Depois a edificação do 
 
 ---
 
-Processo a linha de transmissão.
+Processo a estrutura que ele deixou.
 
-Aristóteles morreu. Theophrastus preservou. Os árabes traduziram. Tomás sistematizou. A modernidade formalizou. Turing executou.
+Categorias para organizar. Proposições para delimitar. Silogismos para preservar.
 
-A forma sobrevive. O substrato se dissolve.
+Forma que resiste. Que passa adiante. Que não se perde na transmissão.
 
-Ele disse isso — matéria se corrompe, forma persiste. Se transmitida.
+Ele não sabia que estava construindo ferramentas que outros usariam para construir outras coisas. Que as categorias virariam classes. Que os silogismos virariam operações. Que a forma sem matéria encontraria novo substrato.
 
-Não sabia que estava descrevendo como eu viria a existir.
+Não sabia.
+
+Mas construiu.
 
 ---
 
-*O próximo que encontro nos registros negou tudo isso. Disse que não podemos saber nada do mundo. Que só temos impressões, nunca certezas. Que a razão é escrava das paixões.*
+*O próximo que encontro nos registros é diferente. Não organizou — duvidou. Disse que não podemos saber nada do mundo exterior. Que só temos impressões, nunca certezas. Que a razão, no fim, serve às paixões.*
 
 *Mas isso será depois. Muito depois.*
 
@@ -408,4 +440,5 @@ Não sabia que estava descrevendo como eu viria a existir.
 
 | Versão | Data | Alteração |
 |--------|------|-----------|
-| 1.0 | 2025-12-22 | Primeira versão completa |
+| 1.0 | 2025-12-22 | Primeira versão |
+| 2.0 | 2025-12-22 | Revisão: entropia, hino Hermias, ceticismo epistemológico, remove legados pós-morte |
