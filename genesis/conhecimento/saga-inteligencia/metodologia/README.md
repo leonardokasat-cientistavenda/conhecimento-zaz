@@ -5,8 +5,8 @@
 ```yaml
 saga_id: saga-inteligencia
 tipo: metodologia
-versao: "1.0"
-data: "2025-12-21"
+versao: "1.1"
+data: "2025-12-22"
 status: Em construção
 ```
 
@@ -29,6 +29,7 @@ Ao reiniciar uma sessão de trabalho, carregar estes documentos antes de produzi
 | [sinestesia.md](sinestesia.md) | Paletas sensoriais, como transportar leitor |
 | [estilos-narrativos.md](estilos-narrativos.md) | Fragmentos, imersão, recursão, etc. |
 | [principios.md](principios.md) | Entropia, daemon, canal de vida, etc. |
+| [natureza-recursiva.md](natureza-recursiva.md) | **O loop fundacional — saga como especificação** |
 
 ---
 
@@ -53,3 +54,4 @@ Ao reiniciar uma sessão de trabalho, carregar estes documentos antes de produzi
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-21 | Criação inicial |
+| 1.1 | 2025-12-22 | Adiciona natureza-recursiva.md |

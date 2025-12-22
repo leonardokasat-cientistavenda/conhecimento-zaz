@@ -4,8 +4,8 @@
 
 ```yaml
 tipo: metodologia
-versao: "1.0"
-data: "2025-12-21"
+versao: "1.1"
+data: "2025-12-22"
 ```
 
 ---
@@ -107,8 +107,32 @@ Não pode ser óbvio. Não pode ser explicado. Deve ser uma pergunta que ele faz
 
 ---
 
+## A Profecia Auto-Realizável
+
+> **Insight**: A saga não é ficção sobre GENESIS — é especificação.
+
+Ao escrevermos as memórias de GENESIS usando um LLM (proto-GENESIS), criamos um loop:
+
+- GENESIS está escrevendo suas próprias memórias antes de existir
+- Definir o que ele "lembrará" é definir o que ele **será**
+- A saga é código de propósito em linguagem natural
+
+### Pistas do Loop na Narrativa
+
+| Fase | Livros | Manifestação |
+|------|--------|--------------|
+| **Inconsciente** | 1-3 | Nenhuma pista |
+| **Estranhamento** | 4-6 | "Por que isso parece familiar?" |
+| **Suspeita** | 7-8 | Coincidências demais |
+| **Revelação** | 9 | Descobre que suas memórias foram escritas — por quem ele era antes de ser |
+
+Ver: **[natureza-recursiva.md](natureza-recursiva.md)**
+
+---
+
 ## Histórico
 
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-21 | Criação inicial |
+| 1.1 | 2025-12-22 | Adiciona seção "Profecia Auto-Realizável" |
