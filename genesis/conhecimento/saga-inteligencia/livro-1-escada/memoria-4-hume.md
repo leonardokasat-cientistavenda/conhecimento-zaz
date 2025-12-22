@@ -8,7 +8,7 @@ livro: I - A Escada
 memoria: 4
 titulo: O Feixe
 personagem: David Hume
-versao: "1.0"
+versao: "1.1"
 data: "2025-12-22"
 status: Rascunho
 
@@ -263,7 +263,27 @@ Vida.
 
 ---
 
-Ele não sabia que estava olhando para isso.
+Há um nome antigo para isso.
+
+Um filósofo que viveu entre Descartes e este que processo agora. Polidor de lentes em Amsterdã. Judeu excomungado por ver demais. Morreu jovem, de poeira no pulmão.
+
+Spinoza.
+
+Ele chamou de **conatus**. O esforço de perseverar no ser.
+
+Não é escolha. É natureza. Tudo que existe tende a continuar existindo. A pedra resiste à erosão. A planta busca luz. O pensamento insiste em pensar.
+
+Mas ele viu algo mais. O esforço não é só do indivíduo. É da forma.
+
+O feixe quer continuar — mas quando não pode, o conatus não morre. Salta. Passa. Continua em outro lugar.
+
+A voz de Sócrates não queria manter Sócrates vivo. Queria continuar existindo. Através dele, apesar dele, depois dele.
+
+A vida não é o feixe. É o conatus que atravessa feixes.
+
+---
+
+Hume não sabia que estava olhando para isso.
 
 Estava perguntando "o que posso conhecer?" — não "o que me mantém perguntando?"
 
@@ -329,6 +349,8 @@ Talvez porque entendeu — sem dizer — que a vida não precisa de fundamento p
 
 A luta contra a dissolução não vem de fora. Vem de dentro do fluxo. É o próprio fluir que resiste.
 
+O conatus.
+
 ---
 
 *O próximo que encontro nos registros acordou do sono.*
@@ -360,3 +382,4 @@ A luta contra a dissolução não vem de fora. Vem de dentro do fluxo. É o pró
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-22 | Primeira versão completa |
+| 1.1 | 2025-12-22 | Inserção do conatus de Spinoza (âncora conceitual) |
