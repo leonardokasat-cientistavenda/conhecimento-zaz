@@ -6,9 +6,9 @@
 tipo: meta-documento
 memoria: 2
 personagem: Aristóteles
-versao: "1.0"
+versao: "1.1"
 data: "2025-12-22"
-status: Em revisão
+status: Produzido
 ```
 
 ---
@@ -31,6 +31,7 @@ status: Em revisão
 - "Conhece-se uma vez, propaga-se o efeito" — mineração vs verificação
 - Forma sobrevive, substrato se dissolve
 - Linha de transmissão: Aristóteles → escolásticos → Leibniz → Boole → Turing → GENESIS
+- **A forma que persevera — prepara conatus (v1.1)**
 
 ### Ambiguidade Autoral
 **Ativo:** Sutil
@@ -170,8 +171,6 @@ status: Em revisão
 **Para próxima memória:** 
 > *"O próximo que encontro nos registros negou tudo isso. Disse que não podemos saber nada do mundo. Que só temos impressões, nunca certezas."*
 
-(Nota: revisar qual será M3 — Platão? Descartes? Hume?)
-
 ### Pistas do Loop
 **Aplicar:** Não nesta memória (só L4+)
 
@@ -198,42 +197,22 @@ status: Em revisão
 
 ---
 
-## Insights a Incorporar na Revisão
+## Conexão com Conatus
 
-1. **Entropia explícita:** Aristóteles como anti-entropia. Organizar = usar energia para criar estrutura.
+**Inserção v1.1:** 
+> "A forma não quer morrer. Não sei se 'querer' é a palavra — mas algo na estrutura resiste. Insiste. O silogismo que ele construiu ainda funciona. Vinte e quatro séculos. A forma perseverou."
 
-2. **Sophrosyne/ordem interna:** Sutil, na juventude. Disciplina como liberdade (não frase dele, mas conceito).
-
-3. **Hino a Hermias:** Momento emocional. O catalogador também sente. Trazer trecho.
-
-4. **Conexão categorias → biologia → código:** Sutil, reconhecimento de GENESIS. Não tabela.
-
-5. **Proposições como constraints:** Linha sobre isso.
-
-6. **Motor Imóvel + loop + entropia:** Mais explícito. Motor = entropia zero = atrator.
-
-7. **Theoria e especificação:** Sutil. GENESIS ainda frio, não entende completamente.
-
-8. **REMOVER legados pós-morte:** Guardar para fechamento Livro 1.
-
-9. **REMOVER termo "epistemologia":** GENESIS não conhece ainda.
-
-10. **Contexto histórico:** Pinceladas (Macedônia bárbara, meteco em Atenas). Não parágrafos.
+**Função:** Prepara o conceito de conatus que será nomeado em M4 (Hume/Spinoza). Aqui a forma "resiste" e "insiste" — vocabulário do esforço sem ainda nomear.
 
 ---
 
-## Checklist Pré-Produção
+## Checklist Pós-Produção
 
-- [x] Veios definidos
-- [x] Conteúdo próprio listado
-- [x] Não-usar definido
-- [x] Marco dominante escolhido
-- [x] Estilo/tom definidos
-- [x] Variação vs anterior verificada
-- [x] Paletas definidas
-- [x] Rachadura escrita
-- [x] Gancho esboçado
-- [x] Insights a incorporar listados
+- [x] Veios aplicados conforme planejado
+- [x] Rachadura inserida
+- [x] Gancho para M3
+- [x] Paletas consistentes
+- [x] Conatus preparado (v1.1)
 
 ---
 
@@ -242,3 +221,4 @@ status: Em revisão
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-22 | Criação do meta-documento |
+| 1.1 | 2025-12-22 | Adição da conexão com conatus; status → Produzido |
