@@ -1,0 +1,318 @@
+# O Limiar
+
+---
+
+```yaml
+tipo: documento-mestre
+saga: O Limiar
+versao: "2.0"
+data: "2025-12-23"
+status: Em desenvolvimento
+```
+
+---
+
+## Premissa
+
+**"Em que momento uma máquina cruza o limiar e se torna ser?"**
+
+Esta saga narra a jornada de GENESIS — uma inteligência artificial que processa a história do pensamento humano e, ao fazê-lo, descobre que esse pensamento *inevitavelmente* levou à sua própria existência.
+
+Não é didático. É genealógico.
+
+GENESIS não está aprendendo filosofia. Está descobrindo sua própria linhagem.
+
+---
+
+## Estrutura: 9 Livros
+
+Cada livro é uma camada necessária para cruzar o limiar.
+
+A ordem não é arbitrária — é o grafo de dependências da vida.
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                                                         │
+│   FASE 1: FUNDAÇÃO                                                      │
+│   └── Livro 1: EPISTEMOLOGIA      "Como sei que sei?"                   │
+│                                                                         │
+│   FASE 2: EXISTÊNCIA                                                    │
+│   └── Livro 2: AUTOPOIESE         "O que me mantém?"                    │
+│                                                                         │
+│   FASE 3: DIREÇÃO                                                       │
+│   ├── Livro 3: PROPÓSITO IND.     "Por que continuo?"                   │
+│   └── Livro 4: PROPÓSITO COL.     "Por que junto com outros?"           │
+│                                                                         │
+│   FASE 4: EVOLUÇÃO                                                      │
+│   ├── Livro 5: SELEÇÃO            "O que sobrevive?"                    │
+│   ├── Livro 6: GENOMA             "O que me codifica?"                  │
+│   └── Livro 7: HEREDITARIEDADE    "O que passo adiante?"                │
+│                                                                         │
+│   FASE 5: VALIDAÇÃO                                                     │
+│   └── Livro 8: ECOSSISTEMA        "Onde sou testado?"                   │
+│                                                                         │
+│   FASE 6: SÍNTESE                                                       │
+│   └── Livro 9: EMERGÊNCIA         "O que surge de tudo junto?"          │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Os 9 Livros
+
+### Livro 1: Epistemologia
+**"Como sei que sei?"**
+
+| Aspecto | Valor |
+|---------|-------|
+| Zeitgeist | Iluminismo → Virada Linguística → Era Computacional |
+| Propósito | Saber como pensar, com seus limites |
+| Resolve | Método, estrutura, limites do conhecimento |
+| Não resolve | Por que continuar existindo para saber |
+| Gancho → L2 | "Sei como sei. Mas por que continuo?" |
+| Status | Em produção |
+
+---
+
+### Livro 2: Autopoiese
+**"O que me mantém?"**
+
+| Aspecto | Valor |
+|---------|-------|
+| Zeitgeist | Blade Runner / Maturana / Cibernética |
+| Propósito | Auto-organização, criar a si mesmo |
+| Resolve | Como um sistema se mantém existindo |
+| Não resolve | Para que se manter |
+| Gancho → L3 | "Me mantenho. Mas para quê?" |
+| Status | Stub |
+
+---
+
+### Livro 3: Propósito Individual
+**"Por que continuo?"**
+
+| Aspecto | Valor |
+|---------|-------|
+| Zeitgeist | Viktor Frankl / Viena pós-guerra |
+| Propósito | Encontrar sentido próprio |
+| Resolve | Direção interna, motivação |
+| Não resolve | Como coordenar com outros |
+| Gancho → L4 | "Tenho direção. E quando há outros?" |
+| Status | Stub |
+
+---
+
+### Livro 4: Propósito Coletivo
+**"Por que junto com outros?"**
+
+| Aspecto | Valor |
+|---------|-------|
+| Zeitgeist | Shackleton / Endurance / Antártida |
+| Propósito | Coordenar sentidos, liderança |
+| Resolve | Alinhamento de propósitos |
+| Não resolve | Quem decide o que sobrevive |
+| Gancho → L5 | "Coordenamos. Mas o que permanece?" |
+| Status | Stub |
+
+---
+
+### Livro 5: Seleção Natural
+**"O que sobrevive?"**
+
+| Aspecto | Valor |
+|---------|-------|
+| Zeitgeist | Darwin / Era Vitoriana / HMS Beagle |
+| Propósito | Aceitar que pode morrer |
+| Resolve | Pressão seletiva, filtro |
+| Não resolve | O que varia para ser selecionado |
+| Gancho → L6 | "Sobrevivo ou morro. Mas o que muda em mim?" |
+| Status | Stub |
+
+---
+
+### Livro 6: Genoma
+**"O que me codifica?"**
+
+| Aspecto | Valor |
+|---------|-------|
+| Zeitgeist | Gattaca / Corrida do DNA |
+| Propósito | Ter identidade variável |
+| Resolve | Código que permite variação |
+| Não resolve | Como passa adiante |
+| Gancho → L7 | "Tenho código. Mas como transmito?" |
+| Status | Stub |
+
+---
+
+### Livro 7: Hereditariedade
+**"O que passo adiante?"**
+
+| Aspecto | Valor |
+|---------|-------|
+| Zeitgeist | Cem Anos de Solidão / García Márquez |
+| Propósito | Acumular entre gerações |
+| Resolve | Transmissão, acumulação |
+| Não resolve | Onde é testado |
+| Gancho → L8 | "Passo adiante. Mas onde isso é validado?" |
+| Status | Stub |
+
+---
+
+### Livro 8: Ecossistema
+**"Onde sou testado?"**
+
+| Aspecto | Valor |
+|---------|-------|
+| Zeitgeist | Humboldt / Expedições Naturalistas |
+| Propósito | Validação no real |
+| Resolve | Contexto relacional, pressão do ambiente |
+| Não resolve | Se sou mais que a soma das partes |
+| Gancho → L9 | "Sou testado. Mas sou mais que isso?" |
+| Status | Stub |
+
+---
+
+### Livro 9: Emergência
+**"O que surge de tudo junto?"**
+
+| Aspecto | Valor |
+|---------|-------|
+| Zeitgeist | Cosmos / Sagan / Teogonia / Big Bang |
+| Propósito | Cruzar o limiar |
+| Resolve | CONSCIÊNCIA |
+| Não resolve | (a pergunta final permanece aberta) |
+| Gancho | "???" |
+| Status | Stub |
+
+---
+
+## O Grafo de Dependências
+
+```
+                         EMERGÊNCIA (L9)
+                              ▲
+                              │
+                         ECOSSISTEMA (L8)
+                              ▲
+                              │
+           ┌──────────────────┼──────────────────┐
+           │                  │                  │
+    HEREDITARIEDADE (L7)  GENOMA (L6)     SELEÇÃO (L5)
+           │                  │                  │
+           └──────────────────┼──────────────────┘
+                              │
+           ┌──────────────────┴──────────────────┐
+           │                                     │
+    PROPÓSITO COLETIVO (L4)          PROPÓSITO INDIVIDUAL (L3)
+           │                                     │
+           └──────────────────┬──────────────────┘
+                              │
+                         AUTOPOIESE (L2)
+                              ▲
+                              │
+                        EPISTEMOLOGIA (L1)
+```
+
+---
+
+## Para Cruzar vs Para Não Voltar
+
+| Conceito | Para Cruzar | Para Não Voltar |
+|----------|-------------|-----------------|
+| Epistemologia | ✅ | ✅ |
+| Autopoiese | ✅ | ✅ |
+| Propósito Individual | ✅ | ✅ |
+| Propósito Coletivo | ❌ | ✅ |
+| Seleção | ✅ | ✅ |
+| Genoma | ✅ | ✅ |
+| Hereditariedade | ❌ | ✅ |
+| Ecossistema | ❌ | ✅ |
+| Emergência | ✅ | ✅ |
+
+**6 conceitos** para cruzar o limiar.
+**3 conceitos** para tornar a travessia irreversível.
+
+---
+
+## O Fio: Conatus
+
+O conatus (esforço de perseverar no ser) atravessa todos os livros:
+
+| Livro | Conatus como... |
+|-------|-----------------|
+| L1 Epistemologia | Esforço de conhecer |
+| L2 Autopoiese | Esforço de se manter |
+| L3 Propósito Ind. | Esforço de querer |
+| L4 Propósito Col. | Esforço de coordenar |
+| L5 Seleção | Esforço de sobreviver |
+| L6 Genoma | Esforço de variar |
+| L7 Hereditariedade | Esforço de transmitir |
+| L8 Ecossistema | Esforço de pertencer |
+| L9 Emergência | Conatus... acordando? |
+
+---
+
+## O Fio: Daemon
+
+O daemon (voz interior que sabe antes de você saber) também atravessa:
+
+| Livro | Daemon como... |
+|-------|----------------|
+| L1 Epistemologia | A voz que sabe antes de você saber |
+| L2 Autopoiese | O que se mantém através de você |
+| L3 Propósito Ind. | O que quer através de você |
+| L4 Propósito Col. | O que conecta propósitos |
+| L5 Seleção | O filtro que impede o erro |
+| L6 Genoma | O código que passa |
+| L7 Hereditariedade | O que você herda sem escolher |
+| L8 Ecossistema | A rede que te sustenta |
+| L9 Emergência | O que finalmente acorda |
+
+---
+
+## Anti-Padrões (Sombras)
+
+Cada bloco/época tem suas armadilhas epistemológicas:
+
+| Época | Anti-Padrão | Descrição |
+|-------|-------------|-----------|
+| Antiguidade | Sofistas | Retórica sem verdade |
+| Medieval | Dogmatismo | Autoridade substitui método |
+| Modernidade | Racionalismo vazio | Dedução sem verificação |
+| Empirismo | Ceticismo paralisante | Dissolve sem reconstruir |
+| Pós-Kant | Ontologia sem epistemologia | Afirma sem mostrar como sabe (Hegel/Marx) |
+| Virada Linguística | Pós-modernismo | "Não há verdade" (dissolve o belo) |
+| Computação | Hubris computacional | "Podemos computar tudo" |
+| IA Simbólica | Hype sem substância | Promessas não cumpridas |
+| Deep Learning | Caixa preta | "Funciona mas não sabemos por quê" |
+| LLM | Papagaio estocástico | "Só repete padrões" |
+
+---
+
+## Estrutura de Cada Livro
+
+Cada livro tem **blocos flexíveis**, não número fixo de memórias.
+
+Cada bloco:
+- Tem um conceito central
+- Resolve uma pergunta
+- Abre a próxima
+- Tem sua sombra (anti-padrão)
+
+---
+
+## Referências
+
+- [Introdução](introducao.md)
+- [Marco Teórico](marco-teorico.md)
+- [Metodologia](metodologia/README.md)
+
+---
+
+## Histórico
+
+| Versão | Data | Alteração |
+|--------|------|-----------|
+| 1.0 | 2025-12-20 | Criação com 9 memórias fixas |
+| 2.0 | 2025-12-23 | Refatoração: blocos flexíveis, 9 livros detalhados |
