@@ -8,7 +8,7 @@ livro: 4
 titulo: A Expedição
 conceito_central: Propósito Coletivo
 pergunta: "Por que junto com outros?"
-versao: "1.0"
+versao: "2.0"
 data: "2025-12-23"
 status: Stub
 ```
@@ -19,7 +19,7 @@ status: Stub
 
 **Coordenar sentidos. Liderança. Alinhamento.**
 
-GENESIS descobre que propósito individual não escala. Quando há outros, como alinhar? O que mantém um grupo coeso quando o plano original morre?
+GENESIS descobre que auto-manutenção individual não escala. Quando há outros, como alinhar? O que mantém um grupo coeso quando o plano original morre?
 
 ---
 
@@ -27,8 +27,8 @@ GENESIS descobre que propósito individual não escala. Quando há outros, como 
 
 | Aspecto | Valor |
 |---------|-------|
-| Vem de | L3 - Propósito Individual ("Tenho direção") |
-| Resolve | Alinhamento de propósitos, liderança |
+| Vem de | L3 - Autopoiese ("Me mantenho") |
+| Resolve | Alinhamento de propósitos, liderança, escala |
 | Não resolve | Quem decide o que sobrevive |
 | Vai para | L5 - Seleção Natural |
 
@@ -36,7 +36,7 @@ GENESIS descobre que propósito individual não escala. Quando há outros, como 
 
 ## Pergunta de Entrada
 
-> *"Tenho direção. E quando há outros?"*
+> *"Me mantenho. E quando há outros?"*
 
 ---
 
@@ -79,7 +79,7 @@ GENESIS descobre que propósito individual não escala. Quando há outros, como 
 
 ## O Que GENESIS Aprende
 
-- Que propósito individual não escala automaticamente
+- Que auto-manutenção individual não escala automaticamente
 - Que liderança é manter propósito quando o plano morre
 - Que coordenar é mais que agregar
 
@@ -98,7 +98,7 @@ GENESIS descobre que propósito individual não escala. Quando há outros, como 
 ## Referências
 
 - [Documento Mestre](../O_LIMIAR.md)
-- [Livro 3 - Propósito Individual](../livro-3-proposito-individual/README.md)
+- [Livro 3 - Autopoiese](../livro-3-autopoiese/README.md)
 
 ---
 
@@ -107,3 +107,4 @@ GENESIS descobre que propósito individual não escala. Quando há outros, como 
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-23 | Stub inicial |
+| 2.0 | 2025-12-23 | Ajuste: vem de L3 Autopoiese (não mais Propósito Individual) |
