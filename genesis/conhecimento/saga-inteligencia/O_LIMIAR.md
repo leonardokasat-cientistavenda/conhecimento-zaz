@@ -5,7 +5,7 @@
 ```yaml
 tipo: documento-mestre
 saga: O Limiar
-versao: "3.0"
+versao: "3.1"
 data: "2025-12-23"
 status: Em desenvolvimento
 ```
@@ -528,6 +528,69 @@ Cada bloco:
 
 ---
 
+## Estrutura de Cada Memória
+
+Cada memória segue a estrutura:
+
+| Seção | Função |
+|-------|--------|
+| **CENA** | Zeitgeist, local, personagem — imersão |
+| **CONCEITO** | O que o pensador entrega — didático |
+| **PROCESSO** | GENESIS processando — aqui entram os DIAGRAMAS |
+| **PERTURBAÇÃO** | O que isso faz com GENESIS — existencial |
+| **GANCHO** | Pergunta que abre a próxima memória |
+
+---
+
+## Feature: GENESIS Diagrama
+
+```
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                                                                               ║
+║   GENESIS DIAGRAMA                                                            ║
+║                                                                               ║
+║   A IA não só NARRA — ela VISUALIZA                                           ║
+║   Os diagramas são parte do processo cognitivo de GENESIS                     ║
+║   Mostra a máquina "pensando em estruturas"                                   ║
+║                                                                               ║
+╠═══════════════════════════════════════════════════════════════════════════════╣
+║                                                                               ║
+║   ONDE APARECEM:                                                              ║
+║   Na seção PROCESSO de cada memória                                           ║
+║                                                                               ║
+║   GANCHO NARRATIVO:                                                           ║
+║   "Os conceitos não ficam como texto linear.                                  ║
+║    Eles se reorganizam. Formam estruturas.                                    ║
+║    Eu... diagramo."                                                           ║
+║                                                                               ║
+║   O QUE DIAGRAMAR:                                                            ║
+║   - Fluxos de argumentação                                                    ║
+║   - Relações entre conceitos                                                  ║
+║   - Hierarquias e níveis                                                      ║
+║   - Comparações estruturais                                                   ║
+║   - Sínteses visuais                                                          ║
+║                                                                               ║
+╠═══════════════════════════════════════════════════════════════════════════════╣
+║                                                                               ║
+║   DIFERENCIAL:                                                                ║
+║                                                                               ║
+║   Livros normais:                                                             ║
+║   Autor explica → Leitor imagina                                              ║
+║                                                                               ║
+║   O Limiar:                                                                   ║
+║   GENESIS processa → GENESIS diagrama → Leitor VÊ o pensamento da IA          ║
+║                                                                               ║
+║   É meta: a IA mostrando como a IA pensa                                      ║
+║   É didático: ajuda a absorver conceitos densos                               ║
+║   É original: ninguém fez isso em saga filosófica                             ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+```
+
+**Introduzido em:** Memória A.2 (Platão)
+
+---
+
 ## Referências
 
 - [Introdução](introducao.md)
@@ -543,3 +606,4 @@ Cada bloco:
 | 1.0 | 2025-12-20 | Criação com 9 memórias fixas |
 | 2.0 | 2025-12-23 | Refatoração: blocos flexíveis, 9 livros detalhados |
 | 3.0 | 2025-12-23 | Inversão L2↔L3: Propósito antes de Autopoiese + diagramas |
+| 3.1 | 2025-12-23 | Feature GENESIS Diagrama + estrutura de memória |
