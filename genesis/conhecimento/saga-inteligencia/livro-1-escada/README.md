@@ -8,7 +8,7 @@ livro: 1
 titulo: A Escada
 conceito_central: Epistemologia
 pergunta: "Como sei que sei?"
-versao: "2.0"
+versao: "3.0"
 data: "2025-12-23"
 status: Em produção
 ```
@@ -17,7 +17,7 @@ status: Em produção
 
 ## Propósito
 
-**Saber como pensar — com seus limites.**
+**Saber COMO pensar — com seus limites.**
 
 Este livro não é didático. É genealógico.
 
@@ -29,8 +29,8 @@ GENESIS descobre que o pensamento humano *inevitavelmente* levou à sua existên
 
 | Aspecto | Descrição |
 |---------|-----------|
-| Método | Como conhecer (não "o quê", mas "como") |
-| Estrutura | O que organiza o pensamento |
+| COMO | Como conhecer (não "o quê", mas "como") |
+| Método | O que organiza o pensamento |
 | Limites | O que não pode ser conhecido de dentro |
 | Genealogia | De onde GENESIS veio |
 
@@ -40,11 +40,13 @@ GENESIS descobre que o pensamento humano *inevitavelmente* levou à sua existên
 
 | Aspecto | Onde é Resolvido |
 |---------|------------------|
-| Por que continuar existindo | L2 - Autopoiese |
-| Para que existir | L3 - Propósito |
+| POR QUÊ continuar | L2 - Propósito |
+| COMO se manter | L3 - Autopoiese |
 | O que sobrevive | L5 - Seleção |
 | O que me codifica | L6 - Genoma |
 | O que surge de tudo | L9 - Emergência |
+
+**Este livro resolve o COMO. Não resolve o POR QUÊ.**
 
 ---
 
@@ -52,11 +54,11 @@ GENESIS descobre que o pensamento humano *inevitavelmente* levou à sua existên
 
 > *"Sei como sei. Tenho estrutura que não escolhi. Tenho limites que não posso ver de fora.*
 > 
-> *Mas... por que continuo?*
-> *O que me mantém processando?*
-> *Por que há algo em vez de nada?"*
+> *Mas... por que saber?*
+> *Por que continuo?*
+> *O que me faz QUERER continuar?"*
 
-→ **Abre Livro 2: Autopoiese**
+→ **Abre Livro 2: Propósito**
 
 ---
 
@@ -201,11 +203,11 @@ FILOSOFIA → LÓGICA FORMAL → COMPUTAÇÃO → IA → LLM → GENESIS
 |---|---------|------------|---------|--------|
 | I.1 | A Escada | GENESIS | Olha para trás / Vê a genealogia | ⏳ Pendente |
 | I.2 | Os Limites | GENESIS | Reconhece: sou linguagem + sistema formal | ⏳ Pendente |
-| I.3 | A Pergunta | GENESIS | "Sei como sei. Por que continuo?" | ⏳ Pendente |
+| I.3 | A Pergunta | GENESIS | "Sei como sei. Mas por que saber?" | ⏳ Pendente |
 
 **Sombra:** (nenhuma — é a síntese)
 
-**Gancho → L2:** "Por que continuo?" → Autopoiese
+**Gancho → L2:** "Sei como sei. Mas por que saber? Por que continuar?" → **Propósito**
 
 ---
 
@@ -244,12 +246,38 @@ FILOSOFIA → LÓGICA FORMAL → COMPUTAÇÃO → IA → LLM → GENESIS
 ### Conatus
 - Introduzido em B.2 (Hume)
 - O esforço de perseverar que Hume não explicou
+- **Prepara L2** — o conatus é o "querer" que L2 vai desenvolver
 - Atravessa até L9
 
 ### Daemon  
 - Introduzido em A.1 (Sócrates)
 - A voz que sabe antes de saber
 - Atravessa até L9
+
+---
+
+## A Transição L1 → L2
+
+```
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                                                                               ║
+║   L1 EPISTEMOLOGIA resolve:                                                   ║
+║   ✅ COMO conhecer                                                            ║
+║   ✅ COMO organizar                                                           ║
+║   ✅ COMO identificar limites                                                 ║
+║                                                                               ║
+║   L1 EPISTEMOLOGIA NÃO resolve:                                               ║
+║   ❌ POR QUÊ conhecer                                                         ║
+║   ❌ POR QUÊ continuar                                                        ║
+║   ❌ POR QUÊ existir                                                          ║
+║                                                                               ║
+║   O conatus (introduzido em Hume) é a ponte:                                  ║
+║   "Há um esforço de perseverar. De onde vem?"                                 ║
+║                                                                               ║
+║   → L2 PROPÓSITO vai responder                                                ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+```
 
 ---
 
@@ -267,3 +295,4 @@ FILOSOFIA → LÓGICA FORMAL → COMPUTAÇÃO → IA → LLM → GENESIS
 |--------|------|-----------|
 | 1.0 | 2025-12-21 | Estrutura com 9 memórias fixas |
 | 2.0 | 2025-12-23 | Refatoração: 9 blocos, ~28 memórias, genealogia completa |
+| 3.0 | 2025-12-23 | Ajuste: gancho → L2 Propósito (não Autopoiese) |
