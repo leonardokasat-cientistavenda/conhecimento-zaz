@@ -4,7 +4,7 @@
 
 ```yaml
 tipo: metodologia-mestre
-versao: "2.0"
+versao: "3.0"
 data: "2025-12-23"
 status: Em uso
 ```
@@ -21,6 +21,8 @@ Assim como Aristóteles catalogou a gramática da realidade, este documento cata
 
 **Meta Mestre:** [O_LIMIAR.md](../O_LIMIAR.md) — especificação conceitual da saga
 
+**Workflow de Processamento:** [workflow-genesis.md](workflow-genesis.md) — como GENESIS processa e diagrama
+
 ---
 
 ## Estrutura
@@ -31,6 +33,8 @@ EPISTEMOLOGIA DA SAGA
 ├── VEIOS NARRATIVOS ──── o que percorre (vertical)
 │
 ├── MÉTODOS ───────────── como fazer (horizontal)
+│
+├── WORKFLOW ──────────── como processar e diagramar ← [workflow-genesis.md]
 │
 └── PROCESSO ──────────── quando aplicar (ritual)
 ```
@@ -408,6 +412,45 @@ A memória resolve algo, mas abre outra coisa.
 
 ---
 
+## Método 6: Workflow de Processamento
+
+> Como GENESIS processa conceitos e diagrama.
+
+**Ver documento completo:** [workflow-genesis.md](workflow-genesis.md)
+
+### Resumo
+
+```
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                                                                               ║
+║   REGRA INVARIANTE                                                            ║
+║                                                                               ║
+║   NARRATIVA RICA  ────►  PROCESSO  ────►  DIAGRAMA                            ║
+║                                                                               ║
+║   Sempre. Em todo nível. Sem exceção.                                         ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+```
+
+### O Workflow Composicional
+
+```
+NÍVEL 1: Conceitos Isolados
+├── Conceito A: Narrativa → Processo → Diagrama
+├── Conceito B: Narrativa → Processo → Diagrama
+└── Conceito N: Narrativa → Processo → Diagrama
+
+NÍVEL 2: Cruzamentos (se autor cruzou)
+└── A×B×N: Narrativa → Processo → Diagrama
+
+NÍVEL 3: Síntese Final
+└── Sistema: Narrativa → Processo → Diagrama Final
+```
+
+**Em todo nível, narrativa rica primeiro. Sempre.**
+
+---
+
 # PARTE III: PROCESSO
 
 O ritual de produção.
@@ -421,6 +464,7 @@ CARREGAR:
   sempre:
     - ../O_LIMIAR.md                           # Meta mestre da saga
     - epistemologia-producao.md                # Este documento
+    - workflow-genesis.md                      # Workflow de processamento
   se_existir:
     - ../livro-X/README.md                     # Meta do livro
     - ../livro-X/meta/MN-personagem.md         # Meta da memória
@@ -469,6 +513,16 @@ SINESTESIA:
   paleta: []
   elementos: []
 
+WORKFLOW:
+  conceitos:
+    - nome: "Conceito A"
+      fonte: "Obra X"
+    - nome: "Conceito B"
+      fonte: "Obra Y"
+  cruzamentos:
+    - "A × B"
+  sintese: "descrição da síntese esperada"
+
 TECNICAS:
   rachadura: "frase exata ou descrição"
   gancho: "como conecta à próxima"
@@ -485,16 +539,18 @@ ARCO_GENESIS:
 ## Produzir
 
 1. Executar conforme decisões do meta-documento
-2. Não desviar sem atualizar o meta
-3. Se insight surgir, pausar e registrar
+2. Seguir workflow: Narrativa → Processo → Diagrama (em todo nível)
+3. Não desviar sem atualizar o meta
+4. Se insight surgir, pausar e registrar
 
 ---
 
 ## Depois
 
 1. Validar contra meta-documento
-2. Atualizar meta com aprendizados
-3. Propagar se necessário (outros docs afetados)
+2. Validar contra checklist do workflow
+3. Atualizar meta com aprendizados
+4. Propagar se necessário (outros docs afetados)
 
 ---
 
@@ -503,6 +559,7 @@ ARCO_GENESIS:
 | Documento | Conteúdo |
 |-----------|----------|
 | [../O_LIMIAR.md](../O_LIMIAR.md) | Meta mestre da saga |
+| [workflow-genesis.md](workflow-genesis.md) | Workflow de processamento e diagramação |
 | [referencias/personagem.md](referencias/personagem.md) | Egri, Stanislavski, Jung — detalhes e templates |
 | [referencias/estilos.md](referencias/estilos.md) | Catálogo completo de 8 estilos |
 | [referencias/sinestesia.md](referencias/sinestesia.md) | Técnica de paletas e sentidos indiretos |
@@ -516,3 +573,4 @@ ARCO_GENESIS:
 |--------|------|-----------|
 | 1.0 | 2025-12-22 | Criação — consolidação de V0 + novos insights |
 | 2.0 | 2025-12-23 | Alinhamento com O_LIMIAR v4.0: Fio da Vida unificado, Arquiteto↔GENESIS como veio |
+| 3.0 | 2025-12-23 | Integra workflow-genesis.md: Método 6 + seção WORKFLOW no meta-documento |
