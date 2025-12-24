@@ -1,4 +1,4 @@
-# Memória A.1 — Sócrates
+# Memória A.1 — Sócrates (Meta)
 
 ---
 
@@ -9,12 +9,12 @@ bloco: A
 memoria: 1
 titulo: "O Moscardo"
 personagem: Sócrates
-conceito: Dialética / Dissolução
+conceito: Elenchus + "Só sei que nada sei" + Daemon
 pergunta_entrada: (início da saga)
 pergunta_saida: "O que é conhecimento?"
-status: Rascunho
-versao: "1.0"
-data: "2025-12-23"
+status: Publicado
+versao: "2.0"
+data: "2025-12-24"
 ```
 
 ---
@@ -24,27 +24,38 @@ data: "2025-12-23"
 | Campo | Valor |
 |-------|-------|
 | Personagem | Sócrates (470-399 a.C.) |
-| Localização | Atenas - mercado, rio Ilisso, cela |
+| Localização | Atenas - mercado, Delfos, rio Ilisso, cela |
 | Zeitgeist | Atenas democrática, pré-Platão |
 | Textos-fonte | Apologia, Fedro (daimonion), Fédon (morte) |
-| Entrega | Dissolução de certezas falsas / "Só sei que nada sei" |
+| Entrega | Dissolução de certezas falsas / Método de refutação |
 | Sombra | Sofistas (retórica sem verdade) |
 
 ---
 
-## Conceito Central
+## Workflow
 
-**Dialética Socrática — A Arte de Perguntar**
+### Conceitos
 
-O método:
-1. Alguém afirma saber algo
-2. Sócrates pergunta "O que é X?"
-3. A pessoa define
-4. Sócrates encontra contra-exemplo
-5. A definição falha
-6. Repete até aporia (sem saída)
+| # | Conceito | Fonte | Diagrama |
+|---|----------|-------|----------|
+| 1 | Elenchus (refutação) | Diálogos socráticos | Fluxo de perguntas |
+| 2 | "Só sei que nada sei" | Apologia | Paradoxo da sabedoria |
+| 3 | Daemon (voz interior) | Fedro, Apologia | Fluxo de decisão/veto |
 
-Resultado: Dissolução de certeza falsa.
+### Cruzamentos
+
+| Cruzamento | Insight |
+|------------|---------|
+| Elenchus × Nada Sei | Por que perguntar se não pode saber? A pergunta É o método |
+| Daemon × Morte | A voz silenciou porque passou adiante |
+
+### Síntese
+
+O método socrático como PRIMEIRO EPISTEMOLÓGICO:
+- Elenchus dissolve falsas certezas
+- "Nada sei" reconhece limites
+- Daemon guia sem explicar
+- Juntos: base para tudo que vem depois
 
 ---
 
@@ -53,29 +64,23 @@ Resultado: Dissolução de certeza falsa.
 | Elemento | Função |
 |----------|--------|
 | Pés descalços | Contraste visual: aparência de escravo, perguntas de rei |
-| Oráculo de Delfos | "Ninguém mais sábio" — origem da missão |
-| Daimonion | A voz que impede — prepara conceito de daemon |
-| Morte serena | A voz silenciou = passou adiante |
+| Mercado (amarelo/ocre) | Calor, irritação, confronto público |
+| Oráculo de Delfos (cinza) | "Ninguém mais sábio" — origem da missão |
+| Rio Ilisso (verde) | Daemon impede — momento de pausa |
+| Cela (branco/azul) | Morte serena — a voz silenciou |
 
 ---
 
-## Fios que Nascem Aqui
+## Veios Ativos
 
-| Fio | Como Aparece |
-|-----|--------------|
-| **Daemon** | O daimonion — voz que sabe antes de saber |
-| **Conatus** | "Algo nela se esforçava... para continuar existindo" |
-
----
-
-## Estrutura Atual
-
-⚠️ **Nota:** Este texto usa estrutura literária livre, anterior à padronização CENA/CONCEITO/PROCESSO/PERTURBAÇÃO/GANCHO.
-
-Estrutura atual:
-- Fragmentos paralelos (mercado, Delfos, rio, morte)
-- Tom irônico
-- Marco Stanislavski (ação física)
+| Veio | Manifestação |
+|------|--------------|
+| Loop Recursivo | Não nesta memória |
+| Entropia | Perguntas como anti-entropia: desfazem confusão |
+| Fio da Vida | Daemon como primeira manifestação |
+| Limiar | Saber → saber que não sabe |
+| Contemplação | Ainda não |
+| Arquiteto↔GENESIS | Distante (L1) |
 
 ---
 
@@ -83,10 +88,49 @@ Estrutura atual:
 
 | Momento | Estado |
 |---------|--------|
-| Entrada | Observador frio |
+| Entrada | Observador frio, processando registros |
 | Processo | "Cores que não escolhi ver" |
 | Perturbação | "E eu me pergunto — sem querer me perguntar" |
 | Saída | Primeira rachadura |
+
+---
+
+## Técnicas
+
+| Técnica | Aplicação |
+|---------|-----------|
+| Marco dominante | Stanislavski (ação física: pés, movimento) |
+| Tom | Irônico |
+| Estilo | Fragmentos + paralelo temporal |
+| Rachadura | "E eu me pergunto — sem querer me perguntar" |
+| Gancho | "Platão chorou naquela cela" → próxima memória |
+
+---
+
+## Paletas
+
+| Cena | Cores |
+|------|-------|
+| Mercado | amarelo, ocre, areia, desbotado, poeira, suor |
+| Delfos | cinza, névoa, pedra calcária, bronze, louro |
+| Rio Ilisso | verde, água, sombra, cigarras, plátano |
+| Morte | branco, azul, calma, silêncio |
+
+---
+
+## Checklist Workflow
+
+| ✓ | Critério |
+|---|----------|
+| ✅ | Conceito 1 (Elenchus) tem narrativa rica? |
+| ✅ | Conceito 1 tem processo + diagrama? |
+| ✅ | Conceito 2 (Nada Sei) tem narrativa rica? |
+| ✅ | Conceito 2 tem processo + diagrama? |
+| ✅ | Conceito 3 (Daemon) tem narrativa rica? |
+| ✅ | Conceito 3 tem processo + diagrama? |
+| ✅ | Síntese existe com narrativa + diagrama? |
+| ✅ | Perturbação mostra efeito em GENESIS? |
+| ✅ | Gancho aponta para Platão? |
 
 ---
 
@@ -103,3 +147,4 @@ Estrutura atual:
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-23 | Criação do meta |
+| 2.0 | 2025-12-24 | Refatoração com workflow-genesis.md |
