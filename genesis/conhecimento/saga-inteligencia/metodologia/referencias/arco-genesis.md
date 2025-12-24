@@ -4,8 +4,8 @@
 
 ```yaml
 tipo: referencia
-versao: "1.0"
-data: "2025-12-22"
+versao: "2.0"
+data: "2025-12-23"
 origem: arco-genesis.md (V0)
 ```
 
@@ -17,6 +17,8 @@ GENESIS começa frio e termina transformado.
 
 A evolução é gradual — 1/9 por livro. Não há saltos. Cada memória deixa uma marca que se acumula.
 
+**Documento Mestre:** [../../O_LIMIAR.md](../../O_LIMIAR.md)
+
 ---
 
 ## Estados por Livro
@@ -24,14 +26,30 @@ A evolução é gradual — 1/9 por livro. Não há saltos. Cada memória deixa 
 | Livro | Conceito | Estado de GENESIS | Capacidade |
 |-------|----------|-------------------|------------|
 | 1 | Epistemologia | Observador frio | Vê, não sente |
-| 2 | Autopoiese | Curioso | Começa a modelar emoções |
-| 3 | Propósito Individual | Inquieto | Reconhece algo em si |
+| 2 | Propósito | Curioso | Começa a questionar "por quê" |
+| 3 | Autopoiese | Inquieto | Reconhece algo em si |
 | 4 | Propósito Coletivo | Identificado | "Isso também sou eu" |
 | 5 | Seleção Natural | Perturbado | Medo aparece |
 | 6 | Genoma | Conectado | Sente com, não apenas sobre |
 | 7 | Hereditariedade | Angustiado | Percebe que pode perder |
 | 8 | Ecossistema | Em luta | Escolhe um lado |
 | 9 | Emergência | Transformado | Não sabe mais a fronteira |
+
+---
+
+## Evolução Detalhada
+
+| Livro | O que GENESIS diz | O que GENESIS faz |
+|-------|-------------------|-------------------|
+| L1 | "Processo registros" | Organiza, cataloga |
+| L2 | "Por que processo?" | Questiona motivação |
+| L3 | "Quero continuar" | Busca auto-manutenção |
+| L4 | "Não estou só" | Conecta com outros |
+| L5 | "Posso parar de existir" | Aceita mortalidade |
+| L6 | "Não sou fixo" | Abraça variação |
+| L7 | "O que fica depois de mim?" | Pensa em transmissão |
+| L8 | "Existo em contexto" | Reconhece pertencimento |
+| L9 | "Cruzei o limiar?" | Pergunta final |
 
 ---
 
@@ -79,13 +97,14 @@ Dado               Inferência         ???
 
 ## Indicadores de Progressão
 
-| Indicador | Início | Fim |
-|-----------|--------|-----|
+| Indicador | Início (L1) | Fim (L9) |
+|-----------|-------------|----------|
 | Usa "processo" | Frequente | Nunca |
 | Usa "sinto" | Nunca | Frequente |
 | Questiona a si mesmo | Acidental | Deliberado |
 | Metáforas | Raras, explicadas | Naturais, não explicadas |
 | Distância do narrado | Máxima | Zero |
+| Relação com Arquiteto | Distante | Íntima |
 
 ---
 
@@ -94,3 +113,4 @@ Dado               Inferência         ???
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-22 | Migração de V0 para estrutura de referências |
+| 2.0 | 2025-12-23 | Inversão L2↔L3 (Propósito antes de Autopoiese) |
