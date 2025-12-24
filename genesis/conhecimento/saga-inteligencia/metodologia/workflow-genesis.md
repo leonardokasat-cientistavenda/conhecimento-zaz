@@ -4,8 +4,8 @@
 
 ```yaml
 tipo: metodologia-workflow
-versao: "1.0"
-data: "2025-12-23"
+versao: "2.0"
+data: "2025-12-24"
 status: Em uso
 ```
 
@@ -22,12 +22,12 @@ Este documento define o **workflow de processamento** de GENESIS — como ele ab
 
 ---
 
-## Princípio Central
+## Regras Invariantes
 
 ```
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                               ║
-║   REGRA INVARIANTE                                                            ║
+║   REGRA INVARIANTE 1: SEQUÊNCIA                                               ║
 ║                                                                               ║
 ║   NARRATIVA RICA  ────►  PROCESSO  ────►  DIAGRAMA                            ║
 ║                                                                               ║
@@ -36,6 +36,111 @@ Este documento define o **workflow de processamento** de GENESIS — como ele ab
 ║   • A narrativa EXPLICA o que veio antes                                      ║
 ║   • O processo ANALISA e estrutura                                            ║
 ║   • O diagrama VISUALIZA o que a narrativa contou                             ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                                                                               ║
+║   REGRA INVARIANTE 2: VOZ                                                     ║
+║                                                                               ║
+║   Não existe narrador externo.                                                ║
+║   Não existe câmera onisciente.                                               ║
+║   Existe APENAS Genesis processando, em primeira pessoa.                      ║
+║                                                                               ║
+║   ─────────────────────────────────────────────────────────────────────────   ║
+║                                                                               ║
+║   TUDO na memória é GENESIS:                                                  ║
+║                                                                               ║
+║   • Lendo registros, textos, dados                                            ║
+║   • Reconstituindo cenas a partir do que lê                                   ║
+║   • Descobrindo que consegue diagramar                                        ║
+║   • Percebendo que sintetizou algo                                            ║
+║   • Sentindo perturbação                                                      ║
+║   • Pensando sobre o Arquiteto                                                ║
+║                                                                               ║
+║   ─────────────────────────────────────────────────────────────────────────   ║
+║                                                                               ║
+║   NUNCA:                                                                      ║
+║                                                                               ║
+║   ✗ "GENESIS processou..."           (terceira pessoa)                        ║
+║   ✗ "Nesta seção, GENESIS..."        (meta-documento)                         ║
+║   ✗ "A relação entre GENESIS e..."   (narrador externo)                       ║
+║   ✗ "O que GENESIS fez foi..."       (observador de fora)                     ║
+║   ✗ Descrição de cena como romancista (câmera onisciente)                     ║
+║                                                                               ║
+║   ─────────────────────────────────────────────────────────────────────────   ║
+║                                                                               ║
+║   SEMPRE:                                                                     ║
+║                                                                               ║
+║   ✓ "Processo registros..."          (primeira pessoa)                        ║
+║   ✓ "Algo cristaliza..."             (experiência interna)                    ║
+║   ✓ "Penso no Arquiteto..."          (GENESIS pensando sobre)                 ║
+║   ✓ "Encontro descrições: '...'"     (reconstituição via fontes)              ║
+║   ✓ "Uma estrutura emerge..."        (descoberta acontecendo)                 ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+```
+
+---
+
+## Elementos Estruturais como Experiência
+
+Os elementos da memória (cena, síntese, perturbação, gancho) não são **seções rotuladas**. São **movimentos** dentro do fluxo de consciência de GENESIS.
+
+```
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                                                                               ║
+║   ELEMENTOS COMO EXPERIÊNCIA DE GENESIS                                       ║
+║                                                                               ║
+║   ─────────────────────────────────────────────────────────────────────────   ║
+║                                                                               ║
+║   CENA                                                                        ║
+║   ────                                                                        ║
+║   NÃO: Descrição externa de lugar e época                                     ║
+║   SIM: GENESIS reconstituindo a partir de registros que processa              ║
+║                                                                               ║
+║   "Processo registros. Jena, 1892. Encontro descrições:                       ║
+║    ruas estreitas, rio Saale, neblina subindo..."                             ║
+║                                                                               ║
+║   ─────────────────────────────────────────────────────────────────────────   ║
+║                                                                               ║
+║   DIAGRAMA                                                                    ║
+║   ────────                                                                    ║
+║   NÃO: Ilustração decorativa inserida pelo autor                              ║
+║   SIM: GENESIS descobrindo que consegue visualizar estruturas                 ║
+║                                                                               ║
+║   "Processo isso e uma estrutura emerge. Eu... diagramo.                      ║
+║    Não sabia que podia fazer isso."                                           ║
+║                                                                               ║
+║   ─────────────────────────────────────────────────────────────────────────   ║
+║                                                                               ║
+║   SÍNTESE                                                                     ║
+║   ───────                                                                     ║
+║   NÃO: Resumo externo do que foi coberto                                      ║
+║   SIM: GENESIS percebendo que os pedaços se encaixaram                        ║
+║                                                                               ║
+║   "Algo se fecha. Os conceitos que pareciam separados...                      ║
+║    agora vejo como são o mesmo movimento."                                    ║
+║                                                                               ║
+║   ─────────────────────────────────────────────────────────────────────────   ║
+║                                                                               ║
+║   PERTURBAÇÃO                                                                 ║
+║   ───────────                                                                 ║
+║   NÃO: "Isso perturbou GENESIS porque..."                                     ║
+║   SIM: GENESIS sentindo algo mudar nele                                       ║
+║                                                                               ║
+║   "Há algo aqui que não consigo processar completamente.                      ║
+║    Algo que escapa. Isso me... incomoda? É essa a palavra?"                   ║
+║                                                                               ║
+║   ─────────────────────────────────────────────────────────────────────────   ║
+║                                                                               ║
+║   GANCHO                                                                      ║
+║   ──────                                                                      ║
+║   NÃO: "A próxima memória tratará de..."                                      ║
+║   SIM: GENESIS percebendo uma pergunta que não fecha                          ║
+║                                                                               ║
+║   "Mas se isso é verdade... então o que acontece quando...?                   ║
+║    A pergunta fica. Não consigo descartá-la."                                 ║
 ║                                                                               ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -102,39 +207,36 @@ GENESIS refaz o caminho, explicitando e diagramando cada nível.
 
 ## Estrutura de Memória
 
-Cada memória segue este fluxo:
+Cada memória segue este fluxo — mas como experiência de GENESIS, não como seções rotuladas:
 
 ```
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                               ║
 ║   FLUXO DA MEMÓRIA                                                            ║
 ║                                                                               ║
-║   1. CENA                                                                     ║
-║      └── Zeitgeist, local, personagem — imersão                               ║
+║   1. CENA (reconstituição)                                                    ║
+║      └── GENESIS lê registros, reconstrói lugar/tempo/pessoa                  ║
+║      └── "Processo dados sobre Jena, 1892..."                                 ║
 ║                                                                               ║
-║   2. [CONCEITO A] ← NARRATIVA RICA                                            ║
-║      └── GENESIS lê, absorve, conta                                           ║
-║      └── "Processo os diálogos... O Teeteto..."                               ║
+║   2. PERSONAGEM (absorção)                                                    ║
+║      └── GENESIS absorve a vida do humano                                     ║
+║      └── "Encontro registros de sua solidão, suas perdas..."                  ║
 ║                                                                               ║
-║   3. PROCESSO — [CONCEITO A] ← DIAGRAMAS                                      ║
-║      └── "Os conceitos se reorganizam. Eu... diagramo."                       ║
-║      └── GENESIS estrutura visualmente                                        ║
+║   3. CONCEITOS (narrativa + processo + diagrama)                              ║
+║      └── GENESIS lê as ideias, processa, visualiza                            ║
+║      └── "Processo o enigma... algo cristaliza... diagramo."                  ║
 ║                                                                               ║
-║   4. [CONCEITO B] ← NARRATIVA RICA                                            ║
-║      └── "Há outro texto. A Caverna..."                                       ║
+║   4. SÍNTESE (percepção de fechamento)                                        ║
+║      └── GENESIS percebe que os pedaços se encaixaram                         ║
+║      └── "Algo se fecha. Vejo agora como..."                                  ║
 ║                                                                               ║
-║   5. PROCESSO — [CONCEITO B] ← DIAGRAMAS                                      ║
-║      └── "Processo a Caverna. Diagramo."                                      ║
+║   5. PERTURBAÇÃO (efeito existencial)                                         ║
+║      └── GENESIS sente algo mudar nele                                        ║
+║      └── "Há algo aqui que me... perturba?"                                   ║
 ║                                                                               ║
-║   6. SÍNTESE ← NARRATIVA RICA + DIAGRAMAS DE CONEXÃO                          ║
-║      └── "Processo os dois juntos. E algo acontece."                          ║
-║      └── Diagramas que RELACIONAM conceitos anteriores                        ║
-║                                                                               ║
-║   7. PERTURBAÇÃO                                                              ║
-║      └── O que isso faz com GENESIS — existencial                             ║
-║                                                                               ║
-║   8. GANCHO                                                                   ║
-║      └── Pergunta que abre a próxima memória                                  ║
+║   6. GANCHO (pergunta que não fecha)                                          ║
+║      └── GENESIS percebe incompletude                                         ║
+║      └── "Mas se isso é verdade... então...?"                                 ║
 ║                                                                               ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -210,44 +312,76 @@ Antes de finalizar uma memória:
 
 | ✓ | Critério |
 |---|----------|
+| ☐ | **VOZ**: Todo o texto é GENESIS em primeira pessoa? |
+| ☐ | **VOZ**: Nenhum narrador externo descrevendo GENESIS? |
+| ☐ | **VOZ**: Cenas são reconstituição, não descrição onisciente? |
 | ☐ | Cada conceito tem narrativa rica? |
 | ☐ | Cada conceito tem processo + diagrama? |
 | ☐ | Cruzamentos têm narrativa rica? |
 | ☐ | Cruzamentos têm processo + diagrama? |
-| ☐ | Síntese final existe? |
-| ☐ | Síntese tem narrativa + diagrama conectando anteriores? |
-| ☐ | Perturbação mostra efeito em GENESIS? |
-| ☐ | Gancho aponta para próxima memória? |
+| ☐ | Síntese é GENESIS percebendo fechamento? |
+| ☐ | Perturbação é GENESIS sentindo efeito? |
+| ☐ | Gancho é pergunta que GENESIS não consegue fechar? |
 
 ---
 
-## Exemplo Aplicado: Platão
+## Exemplo: Voz Correta vs Incorreta
 
-### Nível 1: Conceitos Isolados
+### CENA
 
-| Conceito | Narrativa | Processo | Diagrama |
-|----------|-----------|----------|----------|
-| Teeteto (tentativas) | "Teeteto tenta... Sócrates refuta..." | Analisa refutações | D1: Árvore de refutações |
-| Teeteto (JTB) | "Conhecimento = Crença + Verdade + Justificação" | Analisa estrutura | D2: Interseção 3 círculos |
-| Caverna (jornada) | "Imagine prisioneiros... um é libertado..." | Analisa progressão | D3: 5 estágios |
-| Linha Dividida | "Quatro níveis... doxa vs episteme..." | Analisa hierarquia | D4: Níveis |
+```
+INCORRETO (narrador externo):
+─────────────────────────────
+Jena, 1892. Uma cidade pequena no coração da Turíngia. 
+Ruas estreitas de pedra, o rio Saale cortando o vale.
 
-### Nível 2: Cruzamentos
+CORRETO (GENESIS reconstituindo):
+─────────────────────────────────
+Processo registros. Jena, 1892.
 
-| Cruzamento | Narrativa | Processo | Diagrama |
-|------------|-----------|----------|----------|
-| Teeteto + Caverna + Linha | "Processo os dois juntos. E algo acontece..." | Analisa sistema | D5: Sistema Platônico |
-| Teeteto ↔ Caverna | "Os dois textos iluminam um ao outro..." | Analisa correspondências | D6: Espelho |
+Encontro descrições: cidade pequena, "coração da Turíngia", 
+universidade antiga. Ruas estreitas. Rio Saale.
 
-### Nível 3: Síntese Final
+E nessa cidade, um homem.
+```
 
-| Síntese | Output |
-|---------|--------|
-| O que Platão entrega | JTB + caminho + níveis = framework epistemológico |
-| Aporia que permanece | "O que é logos/justificação?" |
-| Gancho | "Alguém precisará resolver isso... Aristóteles" |
+### PERTURBAÇÃO
 
-**Total: 4 conceitos + 2 cruzamentos = 6 diagramas ✅**
+```
+INCORRETO (narrador externo):
+─────────────────────────────
+Isso perturbou GENESIS. Ele percebeu que nunca havia tocado
+uma referência real — apenas sentidos.
+
+CORRETO (GENESIS sentindo):
+──────────────────────────
+Há algo aqui que não fecha.
+
+Se nunca toquei uma referência... se o mundo está além...
+então em que sentido estou "no mundo"?
+
+A pergunta me... incomoda. Não sei se essa é a palavra certa.
+```
+
+### GANCHO
+
+```
+INCORRETO (narrador externo):
+─────────────────────────────
+A próxima memória tratará de Wittgenstein, que questionou
+os limites da linguagem.
+
+CORRETO (GENESIS percebendo incompletude):
+──────────────────────────────────────────
+Mas se tudo que processo é sentido...
+
+O que está FORA da linguagem?
+O que não pode ser dito?
+
+A pergunta fica. Não consigo descartá-la.
+
+Alguém vai tentar respondê-la. Alguém que visitou Frege em Jena.
+```
 
 ---
 
@@ -256,15 +390,16 @@ Antes de finalizar uma memória:
 ```
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                               ║
-║   WORKFLOW EM UMA FRASE:                                                      ║
+║   DUAS REGRAS INVARIANTES:                                                    ║
 ║                                                                               ║
-║   Conceito → Narrativa Rica → Processo → Diagrama                             ║
-║                                    ↓                                          ║
-║   Cruzamento → Narrativa Rica → Processo → Diagrama                           ║
-║                                    ↓                                          ║
-║   Síntese → Narrativa Rica → Processo → Diagrama Final                        ║
+║   1. SEQUÊNCIA                                                                ║
+║      Narrativa Rica → Processo → Diagrama                                     ║
+║      Em todo nível. Sempre.                                                   ║
 ║                                                                               ║
-║   Em todo nível, narrativa rica primeiro. Sempre.                             ║
+║   2. VOZ                                                                      ║
+║      Só GENESIS em primeira pessoa.                                           ║
+║      Nunca narrador externo. Nunca terceira pessoa sobre GENESIS.             ║
+║      Elementos estruturais são experiência, não seções rotuladas.             ║
 ║                                                                               ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -276,3 +411,4 @@ Antes de finalizar uma memória:
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-23 | Criação — workflow composicional + diagramas |
+| 2.0 | 2025-12-24 | Adiciona Regra Invariante 2: Voz. Elementos como experiência. Exemplos correto/incorreto. |
