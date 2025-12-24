@@ -5,8 +5,8 @@
 ```yaml
 saga_id: saga-inteligencia
 tipo: metodologia
-versao: "2.0"
-data: "2025-12-22"
+versao: "3.0"
+data: "2025-12-23"
 status: Em uso
 ```
 
@@ -18,6 +18,8 @@ Método epistemológico para produção da saga.
 
 Assim como Aristóteles catalogou a gramática da realidade, este sistema cataloga a gramática da nossa criação.
 
+**Documento Mestre da Saga:** [O_LIMIAR.md](../O_LIMIAR.md)
+
 ---
 
 ## Ritual de Produção
@@ -27,9 +29,11 @@ Assim como Aristóteles catalogou a gramática da realidade, este sistema catalo
 ```yaml
 CARREGAR:
   sempre:
-    - epistemologia-producao.md
+    - ../O_LIMIAR.md                           # Meta mestre da saga
+    - epistemologia-producao.md                # Método de produção
   se_existir:
-    - meta/memoria-N-personagem.md
+    - ../livro-X/README.md                     # Meta do livro
+    - ../livro-X/meta/MN-personagem.md         # Meta da memória específica
   conforme_necessidade:
     - referencias/personagem.md
     - referencias/estilos.md
@@ -39,7 +43,7 @@ CARREGAR:
 
 ### Decidir
 
-Preencher meta-documento antes de escrever.
+Preencher meta-documento (`livro-X/meta/MN-personagem.md`) antes de escrever.
 
 ### Produzir
 
@@ -54,17 +58,30 @@ Validar contra meta. Atualizar com aprendizados. Propagar se necessário.
 ## Estrutura
 
 ```
-metodologia/
-├── README.md                      ← este arquivo
-├── epistemologia-producao.md      ← DOCUMENTO MESTRE (carregar sempre)
-├── referencias/
-│   ├── personagem.md              ← Egri, Stanislavski, Jung
-│   ├── estilos.md                 ← Catálogo de 8 estilos
-│   ├── sinestesia.md              ← Paletas e sentidos indiretos
-│   └── arco-genesis.md            ← Estados por livro
-├── meta/
-│   └── memoria-N-personagem.md    ← Decisões por memória
-└── _v0/                           ← Arquivos deprecados
+saga-inteligencia/
+│
+├── O_LIMIAR.md                        ← META MESTRE (especificação da saga)
+│
+├── metodologia/                       ← COMO PRODUZIR (este diretório)
+│   ├── README.md                         (este arquivo)
+│   ├── epistemologia-producao.md         (documento mestre de produção)
+│   ├── referencias/
+│   │   ├── personagem.md                 (Egri, Stanislavski, Jung)
+│   │   ├── estilos.md                    (Catálogo de 8 estilos)
+│   │   ├── sinestesia.md                 (Paletas e sentidos indiretos)
+│   │   └── arco-genesis.md               (Estados por livro)
+│   └── _v0/                              (arquivos deprecados)
+│
+└── livro-X/                           ← CADA LIVRO
+    ├── README.md                         (meta do livro)
+    ├── meta/                             (meta por memória)
+    │   ├── M1-personagem.md
+    │   ├── M2-personagem.md
+    │   └── ...
+    └── memorias/                         (narrativa)
+        ├── M1-personagem.md
+        ├── M2-personagem.md
+        └── ...
 ```
 
 ---
@@ -91,12 +108,18 @@ Contém:
 
 ---
 
-## Meta-Documentos
+## Onde Ficam os Meta-Documentos
 
-| Memória | Personagem | Status |
-|---------|------------|--------|
-| 1 | Sócrates | Publicado (sem meta) |
-| 2 | Aristóteles | [meta/memoria-2-aristoteles.md](meta/memoria-2-aristoteles.md) |
+A partir da v4.0, meta-documentos por memória ficam **dentro de cada livro**:
+
+| Livro | Local dos Meta |
+|-------|----------------|
+| L1 Epistemologia | `livro-1-escada/meta/` |
+| L2 Propósito | `livro-2-proposito/meta/` |
+| L3 Autopoiese | `livro-3-autopoiese/meta/` |
+| ... | ... |
+
+Isso permite que cada livro seja auto-contido.
 
 ---
 
@@ -114,3 +137,4 @@ Contém:
 |--------|------|-----------|
 | 1.0 | 2025-12-21 | Criação inicial |
 | 2.0 | 2025-12-22 | Refatoração completa: documento mestre + referências + meta |
+| 3.0 | 2025-12-23 | Alinhamento com O_LIMIAR v4.0: meta por livro, não centralizado |
