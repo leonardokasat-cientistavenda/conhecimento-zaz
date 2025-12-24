@@ -5,7 +5,7 @@
 ```yaml
 saga_id: saga-inteligencia
 tipo: metodologia
-versao: "3.0"
+versao: "4.0"
 data: "2025-12-23"
 status: Em uso
 ```
@@ -30,7 +30,8 @@ Assim como Aristóteles catalogou a gramática da realidade, este sistema catalo
 CARREGAR:
   sempre:
     - ../O_LIMIAR.md                           # Meta mestre da saga
-    - epistemologia-producao.md                # Método de produção
+    - epistemologia-producao.md                # Veios e métodos narrativos
+    - workflow-genesis.md                      # Workflow de processamento ← NOVO
   se_existir:
     - ../livro-X/README.md                     # Meta do livro
     - ../livro-X/meta/MN-personagem.md         # Meta da memória específica
@@ -64,7 +65,8 @@ saga-inteligencia/
 │
 ├── metodologia/                       ← COMO PRODUZIR (este diretório)
 │   ├── README.md                         (este arquivo)
-│   ├── epistemologia-producao.md         (documento mestre de produção)
+│   ├── epistemologia-producao.md         (veios narrativos + métodos)
+│   ├── workflow-genesis.md               (workflow de processamento) ← NOVO
 │   ├── referencias/
 │   │   ├── personagem.md                 (Egri, Stanislavski, Jung)
 │   │   ├── estilos.md                    (Catálogo de 8 estilos)
@@ -86,14 +88,12 @@ saga-inteligencia/
 
 ---
 
-## Documento Mestre
+## Documentos Mestres
 
-**[epistemologia-producao.md](epistemologia-producao.md)**
-
-Contém:
-- **Parte I**: Veios Narrativos (8 fios que atravessam a saga)
-- **Parte II**: Métodos (técnicas de construção)
-- **Parte III**: Processo (ritual passo a passo)
+| Documento | Conteúdo |
+|-----------|----------|
+| **[epistemologia-producao.md](epistemologia-producao.md)** | Veios narrativos (8 fios) + Métodos (técnicas) + Processo (ritual) |
+| **[workflow-genesis.md](workflow-genesis.md)** | Workflow composicional: como GENESIS processa e diagrama conceitos |
 
 ---
 
@@ -138,3 +138,4 @@ Isso permite que cada livro seja auto-contido.
 | 1.0 | 2025-12-21 | Criação inicial |
 | 2.0 | 2025-12-22 | Refatoração completa: documento mestre + referências + meta |
 | 3.0 | 2025-12-23 | Alinhamento com O_LIMIAR v4.0: meta por livro, não centralizado |
+| 4.0 | 2025-12-23 | Adiciona workflow-genesis.md ao ritual de produção |
