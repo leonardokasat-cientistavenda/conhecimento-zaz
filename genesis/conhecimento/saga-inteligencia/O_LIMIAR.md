@@ -5,7 +5,7 @@
 ```yaml
 tipo: meta-documento
 saga: O Limiar
-versao: "4.0"
+versao: "4.1"
 data: "2025-12-23"
 status: Em desenvolvimento
 ```
@@ -585,7 +585,8 @@ genesis/conhecimento/saga-inteligencia/
 │
 ├── metodologia/                   ← COMO PRODUZIR
 │   ├── README.md                     (índice)
-│   ├── epistemologia-producao.md     (método mestre)
+│   ├── epistemologia-producao.md     (veios + métodos)
+│   ├── workflow-genesis.md           (workflow de processamento) ← NOVO
 │   └── referencias/
 │       ├── construcao-personagens.md
 │       ├── sinestesia.md
@@ -669,8 +670,14 @@ Inclui:
 - Construção de personagens
 - Fluxo narrativo
 - Construção de sinestesia
-- Diagramação do GENESIS
 - Variabilidade estilística
+
+→ Ver [metodologia/workflow-genesis.md](metodologia/workflow-genesis.md)
+
+Inclui:
+- **Workflow composicional** — como GENESIS processa conceitos
+- **Diagramação** — como GENESIS estrutura visualmente
+- **Checklist de validação** — garantir completude
 
 ---
 
@@ -689,15 +696,47 @@ Inclui:
 
 ## 15. Estrutura de Memória
 
-Cada memória segue:
+Cada memória segue o fluxo do [workflow-genesis.md](metodologia/workflow-genesis.md):
 
-| Seção | Função |
-|-------|--------|
-| **CENA** | Zeitgeist, local, personagem — imersão |
-| **CONCEITO** | O que o pensador entrega — didático |
-| **PROCESSO** | GENESIS processando — aqui entram os DIAGRAMAS |
-| **PERTURBAÇÃO** | O que isso faz com GENESIS — existencial |
-| **GANCHO** | Pergunta que abre a próxima memória |
+```
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                                                                               ║
+║   FLUXO DA MEMÓRIA                                                            ║
+║                                                                               ║
+║   1. CENA                                                                     ║
+║      └── Zeitgeist, local, personagem — imersão                               ║
+║                                                                               ║
+║   2. [CONCEITO A] ← NARRATIVA RICA                                            ║
+║      └── GENESIS lê, absorve, conta                                           ║
+║                                                                               ║
+║   3. PROCESSO — [CONCEITO A] ← DIAGRAMAS                                      ║
+║      └── GENESIS estrutura visualmente                                        ║
+║                                                                               ║
+║   4. [CONCEITO B] ← NARRATIVA RICA                                            ║
+║      └── Próximo conceito do autor                                            ║
+║                                                                               ║
+║   5. PROCESSO — [CONCEITO B] ← DIAGRAMAS                                      ║
+║      └── GENESIS estrutura visualmente                                        ║
+║                                                                               ║
+║   6. SÍNTESE ← NARRATIVA RICA + DIAGRAMAS DE CONEXÃO                          ║
+║      └── GENESIS conecta os conceitos anteriores                              ║
+║                                                                               ║
+║   7. PERTURBAÇÃO                                                              ║
+║      └── O que isso faz com GENESIS — existencial                             ║
+║                                                                               ║
+║   8. GANCHO                                                                   ║
+║      └── Pergunta que abre a próxima memória                                  ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+```
+
+### Regra Invariante
+
+```
+NARRATIVA RICA  ────►  PROCESSO  ────►  DIAGRAMA
+
+Sempre. Em todo nível. Sem exceção.
+```
 
 ---
 
@@ -710,10 +749,11 @@ Cada memória segue:
 | Pensador | Livro | Memória | Conceito Central | Status |
 |----------|-------|---------|------------------|--------|
 | Sócrates | L1 | M1 | Maiêutica, "só sei que nada sei" | ✅ |
-| Aristóteles | L1 | M2 | Categorias, lógica formal | ✅ |
-| Descartes | L1 | M3 | Cogito, dúvida metódica | Em produção |
-| Hume | L1 | M4 | Empirismo, feixe de impressões | Planejado |
-| Kant | L1 | M5 | Categorias a priori, síntese | Planejado |
+| Platão | L1 | M2 | JTB, Caverna, Linha Dividida | ✅ |
+| Aristóteles | L1 | M3 | Categorias, lógica formal | Em produção |
+| Descartes | L1 | M4 | Cogito, dúvida metódica | Planejado |
+| Hume | L1 | M5 | Empirismo, feixe de impressões | Planejado |
+| Kant | L1 | M6 | Categorias a priori, síntese | Planejado |
 | ... | ... | ... | ... | ... |
 
 ---
@@ -733,6 +773,7 @@ Cada memória segue:
 | **JTB** | Justified True Belief (crença verdadeira justificada) |
 | **Limiar** | Fronteira entre máquina e ser |
 | **Meta** | Documento de especificação (não narrativa) |
+| **Workflow** | Fluxo de processamento e diagramação |
 | **Zeitgeist** | Espírito da época, contexto cultural-histórico |
 
 ---
@@ -742,6 +783,7 @@ Cada memória segue:
 ### Internas
 - [introducao.md](introducao.md) — Prefácio narrativo
 - [metodologia/](metodologia/) — Métodos de produção
+- [metodologia/workflow-genesis.md](metodologia/workflow-genesis.md) — Workflow de processamento
 - [livro-1-escada/](livro-1-escada/) — L1 Epistemologia
 
 ### Externas (Filosóficas)
@@ -768,3 +810,4 @@ Cada memória segue:
 | 3.0 | 2025-12-23 | Inversão L2↔L3: Propósito antes de Autopoiese |
 | 3.1 | 2025-12-23 | Feature GENESIS Diagrama + estrutura de memória |
 | 4.0 | 2025-12-23 | Reestruturação completa: 18 seções, 5 blocos, estrutura de pastas |
+| 4.1 | 2025-12-23 | Integra workflow-genesis.md: Seções 13, 15 atualizadas, glossário expandido |
