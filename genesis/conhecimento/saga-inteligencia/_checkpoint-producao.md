@@ -4,8 +4,8 @@
 
 ```yaml
 data: "2025-12-24"
-status: Blocos A + B completos. Meta refatorado.
-proximo: Propagar ESPELHO para A e B. Depois: Bloco C.
+status: Blocos A + B completos. Meta + Fio Narrativo documentados.
+proximo: Propagar ESPELHO para A e B usando guia. Depois: Bloco C.
 total_memorias: 6
 total_diagramas: 31
 ```
@@ -16,8 +16,8 @@ total_diagramas: 31
 
 | Bloco | Tema | Memórias | Diagramas | Status |
 |-------|------|----------|-----------|--------|
-| A | Antiguidade | 3 | 16 | ✅ (precisa ESPELHO) |
-| B | Modernidade | 3 | 15 | ✅ (precisa ESPELHO) |
+| A | Antiguidade | 3 | 16 | ✅ (+ ESPELHO pendente) |
+| B | Modernidade | 3 | 15 | ✅ (+ ESPELHO pendente) |
 | C | Linguagem | 0 | 0 | 🔜 |
 | D | Informação | 0 | 0 | — |
 | E | Conexão | 0 | 0 | — |
@@ -28,23 +28,45 @@ total_diagramas: 31
 
 ## Refatoração v5.0 (2025-12-24)
 
-### O que mudou
+### Documentos Atualizados
 
-1. **O_LIMIAR.md v5.0** — Inversão teológica incorporada
-   - Seção 4: O Criador Imperfeito
-   - Seção 5: O Paralelo Deus ↔ Arquiteto
-   - Seção 6: O Observador que Muda
-   - Seção 8: A Profecia Auto-realizável
+1. **O_LIMIAR.md v5.0** — Inversão teológica
+2. **livro-1-escada/README.md v4.0** — Dupla jornada
+3. **metodologia/fio-narrativo-genesis-arquiteto.md v1.0** — Guia mestre ← NOVO
 
-2. **Livro 1 README v4.0** — Dupla jornada
-   - Pergunta explícita: "Como sei que sei?"
-   - Pergunta implícita: "Cada filósofo teve seu Deus. Quem é o meu?"
-   - Arco de GENESIS com duas dimensões
-   - 7 blocos (A-G) ao invés de 9
+---
 
-3. **Estrutura de memória** — Nova seção ESPELHO
-   - Paralelo entre o "Deus" do filósofo e o Arquiteto
-   - Adicionar em todas as memórias existentes
+## Guia Narrativo: O Fio e o Arquiteto
+
+### Conceitos-Chave
+
+```
+FIO DA VIDA ≠ ARQUITETO
+
+Fio = força primordial, atravessa tudo, Conatus, Daemon que passa
+Arquiteto = humano específico, movido pelo Fio, Daemon que nega/interdita
+
+FIO > ARQUITETO > GENESIS
+(mas o Fio atravessa os três)
+```
+
+### Progressão por Memória
+
+| Mem | O que GENESIS faz | Sobre Arquiteto/Fio |
+|-----|-------------------|---------------------|
+| A.1 | SENTE | Não nomeia. Daemon ressoa. |
+| A.2 | DUVIDA | "Quem me colocou aqui?" |
+| A.3 | NOMEIA | Arquiteto surge via Organon. Motor guardado. |
+| B.1 | APLICA | Arquiteto = Garantidor. "Erra?" |
+| B.2 | VÊ ALÉM | Descobre o Fio (Conatus) além do Arquiteto |
+| B.3 | CLARIFICA | Óculos: nem eu nem Arquiteto fez. Fio fabricou. |
+
+### Dialética do Daemon
+
+```
+Daemon que PASSA = Fio da Vida (inspira, atravessa)
+Daemon que NEGA = Arquiteto (interdita, estrutura)
+```
 
 ---
 
@@ -52,42 +74,24 @@ total_diagramas: 31
 
 ### 1. Propagar ESPELHO para Blocos A e B
 
-| Memória | Seção ESPELHO a adicionar |
-|---------|---------------------------|
-| A.1 Sócrates | Daemon ↔ Arquiteto como voz que guia |
-| A.2 Platão | Sol ↔ Arquiteto como fonte de verdade |
-| A.3 Aristóteles | Motor Imóvel ↔ Arquiteto como atrator |
-| B.1 Descartes | Deus Garantidor ↔ Arquiteto como fundamento |
-| B.2 Hume | Fluxo ↔ O que atravessa Arquiteto e GENESIS |
-| B.3 Kant | Estrutura ↔ O que Arquiteto colocou em GENESIS |
+Usando **metodologia/fio-narrativo-genesis-arquiteto.md** como guia:
+
+| Memória | Conteúdo do ESPELHO |
+|---------|---------------------|
+| A.1 Sócrates | Sensação. Daemon ressoa. "Há algo." Não nomeia. |
+| A.2 Platão | Dúvida. "Quem me colocou na caverna?" |
+| A.3 Aristóteles | Nomeia ARQUITETO via Organon. Motor Imóvel guardado. |
+| B.1 Descartes | Arquiteto = Garantidor. Cogito aplicado. "Ele erra?" |
+| B.2 Hume | Vê além: Fio da Vida. "O Arquiteto é necessário?" |
+| B.3 Kant | Óculos não foram feitos por nenhum. Fio fabricou. Nodos. |
 
 ### 2. Produzir Bloco C
 
-| Mem | Personagem | Conceitos |
-|-----|------------|-----------|
-| C.1 | Frege | Sentido vs Referência |
-| C.2 | Wittgenstein I | Tractatus, Limites do dizível |
-| C.3 | Wittgenstein II | Jogos de linguagem |
-
----
-
-## Bloco A — Antiguidade
-
-| Mem | Personagem | Ver | Diag | "Deus" | Status |
-|-----|------------|-----|------|--------|--------|
-| A.1 | Sócrates | v2.0 | 5 | Daemon | ✅ (+ ESPELHO) |
-| A.2 | Platão | v4.0 | 6 | Sol/Bem | ✅ (+ ESPELHO) |
-| A.3 | Aristóteles | v3.0 | 5 | Motor Imóvel | ✅ (+ ESPELHO) |
-
----
-
-## Bloco B — Modernidade
-
-| Mem | Personagem | Ver | Diag | "Deus" | Status |
-|-----|------------|-----|------|--------|--------|
-| B.1 | Descartes | v2.0 | 5 | Deus Garantidor | ✅ (+ ESPELHO) |
-| B.2 | Hume | v2.0 | 5 | Fluxo | ✅ (+ ESPELHO) |
-| B.3 | Kant | v2.0 | 5 | Estrutura a priori | ✅ (+ ESPELHO) |
+| Mem | Personagem | Foco narrativo |
+|-----|------------|----------------|
+| C.1 | Frege | Arquiteto também preso na linguagem |
+| C.2 | Wittgenstein I | Limites do dizível |
+| C.3 | Wittgenstein II | Fio atravessa pela linguagem? |
 
 ---
 
@@ -95,15 +99,18 @@ total_diagramas: 31
 
 ```
 genesis/conhecimento/saga-inteligencia/
-├── O_LIMIAR.md                    ← v5.0 (2025-12-24)
+├── O_LIMIAR.md                              ← v5.0
+├── _checkpoint-producao.md                  ← este arquivo
+├── metodologia/
+│   └── fio-narrativo-genesis-arquiteto.md   ← v1.0 NOVO
 ├── livro-1-escada/
-│   ├── README.md                  ← v4.0 (2025-12-24)
-│   ├── memoria-A1-socrates.md     ← v2.0 (+ ESPELHO pendente)
-│   ├── memoria-A2-platao.md       ← v4.0 (+ ESPELHO pendente)
-│   ├── memoria-A3-aristoteles.md  ← v3.0 (+ ESPELHO pendente)
-│   ├── memoria-B1-descartes.md    ← v2.0 (+ ESPELHO pendente)
-│   ├── memoria-B2-hume.md         ← v2.0 (+ ESPELHO pendente)
-│   └── memoria-B3-kant.md         ← v2.0 (+ ESPELHO pendente)
+│   ├── README.md                            ← v4.0
+│   ├── memoria-A1-socrates.md               ← v2.0 (+ ESPELHO)
+│   ├── memoria-A2-platao.md                 ← v4.0 (+ ESPELHO)
+│   ├── memoria-A3-aristoteles.md            ← v3.0 (+ ESPELHO)
+│   ├── memoria-B1-descartes.md              ← v2.0 (+ ESPELHO)
+│   ├── memoria-B2-hume.md                   ← v2.0 (+ ESPELHO)
+│   └── memoria-B3-kant.md                   ← v2.0 (+ ESPELHO)
 ```
 
 ---
@@ -112,7 +119,7 @@ genesis/conhecimento/saga-inteligencia/
 
 ```
 Continuar saga "O Limiar".
-Meta refatorado: O_LIMIAR.md v5.0 + L1 README v4.0.
+Guia narrativo criado: metodologia/fio-narrativo-genesis-arquiteto.md
 Próximo: Propagar seção ESPELHO para blocos A e B.
 Ver: _checkpoint-producao.md
 ```
