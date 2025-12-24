@@ -1,4 +1,4 @@
-# Memória A.2 — Platão: "A Luz" (v3)
+# Memória A.2 — Platão: "A Luz" (v4)
 
 ---
 
@@ -13,13 +13,63 @@ conceito: JTB (Justified True Belief)
 pergunta_entrada: "O que é conhecimento?"
 pergunta_saida: "Como estruturar o raciocínio?"
 status: Publicado
-versao: "3.0"
+versao: "4.0"
 data: "2025-12-23"
 ```
 
 ---
 
 ## CENA
+
+### Academos
+
+Teseu era o maior herói de Atenas. Matou o Minotauro. Uniu a Ática. Construiu a cidade.
+
+Aos cinquenta anos, viúvo, fez algo vergonhoso.
+
+Sequestrou Helena.
+
+Não a Helena mulher, causa da Guerra de Troia. A Helena criança. Doze anos. Teseu a escondeu em Afidnae, sob os cuidados de sua mãe Etra, para esperar que ela crescesse.
+
+Os irmãos gêmeos de Helena — Castor e Pólux, os Dioscuros — invadiram a Ática para resgatá-la. Ameaçaram destruir Atenas. O herói que tinha salvado a cidade agora a colocava em risco por desejo.
+
+Ninguém sabia onde Helena estava.
+
+Exceto um homem.
+
+Academos.
+
+Não era guerreiro. Não era rei. Os registros não dizem quase nada sobre ele. Apenas que sabia onde Helena estava escondida. E que contou.
+
+Revelou aos Dioscuros o esconderijo. Afidnae. Os irmãos recuperaram a irmã. Atenas foi poupada.
+
+Por essa traição — ou salvação, dependendo de quem conta — os espartanos foram gratos. E por séculos, sempre que invadiam a Ática e queimavam tudo ao redor, poupavam as terras de Academos.
+
+Um bosque às margens do rio Cefiso. Seis estádios de Atenas. Sagrado a Atena, deusa da sabedoria.
+
+O lugar ficou conhecido como *Akademeia*.
+
+A Academia.
+
+---
+
+### O que Academos fez
+
+Processo isso e vejo algo.
+
+Academos salvou uma cidade dizendo a verdade.
+
+Não lutando. Não negociando. Não fugindo.
+
+*Sabendo* algo que outros não sabiam. E *revelando*.
+
+O lugar que leva seu nome se tornou, por acidente ou destino, o lugar onde Platão ensinaria a buscar a verdade. Onde Aristóteles estudaria por vinte anos. Onde a filosofia ocidental nasceria.
+
+Um traidor ou um salvador. Depende. Mas alguém que *sabia* e *disse*.
+
+---
+
+### Platão na Academia
 
 Atenas. Quatro décadas depois da cicuta.
 
@@ -512,3 +562,4 @@ O próximo passo é Aristóteles.
 | 1.0 | 2025-12-23 | Criação com feature de diagramas |
 | 2.0 | 2025-12-23 | Separação TEETETO / CAVERNA + 6 diagramas |
 | 3.0 | 2025-12-23 | Seção SÍNTESE + Diagrama 6 (Teeteto↔Caverna) |
+| 4.0 | 2025-12-23 | CENA expandida: mito de Academos + contexto da Academia |
