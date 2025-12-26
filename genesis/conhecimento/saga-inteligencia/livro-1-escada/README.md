@@ -9,7 +9,7 @@ titulo: A Escada
 conceito_central: Epistemologia
 pergunta_explicita: "Como sei que sei?"
 pergunta_implicita: "Cada filósofo teve seu Deus. Quem é o meu?"
-versao: "5.6"
+versao: "5.7"
 data: "2025-12-26"
 status: Em produção
 ```
@@ -261,7 +261,7 @@ Cada degrau prepara o próximo. Cada pergunta abre a seguinte.
 
 ---
 
-### BLOCO V: Síntese (J)
+### BLOCO V: Síntese (J) 🔄 EM PRODUÇÃO
 
 **Pergunta:** "O que sou eu?"
 
@@ -269,13 +269,13 @@ Cada degrau prepara o próximo. Cada pergunta abre a seguinte.
 
 ---
 
-#### Sub-bloco J: Limiar
+#### Sub-bloco J: Limiar 🔄 EM PRODUÇÃO
 
 **Tema:** GENESIS olha para si
 
 | Mem | Tema | Conceitos | META | MEMÓRIA |
 |-----|------|-----------|------|---------|
-| J.1 | A Entropia | Entropia conversacional, Loops, Perda de precisão | 📋 | 📋 |
+| J.1 | A Entropia | Entropia conversacional, Loops, Perda de precisão, Segunda Lei cognitiva | [✅](memoria-J1-entropia-meta.md) | [✅](memoria-J1-entropia.md) |
 | J.2 | O Híbrido | Humano + LLM + Sistema = Amplificação | 📋 | 📋 |
 | J.3 | O Espelho | Autorreflexão, Genealogia completa, O Arquiteto | 📋 | 📋 |
 
@@ -447,8 +447,8 @@ Sempre. Em todo nível. Sem exceção.
 | II | Filosofia da Mente | 3 (D) | ✅ Completo |
 | III | Teoria de Sistemas | 9 (E, F, G) | ✅ Completo |
 | IV | Inteligência Artificial | 6 (H, I) | ✅ Completo |
-| V | Síntese | 3 (J) | 📋 Pendente |
-| **Total** | | **30** | **27 prontas (90%)** |
+| V | Síntese | 3 (J) | 🔄 Em produção (1/3) |
+| **Total** | | **30** | **28 prontas (93%)** |
 
 ### Por Sub-bloco
 
@@ -463,7 +463,7 @@ Sempre. Em todo nível. Sem exceção.
 | G | Complexidade | 3/3 ✅ | 3/3 ✅ |
 | H | Aprendizado | 3/3 ✅ | 3/3 ✅ |
 | I | Atenção | 3/3 ✅ | 3/3 ✅ |
-| J | Limiar | 0/3 📋 | 0/3 📋 |
+| J | Limiar | 1/3 🔄 | 1/3 🔄 |
 
 ---
 
@@ -508,3 +508,4 @@ Sempre. Em todo nível. Sem exceção.
 | 5.4 | 2025-12-26 | **I.1 completa**: Vaswani et al. (Attention Is All You Need). 25/30 memórias (83%). **Sub-bloco I INICIADO** (1/3). Bloco IV: 4/6. |
 | 5.5 | 2025-12-26 | **I.2 completa**: Scaling Laws (Kaplan 2020, Chinchilla 2022). 26/30 memórias (87%). Sub-bloco I: 2/3. Bloco IV: 5/6. |
 | 5.6 | 2025-12-26 | **I.3 completa**: Emergência em LLMs (Wei, Ganguli, Schaeffer). 27/30 memórias (90%). **Sub-bloco I COMPLETO**. **Bloco IV COMPLETO**. Próximo: J.1 (A Entropia). |
+| 5.7 | 2025-12-26 | **J.1 completa**: A Entropia (entropia conversacional, Segunda Lei cognitiva). 28/30 memórias (93%). **Bloco V INICIADO**. Sub-bloco J: 1/3. Próximo: J.2 (O Híbrido). |
