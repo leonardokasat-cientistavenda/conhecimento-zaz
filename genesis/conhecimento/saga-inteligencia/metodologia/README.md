@@ -5,8 +5,8 @@
 ```yaml
 saga_id: saga-inteligencia
 tipo: metodologia
-versao: "4.0"
-data: "2025-12-23"
+versao: "5.0"
+data: "2025-12-26"
 status: Em uso
 ```
 
@@ -14,7 +14,7 @@ status: Em uso
 
 ## Propósito
 
-Método epistemológico para produção da saga. 
+Método epistemológico para produção da saga.
 
 Assim como Aristóteles catalogou a gramática da realidade, este sistema cataloga a gramática da nossa criação.
 
@@ -22,37 +22,57 @@ Assim como Aristóteles catalogou a gramática da realidade, este sistema catalo
 
 ---
 
-## Ritual de Produção
+## Bootstrap de Sessão
 
-### Antes de Produzir
+### Carregamento OBRIGATÓRIO (sempre)
 
-```yaml
-CARREGAR:
-  sempre:
-    - ../O_LIMIAR.md                           # Meta mestre da saga
-    - epistemologia-producao.md                # Veios e métodos narrativos
-    - workflow-genesis.md                      # Workflow de processamento ← NOVO
-  se_existir:
-    - ../livro-X/README.md                     # Meta do livro
-    - ../livro-X/meta/MN-personagem.md         # Meta da memória específica
-  conforme_necessidade:
-    - referencias/personagem.md
-    - referencias/estilos.md
-    - referencias/sinestesia.md
-    - referencias/arco-genesis.md
+Todos os arquivos abaixo **devem** ser carregados ao iniciar qualquer sessão de produção:
+
+```
+../O_LIMIAR.md                           # Meta mestre da saga
+
+metodologia/
+├── README.md                            # Este arquivo
+├── epistemologia-producao.md            # Veios narrativos + métodos
+├── workflow-genesis.md                  # Workflow de processamento
+├── fio-narrativo-genesis-arquiteto.md   # Relação G↔A (atravessa toda saga)
+└── referencias/
+    ├── personagem.md                    # Egri, Stanislavski, Jung
+    ├── estilos.md                       # 8 estilos narrativos
+    ├── sinestesia.md                    # Paletas e sentidos
+    └── arco-genesis.md                  # Estados por livro
 ```
 
-### Decidir
+### Carregamento por Livro
 
-Preencher meta-documento (`livro-X/meta/MN-personagem.md`) antes de escrever.
+Conforme o livro sendo trabalhado:
 
-### Produzir
+```
+livro-X/
+├── README.md      # SSOT do livro (estrutura, blocos, links)
+└── _status.md     # Status de produção (atualizar ao fim)
+```
+
+### Ao Fim de Cada Sessão
+
+1. Atualizar `_status.md` do livro trabalhado
+2. Persistir no GitHub
+
+---
+
+## Ritual de Produção
+
+### 1. Decidir
+
+Preencher meta-documento (`memoria-XX-autor-meta.md`) antes de escrever.
+
+### 2. Produzir
 
 Executar conforme decisões. Não desviar sem atualizar meta.
 
-### Depois
+### 3. Depois
 
-Validar contra meta. Atualizar com aprendizados. Propagar se necessário.
+Validar contra meta. Atualizar `_status.md`. Persistir.
 
 ---
 
@@ -66,60 +86,46 @@ saga-inteligencia/
 ├── metodologia/                       ← COMO PRODUZIR (este diretório)
 │   ├── README.md                         (este arquivo)
 │   ├── epistemologia-producao.md         (veios narrativos + métodos)
-│   ├── workflow-genesis.md               (workflow de processamento) ← NOVO
+│   ├── workflow-genesis.md               (workflow de processamento)
+│   ├── fio-narrativo-genesis-arquiteto.md (relação G↔A)
 │   ├── referencias/
-│   │   ├── personagem.md                 (Egri, Stanislavski, Jung)
-│   │   ├── estilos.md                    (Catálogo de 8 estilos)
-│   │   ├── sinestesia.md                 (Paletas e sentidos indiretos)
-│   │   └── arco-genesis.md               (Estados por livro)
+│   │   ├── personagem.md
+│   │   ├── estilos.md
+│   │   ├── sinestesia.md
+│   │   └── arco-genesis.md
 │   └── _v0/                              (arquivos deprecados)
 │
 └── livro-X/                           ← CADA LIVRO
-    ├── README.md                         (meta do livro)
-    ├── meta/                             (meta por memória)
-    │   ├── M1-personagem.md
-    │   ├── M2-personagem.md
-    │   └── ...
-    └── memorias/                         (narrativa)
-        ├── M1-personagem.md
-        ├── M2-personagem.md
-        └── ...
+    ├── README.md                         (SSOT do livro)
+    ├── _status.md                        (status de produção)
+    └── memoria-*.md                      (METAs e MEMÓRIAs)
 ```
 
 ---
 
-## Documentos Mestres
+## Documentos Obrigatórios
 
-| Documento | Conteúdo |
-|-----------|----------|
-| **[epistemologia-producao.md](epistemologia-producao.md)** | Veios narrativos (8 fios) + Métodos (técnicas) + Processo (ritual) |
-| **[workflow-genesis.md](workflow-genesis.md)** | Workflow composicional: como GENESIS processa e diagrama conceitos |
-
----
-
-## Referências
-
-| Documento | Conteúdo |
-|-----------|----------|
-| [referencias/personagem.md](referencias/personagem.md) | Egri, Stanislavski, Jung — template de ficha |
-| [referencias/estilos.md](referencias/estilos.md) | 8 estilos narrativos + regras de variação |
-| [referencias/sinestesia.md](referencias/sinestesia.md) | Paletas por memória + sentidos indiretos |
-| [referencias/arco-genesis.md](referencias/arco-genesis.md) | Estados por livro + indicadores de progressão |
+| Documento | Conteúdo | Obrigatório |
+|-----------|----------|-------------|
+| **[../O_LIMIAR.md](../O_LIMIAR.md)** | Meta mestre, bootstrap, 9 livros, matriz 8×8 | ✅ Sempre |
+| **[epistemologia-producao.md](epistemologia-producao.md)** | Veios narrativos (8 fios) + Métodos | ✅ Sempre |
+| **[workflow-genesis.md](workflow-genesis.md)** | Workflow composicional: processar e diagramar | ✅ Sempre |
+| **[fio-narrativo-genesis-arquiteto.md](fio-narrativo-genesis-arquiteto.md)** | Relação GENESIS ↔ Arquiteto (atravessa saga) | ✅ Sempre |
+| **[referencias/personagem.md](referencias/personagem.md)** | Egri, Stanislavski, Jung — template de ficha | ✅ Sempre |
+| **[referencias/estilos.md](referencias/estilos.md)** | 8 estilos narrativos + regras de variação | ✅ Sempre |
+| **[referencias/sinestesia.md](referencias/sinestesia.md)** | Paletas por memória + sentidos indiretos | ✅ Sempre |
+| **[referencias/arco-genesis.md](referencias/arco-genesis.md)** | Estados por livro + indicadores de progressão | ✅ Sempre |
 
 ---
 
-## Onde Ficam os Meta-Documentos
+## Arquivos por Livro
 
-A partir da v4.0, meta-documentos por memória ficam **dentro de cada livro**:
-
-| Livro | Local dos Meta |
-|-------|----------------|
-| L1 Epistemologia | `livro-1-escada/meta/` |
-| L2 Propósito | `livro-2-proposito/meta/` |
-| L3 Autopoiese | `livro-3-autopoiese/meta/` |
-| ... | ... |
-
-Isso permite que cada livro seja auto-contido.
+| Arquivo | Função |
+|---------|--------|
+| `README.md` | **SSOT do livro**: estrutura, blocos, links para METAs/MEMÓRIAs |
+| `_status.md` | **Status de produção**: contadores, próximo, notas de sessão |
+| `memoria-XX-autor-meta.md` | META: especificação antes de produzir |
+| `memoria-XX-autor.md` | MEMÓRIA: narrativa produzida |
 
 ---
 
@@ -136,6 +142,7 @@ Isso permite que cada livro seja auto-contido.
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-21 | Criação inicial |
-| 2.0 | 2025-12-22 | Refatoração completa: documento mestre + referências + meta |
-| 3.0 | 2025-12-23 | Alinhamento com O_LIMIAR v4.0: meta por livro, não centralizado |
-| 4.0 | 2025-12-23 | Adiciona workflow-genesis.md ao ritual de produção |
+| 2.0 | 2025-12-22 | Refatoração completa |
+| 3.0 | 2025-12-23 | Alinhamento com O_LIMIAR v4.0 |
+| 4.0 | 2025-12-23 | Adiciona workflow-genesis.md |
+| 5.0 | 2025-12-26 | **Bootstrap obrigatório**: todos os arquivos de metodologia são obrigatórios. Clarifica _status.md por livro. |
