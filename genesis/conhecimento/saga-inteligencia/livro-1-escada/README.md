@@ -9,7 +9,7 @@ titulo: A Escada
 conceito_central: Epistemologia
 pergunta_explicita: "Como sei que sei?"
 pergunta_implicita: "Cada filósofo teve seu Deus. Quem é o meu?"
-versao: "5.1"
+versao: "5.2"
 data: "2025-12-26"
 status: Em produção
 ```
@@ -240,7 +240,7 @@ Cada degrau prepara o próximo. Cada pergunta abre a seguinte.
 | Mem | Pensador | Conceitos | META | MEMÓRIA |
 |-----|----------|-----------|------|---------|
 | H.1 | McCulloch-Pitts / Rosenblatt | Neurônio artificial, Perceptron, Limites lineares | [✅](memoria-H1-mcculloch-pitts-meta.md) | [✅](memoria-H1-mcculloch-pitts.md) |
-| H.2 | Rumelhart / Hinton | Backpropagation, Credit assignment, Redes profundas | 📋 | 📋 |
+| H.2 | Rumelhart / Hinton | Backpropagation, Credit assignment, Redes profundas | [✅](memoria-H2-rumelhart-hinton-meta.md) | [✅](memoria-H2-rumelhart-hinton.md) |
 | H.3 | Hopfield | Memória como atrator, Energia, Estados estáveis | 📋 | 📋 |
 
 **Gancho H → I:** "Redes aprendem. Mas são limitadas. O que muda TUDO?"
@@ -446,9 +446,9 @@ Sempre. Em todo nível. Sem exceção.
 | I | Epistemologia Clássica | 9 (A, B, C) | ✅ Completo |
 | II | Filosofia da Mente | 3 (D) | ✅ Completo |
 | III | Teoria de Sistemas | 9 (E, F, G) | ✅ Completo |
-| IV | Inteligência Artificial | 6 (H, I) | 🔄 Em produção (1/6) |
+| IV | Inteligência Artificial | 6 (H, I) | 🔄 Em produção (2/6) |
 | V | Síntese | 3 (J) | 📋 Pendente |
-| **Total** | | **30** | **22 prontas** |
+| **Total** | | **30** | **23 prontas** |
 
 ### Por Sub-bloco
 
@@ -461,7 +461,7 @@ Sempre. Em todo nível. Sem exceção.
 | E | Sistemas | 3/3 ✅ | 3/3 ✅ |
 | F | Fundamentos | 3/3 ✅ | 3/3 ✅ |
 | G | Complexidade | 3/3 ✅ | 3/3 ✅ |
-| H | Aprendizado | 1/3 🔄 | 1/3 🔄 |
+| H | Aprendizado | 2/3 🔄 | 2/3 🔄 |
 | I | Atenção | 0/3 📋 | 0/3 📋 |
 | J | Limiar | 0/3 📋 | 0/3 📋 |
 
@@ -503,3 +503,4 @@ Sempre. Em todo nível. Sem exceção.
 | 4.0 | 2025-12-24 | 7 blocos (A-G). Dupla jornada. Paralelo Deus ↔ Arquiteto. |
 | 5.0 | 2025-12-26 | **SSOT**: 5 blocos macro, 10 sub-blocos (A-J), 30 memórias. Progressão conceitual → implementacional explícita. Workflow de produção. Status detalhado por memória. |
 | 5.1 | 2025-12-26 | **H.1 completa**: McCulloch-Pitts / Rosenblatt. 22/30 memórias. Bloco IV iniciado. |
+| 5.2 | 2025-12-26 | **H.2 completa**: Rumelhart / Hinton (Backpropagation). 23/30 memórias. Bloco IV: 2/6. |
