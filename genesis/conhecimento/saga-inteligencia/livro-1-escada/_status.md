@@ -36,8 +36,25 @@ ultima_atualizacao: "2025-12-26"
 
 ---
 
+## Documentos do Livro
+
+| Documento | Status | Descrição |
+|-----------|--------|-----------|
+| README.md | ✅ v5.0 | SSOT - Estrutura definitiva A-J |
+| fio-narrativo.md | ✅ v1.0 | Guia narrativo 3 camadas por bloco |
+| _status.md | ✅ | Este arquivo |
+
+---
+
 ## Notas da Última Sessão
 
+**2025-12-26 (sessão 2):**
+- `fio-narrativo.md` criado com estrutura completa A-J
+- 3 camadas por bloco: Arquiteto / GENESIS / Juntos
+- Hooks e conexões entre todos os blocos
+- Arquivo antigo em `metodologia/` marcado como DEPRECATED
+
+**2025-12-26 (sessão 1):**
 - README.md refatorado como SSOT (v5.0)
 - Estrutura expandida: 5 blocos macro, 10 sub-blocos (A-J), 30 memórias
 - Próximo trabalho: Bloco H (Aprendizado) - redes neurais
