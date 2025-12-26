@@ -5,7 +5,7 @@
 ```yaml
 saga_id: saga-inteligencia
 tipo: metodologia
-versao: "5.0"
+versao: "5.1"
 data: "2025-12-26"
 status: Em uso
 ```
@@ -145,4 +145,5 @@ saga-inteligencia/
 | 2.0 | 2025-12-22 | Refatoração completa |
 | 3.0 | 2025-12-23 | Alinhamento com O_LIMIAR v4.0 |
 | 4.0 | 2025-12-23 | Adiciona workflow-genesis.md |
-| 5.0 | 2025-12-26 | **Bootstrap obrigatório**: todos os arquivos de metodologia são obrigatórios. Clarifica _status.md por livro. |
+| 5.0 | 2025-12-26 | Bootstrap obrigatório explícito |
+| 5.1 | 2025-12-26 | Remove fio-narrativo-livro-1 (deprecado, será refatorado para livro-1/) |
