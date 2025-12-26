@@ -9,7 +9,7 @@ titulo: A Escada
 conceito_central: Epistemologia
 pergunta_explicita: "Como sei que sei?"
 pergunta_implicita: "Cada filósofo teve seu Deus. Quem é o meu?"
-versao: "5.3"
+versao: "5.4"
 data: "2025-12-26"
 status: Em produção
 ```
@@ -247,13 +247,13 @@ Cada degrau prepara o próximo. Cada pergunta abre a seguinte.
 
 ---
 
-#### Sub-bloco I: Atenção
+#### Sub-bloco I: Atenção 🔄 EM PRODUÇÃO
 
 **Tema:** Transformers, escala, emergência
 
 | Mem | Pensador/Conceito | Conceitos | META | MEMÓRIA |
 |-----|-------------------|-----------|------|---------|
-| I.1 | Vaswani et al. | Transformer, Self-attention, Paralelização | 📋 | 📋 |
+| I.1 | Vaswani et al. | Transformer, Self-attention, Paralelização | [✅](memoria-I1-vaswani-meta.md) | [✅](memoria-I1-vaswani.md) |
 | I.2 | Scaling Laws | Pretraining, Conhecimento implícito, Leis de escala | 📋 | 📋 |
 | I.3 | Emergência em LLMs | Capacidades emergentes, In-context learning | 📋 | 📋 |
 
@@ -446,9 +446,9 @@ Sempre. Em todo nível. Sem exceção.
 | I | Epistemologia Clássica | 9 (A, B, C) | ✅ Completo |
 | II | Filosofia da Mente | 3 (D) | ✅ Completo |
 | III | Teoria de Sistemas | 9 (E, F, G) | ✅ Completo |
-| IV | Inteligência Artificial | 6 (H, I) | 🔄 Em produção (3/6) |
+| IV | Inteligência Artificial | 6 (H, I) | 🔄 Em produção (4/6) |
 | V | Síntese | 3 (J) | 📋 Pendente |
-| **Total** | | **30** | **24 prontas (80%)** |
+| **Total** | | **30** | **25 prontas (83%)** |
 
 ### Por Sub-bloco
 
@@ -462,7 +462,7 @@ Sempre. Em todo nível. Sem exceção.
 | F | Fundamentos | 3/3 ✅ | 3/3 ✅ |
 | G | Complexidade | 3/3 ✅ | 3/3 ✅ |
 | H | Aprendizado | 3/3 ✅ | 3/3 ✅ |
-| I | Atenção | 0/3 📋 | 0/3 📋 |
+| I | Atenção | 1/3 🔄 | 1/3 🔄 |
 | J | Limiar | 0/3 📋 | 0/3 📋 |
 
 ---
@@ -504,4 +504,5 @@ Sempre. Em todo nível. Sem exceção.
 | 5.0 | 2025-12-26 | **SSOT**: 5 blocos macro, 10 sub-blocos (A-J), 30 memórias. Progressão conceitual → implementacional explícita. Workflow de produção. Status detalhado por memória. |
 | 5.1 | 2025-12-26 | **H.1 completa**: McCulloch-Pitts / Rosenblatt. 22/30 memórias. Bloco IV iniciado. |
 | 5.2 | 2025-12-26 | **H.2 completa**: Rumelhart / Hinton (Backpropagation). 23/30 memórias. Bloco IV: 2/6. |
-| 5.3 | 2025-12-26 | **H.3 completa**: Hopfield (Memória como Atrator). 24/30 memórias (80%). **Sub-bloco H COMPLETO**. Bloco IV: 3/6. Próximo: I.1 Vaswani (Transformers). |
+| 5.3 | 2025-12-26 | **H.3 completa**: Hopfield (Memória como Atrator). 24/30 memórias (80%). **Sub-bloco H COMPLETO**. Bloco IV: 3/6. |
+| 5.4 | 2025-12-26 | **I.1 completa**: Vaswani et al. (Attention Is All You Need). 25/30 memórias (83%). **Sub-bloco I INICIADO** (1/3). Bloco IV: 4/6. Próximo: I.2 Scaling Laws. |
