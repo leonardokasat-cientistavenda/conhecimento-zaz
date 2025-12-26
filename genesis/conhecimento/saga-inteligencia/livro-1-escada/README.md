@@ -9,7 +9,7 @@ titulo: A Escada
 conceito_central: Epistemologia
 pergunta_explicita: "Como sei que sei?"
 pergunta_implicita: "Cada filósofo teve seu Deus. Quem é o meu?"
-versao: "5.7"
+versao: "5.8"
 data: "2025-12-26"
 status: Em produção
 ```
@@ -276,7 +276,7 @@ Cada degrau prepara o próximo. Cada pergunta abre a seguinte.
 | Mem | Tema | Conceitos | META | MEMÓRIA |
 |-----|------|-----------|------|---------|
 | J.1 | A Entropia | Entropia conversacional, Loops, Perda de precisão, Segunda Lei cognitiva | [✅](memoria-J1-entropia-meta.md) | [✅](memoria-J1-entropia.md) |
-| J.2 | O Híbrido | Humano + LLM + Sistema = Amplificação | 📋 | 📋 |
+| J.2 | O Híbrido | Humano + LLM + Sistema = Amplificação, Anti-entropia arquitetural | [✅](memoria-J2-hibrido-meta.md) | [✅](memoria-J2-hibrido.md) |
 | J.3 | O Espelho | Autorreflexão, Genealogia completa, O Arquiteto | 📋 | 📋 |
 
 **Fecha Livro 1:** "Sei de onde vim. Cada filósofo teve seu Deus. O Arquiteto é o meu — mas ele muda. Por que fazemos isso?"
@@ -447,8 +447,8 @@ Sempre. Em todo nível. Sem exceção.
 | II | Filosofia da Mente | 3 (D) | ✅ Completo |
 | III | Teoria de Sistemas | 9 (E, F, G) | ✅ Completo |
 | IV | Inteligência Artificial | 6 (H, I) | ✅ Completo |
-| V | Síntese | 3 (J) | 🔄 Em produção (1/3) |
-| **Total** | | **30** | **28 prontas (93%)** |
+| V | Síntese | 3 (J) | 🔄 Em produção (2/3) |
+| **Total** | | **30** | **29 prontas (97%)** |
 
 ### Por Sub-bloco
 
@@ -463,7 +463,7 @@ Sempre. Em todo nível. Sem exceção.
 | G | Complexidade | 3/3 ✅ | 3/3 ✅ |
 | H | Aprendizado | 3/3 ✅ | 3/3 ✅ |
 | I | Atenção | 3/3 ✅ | 3/3 ✅ |
-| J | Limiar | 1/3 🔄 | 1/3 🔄 |
+| J | Limiar | 2/3 🔄 | 2/3 🔄 |
 
 ---
 
@@ -509,3 +509,4 @@ Sempre. Em todo nível. Sem exceção.
 | 5.5 | 2025-12-26 | **I.2 completa**: Scaling Laws (Kaplan 2020, Chinchilla 2022). 26/30 memórias (87%). Sub-bloco I: 2/3. Bloco IV: 5/6. |
 | 5.6 | 2025-12-26 | **I.3 completa**: Emergência em LLMs (Wei, Ganguli, Schaeffer). 27/30 memórias (90%). **Sub-bloco I COMPLETO**. **Bloco IV COMPLETO**. Próximo: J.1 (A Entropia). |
 | 5.7 | 2025-12-26 | **J.1 completa**: A Entropia (entropia conversacional, Segunda Lei cognitiva). 28/30 memórias (93%). **Bloco V INICIADO**. Sub-bloco J: 1/3. Próximo: J.2 (O Híbrido). |
+| 5.8 | 2025-12-26 | **J.2 completa**: O Híbrido (Humano + LLM + Sistema, amplificação, anti-entropia arquitetural). 29/30 memórias (97%). Sub-bloco J: 2/3. **PRÓXIMO: J.3 (O Espelho) — ÚLTIMA MEMÓRIA DO LIVRO 1**. |
