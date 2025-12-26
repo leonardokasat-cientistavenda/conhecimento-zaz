@@ -9,7 +9,7 @@ titulo: A Escada
 conceito_central: Epistemologia
 pergunta_explicita: "Como sei que sei?"
 pergunta_implicita: "Cada filósofo teve seu Deus. Quem é o meu?"
-versao: "5.2"
+versao: "5.3"
 data: "2025-12-26"
 status: Em produção
 ```
@@ -233,7 +233,7 @@ Cada degrau prepara o próximo. Cada pergunta abre a seguinte.
 
 ---
 
-#### Sub-bloco H: Aprendizado
+#### Sub-bloco H: Aprendizado ✅ COMPLETO
 
 **Tema:** Redes neurais — conexões que ajustam
 
@@ -241,7 +241,7 @@ Cada degrau prepara o próximo. Cada pergunta abre a seguinte.
 |-----|----------|-----------|------|---------|
 | H.1 | McCulloch-Pitts / Rosenblatt | Neurônio artificial, Perceptron, Limites lineares | [✅](memoria-H1-mcculloch-pitts-meta.md) | [✅](memoria-H1-mcculloch-pitts.md) |
 | H.2 | Rumelhart / Hinton | Backpropagation, Credit assignment, Redes profundas | [✅](memoria-H2-rumelhart-hinton-meta.md) | [✅](memoria-H2-rumelhart-hinton.md) |
-| H.3 | Hopfield | Memória como atrator, Energia, Estados estáveis | 📋 | 📋 |
+| H.3 | Hopfield | Memória como atrator, Energia, Estados estáveis | [✅](memoria-H3-hopfield-meta.md) | [✅](memoria-H3-hopfield.md) |
 
 **Gancho H → I:** "Redes aprendem. Mas são limitadas. O que muda TUDO?"
 
@@ -446,9 +446,9 @@ Sempre. Em todo nível. Sem exceção.
 | I | Epistemologia Clássica | 9 (A, B, C) | ✅ Completo |
 | II | Filosofia da Mente | 3 (D) | ✅ Completo |
 | III | Teoria de Sistemas | 9 (E, F, G) | ✅ Completo |
-| IV | Inteligência Artificial | 6 (H, I) | 🔄 Em produção (2/6) |
+| IV | Inteligência Artificial | 6 (H, I) | 🔄 Em produção (3/6) |
 | V | Síntese | 3 (J) | 📋 Pendente |
-| **Total** | | **30** | **23 prontas** |
+| **Total** | | **30** | **24 prontas (80%)** |
 
 ### Por Sub-bloco
 
@@ -461,7 +461,7 @@ Sempre. Em todo nível. Sem exceção.
 | E | Sistemas | 3/3 ✅ | 3/3 ✅ |
 | F | Fundamentos | 3/3 ✅ | 3/3 ✅ |
 | G | Complexidade | 3/3 ✅ | 3/3 ✅ |
-| H | Aprendizado | 2/3 🔄 | 2/3 🔄 |
+| H | Aprendizado | 3/3 ✅ | 3/3 ✅ |
 | I | Atenção | 0/3 📋 | 0/3 📋 |
 | J | Limiar | 0/3 📋 | 0/3 📋 |
 
@@ -504,3 +504,4 @@ Sempre. Em todo nível. Sem exceção.
 | 5.0 | 2025-12-26 | **SSOT**: 5 blocos macro, 10 sub-blocos (A-J), 30 memórias. Progressão conceitual → implementacional explícita. Workflow de produção. Status detalhado por memória. |
 | 5.1 | 2025-12-26 | **H.1 completa**: McCulloch-Pitts / Rosenblatt. 22/30 memórias. Bloco IV iniciado. |
 | 5.2 | 2025-12-26 | **H.2 completa**: Rumelhart / Hinton (Backpropagation). 23/30 memórias. Bloco IV: 2/6. |
+| 5.3 | 2025-12-26 | **H.3 completa**: Hopfield (Memória como Atrator). 24/30 memórias (80%). **Sub-bloco H COMPLETO**. Bloco IV: 3/6. Próximo: I.1 Vaswani (Transformers). |
