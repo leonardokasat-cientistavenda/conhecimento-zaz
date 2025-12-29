@@ -4,7 +4,7 @@
 
 ```yaml
 nome: MS_Prometheus_Auth
-versao: "1.0"
+versao: "1.1"
 tipo: Padrao_Operacional
 status: Publicado
 pai: genesis/PROMETHEUS.md
@@ -73,7 +73,7 @@ SEM PADRÃO DE AUTENTICAÇÃO
 > - Variabilidade → Padrão único obrigatório
 > - Conhecimento tácito → Documentação explícita
 > - Risco de segurança → Validação padrão
-> - Bloqueio de trabalho → Checklist de novo serviço
+> - Bloqueio de trabalho → Template de solicitação
 
 ---
 
@@ -106,7 +106,7 @@ SEM PADRÃO DE AUTENTICAÇÃO
 │  ┌───────────────────────────┐     ┌───────────────────────────┐            │
 │  │ • env_file em compose     │     │ • Bearer token para HTTP  │            │
 │  │ • PM2 ecosystem.config    │     │ • HMAC para webhooks      │            │
-│  │ • Fallback explícito      │     │ • Checklist obrigatório   │            │
+│  │ • Fallback explícito      │     │ • Template de solicitação │            │
 │  └───────────────────────────┘     └───────────────────────────┘            │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -123,7 +123,7 @@ SEM PADRÃO DE AUTENTICAÇÃO
 - **Padroniza** nomenclatura de variáveis de ambiente
 - **Especifica** como workers consomem secrets
 - **Determina** como validar requests externos
-- **Fornece** checklist para novos serviços
+- **Fornece** template de solicitação para infra
 
 ### 3.2 Fronteiras
 
@@ -132,7 +132,7 @@ SEM PADRÃO DE AUTENTICAÇÃO
 | Padrão de nomenclatura | Gerenciador de secrets (Vault) |
 | Convenção de injeção | Sistema de rotação de keys |
 | Método de validação | Framework de autenticação |
-| Checklist operacional | Política de segurança completa |
+| Template de solicitação | Política de segurança completa |
 
 ### 3.3 Escopo
 
@@ -147,49 +147,7 @@ SEM PADRÃO DE AUTENTICAÇÃO
 
 ## 4. Classe (M3)
 
-### 4.1 Padrão de Armazenamento
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         ONDE FICAM OS SECRETS                               │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  SERVIDOR: /home/camunda-orquestrador/                                      │
-│  ═════════════════════════════════════                                      │
-│                                                                             │
-│  /home/camunda-orquestrador/                                                │
-│  │                                                                          │
-│  ├── .env                          ← FONTE ÚNICA DE VERDADE                 │
-│  │   │                               (não versionado)                       │
-│  │   ├── # === CAMUNDA ===                                                  │
-│  │   ├── CAMUNDA_URL=http://10.100.12.24:8080                               │
-│  │   ├── CAMUNDA_USER=admin                                                 │
-│  │   ├── CAMUNDA_PASS=***                                                   │
-│  │   ├── # === CLICKHOUSE ===                                               │
-│  │   ├── CLICKHOUSE_HOST=10.100.12.24                                       │
-│  │   ├── CLICKHOUSE_PORT=8123                                               │
-│  │   ├── CLICKHOUSE_USER=genesis                                            │
-│  │   ├── CLICKHOUSE_PASS=***                                                │
-│  │   ├── # === AUTH TOKENS ===                                              │
-│  │   ├── AUTH_TOKEN_CLICKHOUSE_API=***                                      │
-│  │   └── DEPLOY_SECRET=***                                                  │
-│  │                                                                          │
-│  ├── Orquestrador-Zarah/                                                    │
-│  │   └── .env.example              ← Template (versionado, sem valores)     │
-│  │                                                                          │
-│  └── docker-compose.yml            ← Referencia .env via env_file           │
-│                                                                             │
-│  REGRAS:                                                                    │
-│  ────────                                                                   │
-│  • .env NUNCA vai para Git                                                  │
-│  • .env.example vai para Git (template)                                     │
-│  • Owner do .env: time de infra (Gabriel)                                   │
-│  • Alterações: via PR no .env.example + comunicação no Mattermost           │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 4.2 Padrão de Nomenclatura
+### 4.1 Padrão de Nomenclatura
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -217,8 +175,8 @@ SEM PADRÃO DE AUTENTICAÇÃO
 │  • Credencial: _USER, _PASS, _API_KEY, _TOKEN                               │
 │  • Recurso: _DATABASE, _BUCKET, _QUEUE                                      │
 │                                                                             │
-│  TOKENS DE AUTENTICAÇÃO:                                                    │
-│  ────────────────────────                                                   │
+│  TOKENS DE AUTENTICAÇÃO (para workers expostos):                            │
+│  ───────────────────────────────────────────────                            │
 │  Formato: AUTH_TOKEN_{WORKER}                                               │
 │  Exemplo: AUTH_TOKEN_CLICKHOUSE_API                                         │
 │           AUTH_TOKEN_GENESIS_API                                            │
@@ -226,212 +184,168 @@ SEM PADRÃO DE AUTENTICAÇÃO
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.3 Padrão de Injeção
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         COMO WORKERS CONSOMEM SECRETS                       │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  OPÇÃO A: PM2 (workers Node.js standalone)                                  │
-│  ═════════════════════════════════════════                                  │
-│                                                                             │
-│  ecosystem.config.js:                                                       │
-│  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │  module.exports = {                                                   │  │
-│  │    apps: [{                                                           │  │
-│  │      name: 'orquestrador',                                            │  │
-│  │      script: './src/index.js',                                        │  │
-│  │      env: {                                                           │  │
-│  │        NODE_ENV: 'production'                                         │  │
-│  │      },                                                               │  │
-│  │      // PM2 carrega ../.env automaticamente                           │  │
-│  │    }]                                                                 │  │
-│  │  }                                                                    │  │
-│  └───────────────────────────────────────────────────────────────────────┘  │
-│                                                                             │
-│  OPÇÃO B: Docker Compose (workers containerizados)                          │
-│  ═════════════════════════════════════════════════                          │
-│                                                                             │
-│  docker-compose.yml:                                                        │
-│  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │  services:                                                            │  │
-│  │    clickhouse-api:                                                    │  │
-│  │      image: node:20-alpine                                            │  │
-│  │      env_file:                                                        │  │
-│  │        - ../.env          # Carrega .env do diretório pai             │  │
-│  │      environment:                                                     │  │
-│  │        - NODE_ENV=production                                          │  │
-│  └───────────────────────────────────────────────────────────────────────┘  │
-│                                                                             │
-│  NO CÓDIGO (ambas opções):                                                  │
-│  ═════════════════════════                                                  │
-│                                                                             │
-│  config.js:                                                                 │
-│  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │  // Falha rápida se secret não existir                                │  │
-│  │  const requiredEnv = (name) => {                                      │  │
-│  │    const value = process.env[name];                                   │  │
-│  │    if (!value) throw new Error(`Missing required env: ${name}`);      │  │
-│  │    return value;                                                      │  │
-│  │  };                                                                   │  │
-│  │                                                                       │  │
-│  │  module.exports = {                                                   │  │
-│  │    clickhouse: {                                                      │  │
-│  │      host: requiredEnv('CLICKHOUSE_HOST'),                            │  │
-│  │      port: process.env.CLICKHOUSE_PORT || '8123',                     │  │
-│  │      user: requiredEnv('CLICKHOUSE_USER'),                            │  │
-│  │      password: requiredEnv('CLICKHOUSE_PASS'),                        │  │
-│  │    }                                                                  │  │
-│  │  };                                                                   │  │
-│  └───────────────────────────────────────────────────────────────────────┘  │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 4.4 Padrão de Validação
+### 4.2 Padrão de Validação (Worker HTTP)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                         COMO VALIDAR REQUESTS EXTERNOS                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  TIPO 1: Bearer Token (MCP Server → Worker HTTP)                            │
-│  ═══════════════════════════════════════════════                            │
+│  Bearer Token (MCP Server → Worker HTTP)                                    │
+│  ═══════════════════════════════════════                                    │
 │                                                                             │
 │  Caller (MCP Server):                                                       │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │  fetch('https://clickhouse-api.zaz.com.br/query', {                   │  │
-│  │    method: 'POST',                                                    │  │
-│  │    headers: {                                                         │  │
-│  │      'Authorization': `Bearer ${process.env.AUTH_TOKEN_CLICKHOUSE_API}`,│ │
-│  │      'Content-Type': 'application/json'                               │  │
-│  │    },                                                                 │  │
-│  │    body: JSON.stringify({ sql: 'SELECT 1' })                          │  │
-│  │  });                                                                  │  │
+│  │  headers: {                                                           │  │
+│  │    'Authorization': `Bearer ${AUTH_TOKEN_CLICKHOUSE_API}`             │  │
+│  │  }                                                                    │  │
 │  └───────────────────────────────────────────────────────────────────────┘  │
 │                                                                             │
-│  Worker (valida):                                                           │
+│  Worker (middleware validateBearer):                                        │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
 │  │  const validateBearer = (req, res, next) => {                         │  │
 │  │    const auth = req.headers['authorization'];                         │  │
-│  │    if (!auth || !auth.startsWith('Bearer ')) {                        │  │
-│  │      return res.status(401).json({ error: 'Missing Bearer token' });  │  │
-│  │    }                                                                  │  │
-│  │    const token = auth.slice(7);                                       │  │
-│  │    const expected = process.env.AUTH_TOKEN_CLICKHOUSE_API;            │  │
-│  │    if (token !== expected) {                                          │  │
+│  │    if (!auth?.startsWith('Bearer '))                                  │  │
+│  │      return res.status(401).json({ error: 'Missing Bearer token' }); │  │
+│  │    if (auth.slice(7) !== process.env.AUTH_TOKEN_CLICKHOUSE_API)       │  │
 │  │      return res.status(403).json({ error: 'Invalid token' });         │  │
-│  │    }                                                                  │  │
 │  │    next();                                                            │  │
 │  │  };                                                                   │  │
 │  └───────────────────────────────────────────────────────────────────────┘  │
-│                                                                             │
-│  TIPO 2: HMAC-SHA256 (GitHub Actions → Worker)                              │
-│  ═════════════════════════════════════════════                              │
-│                                                                             │
-│  Já implementado em MS_Prometheus_Pipeline_Arquitetura.md seção 3.          │
-│  Usado para webhooks de deploy.                                             │
-│                                                                             │
-│  QUANDO USAR CADA TIPO:                                                     │
-│  ══════════════════════                                                     │
-│                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  Bearer Token          │  HMAC-SHA256                               │    │
-│  ├─────────────────────────────────────────────────────────────────────┤    │
-│  │  • Request/Response    │  • Webhooks                                │    │
-│  │  • MCP → Worker        │  • GitHub → Worker                         │    │
-│  │  • Simples             │  • Replay protection                       │    │
-│  │  • Stateless           │  • Timestamp validation                    │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### 4.5 Checklist de Novo Serviço
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    CHECKLIST: ADICIONAR NOVO SERVIÇO                        │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  ☐ 1. NOMENCLATURA                                                          │
-│     • Definir prefixo do serviço (ex: CLICKHOUSE)                           │
-│     • Listar variáveis necessárias (_HOST, _PORT, _USER, _PASS, etc)        │
-│     • Se worker exposto: definir AUTH_TOKEN_{WORKER}                        │
-│                                                                             │
-│  ☐ 2. TEMPLATE                                                              │
-│     • Adicionar variáveis ao .env.example (sem valores reais)               │
-│     • Criar PR com alterações                                               │
-│     • Documentar no PR quais variáveis são obrigatórias                     │
-│                                                                             │
-│  ☐ 3. COMUNICAÇÃO                                                           │
-│     • Notificar time de infra (Gabriel) no Mattermost                       │
-│     • Solicitar criação das credenciais reais                               │
-│     • Confirmar quando .env do servidor foi atualizado                      │
-│                                                                             │
-│  ☐ 4. CÓDIGO                                                                │
-│     • Usar config.js com requiredEnv() para variáveis obrigatórias          │
-│     • Usar fallback (|| 'default') para opcionais                           │
-│     • Falhar rápido na inicialização se faltar secret obrigatório           │
-│                                                                             │
-│  ☐ 5. VALIDAÇÃO (se worker HTTP exposto)                                    │
-│     • Implementar middleware validateBearer ou validateHMAC                 │
-│     • Aplicar em todas as rotas públicas                                    │
-│     • Testar com token válido e inválido                                    │
-│                                                                             │
-│  ☐ 6. DOCUMENTAÇÃO                                                          │
-│     • Atualizar README do worker                                            │
-│     • Adicionar exemplo de chamada com autenticação                         │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 5. Aplicação Imediata: ClickHouse
+### 4.3 Template de Solicitação para Infra (PRINCIPAL)
 
-Aplicando o padrão para desbloquear S-PROMETHEUS-001:
+**Quando usar:** Ao precisar de um novo worker que acessa serviço externo ou é exposto via HTTP.
 
-### 5.1 Variáveis Necessárias
+**Copiar e preencher, enviar no Mattermost para Gabriel:**
 
-```bash
+```
+───────────────────────────────────────────────────────
+🔧 SOLICITAÇÃO: Novo Worker {NOME_DO_WORKER}
+───────────────────────────────────────────────────────
+
+**O que é:** {descrição breve - 1 linha}
+
+**Serviço que acessa:** {ClickHouse / MongoDB / Redis / etc}
+
+**Variáveis que preciso no .env:**
+# === {SERVICO} ===
+{SERVICO}_HOST=
+{SERVICO}_PORT=
+{SERVICO}_USER=
+{SERVICO}_PASS=
+{SERVICO}_DATABASE=
+
+**Worker exposto via HTTPS?** Sim / Não
+  Se sim, preciso de: AUTH_TOKEN_{WORKER}=
+
+**Precisa criar algo no serviço?**
+☐ Usuário: {nome sugerido}
+☐ Database/Schema: {nome sugerido}
+☐ Permissões: {read / write / admin}
+
+**Subdomínio (se exposto):** {worker}.zaz.com.br
+
+**Urgência:** {Alta / Média / Baixa}
+**Contexto:** {sprint ou motivo}
+
+Me avisa quando estiver pronto!
+───────────────────────────────────────────────────────
+```
+
+---
+
+### 4.4 Exemplo: Solicitação ClickHouse
+
+```
+───────────────────────────────────────────────────────
+🔧 SOLICITAÇÃO: Novo Worker clickhouse-api
+───────────────────────────────────────────────────────
+
+**O que é:** API HTTP que recebe queries SQL e executa no ClickHouse
+
+**Serviço que acessa:** ClickHouse
+
+**Variáveis que preciso no .env:**
 # === CLICKHOUSE ===
+CLICKHOUSE_HOST=
+CLICKHOUSE_PORT=
+CLICKHOUSE_USER=
+CLICKHOUSE_PASS=
+CLICKHOUSE_DATABASE=
+
+**Worker exposto via HTTPS?** Sim
+  Preciso de: AUTH_TOKEN_CLICKHOUSE_API=
+
+**Precisa criar algo no serviço?**
+☑ Usuário: genesis
+☑ Database: genesis
+☑ Permissões: read/write (não admin)
+
+**Subdomínio:** clickhouse-api.zaz.com.br
+
+**Urgência:** Alta
+**Contexto:** Bloqueia sprint S-PROMETHEUS-001
+
+Me avisa quando estiver pronto!
+───────────────────────────────────────────────────────
+```
+
+---
+
+### 4.5 Resposta Esperada do Gabriel
+
+Após configurar, Gabriel deve responder com:
+
+```
+✅ Configurado!
+
 CLICKHOUSE_HOST=10.100.12.24
 CLICKHOUSE_PORT=8123
 CLICKHOUSE_USER=genesis
-CLICKHOUSE_PASS=***
+CLICKHOUSE_PASS=(configurado no .env)
 CLICKHOUSE_DATABASE=genesis
+AUTH_TOKEN_CLICKHOUSE_API=(configurado no .env)
 
-# === AUTH TOKEN ===
-AUTH_TOKEN_CLICKHOUSE_API=***
+Subdomínio: clickhouse-api.zaz.com.br → pronto para apontar
+
+Pode seguir!
 ```
 
-### 5.2 Fluxo de Comunicação
+---
+
+## 5. Fluxo Completo
 
 ```
-Gabriel (infra) ──► .env do servidor
-                     │
-                     │ comunica
-                     ▼
-Leonardo ◄────────── Mattermost: "Credenciais ClickHouse configuradas"
-    │
-    │ implementa
-    ▼
-Worker clickhouse-api
-    │
-    │ valida Bearer token
-    ▼
-MCP Server ──► claude.ai
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    FLUXO: NOVO WORKER COM AUTENTICAÇÃO                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1. LEONARDO especifica worker                                              │
+│     └── Define: nome, serviço, variáveis, se exposto                        │
+│                                                                             │
+│  2. LEONARDO envia template (seção 4.3) para Gabriel no Mattermost          │
+│                                                                             │
+│  3. GABRIEL executa:                                                        │
+│     ├── Cria usuário/database no serviço (se necessário)                    │
+│     ├── Adiciona variáveis ao .env do servidor                              │
+│     ├── Gera AUTH_TOKEN se worker exposto (uuidgen)                         │
+│     └── Configura DNS/proxy se subdomínio                                   │
+│                                                                             │
+│  4. GABRIEL responde (seção 4.5) com valores configurados                   │
+│                                                                             │
+│  5. LEONARDO implementa worker:                                             │
+│     ├── config.js com requiredEnv() para vars obrigatórias                  │
+│     ├── middleware validateBearer se exposto                                │
+│     └── Deploy via pipeline                                                 │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
-
-### 5.3 Próximos Passos
-
-1. **Gabriel**: Criar usuário `genesis` no ClickHouse
-2. **Gabriel**: Adicionar variáveis ao .env do servidor
-3. **Gabriel**: Gerar AUTH_TOKEN_CLICKHOUSE_API (UUID v4)
-4. **Gabriel**: Notificar no Mattermost
-5. **Leonardo**: Retomar S-PROMETHEUS-001 task T02
 
 ---
 
@@ -459,4 +373,5 @@ MCP Server ──► claude.ai
 
 | Versão | Data | Alteração |
 |--------|------|-----------|
-| 1.0 | 2025-12-29 | Publicação inicial. Padrão de autenticação para workers: armazenamento, nomenclatura, injeção, validação. Checklist de novo serviço. BKL-065. |
+| 1.0 | 2025-12-29 | Publicação inicial. Padrão completo M0-M4. BKL-065. |
+| 1.1 | 2025-12-29 | **Foco prático**: Template de solicitação (4.3) como seção principal. Exemplo preenchido (4.4). Resposta esperada (4.5). Fluxo completo (seção 5). Removidas seções redundantes. |
