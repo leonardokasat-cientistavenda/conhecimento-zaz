@@ -1,11 +1,18 @@
 ---
 sprint_id: S-PANTHEON-V0-001
 nome: Pantheon V0 - Claude Desktop no MM
-versao: "1.0"
+versao: "1.1"
 tipo: Sprint
-status: Planejado
+status: Pausado
 data_criacao: 2025-12-30
+data_pausa: 2026-01-02
 spec_ref: genesis/specs/PANTHEON_V0_SPEC.md
+bloqueios:
+  - id: BLK-001
+    tipo: Dependência
+    descricao: "Infra-Bot necessário para ciclo code/deploy/test via Claude Desktop"
+    impacto: "Sem Infra-Bot, Claude não consegue testar código implantado"
+    resolucao: "Criar Infra-Bot como Sprint S-INFRA-BOT-001"
 ---
 
 # Sprint S-PANTHEON-V0-001
@@ -13,6 +20,33 @@ spec_ref: genesis/specs/PANTHEON_V0_SPEC.md
 > **Pantheon V0 - Claude Desktop no Mattermost**
 > 
 > Chat com @genesis no MM com contexto, streaming e web search.
+
+---
+
+## ⚠️ SPRINT PAUSADA
+
+**Data:** 2026-01-02
+**Motivo:** Bloqueio BLK-001 - Infra-Bot
+
+### Contexto
+
+Durante análise de como desenvolver o Prometheus via Claude Desktop, identificou-se que:
+
+1. **Claude Desktop consegue:** Desenvolver código (GitHub MCP) e fazer deploy (push → webhook)
+2. **Claude Desktop NÃO consegue:** Ver resultados de testes, logs, status de serviços
+
+### Solução
+
+Criar **Infra-Bot** no Mattermost que:
+- Executa comandos (`test`, `lint`, `logs`, `status`, `restart`, `call`)
+- Posta resultados no canal
+- Claude lê via MCP MM
+
+### Dependência
+
+```
+S-INFRA-BOT-001 (criar) → S-PANTHEON-V0-001 (retomar)
+```
 
 ---
 
@@ -536,3 +570,4 @@ LOG_LEVEL=info
 | Versão | Data | Alteração |
 |--------|------|-----------|
 | 1.0 | 2025-12-30 | Sprint criada com 11 tasks |
+| 1.1 | 2026-01-02 | **PAUSADA** - Bloqueio BLK-001 (Infra-Bot) |
