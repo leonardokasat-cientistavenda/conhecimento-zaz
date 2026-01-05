@@ -105,6 +105,78 @@ Para migrar o comando `github`:
 2. Criar BPMN `github-ops` no Camunda
 3. O infra-bot automaticamente roteia para Camunda
 
+## Estratégia de I/O
+
+### Melhor dos Mundos: Git Local + API
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  ESCRITA (git local)              LEITURA (API Octokit)         │
+│                                                                 │
+│  create  ──┐                      get   ──→ api.github.com      │
+│  replace ──┼──→ git add/commit/push                             │
+│  patch   ──┤                      list  ──→ api.github.com      │
+│  delete  ──┤                                                    │
+│  push    ──┘                                                    │
+│                                                                 │
+│  ✅ Sem rate limit                ✅ Stateless                  │
+│  ✅ Múltiplos arquivos fácil      ✅ Sem clone necessário       │
+│  ✅ Já tem infra pronta           ✅ Rápido para consultas      │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Trade-offs
+
+| Critério | API (Octokit) | Git local |
+|----------|---------------|-----------|
+| Setup | Token apenas | SSH key + clone |
+| Estado | Stateless | Precisa manter repo |
+| Rate limit | 5000 req/h | Sem limite |
+| Push múltiplos arquivos | Complexo (Trees API) | Natural |
+| Operações complexas | Limitado | rebase, merge, cherry-pick |
+| Arquivo grande | Max 100MB | Sem limite |
+| Espaço disco | Zero | Precisa clone |
+
+### Repositórios Clonados
+
+```
+/home/camunda-orquestrador/
+├── Orquestrador-Zarah/     ← Código fonte
+├── conhecimento-zaz/       ← Documentação, specs
+└── Zarah-Camunda/          ← BPMNs, DMNs
+```
+
+### Mapeamento no Worker
+
+```javascript
+const REPOS = {
+  'ZAZ-vendas/Orquestrador-Zarah': '/home/camunda-orquestrador/Orquestrador-Zarah',
+  'leonardokasat-cientistavenda/conhecimento-zaz': '/home/camunda-orquestrador/conhecimento-zaz',
+  'ZAZ-vendas/Zarah-Camunda': '/home/camunda-orquestrador/Zarah-Camunda'
+};
+
+function getRepoPath(owner, repo) {
+  const key = `${owner}/${repo}`;
+  return REPOS[key] || null; // null = usar API
+}
+```
+
+### Decisão por Operação
+
+| Operação | I/O | Motivo |
+|----------|-----|--------|
+| create | Git local | Escrita, sem rate limit |
+| replace | Git local | Escrita, sem rate limit |
+| patch | Git local | Escrita, precisa ler→modificar→escrever |
+| delete | Git local | Escrita, sem rate limit |
+| push | Git local | Múltiplos arquivos = 1 commit |
+| get | API | Leitura, stateless |
+| list | API | Leitura, stateless |
+
+### Fallback
+
+Se repo não estiver clonado → usa API Octokit (com rate limit).
+
 ## Modificações no Infra-bot
 
 ### Arquivo: `pantheon/infra-bot/index.js`
@@ -177,15 +249,15 @@ Parser específico para argumentos do comando github:
 
 **Responsabilidade:** Como executar dentro do processo (qual worker chamar)
 
-| operation | topic | needsContent | needsSha |
-|-----------|-------|--------------|----------|
-| create | createGithubFile | true | false |
-| replace | createGithubFile | true | true |
-| get | getGithubFile | false | false |
-| patch | patchGithubFile | true | false |
-| delete | deleteGithubFile | false | true |
-| list | listGithubFiles | false | false |
-| push | pushGithubFiles | true | false |
+| operation | topic | needsContent | needsSha | io_strategy |
+|-----------|-------|--------------|----------|-------------|
+| create | createGithubFile | true | false | git_local |
+| replace | createGithubFile | true | true | git_local |
+| get | getGithubFile | false | false | api |
+| patch | patchGithubFile | true | false | git_local |
+| delete | deleteGithubFile | false | true | git_local |
+| list | listGithubFiles | false | false | api |
+| push | pushGithubFiles | true | false | git_local |
 
 ## Fluxo Detalhado
 
@@ -263,9 +335,10 @@ Resposta imediata ao usuário: "⏳ Processando github create..."
 
 1. Recebe task do Camunda (polling)
 2. Extrai variáveis: owner, repo, path, content
-3. Chama GitHub API via Octokit
-4. Loga no ClickHouse (`genesis.worker_logs`)
-5. Completa task com resultado
+3. Verifica se repo está clonado → git local OU API
+4. Executa operação
+5. Loga no ClickHouse (`genesis.worker_logs`)
+6. Completa task com resultado
 
 ### Etapa 7: Notificação
 
@@ -294,14 +367,14 @@ Resposta imediata ao usuário: "⏳ Processando github create..."
 
 ## Workers
 
-| Topic | Status | Descrição |
-|-------|--------|-----------|
-| createGithubFile | ✅ Implementado | Cria ou substitui arquivo |
-| getGithubFile | ✅ Implementado | Lê conteúdo de arquivo |
-| patchGithubFile | ❌ Pendente | str_replace cirúrgico |
-| deleteGithubFile | ❌ Pendente | Remove arquivo |
-| listGithubFiles | ❌ Pendente | Lista diretório |
-| pushGithubFiles | ❌ Pendente | Múltiplos arquivos em 1 commit |
+| Topic | Status | I/O | Descrição |
+|-------|--------|-----|-----------|
+| createGithubFile | ✅ Implementado | Git local | Cria ou substitui arquivo |
+| getGithubFile | ✅ Implementado | API | Lê conteúdo de arquivo |
+| patchGithubFile | ❌ Pendente | Git local | str_replace cirúrgico |
+| deleteGithubFile | ❌ Pendente | Git local | Remove arquivo |
+| listGithubFiles | ❌ Pendente | API | Lista diretório |
+| pushGithubFiles | ❌ Pendente | Git local | Múltiplos arquivos em 1 commit |
 
 ## Logs
 
@@ -315,6 +388,7 @@ Todos os workers logam no ClickHouse:
 - `duration_ms`: Tempo de execução
 - `status`: success | error
 - `error_message`: Mensagem de erro (se houver)
+- `io_strategy`: git_local | api
 - `metadata`: JSON com detalhes da operação
 
 ## Componentes
