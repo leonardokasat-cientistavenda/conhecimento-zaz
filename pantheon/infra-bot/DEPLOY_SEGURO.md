@@ -1,5 +1,9 @@
 # Deploy Seguro - Orquestrador-Zarah
 
+> ✅ **STATUS: IMPLEMENTADO E TESTADO** (2026-01-05)
+> 
+> Sprint S-DEPLOY-001 concluída com sucesso. Rollback automático validado em produção.
+
 ## 1. Contexto
 
 ### 1.1 Incidente (2026-01-05)
@@ -47,7 +51,7 @@ deploy-gitActions.sh
 4. **Observabilidade** - Logar tudo no ClickHouse
 5. **Manter `detached`** - Necessário pois o script reinicia seu próprio pai
 
-### 2.2 Fluxo Novo
+### 2.2 Fluxo Implementado
 
 ```
 GitHub Push
@@ -68,8 +72,8 @@ deploy-gitActions.sh v2
     │       ├── SE FALHOU:
     │       │   ├── Log: validation_failed
     │       │   ├── git reset --hard COMMIT_BEFORE
-    │       │   ├── Log: rollback_complete
-    │       │   └── exit 1 (SEM reiniciar)
+    │       │   ├── Log: rollback_syntax
+    │       │   └── exit 1 (SEM reiniciar) ✅
     │       │
     │       └── SE PASSOU:
     │           └── continua...
@@ -81,7 +85,7 @@ deploy-gitActions.sh v2
     │       ├── SE FALHOU:
     │       │   ├── git reset --hard COMMIT_BEFORE
     │       │   ├── pm2 restart index
-    │       │   └── Log: rollback_after_healthcheck
+    │       │   └── Log: rollback_healthcheck
     │       │
     │       └── SE PASSOU:
     │           └── Log: deploy_success
@@ -110,157 +114,113 @@ ORDER BY (timestamp, trace_id)
 TTL timestamp + toIntervalDay(90);
 ```
 
-### 3.2 Script de Deploy
+### 3.2 Helper de Logging
+
+**Arquivo:** `scripts/deploy-log.js`
+
+Helper Node.js que usa o logger padrão do GENESIS (Pino → ClickHouse):
+
+```javascript
+const { createLogger } = require('../genesis/lib/logger');
+
+const logger = createLogger({ table: 'deploy_logs', service: 'deploy' });
+
+const [,, level, event, message, extraJson, traceId] = process.argv;
+
+const data = { event };
+if (extraJson) Object.assign(data, JSON.parse(extraJson));
+
+logger[level]({ ...data, trace_id: traceId }, message);
+
+// Aguarda flush do buffer
+setTimeout(() => process.exit(0), 1500);
+```
+
+### 3.3 Credenciais
+
+O logger usa o usuário `infrabot` para escrita no ClickHouse:
+
+```bash
+# No .env do index
+CLICKHOUSE_USER=infrabot
+CLICKHOUSE_PASSWORD="9R#fQ2!mZ@8KxP$A"
+```
+
+> ⚠️ **Importante**: O usuário `default` só tem leitura. O `infrabot` tem leitura + escrita.
+
+### 3.4 Script de Deploy
 
 **Arquivo:** `scripts/deploy-gitActions.sh`
 
-```bash
-#!/bin/bash
-# deploy-gitActions.sh v2 - Deploy com validação e rollback
-# Sprint: S-DEPLOY-001
-set -e
+Ver arquivo completo no repositório. Principais mudanças da v2:
 
-TRACE_ID="deploy-$(date +%s%3N)-$$"
-REPO_DIR="/home/camunda-orquestrador/Orquestrador-Zarah"
-CLICKHOUSE_URL="http://10.100.12.19:8123"
+1. **Logging via Node.js** (não mais curl direto)
+2. **Validação com `node --check`**
+3. **Rollback automático sem restart**
+4. **Healthcheck pós-restart**
 
-# ============================================
-# Função de log para ClickHouse
-# ============================================
-log_ch() {
-  local level="$1"
-  local event="$2"
-  local message="$3"
-  local extra="${4:-{}}"
-  
-  local timestamp=$(date -u +"%Y-%m-%d %H:%M:%S.%3N")
-  local data="{\"event\":\"$event\",\"extra\":$extra}"
-  
-  # Escapar aspas simples para SQL
-  data=$(echo "$data" | sed "s/'/''/g")
-  message=$(echo "$message" | sed "s/'/''/g")
-  
-  curl -s "$CLICKHOUSE_URL" \
-    -H "X-ClickHouse-User: genesis" \
-    -d "INSERT INTO genesis.deploy_logs (timestamp, level, message, data, trace_id) VALUES ('$timestamp', '$level', '$message', '$data', '$TRACE_ID')" \
-    > /dev/null 2>&1 || true
-  
-  echo "[$timestamp] [$level] $message"
-}
+---
 
-# ============================================
-# Setup NVM
-# ============================================
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-nvm use 20 || true
+## 4. Teste de Validação (T03)
 
-cd "$REPO_DIR"
+### 4.1 Teste Executado (2026-01-05 20:41)
 
-log_ch "info" "deploy_start" "Deploy iniciado" "{\"repo\":\"$REPO_DIR\",\"node\":\"$(node -v)\"}"
+Commit `64a196b` com erro proposital:
 
-# ============================================
-# 1. Salvar commit atual para rollback
-# ============================================
-COMMIT_BEFORE=$(git rev-parse HEAD)
-log_ch "info" "commit_before" "Commit atual: $COMMIT_BEFORE" "{\"sha\":\"$COMMIT_BEFORE\"}"
+```javascript
+// ❌ ERRO PROPOSITAL - TESTE DE ROLLBACK S-DEPLOY-001
+const SYNTAX_ERROR_TEST = {
 
-# ============================================
-# 2. Git Pull
-# ============================================
-log_ch "info" "git_pull_start" "Iniciando git pull"
-
-if ! OUTPUT=$(git pull 2>&1); then
-  log_ch "error" "git_pull_failed" "Falha no git pull: $OUTPUT"
-  exit 1
-fi
-
-COMMIT_AFTER=$(git rev-parse HEAD)
-log_ch "info" "git_pull_complete" "Git pull completo" "{\"sha_before\":\"$COMMIT_BEFORE\",\"sha_after\":\"$COMMIT_AFTER\"}"
-
-# Se não mudou nada, sair
-if [ "$COMMIT_BEFORE" = "$COMMIT_AFTER" ]; then
-  log_ch "info" "no_changes" "Nenhuma mudança detectada"
-  exit 0
-fi
-
-# ============================================
-# 3. NPM Install (se necessário)
-# ============================================
-if git diff --name-only "$COMMIT_BEFORE" "$COMMIT_AFTER" | grep -q "package.json"; then
-  log_ch "info" "npm_install_start" "package.json mudou, executando npm install"
-  npm install --production
-  log_ch "info" "npm_install_complete" "npm install completo"
-fi
-
-# ============================================
-# 4. VALIDAÇÃO DE SINTAXE (CRÍTICO)
-# ============================================
-log_ch "info" "validation_start" "Validando sintaxe do código"
-
-if ! OUTPUT=$(node --check src/index.js 2>&1); then
-  log_ch "error" "validation_failed" "Sintaxe inválida! Fazendo rollback..." "{\"error\":\"$OUTPUT\"}"
-  
-  git reset --hard "$COMMIT_BEFORE"
-  log_ch "warn" "rollback_syntax" "Rollback para $COMMIT_BEFORE (sintaxe inválida)" "{\"sha\":\"$COMMIT_BEFORE\"}"
-  
-  # NÃO reinicia - mantém processo atual rodando
-  exit 1
-fi
-
-log_ch "info" "validation_passed" "Sintaxe válida"
-
-# ============================================
-# 5. Restart Apps
-# ============================================
-log_ch "info" "restart_start" "Reiniciando apps"
-
-pm2 restart index --update-env || true
-
-# Restart infra-bot se existir
-if pm2 describe infra-bot > /dev/null 2>&1; then
-  pm2 restart infra-bot --update-env || true
-fi
-
-# Restart pantheon se existir  
-if pm2 describe pantheon > /dev/null 2>&1; then
-  pm2 restart pantheon --update-env || true
-fi
-
-# ============================================
-# 6. Healthcheck
-# ============================================
-log_ch "info" "healthcheck_start" "Aguardando healthcheck (10s)"
-sleep 10
-
-# Verificar se index está online
-INDEX_STATUS=$(pm2 jlist 2>/dev/null | grep -o '"name":"index"[^}]*"status":"[^"]*"' | grep -o '"status":"[^"]*"' | cut -d'"' -f4 || echo "unknown")
-
-if [ "$INDEX_STATUS" != "online" ]; then
-  log_ch "error" "healthcheck_failed" "App index não está online: $INDEX_STATUS" "{\"status\":\"$INDEX_STATUS\"}"
-  
-  # Rollback
-  git reset --hard "$COMMIT_BEFORE"
-  npm install --production 2>/dev/null || true
-  pm2 restart index --update-env
-  
-  log_ch "warn" "rollback_healthcheck" "Rollback executado após healthcheck falhar" "{\"sha\":\"$COMMIT_BEFORE\"}"
-  exit 1
-fi
-
-log_ch "info" "healthcheck_passed" "Healthcheck OK" "{\"status\":\"$INDEX_STATUS\"}"
-
-# ============================================
-# 7. Finalização
-# ============================================
-pm2 save
-
-log_ch "info" "deploy_success" "Deploy completo com sucesso" "{\"sha\":\"$COMMIT_AFTER\"}"
-
-echo "=== DEPLOY COMPLETO ==="
+const express = require("express");  // Sem fechar o objeto acima
 ```
 
-### 3.3 Queries Úteis
+### 4.2 Resultado
+
+| Verificação | Resultado |
+|-------------|-----------|
+| Deploy iniciou | ✅ |
+| `node --check` detectou erro | ✅ |
+| Rollback automático executado | ✅ |
+| Workers NÃO caíram | ✅ (uptime mantido) |
+| Logs de erro no ClickHouse | ✅ |
+
+### 4.3 Logs Capturados
+
+```sql
+SELECT timestamp, level, message, JSONExtractString(data, 'event') as event
+FROM genesis.deploy_logs
+WHERE trace_id LIKE 'deploy-1767645%'
+ORDER BY timestamp ASC;
+```
+
+| timestamp | level | message | event |
+|-----------|-------|---------|-------|
+| 2026-01-05 20:41:28.468 | info | Deploy iniciado | deploy_start |
+| 2026-01-05 20:41:28.475 | info | Commit atual: 7ede7b3... | commit_before |
+| 2026-01-05 20:41:28.528 | info | Iniciando git pull | git_pull_start |
+| 2026-01-05 20:41:29.354 | info | Git pull completo | git_pull_complete |
+| 2026-01-05 20:41:29.455 | info | Validando sintaxe | validation_start |
+| 2026-01-05 20:41:29.545 | **error** | Sintaxe inválida! Fazendo rollback... | **validation_failed** |
+| 2026-01-05 20:41:29.584 | **warn** | Rollback para 7ede7b3... | **rollback_syntax** |
+
+**Conclusão:** Deploy falhou em < 2 segundos, workers continuaram online, rollback automático funcionou.
+
+---
+
+## 5. Arquivos Relacionados
+
+| Arquivo | Repo | Descrição |
+|---------|------|-----------|
+| `scripts/deploy-gitActions.sh` | Orquestrador-Zarah | Script principal de deploy v2 |
+| `scripts/deploy-log.js` | Orquestrador-Zarah | Helper de logging |
+| `genesis/lib/logger.js` | Orquestrador-Zarah | Logger Pino → ClickHouse |
+| `scripts/README.md` | Orquestrador-Zarah | Documentação dos scripts |
+| `src/services/servidor/deployService.js` | Orquestrador-Zarah | Service que chama o script |
+| `.github/workflows/deploy.yml` | Orquestrador-Zarah | GitHub Actions workflow |
+
+---
+
+## 6. Queries Úteis
 
 ```sql
 -- Últimos deploys
@@ -285,26 +245,21 @@ ORDER BY timestamp DESC
 LIMIT 10;
 
 -- Falhas de validação
-SELECT *
+SELECT timestamp, message, JSONExtractString(data, 'error') as error
 FROM genesis.deploy_logs
 WHERE message LIKE '%validation_failed%'
 ORDER BY timestamp DESC;
+
+-- Timeline de um deploy específico
+SELECT timestamp, level, message, JSONExtractString(data, 'event') as event
+FROM genesis.deploy_logs
+WHERE trace_id = 'deploy-XXXXXX'
+ORDER BY timestamp ASC;
 ```
 
 ---
 
-## 4. Arquivos Relacionados
-
-| Arquivo | Descrição |
-|---------|-----------|
-| `scripts/deploy-gitActions.sh` | Script principal de deploy |
-| `src/services/servidor/deployService.js` | Service que chama o script |
-| `.github/workflows/deploy.yml` | GitHub Actions workflow |
-| `controller/gitActionsController.js` | Controller que recebe webhook |
-
----
-
-## 5. Checklist de Deploy Manual
+## 7. Checklist de Deploy Manual
 
 Se precisar fazer deploy manual:
 
@@ -330,7 +285,7 @@ pm2 status
 
 ---
 
-## 6. Troubleshooting
+## 8. Troubleshooting
 
 ### Deploy não executou
 
@@ -359,9 +314,9 @@ pm2 restart index
 
 ---
 
-## 7. Histórico
+## 9. Histórico
 
-| Data | Versão | Mudança |
-|------|--------|---------|
-| 2026-01-05 | v2 | Adicionado validação de sintaxe e rollback automático |
-| 2025-12-xx | v1 | Versão original (sem validação) |
+| Data | Versão | Sprint | Mudança |
+|------|--------|--------|---------|
+| 2026-01-05 | v2 | S-DEPLOY-001 | ✅ Validação de sintaxe, rollback automático, logging ClickHouse |
+| 2025-12-xx | v1 | - | Versão original (sem validação) |
