@@ -8,37 +8,151 @@
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                              ARQUITETURA                                    │
 │                                                                             │
-│  @infra github <op> <args>                                                  │
+│  @infra <comando>                                                           │
 │         │                                                                   │
 │         ▼                                                                   │
-│  ┌─────────────────────┐                                                    │
-│  │ DMN Pantheon        │  ← "Qual processo atende?"                         │
-│  │ (commands.json)     │                                                    │
-│  └──────────┬──────────┘                                                    │
-│             │ processo: github-ops                                          │
-│             ▼                                                               │
-│  ┌─────────────────────┐                                                    │
-│  │ BPMN github-ops     │  ← Orquestração (limpo, genérico)                  │
-│  │                     │                                                    │
-│  │  Start              │                                                    │
-│  │    ↓                │                                                    │
-│  │  DMN Task ──────────┼───→ DMN github-operations.dmn                      │
-│  │    ↓                │     "Como executar?" → topic                       │
-│  │  Service Task       │     (topic dinâmico)                               │
-│  │    ↓                │                                                    │
-│  │  Notify             │                                                    │
-│  │    ↓                │                                                    │
-│  │  End                │                                                    │
-│  └──────────┬──────────┘                                                    │
-│             │                                                               │
-│             ▼                                                               │
-│  ┌─────────────────────┐                                                    │
-│  │ Workers             │  ← Execução (reutilizáveis)                        │
-│  │ (github/index.js)   │     + Logs → ClickHouse                            │
-│  └─────────────────────┘                                                    │
+│  ┌─────────────────────────────────────────────────────────────────┐        │
+│  │  infra-bot/index.js                                             │        │
+│  │                                                                 │        │
+│  │  1. Parseia comando                                             │        │
+│  │  2. Consulta DMN Router ──────────────────────────────────┐     │        │
+│  │       │                                                   │     │        │
+│  │       ├── type: "camunda" ──→ startCamundaProcess() ──→ BPMN    │        │
+│  │       │                                                   │     │        │
+│  │       └── type: "handler" ──→ commands/*.js (legado)      │     │        │
+│  │                                                                 │        │
+│  └─────────────────────────────────────────────────────────────────┘        │
+│                                      │                                      │
+│                                      │ (se Camunda)                         │
+│                                      ▼                                      │
+│                        ┌─────────────────────────┐                          │
+│                        │  BPMN github-ops        │                          │
+│                        │                         │                          │
+│                        │  Start                  │                          │
+│                        │    ↓                    │                          │
+│                        │  DMN Task ──────────────┼──→ DMN github-operations │
+│                        │    ↓                    │    (operation → topic)   │
+│                        │  Service Task           │                          │
+│                        │    ↓                    │                          │
+│                        │  Notify                 │                          │
+│                        │    ↓                    │                          │
+│                        │  End                    │                          │
+│                        └─────────────────────────┘                          │
+│                                      │                                      │
+│                                      ▼                                      │
+│                        ┌─────────────────────────┐                          │
+│                        │  Workers                │                          │
+│                        │  (execução + logs CH)   │                          │
+│                        └─────────────────────────┘                          │
+│                                      │                                      │
+│                                      ▼                                      │
+│                        ┌─────────────────────────┐                          │
+│                        │  Notify Worker          │                          │
+│                        │  (resposta no MM)       │                          │
+│                        └─────────────────────────┘                          │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+## Estratégia de Migração Gradual
+
+O infra-bot possui sistema legado de comandos (`commands/*.js`). Para migração incremental sem breaking changes, o infra-bot consulta a DMN Router **ANTES** de executar qualquer comando.
+
+### Fluxo de Decisão
+
+```
+@infra <comando>
+       │
+       ▼
+┌──────────────────────────────────┐
+│  DMN Router (commands.json)      │
+│                                  │
+│  Busca rota para:                │
+│  { command: "infra",             │
+│    subcommand: "<comando>" }     │
+└──────────────────────────────────┘
+       │
+       ├── Encontrou rota type: "camunda"
+       │   → Inicia processo Camunda
+       │   → Resposta assíncrona via notify worker
+       │
+       └── Não encontrou OU type: "handler"
+           → Executa commands/*.js (legado)
+           → Resposta síncrona
+```
+
+### Benefícios
+
+- **Zero breaking change** - comandos existentes continuam funcionando
+- **Migração gradual** - adiciona na DMN, funciona via Camunda
+- **Coexistência** - legado e novo convivem no mesmo bot
+- **Rollback fácil** - remove da DMN, volta pro handler legado
+
+### Exemplo de Migração
+
+Para migrar o comando `github`:
+
+1. Adicionar rota na DMN (`commands.json`):
+```json
+{
+  "id": "slash-infra-github",
+  "match": { "type": "slash", "command": "infra", "subcommand": "github" },
+  "action": { "type": "camunda", "process": "github-ops" },
+  "enabled": true
+}
+```
+
+2. Criar BPMN `github-ops` no Camunda
+3. O infra-bot automaticamente roteia para Camunda
+
+## Modificações no Infra-bot
+
+### Arquivo: `pantheon/infra-bot/index.js`
+
+Adicionar consulta ao DMN Router antes de `executeCommand()`:
+
+```javascript
+const dmnRouter = require('../dmn/router');
+
+// ANTES de chamar executeCommand:
+const route = dmnRouter.route({
+  type: 'slash',
+  command: 'infra',
+  subcommand: commandName,
+  args
+});
+
+// Se DMN manda para Camunda, executa lá
+if (route.type === 'camunda' && route._matched) {
+  const result = await startCamundaProcess(route.process, { 
+    commandName, 
+    args, 
+    context 
+  });
+  return result;
+}
+
+// Senão, usa sistema antigo (commands/*.js)
+var result = await executeCommand(commandName, args, fullText, context);
+```
+
+### Arquivo: `pantheon/infra-bot/lib/camunda.js` (NOVO)
+
+Funções para integração com Camunda:
+
+| Função | Descrição |
+|--------|-----------|
+| `startCamundaProcess(processKey, variables)` | Inicia processo via REST API |
+| `buildVariables(commandName, args, context)` | Monta variáveis do Camunda |
+
+### Arquivo: `pantheon/infra-bot/lib/github-parser.js` (NOVO)
+
+Parser específico para argumentos do comando github:
+
+| Função | Descrição |
+|--------|-----------|
+| `parseGithubArgs(args)` | Parseia `owner/repo path content` |
+| `parseOwnerRepo(str)` | Extrai owner e repo de `owner/repo` |
 
 ## Arquitetura de Duas Camadas DMN
 
@@ -95,7 +209,7 @@ POST https://zaz.vc/api/infra/webhook
 - Extrai: `command="infra"`, `text="github create ZAZ-vendas/..."`
 - Parseia: `subcommand="github"`, `args=["create", "ZAZ-vendas/...", ...]`
 
-### Etapa 3: DMN Router
+### Etapa 3: DMN Router (NOVO)
 
 **Arquivo:** `pantheon/dmn/router.js` + `commands.json`
 
@@ -107,10 +221,13 @@ Input: {
   args: ["create", "ZAZ-vendas/conhecimento-zaz", "test.md", "# Oi"]
 }
 
-Output: { type: "camunda", process: "github-ops" }
+// Router busca em commands.json
+Output: { type: "camunda", process: "github-ops", _matched: true }
 ```
 
 ### Etapa 4: Iniciar Processo Camunda
+
+**Arquivo:** `pantheon/infra-bot/lib/camunda.js`
 
 ```
 POST http://localhost:8080/engine-rest/process-definition/key/github-ops/start
@@ -127,7 +244,7 @@ Body: {
   }
 }
 
-Resposta imediata: "⏳ Processando github create..."
+Resposta imediata ao usuário: "⏳ Processando github create..."
 ```
 
 ### Etapa 5: BPMN Executa
@@ -151,6 +268,8 @@ Resposta imediata: "⏳ Processando github create..."
 5. Completa task com resultado
 
 ### Etapa 7: Notificação
+
+**Arquivo:** `orquestrador-Zarah/worker/genesis/notify/index.js`
 
 ```
 ┌────────────────────────────────────────────────────────────────────┐
@@ -200,17 +319,44 @@ Todos os workers logam no ClickHouse:
 
 ## Componentes
 
-| Componente | Localização |
-|------------|-------------|
-| DMN Pantheon | `pantheon/dmn/commands.json` |
-| DMN Router | `pantheon/dmn/router.js` |
-| DMN Processo | `Zarah-Camunda/Genesis/dmn/github-operations.dmn` |
-| BPMN | `Zarah-Camunda/Genesis/bpmn/github-operations.bpmn` |
-| Workers | `orquestrador-Zarah/worker/genesis/github/index.js` |
-| Infra-bot | `orquestrador-Zarah/pantheon/infra-bot/` |
+| Componente | Localização | Status |
+|------------|-------------|--------|
+| DMN Pantheon | `pantheon/dmn/commands.json` | ✅ Existe |
+| DMN Router | `pantheon/dmn/router.js` | ✅ Existe |
+| Infra-bot | `pantheon/infra-bot/index.js` | 🔄 Modificar |
+| Camunda lib | `pantheon/infra-bot/lib/camunda.js` | ❌ Criar |
+| GitHub parser | `pantheon/infra-bot/lib/github-parser.js` | ❌ Criar |
+| DMN Processo | `Zarah-Camunda/Genesis/dmn/github-operations.dmn` | ❌ Criar |
+| BPMN | `Zarah-Camunda/Genesis/bpmn/github-operations.bpmn` | ❌ Criar |
+| Workers GitHub | `worker/genesis/github/index.js` | 🔄 Expandir |
+| Worker Notify | `worker/genesis/notify/index.js` | ✅ Existe |
+
+## Ordem de Implementação
+
+```
+BKL-GH-010 ─→ BKL-GH-011 ─→ BKL-GH-012 ─→ BKL-GH-001
+    │             │             │             │
+    │             │             │             └─ Rota DMN Pantheon
+    │             │             └─ Parser args github
+    │             └─ lib/camunda.js
+    └─ Derivação no index.js
+
+         ─→ BKL-GH-002 ─→ BKL-GH-003 ─→ BKL-GH-004...007
+                │             │              │
+                │             │              └─ Workers novos
+                │             └─ BPMN github-ops
+                └─ DMN github-operations
+
+         ─→ BKL-GH-008 ─→ BKL-GH-009 ─→ BKL-GH-013
+                │             │              │
+                │             │              └─ README infra-bot
+                │             └─ README worker
+                └─ Testes E2E
+```
 
 ## Referências
 
-- [Pantheon README](../../README.md)
+- [Pantheon README](../README.md)
 - [DMN Commands](../dmn/README.md)
-- [Worker GitHub README](../../../worker/genesis/github/README.md)
+- [Infra-bot README](./README.md)
+- [Worker GitHub README](../../worker/genesis/github/README.md)
