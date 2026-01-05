@@ -1,17 +1,17 @@
-# PROMETHEUS v3.1
+# PROMETHEUS v3.2
 
 ---
 
 ```yaml
 nome: PROMETHEUS
-versao: "3.1"
+versao: "3.2"
 tipo: Framework
 classe_ref: Framework
 origem: interno
 status: Publicado
 nivel: C2
 camadas: [L0, L1, L2, L3]
-data_publicacao: 2025-12-19
+data_publicacao: 2026-01-05
 
 # INTERFACE EVENT-DRIVEN (v3.0)
 tipos_consumidos:
@@ -44,6 +44,7 @@ tipos_produzidos:
 | **Worker** | Executor especializado por vertente (E, P, D, I, C) |
 | **Bloco** | Domínio de responsabilidade (INFRA ou PRODUÇÃO) |
 | **Pipeline** | Fluxo automatizado de validação, teste e deploy |
+| **Agent Loop** | Ciclo autônomo: codificar → deploy → testar → iterar |
 
 ### 1.2 Diagrama do Problema
 
@@ -86,6 +87,10 @@ tipos_produzidos:
 > **Diferencial v3.1:**
 > - Pipeline automatizado para deploy de artefatos
 > - Zero operação manual: push → webhook → deploy
+>
+> **Diferencial v3.2:**
+> - Agent Loop via Claude Desktop com MCPs
+> - Ciclo autônomo: codificar → deploy (~5s) → testar → debug → iterar
 >
 > **Resultado:** Previsibilidade, sem surpresas de infra, orçamento aprovado.
 
@@ -560,9 +565,114 @@ corrigir_bug:
 
 ---
 
-## 7. Referências
+## 7. Agent Loop via Claude Desktop (v3.2)
 
-### 7.1 Internas
+### 7.1 Visão Geral
+
+PROMETHEUS pode operar em modo **agente autônomo** via Claude Desktop com MCPs, executando o ciclo completo de desenvolvimento sem intervenção manual.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    AGENT LOOP (@prometheus)                                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1. CODIFICAR   → github:push_files (Orquestrador-Zarah)                    │
+│       │                                                                     │
+│       ▼                                                                     │
+│  2. DEPLOY      → Automático (GitHub Actions ~5s)                           │
+│       │                                                                     │
+│       ▼                                                                     │
+│  3. TESTAR      → mm-prometheus:mattermost_create_post("@infra logs app")   │
+│       │                                                                     │
+│       ▼                                                                     │
+│  4. LER RESP    → mm-prometheus:mattermost_get_posts_unread(...) [após 5s]  │
+│       │                                                                     │
+│       ▼                                                                     │
+│  5. DEBUG       → mcp-clickhouse:run_select_query(...) OU @infra metrics    │
+│       │                                                                     │
+│       ├── SE ERRO → Corrigir código → voltar ao passo 1                     │
+│       │                                                                     │
+│       └── SE OK   → Atualizar sprint → Postar status                        │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 7.2 MCP Servers Utilizados
+
+| MCP | Função |
+|-----|--------|
+| `github:*` | Criar/editar arquivos no repositório |
+| `mm-prometheus:*` | Comunicação no Mattermost como @prometheus |
+| `mongodb:*` | Gerenciar backlogs e sprints |
+| `mcp-clickhouse:*` | Consultar logs detalhados |
+
+### 7.3 Comunicação com @infra
+
+O bot @infra executa comandos de infraestrutura no servidor.
+
+**Fluxo:**
+
+```javascript
+// 1. Postar comando
+mm-prometheus:mattermost_create_post({
+  channelId: "u16s8tyrm7y7zccaji5wfsjkpe",
+  message: "@infra logs pantheon"
+})
+
+// 2. Aguardar 5 segundos (resposta do @infra)
+
+// 3. Ler resposta
+mm-prometheus:mattermost_get_posts_unread({
+  channelId: "u16s8tyrm7y7zccaji5wfsjkpe"
+})
+```
+
+**Comandos úteis:**
+
+| Comando | Uso |
+|---------|-----|
+| `@infra status` | Status PM2 |
+| `@infra logs {app}` | Últimas 50 linhas |
+| `@infra restart {app}` | Reinicia app |
+| `@infra git-log 5` | Últimos 5 commits |
+| `@infra health` | Health check |
+| `@infra metrics` | Métricas ClickHouse |
+
+### 7.4 Logging Obrigatório
+
+Todo código gerado por PROMETHEUS **DEVE** incluir logging para ClickHouse:
+
+```javascript
+const { logger } = require('../lib/logger');
+
+logger.info({ task_id, data }, 'Operação iniciada');
+logger.error({ error: err.message, stack: err.stack }, 'Falha');
+```
+
+**Logger padrão:** `genesis/lib/logger.js` (Pino → ClickHouse)
+
+### 7.5 Regras Anti-Entropia
+
+| Regra | Motivo |
+|-------|--------|
+| Deploy automático (~5s) | NÃO usar `@infra git-pull` |
+| NÃO duplicar commits | Se commitou, está feito |
+| Aguardar 5s antes de ler resposta | @infra precisa processar |
+| Usar `mattermost_get_posts_unread` | Filtrar apenas respostas novas |
+
+### 7.6 Documentação
+
+| Documento | Conteúdo |
+|-----------|----------|
+| Project Instructions (Claude Desktop) | Instruções completas do agent loop |
+| `Orquestrador-Zarah/pantheon/infra-bot/README.md` | Comandos do @infra |
+| `docs/04_P/MS_Prometheus_Logging.md` | Sistema de logging |
+
+---
+
+## 8. Referências
+
+### 8.1 Internas
 
 | Documento | Relação |
 |-----------|---------|
@@ -573,10 +683,11 @@ corrigir_bug:
 | docs/04_P/MS_Produto.md | Aprova orçamento e release |
 | **docs/04_P/MS_Prometheus_Pipeline.md** | Pipeline - guia de uso |
 | **docs/04_P/MS_Prometheus_Pipeline_Arquitetura.md** | Pipeline - arquitetura |
+| **docs/04_P/MS_Prometheus_Logging.md** | Sistema de logging |
 | docs/00_E/00_E_Epistemologia.md | Produz specs |
 | docs/00_E/00_E_1_7_Schema_TDD.md | Estrutura de testes |
 
-### 7.2 Externas
+### 8.2 Externas
 
 | Fonte | Conceito |
 |-------|----------|
@@ -594,3 +705,4 @@ corrigir_bug:
 | 2.0 | 2025-12-15 | Simplificação: 2 blocos (INFRA, PRODUÇÃO). PROMETHEUS como fábrica instrumental. |
 | 3.0 | 2025-12-17 | **Fábrica com Precificação**: tipos_consumidos/produzidos. Ciclo orcar→desenvolver→testar→deployar. Schema Recursos. GAPs como dor de PROMETHEUS (autopoiese). Workers por vertente. Sprint S020/E01. |
 | 3.1 | 2025-12-19 | **Pipeline automatizado**: Seção 5 documenta pipeline de deploy. Referências para docs/04_P/MS_Prometheus_Pipeline*.md. Sprint S028. |
+| 3.2 | 2026-01-05 | **Agent Loop**: Seção 7 documenta ciclo autônomo via Claude Desktop com MCPs. Comunicação com @infra. Logging obrigatório. Regras anti-entropia. |
