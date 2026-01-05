@@ -428,9 +428,83 @@ BKL-GH-010 ─→ BKL-GH-011 ─→ BKL-GH-012 ─→ BKL-GH-001
                 └─ Testes E2E
 ```
 
+---
+
+## Estado da Sprint (S-PANTHEON-003)
+
+> **Atualizado em:** 2026-01-05T22:10:00Z  
+> **Sessão:** 10 (pós S-DEPLOY-001/002)
+
+### Componentes - Status Atual
+
+| Componente | Localização | Status | Observação |
+|------------|-------------|--------|------------|
+| DMN Pantheon | `pantheon/dmn/commands.json` | ✅ Deployado | Rota `infra github → github-ops` |
+| webhook.js | `pantheon/src/webhook.js` | ✅ Deployado | Consulta DMN Router |
+| handler.js | `pantheon/infra-bot/handler.js` | ✅ Deployado | startCamundaProcess() |
+| lib/camunda.js | `pantheon/infra-bot/lib/camunda.js` | ✅ Deployado | URL 10.100.12.24:8080 |
+| lib/github-parser.js | `pantheon/infra-bot/lib/github-parser.js` | ✅ Deployado | Parser de args |
+| BPMN github-ops | `Zarah-Camunda/Genesis/bpmn/github-operations.bpmn` | ⏳ No GitHub | **Falta deploy no Camunda** |
+| DMN githubOperations | `Zarah-Camunda/Genesis/dmn/github-operations.dmn` | ❓ Verificar | Pode não existir ainda |
+| Worker createGithubFile | `worker/genesis/github/` | ✅ Existe | Precisa testar |
+| Worker notifyGithub | `worker/genesis/notify/` | ✅ Existe | Precisa testar |
+
+### Blocker Atual
+
+**BPMN e DMN não deployados no Camunda**
+
+Erro ao testar `@infra github create`:
+```
+No matching process definition with key: github-ops and no tenant-id
+```
+
+### Dependências Resolvidas
+
+- [x] S-DEPLOY-001: Deploy seguro Orquestrador-Zarah
+- [x] S-DEPLOY-002: Deploy seguro Zarah-Camunda (rollback automático)
+
+### Próximos Passos
+
+1. [ ] Verificar/criar DMN `github-operations.dmn`
+2. [ ] Deploy BPMN + DMN no Camunda (via pipeline seguro)
+3. [ ] Testar `@infra github create`
+4. [ ] Implementar workers pendentes (patch, delete, list, push)
+
+### Histórico de Sessões
+
+| Sessão | Data | Foco | Resultado |
+|--------|------|------|-----------|
+| 1-3 | 2026-01-05 | Arquitetura, backlog | Documentação criada |
+| 4-5 | 2026-01-05 | Implementação BKL-GH-010 a 013 | Código deployado |
+| 6-7 | 2026-01-05 | Teste, diagnóstico routing | Bug encontrado e corrigido |
+| 8 | 2026-01-05 | Fix webhook.js | Routing funcionando |
+| 9 | 2026-01-05 | Camunda URL, deploy | **Pausa:** BPMN não deployado |
+| - | 2026-01-05 | S-DEPLOY-001/002 | Deploy seguro implementado |
+| 10 | 2026-01-05 | Retomada | (atual) |
+
+---
+
 ## Referências
+
+### Especificações (conhecimento-zaz)
 
 - [Pantheon README](../README.md)
 - [DMN Commands](../dmn/README.md)
 - [Infra-bot README](./README.md)
 - [Worker GitHub README](../../worker/genesis/github/README.md)
+
+### Deploy Seguro
+
+**Specs:**
+- [DEPLOY_SEGURO.md](../DEPLOY_SEGURO.md) - Arquitetura deploy Orquestrador
+- [deploy_seguro_camunda.md](./deploy_seguro_camunda.md) - Arquitetura deploy Zarah-Camunda
+
+**Implementação (código):**
+- [scripts/README.md](https://github.com/ZAZ-vendas/Orquestrador-Zarah/blob/main/scripts/README.md) - Documentação dos scripts
+- [deploy-gitActions.sh](https://github.com/ZAZ-vendas/Orquestrador-Zarah/blob/main/scripts/deploy-gitActions.sh) - Script v2 com rollback
+- [deploy-camunda.sh](https://github.com/ZAZ-vendas/Orquestrador-Zarah/blob/main/scripts/deploy-camunda.sh) - Script v2.1 com rollback
+- [deploy-log.js](https://github.com/ZAZ-vendas/Orquestrador-Zarah/blob/main/scripts/deploy-log.js) - Helper logging ClickHouse
+
+**Logs (ClickHouse):**
+- `genesis.deploy_logs` - Deploys Orquestrador
+- `genesis.camunda_deploy_logs` - Deploys Zarah-Camunda
