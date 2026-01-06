@@ -1,15 +1,15 @@
-# MS_Backlog v1.2
+# MS_Backlog v1.3
 
 ---
 
 ```yaml
 nome: MS_Backlog
-versao: "1.2"
+versao: "1.3"
 tipo: Meta Sistema
 status: Publicado
 camada: 4
 dominio: Orquestração
-data_publicacao: "2025-12-17"
+data_publicacao: "2026-01-06"
 pai: genesis/GENESIS.md
 depende_de:
   - genesis/GENESIS.md
@@ -690,6 +690,147 @@ consumidores:
 
 ---
 
+## 8. Ciclo de Vida de Documentos (v1.3)
+
+### 8.1 Estrutura de Pastas
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    ESTRUTURA DE PASTAS - BACKLOG                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  conhecimento-zaz/                                                          │
+│  ├── _backlog/                    # Specs de itens BKL-* PENDENTES          │
+│  │   ├── BKL-P05_Sprint_v2.md     # Item aguardando priorização             │
+│  │   ├── BKL-GH-008_Testes.md     # Item em execução na sprint              │
+│  │   └── ...                                                                │
+│  │                                                                          │
+│  ├── _arquivo/                    # Documentos ARQUIVADOS                   │
+│  │   └── backlog/                 # BKL promovidos ou cancelados            │
+│  │       ├── BKL-XXX.md           # Item concluído/cancelado                │
+│  │       └── ...                                                            │
+│  │                                                                          │
+│  └── docs/04_B/                   # Meta Sistema Backlog (este documento)   │
+│      ├── MS_Backlog.md                                                      │
+│      └── MS_Backlog_Arquitetura.md                                          │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 8.2 Ciclo de Vida
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    CICLO DE VIDA: BACKLOG ITEM                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│                          ┌──────────────────┐                               │
+│                          │    CRIAÇÃO       │                               │
+│                          │                  │                               │
+│                          │  1. Criar spec   │                               │
+│                          │     _backlog/    │                               │
+│                          │     BKL-XXX.md   │                               │
+│                          │                  │                               │
+│                          │  2. Criar doc    │                               │
+│                          │     MongoDB      │                               │
+│                          │     backlog_items│                               │
+│                          └────────┬─────────┘                               │
+│                                   │                                         │
+│                                   ▼                                         │
+│  ┌────────────────────────────────────────────────────────────────────┐     │
+│  │                         _backlog/BKL-XXX.md                        │     │
+│  │                         status: pendente                           │     │
+│  │                                                                    │     │
+│  │  Item aguarda priorização e seleção para sprint                    │     │
+│  │  MongoDB: backlog_items.status = "pendente"                        │     │
+│  └────────────────────────────────┬───────────────────────────────────┘     │
+│                                   │                                         │
+│                                   │ promover() - selecionado para sprint    │
+│                                   ▼                                         │
+│  ┌────────────────────────────────────────────────────────────────────┐     │
+│  │                         _backlog/BKL-XXX.md                        │     │
+│  │                         status: em_sprint                          │     │
+│  │                                                                    │     │
+│  │  Item em execução na sprint                                        │     │
+│  │  MongoDB: backlog_items.status = "em_sprint"                       │     │
+│  │  MongoDB: backlog_items.sprint_ref = "S-XXX"                       │     │
+│  └────────────────────────────────┬───────────────────────────────────┘     │
+│                                   │                                         │
+│                    ┌──────────────┼──────────────┐                          │
+│                    │              │              │                          │
+│                    ▼              ▼              ▼                          │
+│              concluir()      cancelar()     devolver()                      │
+│                    │              │              │                          │
+│                    ▼              ▼              │                          │
+│  ┌─────────────────────────────────────────┐    │                          │
+│  │        _arquivo/backlog/BKL-XXX.md      │    │                          │
+│  │        status: concluido | cancelado    │    │                          │
+│  │                                         │    │                          │
+│  │  Item arquivado (histórico)             │    │                          │
+│  │  MongoDB: status = "concluido|cancelado"│    │                          │
+│  └─────────────────────────────────────────┘    │                          │
+│                                                 │                          │
+│                                                 ▼                          │
+│                                   ┌─────────────────────────┐              │
+│                                   │  _backlog/BKL-XXX.md    │              │
+│                                   │  status: pendente       │              │
+│                                   │                         │              │
+│                                   │  Item devolvido ao      │              │
+│                                   │  backlog (volta à fila) │              │
+│                                   └─────────────────────────┘              │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 8.3 Regras de Movimentação
+
+| Transição | Origem | Destino | Ação MongoDB |
+|-----------|--------|---------|--------------|
+| **promover()** | `_backlog/` | permanece | `status = "em_sprint"`, `sprint_ref = S-XXX` |
+| **concluir()** | `_backlog/` | `_arquivo/backlog/` | `status = "concluido"` |
+| **cancelar()** | `_backlog/` | `_arquivo/backlog/` | `status = "cancelado"` |
+| **devolver()** | `_backlog/` | permanece | `status = "pendente"`, `sprint_ref = null` |
+
+**Notas:**
+- O arquivo `.md` só é movido para `_arquivo/` quando o item é **concluído** ou **cancelado**
+- Durante a execução na sprint, o arquivo permanece em `_backlog/` com status atualizado
+- MongoDB é SSOT para status; arquivo é documentação complementar
+
+### 8.4 Formato do Arquivo de Spec
+
+```yaml
+# _backlog/BKL-XXX.md
+
+---
+codigo: BKL-GH-008
+titulo: "Testes E2E GitHub Pipeline"
+tipo: desenvolvimento
+status: pendente           # pendente | em_sprint | concluido | cancelado
+prioridade: alta           # alta | media | baixa
+sistema_afetado: pantheon
+saga_id: SAGA-PANTHEON
+esforco_estimado_horas: 2
+mongodb_ref: "backlog_items.codigo = 'BKL-GH-008'"
+---
+
+## Contexto
+[Descrição do problema/necessidade]
+
+## Critérios de Aceite
+- [ ] Critério 1
+- [ ] Critério 2
+
+## Referências
+- Sprint: S-PANTHEON-003 (se em execução)
+- Documentos relacionados
+
+## Estimativa
+- Esforço: 2h
+- Complexidade: Média
+```
+
+---
+
 ## Referências
 
 | Documento | Relação |
@@ -710,3 +851,4 @@ consumidores:
 | 1.0 | 2025-12-16 | Criação inicial. Promoção de Backlog (Infra C2) para MS_Backlog (Meta Sistema C4). Modelo Event Sourcing + Saga. Tipagem expandida. Métodos produzir/consumir/concluir. |
 | 1.1 | 2025-12-17 | **Interface Sprint**: +campo `origem` em BacklogItem (sprint_id, task_codigo, auto_pull). +métodos `listar_filhos()`, `transferir_para_sprint()`. +invariantes ORIGEM-OPCIONAL, SSOT-ORIGEM. Sprint S022/T02. |
 | 1.2 | 2025-12-17 | **Estimativa obrigatória**: +campo `esforco_estimado_horas` obrigatório em BacklogItem. +invariante ESTIMATIVA-OBRIGATORIA. +validação em produzir(). MS_Sprint herda estimativa ao puxar item. Sprint S023/T02. |
+| 1.3 | 2026-01-06 | **Ciclo de Vida de Documentos**: Seção 8 documenta estrutura de pastas (_backlog/, _arquivo/backlog/), ciclo de vida (pendente → em_sprint → concluido/cancelado), regras de movimentação, formato de spec. Sprint S-PANTHEON-003. |
