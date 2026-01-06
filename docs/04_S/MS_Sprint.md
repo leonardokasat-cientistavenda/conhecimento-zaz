@@ -1,18 +1,20 @@
-# MS_Sprint v1.1
+# MS_Sprint v1.2
 
 ---
 
 ```yaml
 nome: MS_Sprint
-versao: "1.1"
+versao: "1.2"
 tipo: Meta Sistema
 status: Publicado
 camada: 4
 dominio: Execução
-data_publicacao: "2025-12-17"
+data_publicacao: "2026-01-06"
 depende_de:
   - docs/04_B/MS_Backlog.md
   - docs/04_P/MS_Produto.md
+protocolos:
+  - docs/04_S/PROTOCOLO_AGENT_LOOP.md
 ```
 
 ---
@@ -793,8 +795,116 @@ indices:
 ### 8.2 GitHub
 
 ```yaml
-docs/04_S/MS_Sprint.md              # Este documento
-docs/04_S/MS_Sprint_Arquitetura.md  # Contratos técnicos (a criar)
+docs/04_S/MS_Sprint.md              # Este documento (Meta Sistema)
+docs/04_S/MS_Sprint_Arquitetura.md  # Contratos técnicos
+docs/04_S/PROTOCOLO_AGENT_LOOP.md   # Protocolo de execução autônoma (v1.2)
+```
+
+### 8.3 Estrutura de Pastas (v1.2)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    ESTRUTURA DE PASTAS - SPRINTS E BACKLOG                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  conhecimento-zaz/                                                          │
+│  ├── _backlog/                    # Specs de itens BKL-* pendentes          │
+│  │   ├── BKL-P05_Sprint_v2.md                                               │
+│  │   ├── BKL-GH-008_Testes.md                                               │
+│  │   └── ...                                                                │
+│  │                                                                          │
+│  ├── _sprints/                    # Specs de sprints (ativas e concluídas)  │
+│  │   ├── S-PANTHEON-003.md        # Sprint ativa                            │
+│  │   ├── S024_Genesis_Hello.md    # Sprint concluída (histórico)            │
+│  │   └── ...                                                                │
+│  │                                                                          │
+│  ├── _arquivo/                    # Documentos arquivados                   │
+│  │   ├── sprints/                 # Sprints arquivadas                      │
+│  │   │   └── S-XXX.md                                                       │
+│  │   └── backlog/                 # BKL arquivados (promovidos/cancelados)  │
+│  │       └── BKL-XXX.md                                                     │
+│  │                                                                          │
+│  └── docs/04_S/                   # Meta Sistema Sprint (este documento)    │
+│      ├── MS_Sprint.md                                                       │
+│      ├── MS_Sprint_Arquitetura.md                                           │
+│      └── PROTOCOLO_AGENT_LOOP.md                                            │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Ciclo de Vida de Documentos:**
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    CICLO DE VIDA DE DOCUMENTOS                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  BACKLOG ITEM                                                               │
+│  ┌─────────┐        promover()         ┌─────────────┐                      │
+│  │_backlog/│ ─────────────────────────►│  _arquivo/  │                      │
+│  │BKL-*.md │   (item vai pra sprint)   │backlog/*.md │                      │
+│  └─────────┘                           └─────────────┘                      │
+│                                                                             │
+│  SPRINT                                                                     │
+│  ┌──────────┐      ┌──────────┐      ┌──────────┐      ┌─────────────┐      │
+│  │ _sprints/│      │ _sprints/│      │ _sprints/│      │  _arquivo/  │      │
+│  │ S-XXX.md │ ──►  │ S-XXX.md │ ──►  │ S-XXX.md │ ──►  │ sprints/    │      │
+│  │  ativa   │      │  pausada │      │ concluida│      │  S-XXX.md   │      │
+│  └──────────┘      └──────────┘      └──────────┘      └─────────────┘      │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 8.4 Vínculo Arquivo ↔ MongoDB (v1.2)
+
+O arquivo `.md` da sprint em `_sprints/` deve conter referência ao documento no MongoDB:
+
+```yaml
+# No frontmatter YAML do arquivo _sprints/S-XXX.md
+nome: S-PANTHEON-003
+versao: "2.1"
+tipo: Sprint
+status: Ativa
+mongodb_ref: "sprint_sessions.codigo = 'S-PANTHEON-003'"  # ← VÍNCULO
+```
+
+**Busca no MongoDB:**
+
+```javascript
+// Carregar sprint ativa pelo código
+db.sprint_sessions.findOne({ 
+  codigo: "S-PANTHEON-003",
+  status: { $in: ["ativa", "pausada"] }
+})
+
+// Ou buscar qualquer sprint ativa
+db.sprint_sessions.findOne({ 
+  status: { $in: ["ativa", "pausada"] }
+})
+```
+
+**Fluxo de Carregamento:**
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    FLUXO: CARREGAR SPRINT                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1. MongoDB primeiro (dados dinâmicos)                                      │
+│     db.sprint_sessions.findOne({ status: { $in: ["ativa", "pausada"] } })   │
+│                                                                             │
+│  2. Se encontrou → usar dados do MongoDB                                    │
+│     - Tasks, progresso, bloqueios, etc.                                     │
+│                                                                             │
+│  3. Se precisar de contexto extra → buscar arquivo                          │
+│     github:get_file_contents("_sprints/{codigo}.md")                        │
+│     - Objetivo detalhado, arquitetura target, notas                         │
+│                                                                             │
+│  4. Arquivo é OPCIONAL para execução                                        │
+│     - MongoDB é SSOT para estado                                            │
+│     - Arquivo é documentação complementar                                   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -815,6 +925,7 @@ docs/04_S/MS_Sprint_Arquitetura.md  # Contratos técnicos (a criar)
 | **AUTO-PULL-RESPEITADO** | Nunca puxa auto_pull=false sem confirmação (v1.1) |
 | **HIERARQUIA-CODIGO** | Subtask deriva código do pai (v1.1) |
 | **SSOT-BACKLOG** | Origem persiste apenas no BacklogItem (v1.1) |
+| **MONGODB-SSOT-ESTADO** | MongoDB é fonte de verdade para estado da sprint (v1.2) |
 
 ---
 
@@ -873,6 +984,7 @@ if sessao and sessao.status == "pausada":
 | Velocidade histórica | **MS_Sprint** | - |
 | Variação de escopo | **MS_Sprint** | - |
 | Produto/Feature | MS_Produto | MS_Sprint |
+| Estado da sprint | **MongoDB** | Arquivo .md (v1.2) |
 
 ---
 
@@ -883,6 +995,7 @@ if sessao and sessao.status == "pausada":
 | docs/04_B/MS_Backlog.md | Fonte de itens, listar_filhos, transferir |
 | docs/04_B/MS_Backlog_Arquitetura.md | Contratos backlog |
 | docs/04_P/MS_Produto.md | Fonte de saga/produto |
+| docs/04_S/PROTOCOLO_AGENT_LOOP.md | Protocolo de execução autônoma (v1.2) |
 | genesis/GENESIS.md | Consumidor |
 | _drafts/S021/M0-M3_MS_Sprint.md | Epistemologia completa |
 | _drafts/S022/M0-M3_Sprint_Orquestrador.md | Epistemologia orquestrador |
@@ -895,3 +1008,4 @@ if sessao and sessao.status == "pausada":
 |--------|------|-----------|
 | 1.0 | 2025-12-17 | Criação inicial. Task como entidade de execução. 6 relatórios. Controle de variação de escopo. Guia do usuário com 17 comandos. Porta para multi-user. Sprint S021. |
 | 1.1 | 2025-12-17 | **Orquestrador de Receitas**: Task com hierarquia (task_pai, nivel, backlog_item_origem). concluir_task() consulta filhos via MS_Backlog.listar_filhos(). Auto-pull de subtasks. gerar_codigo_subtask(). Comando puxar-filho. Invariantes AUTO-PULL-RESPEITADO, HIERARQUIA-CODIGO, SSOT-BACKLOG. Sprint S022/T03. |
+| 1.2 | 2026-01-06 | **Estrutura de Pastas**: Seções 8.3 e 8.4. Documentar ciclo de vida (_sprints/, _backlog/, _arquivo/). Vínculo arquivo ↔ MongoDB via mongodb_ref. Invariante MONGODB-SSOT-ESTADO. Referência ao PROTOCOLO_AGENT_LOOP.md. Sprint S-PANTHEON-003. |
