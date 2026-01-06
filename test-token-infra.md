@@ -1,0 +1,1 @@
+# Teste Token @infra\n\nSprint: S-PANTHEON-003\nData: 2026-01-06\n\nEste arquivo testa se a notificação de sucesso aparece como @infra.
