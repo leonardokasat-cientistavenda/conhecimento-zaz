@@ -17,27 +17,23 @@
  */
 
 const { v4: uuidv4 } = require('uuid');
+const { Pool } = require('pg');
+const http = require('http');
+const config = require('../lib/config');
 
 // ============================================================================
-// CONFIGURAÇÃO
+// CLIENTES
 // ============================================================================
 
-const CONFIG = {
-  // PostgreSQL Mattermost (T2)
-  postgres: {
-    host: process.env.MM_POSTGRES_HOST || 'localhost',
-    port: process.env.MM_POSTGRES_PORT || 5432,
-    database: process.env.MM_POSTGRES_DB || 'mattermost',
-    user: process.env.MM_POSTGRES_USER || 'mmuser',
-    password: process.env.MM_POSTGRES_PASSWORD || ''
-  },
-  // ClickHouse Audit (T3)
-  clickhouse: {
-    host: process.env.CH_HOST || 'localhost',
-    port: process.env.CH_PORT || 8123,
-    database: 'genesis'
+// Pool PostgreSQL (conexão lazy)
+let pgPool = null;
+
+function getPgPool() {
+  if (!pgPool) {
+    pgPool = new Pool(config.mm.postgres);
   }
-};
+  return pgPool;
+}
 
 // ============================================================================
 // HELP
@@ -111,7 +107,7 @@ function isValidPostId(postId) {
 }
 
 // ============================================================================
-// STATUS DO POST (T4)
+// STATUS DO POST
 // ============================================================================
 
 /**
@@ -120,13 +116,36 @@ function isValidPostId(postId) {
  * @returns {Promise<{exists: boolean, deleted: boolean, deleteAt: number}>}
  */
 async function checkPostStatus(postId) {
-  // TODO: T4 - Implementar query PostgreSQL
-  // SELECT id, delete_at FROM posts WHERE id = $1
-  throw new Error('NOT_IMPLEMENTED: checkPostStatus aguarda T4');
+  const pool = getPgPool();
+  
+  const query = `
+    SELECT id, deleteat as delete_at
+    FROM posts 
+    WHERE id = $1
+  `;
+  
+  const result = await pool.query(query, [postId]);
+  
+  if (result.rows.length === 0) {
+    return {
+      exists: false,
+      deleted: false,
+      deleteAt: 0
+    };
+  }
+  
+  const row = result.rows[0];
+  const deleteAt = parseInt(row.delete_at, 10) || 0;
+  
+  return {
+    exists: true,
+    deleted: deleteAt > 0,
+    deleteAt: deleteAt
+  };
 }
 
 // ============================================================================
-// AUDIT (T3)
+// AUDIT (ClickHouse)
 // ============================================================================
 
 /**
@@ -135,13 +154,111 @@ async function checkPostStatus(postId) {
  * @returns {Promise<boolean>} true se registrado
  */
 async function logAudit(auditData) {
-  // TODO: T3 - Implementar INSERT no ClickHouse
-  // INSERT INTO genesis.mm_post_recovery_audit
-  throw new Error('NOT_IMPLEMENTED: logAudit aguarda T3');
+  // Se audit desabilitado, retorna true (no-op)
+  if (!config.features.auditEnabled) {
+    return true;
+  }
+  
+  const { ch } = config;
+  
+  const insertQuery = `
+    INSERT INTO ${ch.database}.mm_post_recovery_audit 
+    (trace_id, post_id, user_id, channel_id, action, status, delete_at_before, timestamp)
+    VALUES (
+      '${auditData.trace_id}',
+      '${auditData.post_id}',
+      '${auditData.user_id || ''}',
+      '${auditData.channel_id || ''}',
+      'recover',
+      'pending',
+      ${auditData.delete_at_before || 0},
+      now64(3)
+    )
+  `;
+  
+  return new Promise((resolve) => {
+    const options = {
+      hostname: ch.host,
+      port: ch.port,
+      path: '/',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain'
+      },
+      timeout: ch.timeout || 5000
+    };
+    
+    const req = http.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        resolve(res.statusCode === 200);
+      });
+    });
+    
+    req.on('error', (err) => {
+      console.error('[AUDIT] ClickHouse error:', err.message);
+      resolve(false);
+    });
+    
+    req.on('timeout', () => {
+      console.error('[AUDIT] ClickHouse timeout');
+      req.destroy();
+      resolve(false);
+    });
+    
+    req.write(insertQuery);
+    req.end();
+  });
+}
+
+/**
+ * Atualiza status do audit após operação
+ * @param {string} traceId - Trace ID da operação
+ * @param {string} status - Novo status (success, failed, skipped)
+ * @param {Object} data - Dados adicionais
+ */
+async function updateAuditStatus(traceId, status, data = {}) {
+  if (!config.features.auditEnabled) return;
+  
+  const { ch } = config;
+  
+  // ClickHouse não suporta UPDATE, então inserimos novo registro
+  const insertQuery = `
+    INSERT INTO ${ch.database}.mm_post_recovery_audit 
+    (trace_id, post_id, user_id, channel_id, action, status, delete_at_after, duration_ms, error_message, timestamp)
+    VALUES (
+      '${traceId}',
+      '${data.post_id || ''}',
+      '${data.user_id || ''}',
+      '${data.channel_id || ''}',
+      'recover',
+      '${status}',
+      ${data.delete_at_after || 0},
+      ${data.duration_ms || 0},
+      '${(data.error || '').replace(/'/g, "\\'")}',
+      now64(3)
+    )
+  `;
+  
+  return new Promise((resolve) => {
+    const options = {
+      hostname: ch.host,
+      port: ch.port,
+      path: '/',
+      method: 'POST',
+      timeout: 5000
+    };
+    
+    const req = http.request(options, () => resolve());
+    req.on('error', () => resolve());
+    req.write(insertQuery);
+    req.end();
+  });
 }
 
 // ============================================================================
-// RECOVERY (T4)
+// RECOVERY
 // ============================================================================
 
 /**
@@ -150,9 +267,25 @@ async function logAudit(auditData) {
  * @returns {Promise<boolean>} true se recuperado
  */
 async function recoverPost(postId) {
-  // TODO: T4 - Implementar UPDATE PostgreSQL
-  // UPDATE posts SET delete_at = 0 WHERE id = $1
-  throw new Error('NOT_IMPLEMENTED: recoverPost aguarda T4');
+  // Dry-run mode
+  if (config.features.dryRun) {
+    console.log(`[DRY-RUN] Would recover post: ${postId}`);
+    return true;
+  }
+  
+  const pool = getPgPool();
+  
+  const query = `
+    UPDATE posts 
+    SET deleteat = 0, updateat = $2
+    WHERE id = $1 AND deleteat > 0
+    RETURNING id
+  `;
+  
+  const now = Date.now();
+  const result = await pool.query(query, [postId, now]);
+  
+  return result.rowCount > 0;
 }
 
 // ============================================================================
@@ -243,6 +376,15 @@ async function execute(context) {
     
     const duration = Date.now() - startTime;
     
+    // 4. Atualizar audit com resultado
+    await updateAuditStatus(traceId, recovered ? 'success' : 'failed', {
+      post_id: context.postId,
+      user_id: context.userId,
+      channel_id: context.channelId,
+      delete_at_after: 0,
+      duration_ms: duration
+    });
+    
     return {
       success: recovered,
       status: recovered ? 'recovered' : 'recovery_failed',
@@ -254,6 +396,17 @@ async function execute(context) {
     };
     
   } catch (error) {
+    const duration = Date.now() - startTime;
+    
+    // Registrar erro no audit
+    await updateAuditStatus(traceId, 'failed', {
+      post_id: context.postId,
+      user_id: context.userId,
+      channel_id: context.channelId,
+      duration_ms: duration,
+      error: error.message
+    });
+    
     return {
       success: false,
       status: 'error',
@@ -261,6 +414,20 @@ async function execute(context) {
       trace_id: traceId,
       error: error.message
     };
+  }
+}
+
+// ============================================================================
+// CLEANUP
+// ============================================================================
+
+/**
+ * Fecha conexões ao encerrar
+ */
+async function cleanup() {
+  if (pgPool) {
+    await pgPool.end();
+    pgPool = null;
   }
 }
 
@@ -274,11 +441,13 @@ module.exports = {
   execute,
   help,
   isValidPostId,
+  cleanup,
   // Exports para testes
   _internals: {
     checkPostStatus,
     logAudit,
+    updateAuditStatus,
     recoverPost,
-    CONFIG
+    getPgPool
   }
 };
