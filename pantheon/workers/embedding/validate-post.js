@@ -1,91 +1,66 @@
 /**
  * Worker: validate-post
- * Valida se post deve ser indexado (Speed Layer)
- * Usa DMN post_validation para regras
+ * Valida post usando DMN post_validation
  * 
  * Topic: embedding-validate-post
  * 
  * Input Variables:
  *   - post_id: string
- *   - channel_id: string
- *   - content: string
- *   - is_streaming: boolean
+ *   - message: string
+ *   - props: object
  * 
  * Output Variables:
  *   - valid: boolean
- *   - skip_reason: string (se não válido)
+ *   - skip_reason: string
  */
 
 const { createWorker, getVariables } = require('./base');
-const mongoDb = require('../../database/mongodb/embeddings');
 
 const TOPIC = 'embedding-validate-post';
 
-/**
- * Valida post conforme regras da DMN
- * (Implementação local - DMN será chamada pelo Camunda)
- */
-function validatePost(data) {
-  const { content, is_streaming, is_bot, is_system } = data;
-  const message_length = (content || '').length;
-  
-  // Regras da DMN post_validation
-  if (is_streaming) {
-    return { valid: false, skip_reason: 'streaming_active' };
-  }
-  
-  if (is_system) {
-    return { valid: false, skip_reason: 'system_post' };
-  }
-  
-  if (message_length < 10) {
-    return { valid: false, skip_reason: 'too_short' };
-  }
-  
-  if (is_bot && message_length < 500) {
-    return { valid: false, skip_reason: 'bot_post_short' };
-  }
-  
-  return { valid: true, skip_reason: null };
-}
+// Este worker é opcional - a validação principal está no receive-post
+// Pode ser usado para validação adicional via DMN
 
-createWorker(TOPIC, async (task, taskService, { logger, config }) => {
-  const variables = getVariables(task, [
+createWorker(TOPIC, async (task, taskService, { logger }) => {
+  const { post_id, message, props } = getVariables(task, [
     'post_id',
-    'channel_id', 
-    'content',
-    'is_streaming',
-    'is_bot',
-    'is_system'
+    'message', 
+    'props'
   ]);
   
-  logger.info('Validando post', { post_id: variables.post_id });
+  logger.debug('Validando post', { post_id });
   
-  // Validar
-  const { valid, skip_reason } = validatePost(variables);
+  // Validação básica (DMN pode adicionar regras complexas)
+  const message_length = (message || '').length;
+  const is_bot = props?.from_bot === true;
+  const is_system = !!(task.variables.get('type'));
+  const is_streaming = props?.streaming === true;
+  const props_streaming = props?.streaming === true;
   
-  logger.info('Resultado validação', { 
-    post_id: variables.post_id,
-    valid,
-    skip_reason
-  });
+  // Regras de validação (espelho do DMN post_validation)
+  let valid = true;
+  let skip_reason = 'valid';
   
-  // Se não válido, marcar no MongoDB
-  if (!valid) {
-    await mongoDb.connect(config.mongodb.uri, config.mongodb.database);
-    await mongoDb.skipPost(
-      variables.post_id,
-      config.embedding.provider,
-      config.embedding.model,
-      skip_reason
-    );
+  if (is_streaming || props_streaming) {
+    valid = false;
+    skip_reason = 'streaming_active';
+  } else if (is_system) {
+    valid = false;
+    skip_reason = 'system_post';
+  } else if (message_length < 10) {
+    valid = false;
+    skip_reason = 'too_short';
+  } else if (is_bot && message_length < 500) {
+    valid = false;
+    skip_reason = 'bot_post_short';
   }
   
-  // Completar task
+  logger.debug('Validação concluída', { post_id, valid, skip_reason });
+  
   await taskService.complete(task, {
     valid,
     skip_reason
   });
 });
 
-module.exports = { TOPIC, validatePost };
+module.exports = { TOPIC };

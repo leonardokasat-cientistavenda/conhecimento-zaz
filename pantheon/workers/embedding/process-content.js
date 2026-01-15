@@ -1,134 +1,110 @@
 /**
  * Worker: process-content
- * Processa conteúdo do post (limpeza, chunking)
- * Usa DMN content_strategy para estratégia
+ * Processa conteúdo do post (limpeza, chunking se necessário)
  * 
  * Topic: embedding-process-content
  * 
  * Input Variables:
  *   - post_id: string
- *   - content: string
- *   - content_hash: string
+ *   - message: string
+ *   - token_count: number
  * 
  * Output Variables:
  *   - processed_content: string
- *   - token_count: number
- *   - strategy: string
+ *   - chunks: string[] (se chunking necessário)
+ *   - strategy: string (direct, chunk, section)
  */
 
-const { createWorker, getVariables, estimateTokens, hashContent } = require('./base');
-const mongoDb = require('../../database/mongodb/embeddings');
-const pgDb = require('../../database/postgresql/embeddings');
+const { createWorker, getVariables, estimateTokens } = require('./base');
 
 const TOPIC = 'embedding-process-content';
 
+// Limites de chunking (alinhado com DMN content_strategy)
+const MAX_TOKENS_DIRECT = 2000;
+const CHUNK_SIZE = 1500;
+const CHUNK_OVERLAP = 200;
+
 /**
- * Remove blocos de código para embedding mais limpo
+ * Remove código excessivo mantendo contexto
  */
 function cleanCode(text) {
-  // Remove blocos de código
-  let cleaned = text.replace(/```[\s\S]*?```/g, '[CODE_BLOCK]');
-  // Remove código inline
-  cleaned = cleaned.replace(/`[^`]+`/g, '[CODE]');
-  return cleaned;
+  // Substitui blocos de código longos por placeholder
+  return text.replace(/```[\s\S]{500,}?```/g, '[código removido]');
 }
 
 /**
- * Determina estratégia de processamento
- * (Implementação local - DMN content_strategy)
+ * Detecta se tem código
  */
-function getStrategy(content, hasCode) {
-  const tokenCount = estimateTokens(content);
-  
-  if (tokenCount < 100) {
-    return { strategy: 'direct', chunk_size: 0, overlap: 0, clean_code: false };
-  }
-  
-  if (tokenCount <= 2000 && !hasCode) {
-    return { strategy: 'direct', chunk_size: 0, overlap: 0, clean_code: false };
-  }
-  
-  if (tokenCount <= 2000 && hasCode) {
-    return { strategy: 'direct', chunk_size: 0, overlap: 0, clean_code: true };
-  }
-  
-  // Posts longos
-  return { 
-    strategy: 'chunk', 
-    chunk_size: 1500, 
-    overlap: 200, 
-    clean_code: hasCode 
-  };
+function hasCode(text) {
+  return /```/.test(text) || /`[^`]+`/.test(text);
 }
 
-createWorker(TOPIC, async (task, taskService, { logger, config }) => {
-  const { post_id, content, content_hash } = getVariables(task, [
+/**
+ * Divide texto em chunks com overlap
+ */
+function chunkText(text, chunkSize = CHUNK_SIZE, overlap = CHUNK_OVERLAP) {
+  const chunks = [];
+  let start = 0;
+  
+  while (start < text.length) {
+    const end = Math.min(start + chunkSize * 4, text.length); // ~4 chars per token
+    chunks.push(text.slice(start, end));
+    start = end - (overlap * 4);
+    
+    if (start >= text.length - 100) break; // Evita chunks muito pequenos
+  }
+  
+  return chunks;
+}
+
+createWorker(TOPIC, async (task, taskService, { logger }) => {
+  const { post_id, message, token_count } = getVariables(task, [
     'post_id',
-    'content',
-    'content_hash'
+    'message',
+    'token_count'
   ]);
   
-  logger.info('Processando conteúdo', { post_id });
+  logger.debug('Processando conteúdo', { post_id, token_count });
   
-  // Conectar aos bancos
-  await mongoDb.connect(config.mongodb.uri, config.mongodb.database);
-  pgDb.connect(config.postgresql.uri);
+  let processed_content = message || '';
+  let chunks = [];
+  let strategy = 'direct';
   
-  // Verificar se conteúdo mudou (idempotência)
-  const changed = await pgDb.checkContentChanged(
-    post_id,
-    content_hash,
-    config.embedding.provider,
-    config.embedding.model
-  );
+  const tokens = token_count || estimateTokens(processed_content);
+  const containsCode = hasCode(processed_content);
   
-  if (!changed) {
-    logger.info('Conteúdo não mudou, skip', { post_id });
-    await taskService.complete(task, {
-      processed_content: null,
-      token_count: 0,
-      strategy: 'skip',
-      skip_reason: 'content_unchanged'
-    });
-    return;
+  // Determinar estratégia (espelho do DMN content_strategy)
+  if (tokens < 100) {
+    // Posts curtos: direto
+    strategy = 'direct';
+  } else if (tokens <= MAX_TOKENS_DIRECT) {
+    // Posts normais
+    strategy = 'direct';
+    if (containsCode) {
+      processed_content = cleanCode(processed_content);
+    }
+  } else {
+    // Posts longos: chunking
+    strategy = 'chunk';
+    if (containsCode) {
+      processed_content = cleanCode(processed_content);
+    }
+    chunks = chunkText(processed_content, CHUNK_SIZE, CHUNK_OVERLAP);
   }
   
-  // Detectar código
-  const hasCode = /```|`[^`]+`/.test(content);
-  
-  // Determinar estratégia
-  const strategyConfig = getStrategy(content, hasCode);
-  
-  // Processar conteúdo
-  let processed = content;
-  if (strategyConfig.clean_code) {
-    processed = cleanCode(content);
-  }
-  
-  const token_count = estimateTokens(processed);
-  
-  logger.info('Conteúdo processado', {
+  logger.debug('Processamento concluído', {
     post_id,
-    strategy: strategyConfig.strategy,
-    token_count,
-    clean_code: strategyConfig.clean_code
+    strategy,
+    chunks_count: chunks.length,
+    original_tokens: tokens,
+    processed_length: processed_content.length
   });
   
-  // Atualizar MongoDB
-  await mongoDb.updatePostStatus(
-    post_id,
-    config.embedding.provider,
-    config.embedding.model,
-    'processing',
-    { token_count }
-  );
-  
-  // Completar task
   await taskService.complete(task, {
-    processed_content: processed,
-    token_count,
-    strategy: strategyConfig.strategy
+    processed_content,
+    chunks: JSON.stringify(chunks),
+    strategy
   });
 });
 
-module.exports = { TOPIC, cleanCode, getStrategy };
+module.exports = { TOPIC, cleanCode, hasCode, chunkText };
