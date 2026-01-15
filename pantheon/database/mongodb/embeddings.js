@@ -1,5 +1,6 @@
 /**
  * Funções de acesso ao MongoDB para pipeline de embeddings
+ * Alinhado com SPEC MongoDB v2 FINAL
  * 
  * @module database/mongodb/embeddings
  */
@@ -219,22 +220,85 @@ async function updateBatchStatus(batch_id, status, result = null, error = null) 
   return updateBatch(batch_id, updates);
 }
 
+/**
+ * Incrementa retry_count do batch
+ */
+async function incrementBatchRetry(batch_id) {
+  const { batches } = getCollections();
+  return batches.updateOne(
+    { batch_id },
+    { $inc: { retry_count: 1 } }
+  );
+}
+
 // ============================================
-// POSTS
+// POSTS (SPEC v2 COMPLIANT)
 // ============================================
 
 /**
+ * Cria documento de post com todos os campos da SPEC v2
+ * 
+ * @param {Object} data - Dados do post
+ * @returns {Object} Documento formatado conforme SPEC v2
+ */
+function buildPostDocument(data) {
+  return {
+    // Identificação
+    post_id: data.post_id,
+    channel_id: data.channel_id,
+    
+    // Referências (null para Speed Layer)
+    batch_id: data.batch_id || null,
+    job_id: data.job_id || null,
+    
+    // Status
+    status: data.status || 'pending',
+    source: data.source || 'batch',  // SPEC v2: "batch" ou "speed"
+    
+    // Conteúdo
+    content_hash: data.content_hash || null,
+    token_count: data.token_count || 0,
+    
+    // Multimodelo (alinhado com pgvector v2)
+    provider: data.provider || 'openai',
+    model: data.model || 'text-embedding-3-small',
+    
+    // Metadados extensíveis (SPEC v2)
+    metadata: data.metadata || {
+      content_type: 'post',
+      has_attachments: false,
+      language: null
+    },
+    
+    // Tracking de edição (SPEC v2)
+    is_edit: data.is_edit || false,
+    edit_count: data.edit_count || 0,
+    previous_hash: data.previous_hash || null,
+    
+    // Skip info (SPEC v2)
+    skip_reason: data.skip_reason || null
+  };
+}
+
+/**
  * Upsert de post (idempotente por post_id + provider + model)
+ * Conforme SPEC MongoDB v2
+ * 
+ * @param {Object} postData - Dados do post
+ * @returns {Object} Resultado do upsert
  */
 async function upsertPost(postData) {
   const { posts } = getCollections();
   const { post_id, provider, model } = postData;
   
+  // Constrói documento conforme SPEC v2
+  const doc = buildPostDocument(postData);
+  
   return posts.updateOne(
-    { post_id, provider, model },
+    { post_id, provider: provider || 'openai', model: model || 'text-embedding-3-small' },
     { 
       $set: { 
-        ...postData,
+        ...doc,
         updated_at: new Date() 
       },
       $setOnInsert: {
@@ -244,6 +308,28 @@ async function upsertPost(postData) {
     },
     { upsert: true }
   );
+}
+
+/**
+ * Cria post para Batch Layer
+ */
+async function createBatchPost(data) {
+  return upsertPost({
+    ...data,
+    source: 'batch'
+  });
+}
+
+/**
+ * Cria post para Speed Layer
+ */
+async function createSpeedPost(data) {
+  return upsertPost({
+    ...data,
+    source: 'speed',
+    batch_id: null,
+    job_id: null
+  });
 }
 
 /**
@@ -291,6 +377,64 @@ async function updatePostStatus(post_id, provider, model, status, extraUpdates =
   );
 }
 
+/**
+ * Marca post como editado (SPEC v2)
+ */
+async function markPostEdited(post_id, provider, model, newHash, previousHash) {
+  const { posts } = getCollections();
+  
+  return posts.updateOne(
+    { post_id, provider, model },
+    { 
+      $set: { 
+        is_edit: true,
+        content_hash: newHash,
+        previous_hash: previousHash,
+        status: 'pending',
+        updated_at: new Date()
+      },
+      $inc: { edit_count: 1 }
+    }
+  );
+}
+
+/**
+ * Marca post como skipped (SPEC v2)
+ */
+async function skipPost(post_id, provider, model, reason) {
+  return updatePostStatus(post_id, provider, model, 'skipped', {
+    skip_reason: reason
+  });
+}
+
+/**
+ * Lista posts por status
+ */
+async function getPostsByStatus(status, limit = 100) {
+  const { posts } = getCollections();
+  return posts.find({ status }).limit(limit).toArray();
+}
+
+/**
+ * Lista posts de um job
+ */
+async function getPostsByJob(job_id, status = null) {
+  const { posts } = getCollections();
+  const query = { job_id };
+  if (status) query.status = status;
+  return posts.find(query).toArray();
+}
+
+/**
+ * Lista posts de um batch
+ */
+async function getPostsByBatch(batch_id, status = null) {
+  const { posts } = getCollections();
+  const query = { batch_id };
+  if (status) query.status = status;
+  return posts.find(query).toArray();
+}
+
 // ============================================
 // CLEANUP
 // ============================================
@@ -326,10 +470,19 @@ module.exports = {
   getBatchesByJob,
   updateBatch,
   updateBatchStatus,
+  incrementBatchRetry,
   
-  // Posts
+  // Posts (SPEC v2)
+  buildPostDocument,
   upsertPost,
+  createBatchPost,
+  createSpeedPost,
   getPost,
   checkContentChanged,
-  updatePostStatus
+  updatePostStatus,
+  markPostEdited,
+  skipPost,
+  getPostsByStatus,
+  getPostsByJob,
+  getPostsByBatch
 };
